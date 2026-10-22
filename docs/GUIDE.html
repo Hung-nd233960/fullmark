@@ -155,7 +155,12 @@ or the installed <code>quiz</code> fails with
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>quiz new calculus</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>quiz check calculus-1<span class="op">.</span><span class="fu">md</span></span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>quiz build calculus-1<span class="op">.</span><span class="fu">md</span> <span class="op">--</span>open</span></code></pre></div>
-<p><code>quiz new</code> copies a template and its images.
+<p><code>quiz new</code> copies a template and its images, plus a
+<code>.markdownlint.json</code> that turns off the three Markdown lint
+rules the quiz syntax trips (MD013 line length, MD025 several
+<code>#</code> sections, MD028 a hint callout directly followed by an
+explanation); an existing config is kept. <code>quiz brief</code> writes
+the same file. Do not use HTML comments in a quiz: they show as text.
 <code>quiz check</code> should print
 <code>0 error(s), 0 warning(s)</code>. <code>quiz build --open</code>
 writes <code>calculus-1.html</code> and opens it in your browser.</p>

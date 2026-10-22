@@ -16,6 +16,7 @@ from typing import Any, Literal
 import yaml
 from pydantic import BaseModel, ConfigDict, Field
 
+from .mdutil import write_markdownlint_config
 from .models import Finding, Findings, Quiz
 
 QUESTIONS_PATH = Path(__file__).with_name("brief_questions.yaml")
@@ -413,6 +414,9 @@ def write_brief_files(folder: Path, brief: Brief) -> list[Path]:
     if not readme.exists():
         readme.write_text(CONTENT_README, encoding="utf-8", newline="\n")
         made.append(readme)
+    lint = write_markdownlint_config(folder)
+    if lint:
+        made.append(lint)
     return made
 
 

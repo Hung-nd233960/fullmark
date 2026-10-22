@@ -457,6 +457,7 @@ def test_web_round_trip_writes_the_brief(tmp_path, capsys):
     )
     assert brief_.decided_by["mode"] == "default"
     assert not (d / ".brief").exists() and sorted(p.name for p in d.iterdir()) == [
+        ".markdownlint.json",
         "brief.yaml",
         "content",
     ]
@@ -798,3 +799,18 @@ def test_check_says_so_when_the_brief_cannot_be_read(tmp_path, capsys):
     (d / "brief.yaml").write_text("purpose: nonsense\n", encoding="utf-8")
     code, found = checked(d, capsys)
     assert code == 0 and [f["rule"] for f in found] == ["brief.invalid"]
+
+
+def test_brief_writes_markdownlint_config(tmp_path):
+    d = tmp_path / "b"
+    assert main(["brief", str(d), *FLAGS]) == 0
+    assert json.loads((d / ".markdownlint.json").read_text(encoding="utf-8")) == {
+        "MD013": False,
+        "MD025": False,
+        "MD028": False,
+    }
+    d2 = tmp_path / "b2"
+    d2.mkdir()
+    (d2 / ".markdownlint-cli2.jsonc").write_text("{}", encoding="utf-8")
+    assert main(["brief", str(d2), *FLAGS]) == 0
+    assert not (d2 / ".markdownlint.json").exists()

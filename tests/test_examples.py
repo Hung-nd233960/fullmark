@@ -1,3 +1,4 @@
+import json
 import shutil
 import subprocess
 from pathlib import Path
@@ -264,3 +265,17 @@ def test_survey_example_requirements():
     assert types.count("scale") == 2 and types.count("ordering") == 1
     assert types.count("fields") == 1 and types.count("essay") == 1
     assert all(q.ungraded for q in quiz.questions) and quiz.total_points == 0
+
+
+def test_new_writes_markdownlint_config_without_overwriting(tmp_path):
+    dest = tmp_path / "q"
+    assert main(["new", "blank", str(dest)]) == 0
+    cfg = json.loads((dest / ".markdownlint.json").read_text(encoding="utf-8"))
+    assert cfg == {"MD013": False, "MD025": False, "MD028": False}
+    own = tmp_path / "own"
+    own.mkdir()
+    (own / ".markdownlint.json").write_text('{"MD001": false}', encoding="utf-8")
+    assert main(["new", "blank", str(own)]) == 0
+    assert (own / ".markdownlint.json").read_text(encoding="utf-8") == (
+        '{"MD001": false}'
+    )

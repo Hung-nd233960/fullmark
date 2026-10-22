@@ -20,6 +20,7 @@ fullmark turns one Markdown file into one offline, self-grading HTML quiz. This 
 
 Rules that avoid most errors:
 
+- Never use HTML comments in a quiz: HTML is off, so they show as text. markdownlint warnings MD013, MD025 and MD028 are expected (`quiz new` and `quiz brief` write a `.markdownlint.json` that disables them); do not rewrite the quiz to satisfy them.
 - Choice questions: every item needs `[ ]` or `[x]`. One `[x]` is single, two or more is multi.
 - `truefalse`, `numeric`, `short`, `fields`, `essay` and `code` need a fenced block whose info string is `answer`, containing YAML (`value`, `tolerance`, `accept`, `patterns`, `min_words`, `rubric`, `language`, `starter`).
 - `ordering`: write an ordered list in the **correct** order (the page shuffles it). `matching`: bullets `left :: right`; a bullet `:: right` is a distractor. Neither takes an `answer` block. Both follow `multi_scoring` (`partial` or `all_or_nothing`).

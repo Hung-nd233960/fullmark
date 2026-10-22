@@ -4,6 +4,8 @@ import shutil
 from dataclasses import dataclass
 from pathlib import Path
 
+from .mdutil import write_markdownlint_config
+
 PKG = Path(__file__).parent
 EXAMPLES = PKG / "examples"
 
@@ -90,6 +92,9 @@ def new_from_template(name: str, dest: Path) -> list[Path]:
         dst.parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(src, dst)
         written.append(dst)
+    lint = write_markdownlint_config(dest)
+    if lint:
+        written.append(lint)
     return written
 
 

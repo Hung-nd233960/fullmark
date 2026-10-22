@@ -35,7 +35,7 @@ quiz check calculus-1.md
 quiz build calculus-1.md --open
 ```
 
-`quiz new` copies a template and its images. `quiz check` should print `0 error(s), 0 warning(s)`. `quiz build --open` writes `calculus-1.html` and opens it in your browser.
+`quiz new` copies a template and its images, plus a `.markdownlint.json` that turns off the three Markdown lint rules the quiz syntax trips (MD013 line length, MD025 several `#` sections, MD028 a hint callout directly followed by an explanation); an existing config is kept. `quiz brief` writes the same file. Do not use HTML comments in a quiz: they show as text. `quiz check` should print `0 error(s), 0 warning(s)`. `quiz build --open` writes `calculus-1.html` and opens it in your browser.
 
 The templates:
 

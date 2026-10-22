@@ -351,6 +351,7 @@ To keep your own quizzes and results in one folder under git, register the finis
 - `[[...]]` in a question that is not `type=blanks`, or inside `$...$`.
 - Putting the answer in the question text.
 - `{input}` anywhere but the end of a `- [ ]` choice of a `single` or `multi` question, or `{input=What is it?}` without double quotes: write `{input="What is it?"}`.
+- An HTML comment (`<!-- ... -->`) in a quiz: HTML is off, so it shows as literal text. Do not "fix" markdownlint warnings by adding one. `quiz new` and `quiz brief` write a `.markdownlint.json` that turns off MD013, MD025 and MD028, the rules the quiz syntax trips (several `#` sections, a hint callout directly followed by an explanation, long lines); an existing config is never overwritten.
 - A rubric line such as `- Name: detail` is fine; a description with another colon-and-space inside is not (quote the line).
 
 ## Writing good questions

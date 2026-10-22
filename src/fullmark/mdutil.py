@@ -1,6 +1,7 @@
 """Shared Markdown helpers."""
 
 import re
+from pathlib import Path
 
 from markdown_it import MarkdownIt
 from mdit_py_plugins.dollarmath import dollarmath_plugin
@@ -39,3 +40,35 @@ def math_spans(text: str) -> list[str]:
 
 def has_math(text: str) -> bool:
     return bool(math_spans(text))
+
+
+MARKDOWNLINT_CONFIG = """{
+  "MD013": false,
+  "MD025": false,
+  "MD028": false
+}
+"""
+
+
+def write_markdownlint_config(folder: Path) -> Path | None:
+    """Write `.markdownlint.json` into a quiz folder unless one already exists.
+
+    The quiz syntax trips three default rules: several `#` sections (MD025), a
+    `[!hint]` callout directly followed by `[!explanation]` (MD028) and long
+    lines (MD013). Returns the path written, or None when a config was there."""
+    path = Path(folder) / ".markdownlint.json"
+    if any(
+        (Path(folder) / n).exists()
+        for n in (
+            ".markdownlint.json",
+            ".markdownlint.jsonc",
+            ".markdownlint.yaml",
+            ".markdownlint.yml",
+            ".markdownlint-cli2.jsonc",
+            ".markdownlint-cli2.yaml",
+        )
+    ):
+        return None
+    Path(folder).mkdir(parents=True, exist_ok=True)
+    path.write_text(MARKDOWNLINT_CONFIG, encoding="utf-8", newline="\n")
+    return path
