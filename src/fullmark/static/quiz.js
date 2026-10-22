@@ -912,14 +912,12 @@
         );
       }
 
-      const box = h(
-        "section",
-        { class: "qm-start", id: "start-screen" },
-        h("h1", { text: DATA.title }),
-        DATA.description_html ? h("div", { class: "qm-prose", html: DATA.description_html }) : null,
-        DATA.preamble_html ? h("div", { class: "qm-prose", html: DATA.preamble_html }) : null,
+      // The facts, Focus mode and Start sit together; with a section list, wide screens
+      // put them in a column beside it, so Start stays in view however long the list is.
+      const side = h(
+        "div",
+        { class: "qm-cover-side" },
         coverFacts(),
-        list,
         saved
           ? h("p", {
               class: "qm-saved",
@@ -930,6 +928,14 @@
           : null,
         ready,
         actions,
+      );
+      const box = h(
+        "section",
+        { class: list ? "qm-start qm-start-wide" : "qm-start", id: "start-screen" },
+        h("h1", { text: DATA.title }),
+        DATA.description_html ? h("div", { class: "qm-prose", html: DATA.description_html }) : null,
+        DATA.preamble_html ? h("div", { class: "qm-prose", html: DATA.preamble_html }) : null,
+        h("div", { class: "qm-cover" }, side, list),
       );
       wrap.append(box);
       renderEta();

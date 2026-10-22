@@ -391,14 +391,42 @@ textarea:disabled {
   font-size: 1.15em;
 }
 
-.qm-start > .qm-saved {
+.qm-cover-side > .qm-saved {
   margin-top: 2rem;
 }
 
-.qm-start > .qm-saved + .qm-actions,
-.qm-start > .qm-contents + .qm-actions,
-.qm-start > .qm-facts + .qm-actions {
+.qm-cover-side > .qm-saved + .qm-actions,
+.qm-cover-side > .qm-facts + .qm-actions {
   margin-top: 2rem;
+}
+
+/* Wide screens with a section list: the list on the left, the facts, Focus mode and
+   Start in a column on the right that stays in view while the list scrolls. */
+@media (min-width: 64rem) {
+  .qm-start-wide {
+    max-width: 68rem;
+  }
+
+  .qm-start-wide .qm-cover {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 22rem;
+    column-gap: 4rem;
+    align-items: start;
+  }
+
+  .qm-start-wide .qm-cover-side {
+    grid-column: 2;
+    grid-row: 1;
+    position: sticky;
+    top: 1.5rem;
+  }
+
+  .qm-start-wide .qm-contents {
+    grid-column: 1;
+    grid-row: 1;
+    padding-top: 0.55rem;
+    border-top: 2px solid var(--line-strong);
+  }
 }
 
 .qm-actions {
