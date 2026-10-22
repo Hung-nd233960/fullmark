@@ -213,10 +213,13 @@ scoring: points        # or: band (the report asks for 0-9 bands)
 rubric:
   - Task achievement: covers the key features
   - Coherence and cohesion
+sample_answer: |       # optional model answer (Markdown)
+  The chart shows...
+show_sample: true      # show the sample answer after submit (default false)
 ```
 ````
 
-Never auto-graded: the report asks an AI to grade it against the rubric. Always write a rubric.
+Never auto-graded: the report asks an AI to grade it against the rubric. Always write a rubric. The sample answer stays out of the page unless `show_sample: true`; `quiz review` shows it to the reviewer either way.
 
 ### code
 
@@ -253,7 +256,7 @@ Some questions have no right answer: intake forms, self-reviews, course feedback
 | `short` | free text | no `answer` block |
 | `fields` | labelled free text | fields with only a `label` (no `value`/`accept`) |
 | `essay` | long text, not sent to AI grading | `answer` block optional; no `rubric`; `min_words`/`max_words` allowed |
-| `ordering` | a ranking: shown in the written order, the learner reorders it | the usual list |
+| `ordering` | a ranking: shown in the written order, the learner reorders it or presses **Keep this order** | the usual list |
 | `scale` | always ungraded | see below |
 | `truefalse`, `numeric`, `blanks`, `matching`, `code` | not allowed | error |
 
@@ -363,5 +366,5 @@ To keep your own quizzes and results in one folder under git, register the finis
 - Distractors: real misconceptions, off-by-one values, near-synonyms. Keep options about the same length; the longest option is picked more often. Avoid "all/none of the above".
 - Points: 1 for recall, 2 for a multi-step or multi-part question, more for essays. Tag every question (`tags=`); the tags drive the per-topic report.
 - For lecture slides or a PDF: render the pages to images and read them (the figures hold facts the text does not), tag by lecture section, and check coverage with `quiz inspect` (questions and points per section and tag).
-- `quiz check` also warns about weak questions: a missing or one-line explanation, duplicate choices, "all/none of the above", a correct option much longer than the rest, a question that already contains the answer, and a correct answer that sits in the same position too often. Fix the warnings, or use `--strict` in CI.
+- `quiz check` also warns about weak questions: a missing or one-line explanation, duplicate choices, "all/none of the above", a correct option much longer than the rest, a question that already contains the answer, and a correct answer that sits in the same position too often. It also warns about an essay or code question without a rubric, a scale without labels, an ungraded `single` with fewer than three choices, an image with empty alt text and a code language it cannot highlight. Fix the warnings, or use `--strict` in CI.
 - Run `quiz check` until there are no errors, then `quiz build --open`.

@@ -94,8 +94,8 @@ Put a colon inside a YAML value in quotes, as in the title above.
 | `fields` | `{type=fields}` and an `answer` block listing labeled boxes |
 | `ordering` | `{type=ordering}` and a list written in the correct order; the page shuffles it |
 | `matching` | `{type=matching}` and a list of `left :: right` bullets; `:: right` adds a distractor |
-| `essay` | `{type=essay}`, an `answer` block with `min_words` and a `rubric` |
-| `code` | `{type=code}`, an `answer` block with `language`, `starter`, `rubric` |
+| `essay` | `{type=essay}`, an `answer` block with `min_words` and a `rubric`; optional `sample_answer`, shown after submit with `show_sample: true` |
+| `code` | `{type=code}`, an `answer` block with `language`, `starter`, `rubric`; optional `reference`, shown after submit with `show_reference: true` |
 | `scale` | `{type=scale}` and an optional `answer` block with `min`, `max`, `labels`; always ungraded |
 
 An `answer` block is a fenced block whose info string is `answer`, containing YAML:
@@ -225,7 +225,7 @@ quiz.md:37: error: q4 (numeric): 'value' must be a number, got 'one'
 quiz.md:52: warning: q6 (single): no explanation
 ```
 
-Errors stop the build; warnings do not. Besides structural problems, `quiz check` warns about weak questions: a missing or very short explanation, duplicate choices, "all/none of the above", a correct choice much longer than every distractor, a question text that already contains the answer, and a single-choice key that favors one position (when choices are not shuffled). Exit code 0 means no errors, 1 means errors, 2 means a usage or file problem. Add `--json` for machine-readable output. Add `--strict` (also on `quiz build`) to treat warnings as errors, for CI: the exit code is 1 if there is any finding, and `quiz build --strict` writes nothing.
+Errors stop the build; warnings do not. Besides structural problems, `quiz check` warns about weak questions: a missing or very short explanation, duplicate choices, "all/none of the above", a correct choice much longer than every distractor, a question text that already contains the answer, and a single-choice key that favors one position (when choices are not shuffled). It also warns about an essay or code question without a rubric, a scale without labels, an ungraded single-choice question with fewer than three choices, an image with empty alt text and a code language it cannot highlight. Exit code 0 means no errors, 1 means errors, 2 means a usage or file problem. Add `--json` for machine-readable output. Add `--strict` (also on `quiz build`) to treat warnings as errors, for CI: the exit code is 1 if there is any finding, and `quiz build --strict` writes nothing.
 
 ## 5. Taking a quiz
 
@@ -234,7 +234,12 @@ Errors stop the build; warnings do not. Besides structural problems, `quiz check
 3. **Hints** are hidden behind a button.
 4. **Instant feedback** quizzes have a **Check** button per question. It locks the answer, shows right or wrong, the correct answer and the explanation. Pressing **Enter** in a one-line answer box does the same.
 5. **Timer**: it keeps counting if you reload the page. It warns at 5 minutes and 1 minute. When time runs out, the quiz either submits automatically or counts overtime, depending on `on_timeout`.
-6. **Submit** shows the score, a per-topic breakdown, and which questions still wait for AI review (essays and code). In a survey the button reads **Finish** and the page shows no score at all, only **Export answers**.
+6. **Submit** shows the score, a per-topic breakdown, and which questions still wait for AI review (essays and code). Essays and code show the sample answer or reference solution when the quiz allows it. The results screen has:
+   - **All questions** / **Needs review (N)**: show every question, or only the wrong, partial and unanswered ones.
+   - **Retry missed (N)**: a new attempt with only those questions. It asks first, and warns if you have not exported this attempt, since the retry replaces it. The export records `attempt.retry_of`.
+   - **Print**, and **Print with answers** (adds the answer key to the printout).
+
+   In a survey the button reads **Finish** and the page shows no score at all, only **Export answers** and **Print**.
 
 Keyboard and accessibility: everything works with the keyboard. In a code box, **Tab** indents; press **Esc** and then **Tab** to leave the box. The theme button switches between light and dark (hidden when the quiz locks its theme) and remembers your choice. **A−** and **A+** make all text smaller or larger in five steps; the size is remembered on this device for every quiz.
 
@@ -356,7 +361,7 @@ Results and snapshots are plain files. `quiz library path NAME` prints a quiz's 
 | `quiz templates` | List the templates |
 | `quiz guide` | Print the authoring reference |
 | `quiz agent-guide` | Print the instructions for AI agents (the same text as `AGENTS.md`, shipped in the package) |
-| `quiz library` | `init`, `status`, `register`, `list`, `take`, `share` and `path`: keep quizzes and results in one folder under git. `take NAME` serves a quiz and files the result in the library; `share NAME` writes a standalone page, or with `--source` an editable folder; `path [NAME]` prints the library or a quiz folder (see section 7). `status` and `list` print colored tables in a terminal; `--plain` or `NO_COLOR` gives plain text, `--json` is for scripts |
+| `quiz library` | `init`, `status`, `register`, `list`, `take`, `share`, `path`, `grade`, `stats`, `rename` and `rm`: keep quizzes and results in one folder under git. `take NAME` serves a quiz and files the result in the library; `share NAME` writes a standalone page, or with `--source` an editable folder; `path [NAME]` prints the library or a quiz folder; `grade` and `stats` work on the filed attempts (see section 7). `status` and `list` print colored tables in a terminal; `--plain` or `NO_COLOR` gives plain text, `--json` is for scripts |
 
 ## 9. How it is built
 
@@ -385,11 +390,11 @@ The design decisions are in [SPEC.md](https://github.com/Hung-nd233960/fullmark/
 
 ```powershell
 cd <path to this repo>
-uv run pytest -q                       # everything (about 30 seconds)
+uv run pytest -q                       # everything (about 5 minutes)
 uv run pytest -q --ignore=tests/e2e    # skip the browser tests
 ```
 
-The tests cover validation (one fixture per error), the grader (over 100 golden cases run through both Python and JavaScript), the build, the report, the examples, and real-browser end-to-end flows on `file://` pages. They also check that the page makes no network requests and that text colors meet contrast limits in both themes.
+The tests cover validation (one fixture per error), the grader (160 golden cases run through both Python and JavaScript), the build, the report, the examples, and real-browser end-to-end flows on `file://` pages. They also check that the page makes no network requests and that text colors meet contrast limits in both themes.
 
 ## 11. Limits and tips
 

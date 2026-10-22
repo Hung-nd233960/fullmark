@@ -298,12 +298,16 @@ distractor</td>
 <tr>
 <td><code>essay</code></td>
 <td><code>{type=essay}</code>, an <code>answer</code> block with
-<code>min_words</code> and a <code>rubric</code></td>
+<code>min_words</code> and a <code>rubric</code>; optional
+<code>sample_answer</code>, shown after submit with
+<code>show_sample: true</code></td>
 </tr>
 <tr>
 <td><code>code</code></td>
 <td><code>{type=code}</code>, an <code>answer</code> block with
-<code>language</code>, <code>starter</code>, <code>rubric</code></td>
+<code>language</code>, <code>starter</code>, <code>rubric</code>;
+optional <code>reference</code>, shown after submit with
+<code>show_reference: true</code></td>
 </tr>
 <tr>
 <td><code>scale</code></td>
@@ -632,12 +636,15 @@ quiz.md:52: warning: q6 (single): no explanation</code></pre>
 short explanation, duplicate choices, “all/none of the above”, a correct
 choice much longer than every distractor, a question text that already
 contains the answer, and a single-choice key that favors one position
-(when choices are not shuffled). Exit code 0 means no errors, 1 means
-errors, 2 means a usage or file problem. Add <code>--json</code> for
-machine-readable output. Add <code>--strict</code> (also on
-<code>quiz build</code>) to treat warnings as errors, for CI: the exit
-code is 1 if there is any finding, and <code>quiz build --strict</code>
-writes nothing.</p>
+(when choices are not shuffled). It also warns about an essay or code
+question without a rubric, a scale without labels, an ungraded
+single-choice question with fewer than three choices, an image with
+empty alt text and a code language it cannot highlight. Exit code 0
+means no errors, 1 means errors, 2 means a usage or file problem. Add
+<code>--json</code> for machine-readable output. Add
+<code>--strict</code> (also on <code>quiz build</code>) to treat
+warnings as errors, for CI: the exit code is 1 if there is any finding,
+and <code>quiz build --strict</code> writes nothing.</p>
 <h2 id="taking-a-quiz">5. Taking a quiz</h2>
 <ol type="1">
 <li><strong>Start screen</strong>: a cover sheet with the number of
@@ -672,9 +679,23 @@ warns at 5 minutes and 1 minute. When time runs out, the quiz either
 submits automatically or counts overtime, depending on
 <code>on_timeout</code>.</li>
 <li><strong>Submit</strong> shows the score, a per-topic breakdown, and
-which questions still wait for AI review (essays and code). In a survey
-the button reads <strong>Finish</strong> and the page shows no score at
-all, only <strong>Export answers</strong>.</li>
+which questions still wait for AI review (essays and code). Essays and
+code show the sample answer or reference solution when the quiz allows
+it. The results screen has:
+<ul>
+<li><strong>All questions</strong> / <strong>Needs review (N)</strong>:
+show every question, or only the wrong, partial and unanswered
+ones.</li>
+<li><strong>Retry missed (N)</strong>: a new attempt with only those
+questions. It asks first, and warns if you have not exported this
+attempt, since the retry replaces it. The export records
+<code>attempt.retry_of</code>.</li>
+<li><strong>Print</strong>, and <strong>Print with answers</strong>
+(adds the answer key to the printout).</li>
+</ul>
+In a survey the button reads <strong>Finish</strong> and the page shows
+no score at all, only <strong>Export answers</strong> and
+<strong>Print</strong>.</li>
 </ol>
 <p>Keyboard and accessibility: everything works with the keyboard. In a
 code box, <strong>Tab</strong> indents; press <strong>Esc</strong> and
@@ -1041,15 +1062,17 @@ handing a quiz out</td>
 <tr>
 <td><code>quiz library</code></td>
 <td><code>init</code>, <code>status</code>, <code>register</code>,
-<code>list</code>, <code>take</code>, <code>share</code> and
-<code>path</code>: keep quizzes and results in one folder under git.
-<code>take NAME</code> serves a quiz and files the result in the
-library; <code>share NAME</code> writes a standalone page, or with
-<code>--source</code> an editable folder; <code>path [NAME]</code>
-prints the library or a quiz folder (see section 7). <code>status</code>
-and <code>list</code> print colored tables in a terminal;
-<code>--plain</code> or <code>NO_COLOR</code> gives plain text,
-<code>--json</code> is for scripts</td>
+<code>list</code>, <code>take</code>, <code>share</code>,
+<code>path</code>, <code>grade</code>, <code>stats</code>,
+<code>rename</code> and <code>rm</code>: keep quizzes and results in one
+folder under git. <code>take NAME</code> serves a quiz and files the
+result in the library; <code>share NAME</code> writes a standalone page,
+or with <code>--source</code> an editable folder;
+<code>path [NAME]</code> prints the library or a quiz folder;
+<code>grade</code> and <code>stats</code> work on the filed attempts
+(see section 7). <code>status</code> and <code>list</code> print colored
+tables in a terminal; <code>--plain</code> or <code>NO_COLOR</code>
+gives plain text, <code>--json</code> is for scripts</td>
 </tr>
 </tbody>
 </table>
@@ -1117,10 +1140,10 @@ images.</li>
 <p>The design decisions are in <a href="https://github.com/Hung-nd233960/fullmark/blob/main/docs/SPEC.md">SPEC.md</a>.</p>
 <h2 id="testing">10. Testing</h2>
 <div class="sourceCode" id="cb11"><pre class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cd</span> <span class="op">&lt;</span>path to this repo<span class="op">&gt;</span></span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>uv run pytest <span class="op">-</span>q                       <span class="co"># everything (about 30 seconds)</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>uv run pytest <span class="op">-</span>q                       <span class="co"># everything (about 5 minutes)</span></span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>uv run pytest <span class="op">-</span>q <span class="op">--</span>ignore<span class="op">=</span>tests<span class="op">/</span>e2e    <span class="co"># skip the browser tests</span></span></code></pre></div>
-<p>The tests cover validation (one fixture per error), the grader (over
-100 golden cases run through both Python and JavaScript), the build, the
+<p>The tests cover validation (one fixture per error), the grader (160
+golden cases run through both Python and JavaScript), the build, the
 report, the examples, and real-browser end-to-end flows on
 <code>file://</code> pages. They also check that the page makes no
 network requests and that text colors meet contrast limits in both
