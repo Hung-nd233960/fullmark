@@ -325,7 +325,7 @@ Questions match review items by id first, then by a hash of their source block, 
 - **Material:** put the files in `content/` and tick their `--kinds` (`lecture-slides`, `textbook`, `notes`, `past-exams`, `lab-manual`, `other` with `--kinds-other TEXT`). Material that lives elsewhere goes in `--elsewhere`. Past exams are mirrored in structure: types, split of marks, length.
 - **Weak topics:** if the folder holds results files (`*-results-*.json`) of a quiz, `weak_topics` defaults to yes and `focus_tags` lists the topics under 80% in the latest attempt (the data of `quiz stats`, at most three).
 - The last line says what to tell Claude: `Next: tell Claude: "Write the quiz in DIR (brief.yaml is ready)."`
-- **`quiz check` reads the brief.** With a `brief.yaml` beside the quiz it adds warnings: `brief.count` (the question count is outside 20% of `count`), `brief.mix` (a kind of question in `mix` is missing), `brief.past-exams` (past exams are ticked but no question has a `Source:` note) and `brief.content-kinds` (a ticked kind has no matching file in `content/`).
+- **`quiz check` reads the brief.** With a `brief.yaml` beside the quiz it adds warnings: `brief.count` (the question count is outside 20% of `count`) and, as an info line that never fails `--strict`, `brief.count-near` (the count differs from `count` but is within 20%), `brief.mix` (a kind of question in `mix` is missing), `brief.past-exams` (past exams are ticked but no question has a `Source:` note) and `brief.content-kinds` (a ticked kind has no matching file in `content/`).
 
 ## Keep a library
 

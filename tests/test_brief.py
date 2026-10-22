@@ -814,3 +814,49 @@ def test_brief_writes_markdownlint_config(tmp_path):
     (d2 / ".markdownlint-cli2.jsonc").write_text("{}", encoding="utf-8")
     assert main(["brief", str(d2), *FLAGS]) == 0
     assert not (d2 / ".markdownlint.json").exists()
+
+
+def test_check_says_so_when_the_count_is_close_but_not_exact(tmp_path, capsys):
+    questions = "\n".join(
+        f"## Is {i} a number? {{type=truefalse}}\n\n```answer\nvalue: true\n```\n\n"
+        "> [!explanation]\n> Yes, every integer is a number, so the key is true.\n"
+        for i in range(11)
+    )
+    quiz = f"---\ntitle: Eleven\n---\n\n{questions}"
+    d = brief_folder(
+        tmp_path,
+        capsys,
+        "--count",
+        10,
+        "--mix",
+        "recall",
+        "--elsewhere",
+        "the wiki",
+        quiz=quiz,
+    )
+    code, found = checked(d, capsys, "--strict")
+    assert code == 0  # info does not fail --strict
+    assert [(f["rule"], f["severity"]) for f in found] == [("brief.count-near", "info")]
+    assert found[0]["message"] == "11 questions; the brief asks for 10"
+    assert main(["check", str(d / "quiz.md"), "--strict"]) == 0
+    capsys.readouterr()
+
+    # An exact count says nothing.
+    d2 = tmp_path / "q2"
+    d2.mkdir()
+    assert (
+        run(
+            capsys,
+            d2,
+            *FLAGS,
+            "--count",
+            11,
+            "--mix",
+            "recall",
+            "--elsewhere",
+            "the wiki",
+        )[0]
+        == 0
+    )
+    (d2 / "quiz.md").write_text(quiz, encoding="utf-8")
+    assert checked(d2, capsys) == (0, [])

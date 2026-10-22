@@ -626,11 +626,13 @@ three).</li>
 <li><strong><code>quiz check</code> reads the brief.</strong> With a
 <code>brief.yaml</code> beside the quiz it adds warnings:
 <code>brief.count</code> (the question count is outside 20% of
-<code>count</code>), <code>brief.mix</code> (a kind of question in
-<code>mix</code> is missing), <code>brief.past-exams</code> (past exams
-are ticked but no question has a <code>Source:</code> note) and
-<code>brief.content-kinds</code> (a ticked kind has no matching file in
-<code>content/</code>).</li>
+<code>count</code>) and, as an info line that never fails
+<code>--strict</code>, <code>brief.count-near</code> (the count differs
+from <code>count</code> but is within 20%), <code>brief.mix</code> (a
+kind of question in <code>mix</code> is missing),
+<code>brief.past-exams</code> (past exams are ticked but no question has
+a <code>Source:</code> note) and <code>brief.content-kinds</code> (a
+ticked kind has no matching file in <code>content/</code>).</li>
 </ul>
 <h3 id="checking-your-file">Checking your file</h3>
 <p><code>quiz check quiz.md</code> prints one line per finding:</p>
