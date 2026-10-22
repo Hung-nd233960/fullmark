@@ -1,0 +1,3657 @@
+[
+ {
+  "name": "single right",
+  "type": "single",
+  "spec": {
+   "points": 1,
+   "case": "insensitive",
+   "correct": 1
+  },
+  "response": {
+   "choice": 1
+  },
+  "expected_earned": 1,
+  "expected_status": "correct"
+ },
+ {
+  "name": "single wrong",
+  "type": "single",
+  "spec": {
+   "points": 1,
+   "case": "insensitive",
+   "correct": 1
+  },
+  "response": {
+   "choice": 0
+  },
+  "expected_earned": 0,
+  "expected_status": "incorrect"
+ },
+ {
+  "name": "single first index right",
+  "type": "single",
+  "spec": {
+   "points": 2,
+   "case": "insensitive",
+   "correct": 0
+  },
+  "response": {
+   "choice": 0
+  },
+  "expected_earned": 2,
+  "expected_status": "correct"
+ },
+ {
+  "name": "single unanswered null",
+  "type": "single",
+  "spec": {
+   "points": 1,
+   "case": "insensitive",
+   "correct": 1
+  },
+  "response": null,
+  "expected_earned": 0,
+  "expected_status": "unanswered"
+ },
+ {
+  "name": "single unanswered empty",
+  "type": "single",
+  "spec": {
+   "points": 1,
+   "case": "insensitive",
+   "correct": 1
+  },
+  "response": {},
+  "expected_earned": 0,
+  "expected_status": "unanswered"
+ },
+ {
+  "name": "single unanswered choice null",
+  "type": "single",
+  "spec": {
+   "points": 1,
+   "case": "insensitive",
+   "correct": 1
+  },
+  "response": {
+   "choice": null
+  },
+  "expected_earned": 0,
+  "expected_status": "unanswered"
+ },
+ {
+  "name": "multi exact",
+  "type": "multi",
+  "spec": {
+   "points": 2,
+   "case": "insensitive",
+   "correct": [
+    0,
+    2
+   ]
+  },
+  "response": {
+   "choices": [
+    0,
+    2
+   ]
+  },
+  "expected_earned": 2,
+  "expected_status": "correct"
+ },
+ {
+  "name": "multi exact other order",
+  "type": "multi",
+  "spec": {
+   "points": 2,
+   "case": "insensitive",
+   "correct": [
+    0,
+    2
+   ]
+  },
+  "response": {
+   "choices": [
+    2,
+    0
+   ]
+  },
+  "expected_earned": 2,
+  "expected_status": "correct"
+ },
+ {
+  "name": "multi half",
+  "type": "multi",
+  "spec": {
+   "points": 2,
+   "case": "insensitive",
+   "correct": [
+    0,
+    2
+   ]
+  },
+  "response": {
+   "choices": [
+    0
+   ]
+  },
+  "expected_earned": 1,
+  "expected_status": "partial"
+ },
+ {
+  "name": "multi one right one wrong",
+  "type": "multi",
+  "spec": {
+   "points": 2,
+   "case": "insensitive",
+   "correct": [
+    0,
+    2
+   ]
+  },
+  "response": {
+   "choices": [
+    0,
+    1
+   ]
+  },
+  "expected_earned": 0,
+  "expected_status": "incorrect"
+ },
+ {
+  "name": "multi right plus wrong",
+  "type": "multi",
+  "spec": {
+   "points": 2,
+   "case": "insensitive",
+   "correct": [
+    0,
+    2
+   ]
+  },
+  "response": {
+   "choices": [
+    0,
+    2,
+    1
+   ]
+  },
+  "expected_earned": 1,
+  "expected_status": "partial"
+ },
+ {
+  "name": "multi only wrong",
+  "type": "multi",
+  "spec": {
+   "points": 2,
+   "case": "insensitive",
+   "correct": [
+    0,
+    2
+   ]
+  },
+  "response": {
+   "choices": [
+    1
+   ]
+  },
+  "expected_earned": 0,
+  "expected_status": "incorrect"
+ },
+ {
+  "name": "multi floor at zero",
+  "type": "multi",
+  "spec": {
+   "points": 2,
+   "case": "insensitive",
+   "correct": [
+    0,
+    2
+   ]
+  },
+  "response": {
+   "choices": [
+    1,
+    3
+   ]
+  },
+  "expected_earned": 0,
+  "expected_status": "incorrect"
+ },
+ {
+  "name": "multi unanswered",
+  "type": "multi",
+  "spec": {
+   "points": 2,
+   "case": "insensitive",
+   "correct": [
+    0,
+    2
+   ]
+  },
+  "response": {
+   "choices": []
+  },
+  "expected_earned": 0,
+  "expected_status": "unanswered"
+ },
+ {
+  "name": "multi null",
+  "type": "multi",
+  "spec": {
+   "points": 2,
+   "case": "insensitive",
+   "correct": [
+    0,
+    2
+   ]
+  },
+  "response": null,
+  "expected_earned": 0,
+  "expected_status": "unanswered"
+ },
+ {
+  "name": "multi thirds rounded",
+  "type": "multi",
+  "spec": {
+   "points": 1,
+   "case": "insensitive",
+   "correct": [
+    0,
+    1,
+    2
+   ]
+  },
+  "response": {
+   "choices": [
+    0
+   ]
+  },
+  "expected_earned": 0.33,
+  "expected_status": "partial"
+ },
+ {
+  "name": "multi two thirds rounded",
+  "type": "multi",
+  "spec": {
+   "points": 1,
+   "case": "insensitive",
+   "correct": [
+    0,
+    1,
+    2
+   ]
+  },
+  "response": {
+   "choices": [
+    0,
+    1
+   ]
+  },
+  "expected_earned": 0.67,
+  "expected_status": "partial"
+ },
+ {
+  "name": "multi a-o-n exact",
+  "type": "multi",
+  "spec": {
+   "points": 2,
+   "case": "insensitive",
+   "correct": [
+    0,
+    2
+   ],
+   "scoring": "all_or_nothing"
+  },
+  "response": {
+   "choices": [
+    0,
+    2
+   ]
+  },
+  "expected_earned": 2,
+  "expected_status": "correct"
+ },
+ {
+  "name": "multi a-o-n partial gets zero",
+  "type": "multi",
+  "spec": {
+   "points": 2,
+   "case": "insensitive",
+   "correct": [
+    0,
+    2
+   ],
+   "scoring": "all_or_nothing"
+  },
+  "response": {
+   "choices": [
+    0
+   ]
+  },
+  "expected_earned": 0,
+  "expected_status": "incorrect"
+ },
+ {
+  "name": "multi a-o-n extra gets zero",
+  "type": "multi",
+  "spec": {
+   "points": 2,
+   "case": "insensitive",
+   "correct": [
+    0,
+    2
+   ],
+   "scoring": "all_or_nothing"
+  },
+  "response": {
+   "choices": [
+    0,
+    1,
+    2
+   ]
+  },
+  "expected_earned": 0,
+  "expected_status": "incorrect"
+ },
+ {
+  "name": "multi single correct set",
+  "type": "multi",
+  "spec": {
+   "points": 1,
+   "case": "insensitive",
+   "correct": [
+    1
+   ]
+  },
+  "response": {
+   "choices": [
+    1
+   ]
+  },
+  "expected_earned": 1,
+  "expected_status": "correct"
+ },
+ {
+  "name": "tf true right",
+  "type": "truefalse",
+  "spec": {
+   "points": 1,
+   "case": "insensitive",
+   "value": true
+  },
+  "response": {
+   "value": true
+  },
+  "expected_earned": 1,
+  "expected_status": "correct"
+ },
+ {
+  "name": "tf false right",
+  "type": "truefalse",
+  "spec": {
+   "points": 1,
+   "case": "insensitive",
+   "value": false
+  },
+  "response": {
+   "value": false
+  },
+  "expected_earned": 1,
+  "expected_status": "correct"
+ },
+ {
+  "name": "tf wrong",
+  "type": "truefalse",
+  "spec": {
+   "points": 1,
+   "case": "insensitive",
+   "value": true
+  },
+  "response": {
+   "value": false
+  },
+  "expected_earned": 0,
+  "expected_status": "incorrect"
+ },
+ {
+  "name": "tf unanswered",
+  "type": "truefalse",
+  "spec": {
+   "points": 1,
+   "case": "insensitive",
+   "value": true
+  },
+  "response": null,
+  "expected_earned": 0,
+  "expected_status": "unanswered"
+ },
+ {
+  "name": "tf unanswered null value",
+  "type": "truefalse",
+  "spec": {
+   "points": 1,
+   "case": "insensitive",
+   "value": false
+  },
+  "response": {
+   "value": null
+  },
+  "expected_earned": 0,
+  "expected_status": "unanswered"
+ },
+ {
+  "name": "num exact",
+  "type": "numeric",
+  "spec": {
+   "points": 1,
+   "case": "insensitive",
+   "values": [
+    0.3333
+   ],
+   "tolerance": 0.001,
+   "rel_tolerance": null
+  },
+  "response": {
+   "raw": "0.3333"
+  },
+  "expected_earned": 1,
+  "expected_status": "correct"
+ },
+ {
+  "name": "num within tolerance",
+  "type": "numeric",
+  "spec": {
+   "points": 1,
+   "case": "insensitive",
+   "values": [
+    0.3333
+   ],
+   "tolerance": 0.001,
+   "rel_tolerance": null
+  },
+  "response": {
+   "raw": "0.3340"
+  },
+  "expected_earned": 1,
+  "expected_status": "correct"
+ },
+ {
+  "name": "num boundary inclusive",
+  "type": "numeric",
+  "spec": {
+   "points": 1,
+   "case": "insensitive",
+   "values": [
+    0.3333
+   ],
+   "tolerance": 0.001,
+   "rel_tolerance": null
+  },
+  "response": {
+   "raw": "0.3343"
+  },
+  "expected_earned": 1,
+  "expected_status": "correct"
+ },
+ {
+  "name": "num outside tolerance",
+  "type": "numeric",
+  "spec": {
+   "points": 1,
+   "case": "insensitive",
+   "values": [
+    0.3333
+   ],
+   "tolerance": 0.001,
+   "rel_tolerance": null
+  },
+  "response": {
+   "raw": "0.335"
+  },
+  "expected_earned": 0,
+  "expected_status": "incorrect"
+ },
+ {
+  "name": "num fraction",
+  "type": "numeric",
+  "spec": {
+   "points": 1,
+   "case": "insensitive",
+   "values": [
+    0.3333
+   ],
+   "tolerance": 0.001,
+   "rel_tolerance": null
+  },
+  "response": {
+   "raw": "1/3"
+  },
+  "expected_earned": 1,
+  "expected_status": "correct"
+ },
+ {
+  "name": "num fraction spaces",
+  "type": "numeric",
+  "spec": {
+   "points": 1,
+   "case": "insensitive",
+   "values": [
+    0.3333
+   ],
+   "tolerance": 0.001,
+   "rel_tolerance": null
+  },
+  "response": {
+   "raw": " 1 / 3 "
+  },
+  "expected_earned": 1,
+  "expected_status": "correct"
+ },
+ {
+  "name": "num fraction zero denominator",
+  "type": "numeric",
+  "spec": {
+   "points": 1,
+   "case": "insensitive",
+   "values": [
+    0.3333
+   ],
+   "tolerance": 0.001,
+   "rel_tolerance": null
+  },
+  "response": {
+   "raw": "1/0"
+  },
+  "expected_earned": 0,
+  "expected_status": "incorrect"
+ },
+ {
+  "name": "num scientific",
+  "type": "numeric",
+  "spec": {
+   "points": 1,
+   "case": "insensitive",
+   "values": [
+    0.001
+   ],
+   "tolerance": 0
+  },
+  "response": {
+   "raw": "1e-3"
+  },
+  "expected_earned": 1,
+  "expected_status": "correct"
+ },
+ {
+  "name": "num scientific capital",
+  "type": "numeric",
+  "spec": {
+   "points": 1,
+   "case": "insensitive",
+   "values": [
+    1500
+   ],
+   "tolerance": 0
+  },
+  "response": {
+   "raw": "1.5E3"
+  },
+  "expected_earned": 1,
+  "expected_status": "correct"
+ },
+ {
+  "name": "num integer",
+  "type": "numeric",
+  "spec": {
+   "points": 1,
+   "case": "insensitive",
+   "values": [
+    42
+   ],
+   "tolerance": 0
+  },
+  "response": {
+   "raw": "42"
+  },
+  "expected_earned": 1,
+  "expected_status": "correct"
+ },
+ {
+  "name": "num negative",
+  "type": "numeric",
+  "spec": {
+   "points": 1,
+   "case": "insensitive",
+   "values": [
+    -1
+   ],
+   "tolerance": 0
+  },
+  "response": {
+   "raw": "-1"
+  },
+  "expected_earned": 1,
+  "expected_status": "correct"
+ },
+ {
+  "name": "num unicode minus",
+  "type": "numeric",
+  "spec": {
+   "points": 1,
+   "case": "insensitive",
+   "values": [
+    -1
+   ],
+   "tolerance": 0
+  },
+  "response": {
+   "raw": "−1"
+  },
+  "expected_earned": 1,
+  "expected_status": "correct"
+ },
+ {
+  "name": "num leading plus",
+  "type": "numeric",
+  "spec": {
+   "points": 1,
+   "case": "insensitive",
+   "values": [
+    5
+   ],
+   "tolerance": 0
+  },
+  "response": {
+   "raw": "+5"
+  },
+  "expected_earned": 1,
+  "expected_status": "correct"
+ },
+ {
+  "name": "num leading dot",
+  "type": "numeric",
+  "spec": {
+   "points": 1,
+   "case": "insensitive",
+   "values": [
+    0.5
+   ],
+   "tolerance": 0
+  },
+  "response": {
+   "raw": ".5"
+  },
+  "expected_earned": 1,
+  "expected_status": "correct"
+ },
+ {
+  "name": "num comma decimal rejected",
+  "type": "numeric",
+  "spec": {
+   "points": 1,
+   "case": "insensitive",
+   "values": [
+    3.14
+   ],
+   "tolerance": 0.01
+  },
+  "response": {
+   "raw": "3,14"
+  },
+  "expected_earned": 0,
+  "expected_status": "incorrect"
+ },
+ {
+  "name": "num garbage",
+  "type": "numeric",
+  "spec": {
+   "points": 1,
+   "case": "insensitive",
+   "values": [
+    0.3333
+   ],
+   "tolerance": 0.001,
+   "rel_tolerance": null
+  },
+  "response": {
+   "raw": "abc"
+  },
+  "expected_earned": 0,
+  "expected_status": "incorrect"
+ },
+ {
+  "name": "num empty",
+  "type": "numeric",
+  "spec": {
+   "points": 1,
+   "case": "insensitive",
+   "values": [
+    0.3333
+   ],
+   "tolerance": 0.001,
+   "rel_tolerance": null
+  },
+  "response": {
+   "raw": "  "
+  },
+  "expected_earned": 0,
+  "expected_status": "unanswered"
+ },
+ {
+  "name": "num null response",
+  "type": "numeric",
+  "spec": {
+   "points": 1,
+   "case": "insensitive",
+   "values": [
+    0.3333
+   ],
+   "tolerance": 0.001,
+   "rel_tolerance": null
+  },
+  "response": null,
+  "expected_earned": 0,
+  "expected_status": "unanswered"
+ },
+ {
+  "name": "num relative within",
+  "type": "numeric",
+  "spec": {
+   "points": 1,
+   "case": "insensitive",
+   "values": [
+    100
+   ],
+   "rel_tolerance": 0.01
+  },
+  "response": {
+   "raw": "100.9"
+  },
+  "expected_earned": 1,
+  "expected_status": "correct"
+ },
+ {
+  "name": "num relative outside",
+  "type": "numeric",
+  "spec": {
+   "points": 1,
+   "case": "insensitive",
+   "values": [
+    100
+   ],
+   "rel_tolerance": 0.01
+  },
+  "response": {
+   "raw": "102"
+  },
+  "expected_earned": 0,
+  "expected_status": "incorrect"
+ },
+ {
+  "name": "num relative negative target",
+  "type": "numeric",
+  "spec": {
+   "points": 1,
+   "case": "insensitive",
+   "values": [
+    -200
+   ],
+   "rel_tolerance": 0.05
+  },
+  "response": {
+   "raw": "-195"
+  },
+  "expected_earned": 1,
+  "expected_status": "correct"
+ },
+ {
+  "name": "num several values second",
+  "type": "numeric",
+  "spec": {
+   "points": 1,
+   "case": "insensitive",
+   "values": [
+    2,
+    -2
+   ],
+   "tolerance": 0
+  },
+  "response": {
+   "raw": "-2"
+  },
+  "expected_earned": 1,
+  "expected_status": "correct"
+ },
+ {
+  "name": "num zero tolerance wrong",
+  "type": "numeric",
+  "spec": {
+   "points": 1,
+   "case": "insensitive",
+   "values": [
+    2
+   ],
+   "tolerance": 0
+  },
+  "response": {
+   "raw": "2.0001"
+  },
+  "expected_earned": 0,
+  "expected_status": "incorrect"
+ },
+ {
+  "name": "short exact",
+  "type": "short",
+  "spec": {
+   "points": 1,
+   "case": "insensitive",
+   "accept": [
+    "3"
+   ],
+   "patterns": []
+  },
+  "response": {
+   "text": "3"
+  },
+  "expected_earned": 1,
+  "expected_status": "correct"
+ },
+ {
+  "name": "short trims",
+  "type": "short",
+  "spec": {
+   "points": 1,
+   "case": "insensitive",
+   "accept": [
+    "3"
+   ],
+   "patterns": []
+  },
+  "response": {
+   "text": "  3  "
+  },
+  "expected_earned": 1,
+  "expected_status": "correct"
+ },
+ {
+  "name": "short wrong",
+  "type": "short",
+  "spec": {
+   "points": 1,
+   "case": "insensitive",
+   "accept": [
+    "3"
+   ],
+   "patterns": []
+  },
+  "response": {
+   "text": "4"
+  },
+  "expected_earned": 0,
+  "expected_status": "incorrect"
+ },
+ {
+  "name": "short empty",
+  "type": "short",
+  "spec": {
+   "points": 1,
+   "case": "insensitive",
+   "accept": [
+    "3"
+   ],
+   "patterns": []
+  },
+  "response": {
+   "text": ""
+  },
+  "expected_earned": 0,
+  "expected_status": "unanswered"
+ },
+ {
+  "name": "short whitespace only",
+  "type": "short",
+  "spec": {
+   "points": 1,
+   "case": "insensitive",
+   "accept": [
+    "3"
+   ],
+   "patterns": []
+  },
+  "response": {
+   "text": "   "
+  },
+  "expected_earned": 0,
+  "expected_status": "unanswered"
+ },
+ {
+  "name": "short null",
+  "type": "short",
+  "spec": {
+   "points": 1,
+   "case": "insensitive",
+   "accept": [
+    "3"
+   ],
+   "patterns": []
+  },
+  "response": null,
+  "expected_earned": 0,
+  "expected_status": "unanswered"
+ },
+ {
+  "name": "short case insensitive",
+  "type": "short",
+  "spec": {
+   "points": 1,
+   "case": "insensitive",
+   "accept": [
+    "Hello World"
+   ],
+   "patterns": []
+  },
+  "response": {
+   "text": "hello WORLD"
+  },
+  "expected_earned": 1,
+  "expected_status": "correct"
+ },
+ {
+  "name": "short case sensitive wrong",
+  "type": "short",
+  "spec": {
+   "points": 1,
+   "case": "sensitive",
+   "accept": [
+    "Hello"
+   ],
+   "patterns": []
+  },
+  "response": {
+   "text": "hello"
+  },
+  "expected_earned": 0,
+  "expected_status": "incorrect"
+ },
+ {
+  "name": "short case sensitive right",
+  "type": "short",
+  "spec": {
+   "points": 1,
+   "case": "sensitive",
+   "accept": [
+    "Hello"
+   ],
+   "patterns": []
+  },
+  "response": {
+   "text": "Hello"
+  },
+  "expected_earned": 1,
+  "expected_status": "correct"
+ },
+ {
+  "name": "short collapses whitespace",
+  "type": "short",
+  "spec": {
+   "points": 1,
+   "case": "insensitive",
+   "accept": [
+    "a b c"
+   ],
+   "patterns": []
+  },
+  "response": {
+   "text": "a   b\t c"
+  },
+  "expected_earned": 1,
+  "expected_status": "correct"
+ },
+ {
+  "name": "short second accept",
+  "type": "short",
+  "spec": {
+   "points": 1,
+   "case": "insensitive",
+   "accept": [
+    "x",
+    "y"
+   ],
+   "patterns": []
+  },
+  "response": {
+   "text": "y"
+  },
+  "expected_earned": 1,
+  "expected_status": "correct"
+ },
+ {
+  "name": "short pattern full match",
+  "type": "short",
+  "spec": {
+   "points": 1,
+   "case": "insensitive",
+   "accept": [],
+   "patterns": [
+    "^3(\\.0)?$"
+   ]
+  },
+  "response": {
+   "text": "3.0"
+  },
+  "expected_earned": 1,
+  "expected_status": "correct"
+ },
+ {
+  "name": "short pattern must be full",
+  "type": "short",
+  "spec": {
+   "points": 1,
+   "case": "insensitive",
+   "accept": [],
+   "patterns": [
+    "3"
+   ]
+  },
+  "response": {
+   "text": "33"
+  },
+  "expected_earned": 0,
+  "expected_status": "incorrect"
+ },
+ {
+  "name": "short pattern case sensitive",
+  "type": "short",
+  "spec": {
+   "points": 1,
+   "case": "sensitive",
+   "accept": [],
+   "patterns": [
+    "A+"
+   ]
+  },
+  "response": {
+   "text": "aaa"
+  },
+  "expected_earned": 0,
+  "expected_status": "incorrect"
+ },
+ {
+  "name": "short pattern case insensitive",
+  "type": "short",
+  "spec": {
+   "points": 1,
+   "case": "insensitive",
+   "accept": [],
+   "patterns": [
+    "A+"
+   ]
+  },
+  "response": {
+   "text": "aaa"
+  },
+  "expected_earned": 1,
+  "expected_status": "correct"
+ },
+ {
+  "name": "short pattern digits ascii",
+  "type": "short",
+  "spec": {
+   "points": 1,
+   "case": "insensitive",
+   "accept": [],
+   "patterns": [
+    "\\d+"
+   ]
+  },
+  "response": {
+   "text": "٣"
+  },
+  "expected_earned": 0,
+  "expected_status": "incorrect"
+ },
+ {
+  "name": "short unicode accept",
+  "type": "short",
+  "spec": {
+   "points": 1,
+   "case": "insensitive",
+   "accept": [
+    "Na⁺"
+   ],
+   "patterns": []
+  },
+  "response": {
+   "text": "na⁺"
+  },
+  "expected_earned": 1,
+  "expected_status": "correct"
+ },
+ {
+  "name": "short points kept",
+  "type": "short",
+  "spec": {
+   "points": 4,
+   "case": "insensitive",
+   "accept": [
+    "ok"
+   ],
+   "patterns": []
+  },
+  "response": {
+   "text": "ok"
+  },
+  "expected_earned": 4,
+  "expected_status": "correct"
+ },
+ {
+  "name": "blanks all right",
+  "type": "blanks",
+  "spec": {
+   "points": 2,
+   "case": "insensitive",
+   "blanks": [
+    {
+     "numeric": false,
+     "accept": [
+      "cos x",
+      "cos(x)"
+     ]
+    },
+    {
+     "numeric": false,
+     "accept": [
+      "e^x",
+      "exp(x)"
+     ]
+    }
+   ]
+  },
+  "response": {
+   "blanks": [
+    "cos x",
+    "e^x"
+   ]
+  },
+  "expected_earned": 2,
+  "expected_status": "correct",
+  "expected_results": [
+   true,
+   true
+  ]
+ },
+ {
+  "name": "blanks variant",
+  "type": "blanks",
+  "spec": {
+   "points": 2,
+   "case": "insensitive",
+   "blanks": [
+    {
+     "numeric": false,
+     "accept": [
+      "cos x",
+      "cos(x)"
+     ]
+    },
+    {
+     "numeric": false,
+     "accept": [
+      "e^x",
+      "exp(x)"
+     ]
+    }
+   ]
+  },
+  "response": {
+   "blanks": [
+    "cos(x)",
+    "EXP(x)"
+   ]
+  },
+  "expected_earned": 2,
+  "expected_status": "correct",
+  "expected_results": [
+   true,
+   true
+  ]
+ },
+ {
+  "name": "blanks one of two",
+  "type": "blanks",
+  "spec": {
+   "points": 2,
+   "case": "insensitive",
+   "blanks": [
+    {
+     "numeric": false,
+     "accept": [
+      "cos x",
+      "cos(x)"
+     ]
+    },
+    {
+     "numeric": false,
+     "accept": [
+      "e^x",
+      "exp(x)"
+     ]
+    }
+   ]
+  },
+  "response": {
+   "blanks": [
+    "cos x",
+    "x"
+   ]
+  },
+  "expected_earned": 1,
+  "expected_status": "partial",
+  "expected_results": [
+   true,
+   false
+  ]
+ },
+ {
+  "name": "blanks none right",
+  "type": "blanks",
+  "spec": {
+   "points": 2,
+   "case": "insensitive",
+   "blanks": [
+    {
+     "numeric": false,
+     "accept": [
+      "cos x",
+      "cos(x)"
+     ]
+    },
+    {
+     "numeric": false,
+     "accept": [
+      "e^x",
+      "exp(x)"
+     ]
+    }
+   ]
+  },
+  "response": {
+   "blanks": [
+    "a",
+    "b"
+   ]
+  },
+  "expected_earned": 0,
+  "expected_status": "incorrect",
+  "expected_results": [
+   false,
+   false
+  ]
+ },
+ {
+  "name": "blanks all empty",
+  "type": "blanks",
+  "spec": {
+   "points": 2,
+   "case": "insensitive",
+   "blanks": [
+    {
+     "numeric": false,
+     "accept": [
+      "cos x",
+      "cos(x)"
+     ]
+    },
+    {
+     "numeric": false,
+     "accept": [
+      "e^x",
+      "exp(x)"
+     ]
+    }
+   ]
+  },
+  "response": {
+   "blanks": [
+    "",
+    ""
+   ]
+  },
+  "expected_earned": 0,
+  "expected_status": "unanswered",
+  "expected_results": [
+   false,
+   false
+  ]
+ },
+ {
+  "name": "blanks null",
+  "type": "blanks",
+  "spec": {
+   "points": 2,
+   "case": "insensitive",
+   "blanks": [
+    {
+     "numeric": false,
+     "accept": [
+      "cos x",
+      "cos(x)"
+     ]
+    },
+    {
+     "numeric": false,
+     "accept": [
+      "e^x",
+      "exp(x)"
+     ]
+    }
+   ]
+  },
+  "response": null,
+  "expected_earned": 0,
+  "expected_status": "unanswered",
+  "expected_results": [
+   false,
+   false
+  ]
+ },
+ {
+  "name": "blanks short list",
+  "type": "blanks",
+  "spec": {
+   "points": 2,
+   "case": "insensitive",
+   "blanks": [
+    {
+     "numeric": false,
+     "accept": [
+      "cos x",
+      "cos(x)"
+     ]
+    },
+    {
+     "numeric": false,
+     "accept": [
+      "e^x",
+      "exp(x)"
+     ]
+    }
+   ]
+  },
+  "response": {
+   "blanks": [
+    "cos x"
+   ]
+  },
+  "expected_earned": 1,
+  "expected_status": "partial",
+  "expected_results": [
+   true,
+   false
+  ]
+ },
+ {
+  "name": "blanks split in thirds",
+  "type": "blanks",
+  "spec": {
+   "points": 1,
+   "case": "insensitive",
+   "blanks": [
+    {
+     "numeric": false,
+     "accept": [
+      "a"
+     ]
+    },
+    {
+     "numeric": false,
+     "accept": [
+      "a"
+     ]
+    },
+    {
+     "numeric": false,
+     "accept": [
+      "a"
+     ]
+    }
+   ]
+  },
+  "response": {
+   "blanks": [
+    "a",
+    "x",
+    "x"
+   ]
+  },
+  "expected_earned": 0.33,
+  "expected_status": "partial",
+  "expected_results": [
+   true,
+   false,
+   false
+  ]
+ },
+ {
+  "name": "blanks case sensitive",
+  "type": "blanks",
+  "spec": {
+   "points": 1,
+   "case": "sensitive",
+   "blanks": [
+    {
+     "numeric": false,
+     "accept": [
+      "mut"
+     ]
+    }
+   ]
+  },
+  "response": {
+   "blanks": [
+    "Mut"
+   ]
+  },
+  "expected_earned": 0,
+  "expected_status": "incorrect",
+  "expected_results": [
+   false
+  ]
+ },
+ {
+  "name": "blanks numeric within",
+  "type": "blanks",
+  "spec": {
+   "points": 1,
+   "case": "insensitive",
+   "blanks": [
+    {
+     "numeric": true,
+     "value": 0.5,
+     "tolerance": 0.01
+    }
+   ]
+  },
+  "response": {
+   "blanks": [
+    "0.505"
+   ]
+  },
+  "expected_earned": 1,
+  "expected_status": "correct",
+  "expected_results": [
+   true
+  ]
+ },
+ {
+  "name": "blanks numeric fraction",
+  "type": "blanks",
+  "spec": {
+   "points": 1,
+   "case": "insensitive",
+   "blanks": [
+    {
+     "numeric": true,
+     "value": 0.5,
+     "tolerance": 0.01
+    }
+   ]
+  },
+  "response": {
+   "blanks": [
+    "1/2"
+   ]
+  },
+  "expected_earned": 1,
+  "expected_status": "correct",
+  "expected_results": [
+   true
+  ]
+ },
+ {
+  "name": "blanks numeric outside",
+  "type": "blanks",
+  "spec": {
+   "points": 1,
+   "case": "insensitive",
+   "blanks": [
+    {
+     "numeric": true,
+     "value": 0.5,
+     "tolerance": 0.01
+    }
+   ]
+  },
+  "response": {
+   "blanks": [
+    "0.6"
+   ]
+  },
+  "expected_earned": 0,
+  "expected_status": "incorrect",
+  "expected_results": [
+   false
+  ]
+ },
+ {
+  "name": "blanks numeric text",
+  "type": "blanks",
+  "spec": {
+   "points": 1,
+   "case": "insensitive",
+   "blanks": [
+    {
+     "numeric": true,
+     "value": 0.5,
+     "tolerance": 0.01
+    }
+   ]
+  },
+  "response": {
+   "blanks": [
+    "half"
+   ]
+  },
+  "expected_earned": 0,
+  "expected_status": "incorrect",
+  "expected_results": [
+   false
+  ]
+ },
+ {
+  "name": "blanks symbol",
+  "type": "blanks",
+  "spec": {
+   "points": 1,
+   "case": "insensitive",
+   "blanks": [
+    {
+     "numeric": false,
+     "accept": [
+      "&"
+     ]
+    }
+   ]
+  },
+  "response": {
+   "blanks": [
+    "&"
+   ]
+  },
+  "expected_earned": 1,
+  "expected_status": "correct",
+  "expected_results": [
+   true
+  ]
+ },
+ {
+  "name": "fields all right",
+  "type": "fields",
+  "spec": {
+   "points": 4,
+   "case": "insensitive",
+   "fields": [
+    {
+     "label": "f'",
+     "kind": "text",
+     "points": null,
+     "values": [],
+     "tolerance": 0,
+     "rel_tolerance": null,
+     "accept": [
+      "3x^2-3",
+      "3x^2 - 3"
+     ],
+     "patterns": []
+    },
+    {
+     "label": "count",
+     "kind": "numeric",
+     "points": null,
+     "values": [
+      2
+     ],
+     "tolerance": 0,
+     "rel_tolerance": null,
+     "accept": [],
+     "patterns": []
+    },
+    {
+     "label": "max",
+     "kind": "numeric",
+     "points": null,
+     "values": [
+      -1
+     ],
+     "tolerance": 0,
+     "rel_tolerance": null,
+     "accept": [],
+     "patterns": []
+    },
+    {
+     "label": "min",
+     "kind": "numeric",
+     "points": null,
+     "values": [
+      1
+     ],
+     "tolerance": 0,
+     "rel_tolerance": null,
+     "accept": [],
+     "patterns": []
+    }
+   ]
+  },
+  "response": {
+   "fields": [
+    "3x^2-3",
+    "2",
+    "-1",
+    "1"
+   ]
+  },
+  "expected_earned": 4,
+  "expected_status": "correct",
+  "expected_results": [
+   true,
+   true,
+   true,
+   true
+  ]
+ },
+ {
+  "name": "fields text variant",
+  "type": "fields",
+  "spec": {
+   "points": 4,
+   "case": "insensitive",
+   "fields": [
+    {
+     "label": "f'",
+     "kind": "text",
+     "points": null,
+     "values": [],
+     "tolerance": 0,
+     "rel_tolerance": null,
+     "accept": [
+      "3x^2-3",
+      "3x^2 - 3"
+     ],
+     "patterns": []
+    },
+    {
+     "label": "count",
+     "kind": "numeric",
+     "points": null,
+     "values": [
+      2
+     ],
+     "tolerance": 0,
+     "rel_tolerance": null,
+     "accept": [],
+     "patterns": []
+    },
+    {
+     "label": "max",
+     "kind": "numeric",
+     "points": null,
+     "values": [
+      -1
+     ],
+     "tolerance": 0,
+     "rel_tolerance": null,
+     "accept": [],
+     "patterns": []
+    },
+    {
+     "label": "min",
+     "kind": "numeric",
+     "points": null,
+     "values": [
+      1
+     ],
+     "tolerance": 0,
+     "rel_tolerance": null,
+     "accept": [],
+     "patterns": []
+    }
+   ]
+  },
+  "response": {
+   "fields": [
+    "3x^2 - 3",
+    "2",
+    "-1",
+    "1"
+   ]
+  },
+  "expected_earned": 4,
+  "expected_status": "correct",
+  "expected_results": [
+   true,
+   true,
+   true,
+   true
+  ]
+ },
+ {
+  "name": "fields half",
+  "type": "fields",
+  "spec": {
+   "points": 4,
+   "case": "insensitive",
+   "fields": [
+    {
+     "label": "f'",
+     "kind": "text",
+     "points": null,
+     "values": [],
+     "tolerance": 0,
+     "rel_tolerance": null,
+     "accept": [
+      "3x^2-3",
+      "3x^2 - 3"
+     ],
+     "patterns": []
+    },
+    {
+     "label": "count",
+     "kind": "numeric",
+     "points": null,
+     "values": [
+      2
+     ],
+     "tolerance": 0,
+     "rel_tolerance": null,
+     "accept": [],
+     "patterns": []
+    },
+    {
+     "label": "max",
+     "kind": "numeric",
+     "points": null,
+     "values": [
+      -1
+     ],
+     "tolerance": 0,
+     "rel_tolerance": null,
+     "accept": [],
+     "patterns": []
+    },
+    {
+     "label": "min",
+     "kind": "numeric",
+     "points": null,
+     "values": [
+      1
+     ],
+     "tolerance": 0,
+     "rel_tolerance": null,
+     "accept": [],
+     "patterns": []
+    }
+   ]
+  },
+  "response": {
+   "fields": [
+    "3x^2-3",
+    "2",
+    "1",
+    "-1"
+   ]
+  },
+  "expected_earned": 2,
+  "expected_status": "partial",
+  "expected_results": [
+   true,
+   true,
+   false,
+   false
+  ]
+ },
+ {
+  "name": "fields none right",
+  "type": "fields",
+  "spec": {
+   "points": 4,
+   "case": "insensitive",
+   "fields": [
+    {
+     "label": "f'",
+     "kind": "text",
+     "points": null,
+     "values": [],
+     "tolerance": 0,
+     "rel_tolerance": null,
+     "accept": [
+      "3x^2-3",
+      "3x^2 - 3"
+     ],
+     "patterns": []
+    },
+    {
+     "label": "count",
+     "kind": "numeric",
+     "points": null,
+     "values": [
+      2
+     ],
+     "tolerance": 0,
+     "rel_tolerance": null,
+     "accept": [],
+     "patterns": []
+    },
+    {
+     "label": "max",
+     "kind": "numeric",
+     "points": null,
+     "values": [
+      -1
+     ],
+     "tolerance": 0,
+     "rel_tolerance": null,
+     "accept": [],
+     "patterns": []
+    },
+    {
+     "label": "min",
+     "kind": "numeric",
+     "points": null,
+     "values": [
+      1
+     ],
+     "tolerance": 0,
+     "rel_tolerance": null,
+     "accept": [],
+     "patterns": []
+    }
+   ]
+  },
+  "response": {
+   "fields": [
+    "x",
+    "9",
+    "9",
+    "9"
+   ]
+  },
+  "expected_earned": 0,
+  "expected_status": "incorrect",
+  "expected_results": [
+   false,
+   false,
+   false,
+   false
+  ]
+ },
+ {
+  "name": "fields all empty",
+  "type": "fields",
+  "spec": {
+   "points": 4,
+   "case": "insensitive",
+   "fields": [
+    {
+     "label": "f'",
+     "kind": "text",
+     "points": null,
+     "values": [],
+     "tolerance": 0,
+     "rel_tolerance": null,
+     "accept": [
+      "3x^2-3",
+      "3x^2 - 3"
+     ],
+     "patterns": []
+    },
+    {
+     "label": "count",
+     "kind": "numeric",
+     "points": null,
+     "values": [
+      2
+     ],
+     "tolerance": 0,
+     "rel_tolerance": null,
+     "accept": [],
+     "patterns": []
+    },
+    {
+     "label": "max",
+     "kind": "numeric",
+     "points": null,
+     "values": [
+      -1
+     ],
+     "tolerance": 0,
+     "rel_tolerance": null,
+     "accept": [],
+     "patterns": []
+    },
+    {
+     "label": "min",
+     "kind": "numeric",
+     "points": null,
+     "values": [
+      1
+     ],
+     "tolerance": 0,
+     "rel_tolerance": null,
+     "accept": [],
+     "patterns": []
+    }
+   ]
+  },
+  "response": {
+   "fields": [
+    "",
+    "",
+    "",
+    ""
+   ]
+  },
+  "expected_earned": 0,
+  "expected_status": "unanswered",
+  "expected_results": [
+   false,
+   false,
+   false,
+   false
+  ]
+ },
+ {
+  "name": "fields null",
+  "type": "fields",
+  "spec": {
+   "points": 4,
+   "case": "insensitive",
+   "fields": [
+    {
+     "label": "f'",
+     "kind": "text",
+     "points": null,
+     "values": [],
+     "tolerance": 0,
+     "rel_tolerance": null,
+     "accept": [
+      "3x^2-3",
+      "3x^2 - 3"
+     ],
+     "patterns": []
+    },
+    {
+     "label": "count",
+     "kind": "numeric",
+     "points": null,
+     "values": [
+      2
+     ],
+     "tolerance": 0,
+     "rel_tolerance": null,
+     "accept": [],
+     "patterns": []
+    },
+    {
+     "label": "max",
+     "kind": "numeric",
+     "points": null,
+     "values": [
+      -1
+     ],
+     "tolerance": 0,
+     "rel_tolerance": null,
+     "accept": [],
+     "patterns": []
+    },
+    {
+     "label": "min",
+     "kind": "numeric",
+     "points": null,
+     "values": [
+      1
+     ],
+     "tolerance": 0,
+     "rel_tolerance": null,
+     "accept": [],
+     "patterns": []
+    }
+   ]
+  },
+  "response": null,
+  "expected_earned": 0,
+  "expected_status": "unanswered",
+  "expected_results": [
+   false,
+   false,
+   false,
+   false
+  ]
+ },
+ {
+  "name": "fields one filled",
+  "type": "fields",
+  "spec": {
+   "points": 4,
+   "case": "insensitive",
+   "fields": [
+    {
+     "label": "f'",
+     "kind": "text",
+     "points": null,
+     "values": [],
+     "tolerance": 0,
+     "rel_tolerance": null,
+     "accept": [
+      "3x^2-3",
+      "3x^2 - 3"
+     ],
+     "patterns": []
+    },
+    {
+     "label": "count",
+     "kind": "numeric",
+     "points": null,
+     "values": [
+      2
+     ],
+     "tolerance": 0,
+     "rel_tolerance": null,
+     "accept": [],
+     "patterns": []
+    },
+    {
+     "label": "max",
+     "kind": "numeric",
+     "points": null,
+     "values": [
+      -1
+     ],
+     "tolerance": 0,
+     "rel_tolerance": null,
+     "accept": [],
+     "patterns": []
+    },
+    {
+     "label": "min",
+     "kind": "numeric",
+     "points": null,
+     "values": [
+      1
+     ],
+     "tolerance": 0,
+     "rel_tolerance": null,
+     "accept": [],
+     "patterns": []
+    }
+   ]
+  },
+  "response": {
+   "fields": [
+    "",
+    "2"
+   ]
+  },
+  "expected_earned": 1,
+  "expected_status": "partial",
+  "expected_results": [
+   false,
+   true,
+   false,
+   false
+  ]
+ },
+ {
+  "name": "fields ungraded ignored",
+  "type": "fields",
+  "spec": {
+   "points": 3,
+   "case": "insensitive",
+   "fields": [
+    {
+     "label": "a",
+     "kind": "numeric",
+     "points": null,
+     "values": [
+      1
+     ],
+     "tolerance": 0,
+     "rel_tolerance": null,
+     "accept": [],
+     "patterns": []
+    },
+    {
+     "label": "free text",
+     "kind": "none",
+     "points": null,
+     "values": [],
+     "tolerance": 0,
+     "rel_tolerance": null,
+     "accept": [],
+     "patterns": []
+    },
+    {
+     "label": "b",
+     "kind": "text",
+     "points": null,
+     "values": [],
+     "tolerance": 0,
+     "rel_tolerance": null,
+     "accept": [
+      "yes"
+     ],
+     "patterns": []
+    }
+   ]
+  },
+  "response": {
+   "fields": [
+    "1",
+    "anything",
+    "yes"
+   ]
+  },
+  "expected_earned": 3,
+  "expected_status": "correct",
+  "expected_results": [
+   true,
+   null,
+   true
+  ]
+ },
+ {
+  "name": "fields ungraded half",
+  "type": "fields",
+  "spec": {
+   "points": 3,
+   "case": "insensitive",
+   "fields": [
+    {
+     "label": "a",
+     "kind": "numeric",
+     "points": null,
+     "values": [
+      1
+     ],
+     "tolerance": 0,
+     "rel_tolerance": null,
+     "accept": [],
+     "patterns": []
+    },
+    {
+     "label": "free text",
+     "kind": "none",
+     "points": null,
+     "values": [],
+     "tolerance": 0,
+     "rel_tolerance": null,
+     "accept": [],
+     "patterns": []
+    },
+    {
+     "label": "b",
+     "kind": "text",
+     "points": null,
+     "values": [],
+     "tolerance": 0,
+     "rel_tolerance": null,
+     "accept": [
+      "yes"
+     ],
+     "patterns": []
+    }
+   ]
+  },
+  "response": {
+   "fields": [
+    "1",
+    "anything",
+    "no"
+   ]
+  },
+  "expected_earned": 1.5,
+  "expected_status": "partial",
+  "expected_results": [
+   true,
+   null,
+   false
+  ]
+ },
+ {
+  "name": "fields only ungraded answered is not scored",
+  "type": "fields",
+  "spec": {
+   "points": 3,
+   "case": "insensitive",
+   "fields": [
+    {
+     "label": "a",
+     "kind": "numeric",
+     "points": null,
+     "values": [
+      1
+     ],
+     "tolerance": 0,
+     "rel_tolerance": null,
+     "accept": [],
+     "patterns": []
+    },
+    {
+     "label": "free text",
+     "kind": "none",
+     "points": null,
+     "values": [],
+     "tolerance": 0,
+     "rel_tolerance": null,
+     "accept": [],
+     "patterns": []
+    },
+    {
+     "label": "b",
+     "kind": "text",
+     "points": null,
+     "values": [],
+     "tolerance": 0,
+     "rel_tolerance": null,
+     "accept": [
+      "yes"
+     ],
+     "patterns": []
+    }
+   ]
+  },
+  "response": {
+   "fields": [
+    "",
+    "essay",
+    ""
+   ]
+  },
+  "expected_earned": 0,
+  "expected_status": "unanswered",
+  "expected_results": [
+   false,
+   null,
+   false
+  ]
+ },
+ {
+  "name": "fields explicit points big only",
+  "type": "fields",
+  "spec": {
+   "points": 4,
+   "case": "insensitive",
+   "fields": [
+    {
+     "label": "big",
+     "kind": "numeric",
+     "points": 3,
+     "values": [
+      1
+     ],
+     "tolerance": 0,
+     "rel_tolerance": null,
+     "accept": [],
+     "patterns": []
+    },
+    {
+     "label": "small",
+     "kind": "numeric",
+     "points": null,
+     "values": [
+      2
+     ],
+     "tolerance": 0,
+     "rel_tolerance": null,
+     "accept": [],
+     "patterns": []
+    }
+   ]
+  },
+  "response": {
+   "fields": [
+    "1",
+    "0"
+   ]
+  },
+  "expected_earned": 3,
+  "expected_status": "partial",
+  "expected_results": [
+   true,
+   false
+  ]
+ },
+ {
+  "name": "fields explicit points small only",
+  "type": "fields",
+  "spec": {
+   "points": 4,
+   "case": "insensitive",
+   "fields": [
+    {
+     "label": "big",
+     "kind": "numeric",
+     "points": 3,
+     "values": [
+      1
+     ],
+     "tolerance": 0,
+     "rel_tolerance": null,
+     "accept": [],
+     "patterns": []
+    },
+    {
+     "label": "small",
+     "kind": "numeric",
+     "points": null,
+     "values": [
+      2
+     ],
+     "tolerance": 0,
+     "rel_tolerance": null,
+     "accept": [],
+     "patterns": []
+    }
+   ]
+  },
+  "response": {
+   "fields": [
+    "0",
+    "2"
+   ]
+  },
+  "expected_earned": 1,
+  "expected_status": "partial",
+  "expected_results": [
+   false,
+   true
+  ]
+ },
+ {
+  "name": "fields numeric tolerance",
+  "type": "fields",
+  "spec": {
+   "points": 1,
+   "case": "insensitive",
+   "fields": [
+    {
+     "label": "x",
+     "kind": "numeric",
+     "points": null,
+     "values": [
+      10
+     ],
+     "tolerance": 0.5,
+     "rel_tolerance": null,
+     "accept": [],
+     "patterns": []
+    }
+   ]
+  },
+  "response": {
+   "fields": [
+    "10.4"
+   ]
+  },
+  "expected_earned": 1,
+  "expected_status": "correct",
+  "expected_results": [
+   true
+  ]
+ },
+ {
+  "name": "fields text pattern",
+  "type": "fields",
+  "spec": {
+   "points": 1,
+   "case": "insensitive",
+   "fields": [
+    {
+     "label": "x",
+     "kind": "text",
+     "points": null,
+     "values": [],
+     "tolerance": 0,
+     "rel_tolerance": null,
+     "accept": [],
+     "patterns": [
+      "a+b"
+     ]
+    }
+   ]
+  },
+  "response": {
+   "fields": [
+    "AAB"
+   ]
+  },
+  "expected_earned": 1,
+  "expected_status": "correct",
+  "expected_results": [
+   true
+  ]
+ },
+ {
+  "name": "fields all ungraded",
+  "type": "fields",
+  "spec": {
+   "points": 2,
+   "case": "insensitive",
+   "fields": [
+    {
+     "label": "x",
+     "kind": "none",
+     "points": null,
+     "values": [],
+     "tolerance": 0,
+     "rel_tolerance": null,
+     "accept": [],
+     "patterns": []
+    }
+   ]
+  },
+  "response": {
+   "fields": [
+    "notes"
+   ]
+  },
+  "expected_earned": null,
+  "expected_status": "pending"
+ },
+ {
+  "name": "essay answered is pending",
+  "type": "essay",
+  "spec": {
+   "points": 10,
+   "case": "insensitive"
+  },
+  "response": {
+   "text": "Some words here.",
+   "word_count": 3
+  },
+  "expected_earned": null,
+  "expected_status": "pending"
+ },
+ {
+  "name": "essay empty",
+  "type": "essay",
+  "spec": {
+   "points": 10,
+   "case": "insensitive"
+  },
+  "response": {
+   "text": "  "
+  },
+  "expected_earned": null,
+  "expected_status": "unanswered"
+ },
+ {
+  "name": "essay null",
+  "type": "essay",
+  "spec": {
+   "points": 10,
+   "case": "insensitive"
+  },
+  "response": null,
+  "expected_earned": null,
+  "expected_status": "unanswered"
+ },
+ {
+  "name": "code answered is pending",
+  "type": "code",
+  "spec": {
+   "points": 3,
+   "case": "insensitive"
+  },
+  "response": {
+   "language": "rust",
+   "code": "fn f() {}"
+  },
+  "expected_earned": null,
+  "expected_status": "pending"
+ },
+ {
+  "name": "code empty",
+  "type": "code",
+  "spec": {
+   "points": 3,
+   "case": "insensitive"
+  },
+  "response": {
+   "language": "rust",
+   "code": ""
+  },
+  "expected_earned": null,
+  "expected_status": "unanswered"
+ },
+ {
+  "name": "code null",
+  "type": "code",
+  "spec": {
+   "points": 3,
+   "case": "insensitive"
+  },
+  "response": null,
+  "expected_earned": null,
+  "expected_status": "unanswered"
+ },
+ {
+  "name": "ordering exact",
+  "type": "ordering",
+  "spec": {
+   "points": 4,
+   "case": "insensitive",
+   "n": 4
+  },
+  "response": {
+   "order": [
+    0,
+    1,
+    2,
+    3
+   ]
+  },
+  "expected_earned": 4,
+  "expected_status": "correct",
+  "expected_results": [
+   true,
+   true,
+   true,
+   true
+  ]
+ },
+ {
+  "name": "ordering two swapped",
+  "type": "ordering",
+  "spec": {
+   "points": 4,
+   "case": "insensitive",
+   "n": 4
+  },
+  "response": {
+   "order": [
+    1,
+    0,
+    2,
+    3
+   ]
+  },
+  "expected_earned": 2,
+  "expected_status": "partial",
+  "expected_results": [
+   false,
+   false,
+   true,
+   true
+  ]
+ },
+ {
+  "name": "ordering reversed even",
+  "type": "ordering",
+  "spec": {
+   "points": 4,
+   "case": "insensitive",
+   "n": 4
+  },
+  "response": {
+   "order": [
+    3,
+    2,
+    1,
+    0
+   ]
+  },
+  "expected_earned": 0,
+  "expected_status": "incorrect",
+  "expected_results": [
+   false,
+   false,
+   false,
+   false
+  ]
+ },
+ {
+  "name": "ordering reversed odd keeps middle",
+  "type": "ordering",
+  "spec": {
+   "points": 3,
+   "case": "insensitive",
+   "n": 3
+  },
+  "response": {
+   "order": [
+    2,
+    1,
+    0
+   ]
+  },
+  "expected_earned": 1,
+  "expected_status": "partial",
+  "expected_results": [
+   false,
+   true,
+   false
+  ]
+ },
+ {
+  "name": "ordering a-o-n exact",
+  "type": "ordering",
+  "spec": {
+   "points": 4,
+   "case": "insensitive",
+   "n": 4,
+   "scoring": "all_or_nothing"
+  },
+  "response": {
+   "order": [
+    0,
+    1,
+    2,
+    3
+   ]
+  },
+  "expected_earned": 4,
+  "expected_status": "correct"
+ },
+ {
+  "name": "ordering a-o-n one wrong gets zero",
+  "type": "ordering",
+  "spec": {
+   "points": 4,
+   "case": "insensitive",
+   "n": 4,
+   "scoring": "all_or_nothing"
+  },
+  "response": {
+   "order": [
+    0,
+    1,
+    3,
+    2
+   ]
+  },
+  "expected_earned": 0,
+  "expected_status": "incorrect"
+ },
+ {
+  "name": "ordering thirds rounded",
+  "type": "ordering",
+  "spec": {
+   "points": 1,
+   "case": "insensitive",
+   "n": 3
+  },
+  "response": {
+   "order": [
+    0,
+    2,
+    1
+   ]
+  },
+  "expected_earned": 0.33,
+  "expected_status": "partial"
+ },
+ {
+  "name": "ordering null",
+  "type": "ordering",
+  "spec": {
+   "points": 4,
+   "case": "insensitive",
+   "n": 4
+  },
+  "response": null,
+  "expected_earned": 0,
+  "expected_status": "unanswered"
+ },
+ {
+  "name": "ordering empty",
+  "type": "ordering",
+  "spec": {
+   "points": 4,
+   "case": "insensitive",
+   "n": 4
+  },
+  "response": {},
+  "expected_earned": 0,
+  "expected_status": "unanswered"
+ },
+ {
+  "name": "ordering wrong length",
+  "type": "ordering",
+  "spec": {
+   "points": 4,
+   "case": "insensitive",
+   "n": 4
+  },
+  "response": {
+   "order": [
+    0,
+    1
+   ]
+  },
+  "expected_earned": 0,
+  "expected_status": "unanswered"
+ },
+ {
+  "name": "matching all right",
+  "type": "matching",
+  "spec": {
+   "points": 3,
+   "case": "insensitive",
+   "answer": [
+    0,
+    1,
+    2
+   ]
+  },
+  "response": {
+   "pairs": [
+    0,
+    1,
+    2
+   ]
+  },
+  "expected_earned": 3,
+  "expected_status": "correct",
+  "expected_results": [
+   true,
+   true,
+   true
+  ]
+ },
+ {
+  "name": "matching one right",
+  "type": "matching",
+  "spec": {
+   "points": 3,
+   "case": "insensitive",
+   "answer": [
+    0,
+    1,
+    2
+   ]
+  },
+  "response": {
+   "pairs": [
+    0,
+    2,
+    1
+   ]
+  },
+  "expected_earned": 1,
+  "expected_status": "partial",
+  "expected_results": [
+   true,
+   false,
+   false
+  ]
+ },
+ {
+  "name": "matching distractor chosen",
+  "type": "matching",
+  "spec": {
+   "points": 3,
+   "case": "insensitive",
+   "answer": [
+    0,
+    1,
+    2
+   ]
+  },
+  "response": {
+   "pairs": [
+    3,
+    3,
+    3
+   ]
+  },
+  "expected_earned": 0,
+  "expected_status": "incorrect",
+  "expected_results": [
+   false,
+   false,
+   false
+  ]
+ },
+ {
+  "name": "matching some left empty",
+  "type": "matching",
+  "spec": {
+   "points": 3,
+   "case": "insensitive",
+   "answer": [
+    0,
+    1,
+    2
+   ]
+  },
+  "response": {
+   "pairs": [
+    0,
+    null,
+    null
+   ]
+  },
+  "expected_earned": 1,
+  "expected_status": "partial",
+  "expected_results": [
+   true,
+   false,
+   false
+  ]
+ },
+ {
+  "name": "matching short list is padded",
+  "type": "matching",
+  "spec": {
+   "points": 3,
+   "case": "insensitive",
+   "answer": [
+    0,
+    1,
+    2
+   ]
+  },
+  "response": {
+   "pairs": [
+    0,
+    1
+   ]
+  },
+  "expected_earned": 2,
+  "expected_status": "partial",
+  "expected_results": [
+   true,
+   true,
+   false
+  ]
+ },
+ {
+  "name": "matching all empty",
+  "type": "matching",
+  "spec": {
+   "points": 3,
+   "case": "insensitive",
+   "answer": [
+    0,
+    1,
+    2
+   ]
+  },
+  "response": {
+   "pairs": [
+    null,
+    null,
+    null
+   ]
+  },
+  "expected_earned": 0,
+  "expected_status": "unanswered",
+  "expected_results": [
+   false,
+   false,
+   false
+  ]
+ },
+ {
+  "name": "matching null",
+  "type": "matching",
+  "spec": {
+   "points": 3,
+   "case": "insensitive",
+   "answer": [
+    0,
+    1,
+    2
+   ]
+  },
+  "response": null,
+  "expected_earned": 0,
+  "expected_status": "unanswered"
+ },
+ {
+  "name": "matching a-o-n all right",
+  "type": "matching",
+  "spec": {
+   "points": 3,
+   "case": "insensitive",
+   "answer": [
+    0,
+    1,
+    2
+   ],
+   "scoring": "all_or_nothing"
+  },
+  "response": {
+   "pairs": [
+    0,
+    1,
+    2
+   ]
+  },
+  "expected_earned": 3,
+  "expected_status": "correct"
+ },
+ {
+  "name": "matching a-o-n one wrong gets zero",
+  "type": "matching",
+  "spec": {
+   "points": 3,
+   "case": "insensitive",
+   "answer": [
+    0,
+    1,
+    2
+   ],
+   "scoring": "all_or_nothing"
+  },
+  "response": {
+   "pairs": [
+    0,
+    1,
+    3
+   ]
+  },
+  "expected_earned": 0,
+  "expected_status": "incorrect"
+ },
+ {
+  "name": "matching index zero is an answer",
+  "type": "matching",
+  "spec": {
+   "points": 2,
+   "case": "insensitive",
+   "answer": [
+    0,
+    1
+   ]
+  },
+  "response": {
+   "pairs": [
+    0,
+    0
+   ]
+  },
+  "expected_earned": 1,
+  "expected_status": "partial",
+  "expected_results": [
+   true,
+   false
+  ]
+ },
+ {
+  "name": "ungraded single picked",
+  "type": "single",
+  "spec": {
+   "points": 0,
+   "case": "insensitive",
+   "ungraded": true
+  },
+  "response": {
+   "choice": 0
+  },
+  "expected_earned": null,
+  "expected_status": "ungraded"
+ },
+ {
+  "name": "ungraded single unanswered",
+  "type": "single",
+  "spec": {
+   "points": 0,
+   "case": "insensitive",
+   "ungraded": true
+  },
+  "response": null,
+  "expected_earned": null,
+  "expected_status": "unanswered"
+ },
+ {
+  "name": "ungraded single choice null",
+  "type": "single",
+  "spec": {
+   "points": 0,
+   "case": "insensitive",
+   "ungraded": true
+  },
+  "response": {
+   "choice": null
+  },
+  "expected_earned": null,
+  "expected_status": "unanswered"
+ },
+ {
+  "name": "ungraded multi picked",
+  "type": "multi",
+  "spec": {
+   "points": 0,
+   "case": "insensitive",
+   "ungraded": true
+  },
+  "response": {
+   "choices": [
+    0,
+    2
+   ]
+  },
+  "expected_earned": null,
+  "expected_status": "ungraded"
+ },
+ {
+  "name": "ungraded multi empty",
+  "type": "multi",
+  "spec": {
+   "points": 0,
+   "case": "insensitive",
+   "ungraded": true
+  },
+  "response": {
+   "choices": []
+  },
+  "expected_earned": null,
+  "expected_status": "unanswered"
+ },
+ {
+  "name": "ungraded multi null",
+  "type": "multi",
+  "spec": {
+   "points": 0,
+   "case": "insensitive",
+   "ungraded": true
+  },
+  "response": null,
+  "expected_earned": null,
+  "expected_status": "unanswered"
+ },
+ {
+  "name": "ungraded short text",
+  "type": "short",
+  "spec": {
+   "points": 0,
+   "case": "insensitive",
+   "ungraded": true
+  },
+  "response": {
+   "text": "anything"
+  },
+  "expected_earned": null,
+  "expected_status": "ungraded"
+ },
+ {
+  "name": "ungraded short blank",
+  "type": "short",
+  "spec": {
+   "points": 0,
+   "case": "insensitive",
+   "ungraded": true
+  },
+  "response": {
+   "text": "   "
+  },
+  "expected_earned": null,
+  "expected_status": "unanswered"
+ },
+ {
+  "name": "ungraded short null",
+  "type": "short",
+  "spec": {
+   "points": 0,
+   "case": "insensitive",
+   "ungraded": true
+  },
+  "response": null,
+  "expected_earned": null,
+  "expected_status": "unanswered"
+ },
+ {
+  "name": "ungraded fields one filled",
+  "type": "fields",
+  "spec": {
+   "points": 0,
+   "case": "insensitive",
+   "ungraded": true,
+   "fields": [
+    {
+     "label": "A",
+     "kind": "none",
+     "points": null,
+     "values": [],
+     "tolerance": 0,
+     "rel_tolerance": null,
+     "accept": [],
+     "patterns": []
+    },
+    {
+     "label": "B",
+     "kind": "none",
+     "points": null,
+     "values": [],
+     "tolerance": 0,
+     "rel_tolerance": null,
+     "accept": [],
+     "patterns": []
+    }
+   ]
+  },
+  "response": {
+   "fields": [
+    "",
+    "x"
+   ]
+  },
+  "expected_earned": null,
+  "expected_status": "ungraded"
+ },
+ {
+  "name": "ungraded fields all blank",
+  "type": "fields",
+  "spec": {
+   "points": 0,
+   "case": "insensitive",
+   "ungraded": true,
+   "fields": [
+    {
+     "label": "A",
+     "kind": "none",
+     "points": null,
+     "values": [],
+     "tolerance": 0,
+     "rel_tolerance": null,
+     "accept": [],
+     "patterns": []
+    },
+    {
+     "label": "B",
+     "kind": "none",
+     "points": null,
+     "values": [],
+     "tolerance": 0,
+     "rel_tolerance": null,
+     "accept": [],
+     "patterns": []
+    }
+   ]
+  },
+  "response": {
+   "fields": [
+    "",
+    " "
+   ]
+  },
+  "expected_earned": null,
+  "expected_status": "unanswered"
+ },
+ {
+  "name": "ungraded fields null",
+  "type": "fields",
+  "spec": {
+   "points": 0,
+   "case": "insensitive",
+   "ungraded": true,
+   "fields": [
+    {
+     "label": "A",
+     "kind": "none",
+     "points": null,
+     "values": [],
+     "tolerance": 0,
+     "rel_tolerance": null,
+     "accept": [],
+     "patterns": []
+    },
+    {
+     "label": "B",
+     "kind": "none",
+     "points": null,
+     "values": [],
+     "tolerance": 0,
+     "rel_tolerance": null,
+     "accept": [],
+     "patterns": []
+    }
+   ]
+  },
+  "response": null,
+  "expected_earned": null,
+  "expected_status": "unanswered"
+ },
+ {
+  "name": "ungraded essay text",
+  "type": "essay",
+  "spec": {
+   "points": 0,
+   "case": "insensitive",
+   "ungraded": true
+  },
+  "response": {
+   "text": "my view",
+   "word_count": 2
+  },
+  "expected_earned": null,
+  "expected_status": "ungraded"
+ },
+ {
+  "name": "ungraded essay blank",
+  "type": "essay",
+  "spec": {
+   "points": 0,
+   "case": "insensitive",
+   "ungraded": true
+  },
+  "response": {
+   "text": ""
+  },
+  "expected_earned": null,
+  "expected_status": "unanswered"
+ },
+ {
+  "name": "ungraded essay null",
+  "type": "essay",
+  "spec": {
+   "points": 0,
+   "case": "insensitive",
+   "ungraded": true
+  },
+  "response": null,
+  "expected_earned": null,
+  "expected_status": "unanswered"
+ },
+ {
+  "name": "ungraded ordering ranked",
+  "type": "ordering",
+  "spec": {
+   "points": 0,
+   "case": "insensitive",
+   "ungraded": true,
+   "n": 3
+  },
+  "response": {
+   "order": [
+    2,
+    0,
+    1
+   ]
+  },
+  "expected_earned": null,
+  "expected_status": "ungraded"
+ },
+ {
+  "name": "ungraded ordering written order",
+  "type": "ordering",
+  "spec": {
+   "points": 0,
+   "case": "insensitive",
+   "ungraded": true,
+   "n": 3
+  },
+  "response": {
+   "order": [
+    0,
+    1,
+    2
+   ]
+  },
+  "expected_earned": null,
+  "expected_status": "ungraded"
+ },
+ {
+  "name": "ungraded ordering wrong length",
+  "type": "ordering",
+  "spec": {
+   "points": 0,
+   "case": "insensitive",
+   "ungraded": true,
+   "n": 3
+  },
+  "response": {
+   "order": [
+    0,
+    1
+   ]
+  },
+  "expected_earned": null,
+  "expected_status": "unanswered"
+ },
+ {
+  "name": "ungraded ordering null",
+  "type": "ordering",
+  "spec": {
+   "points": 0,
+   "case": "insensitive",
+   "ungraded": true,
+   "n": 3
+  },
+  "response": null,
+  "expected_earned": null,
+  "expected_status": "unanswered"
+ },
+ {
+  "name": "scale answered",
+  "type": "scale",
+  "spec": {
+   "points": 0,
+   "case": "insensitive",
+   "min": 1,
+   "max": 5,
+   "labels": {}
+  },
+  "response": {
+   "value": 4
+  },
+  "expected_earned": null,
+  "expected_status": "ungraded"
+ },
+ {
+  "name": "scale at the low end",
+  "type": "scale",
+  "spec": {
+   "points": 0,
+   "case": "insensitive",
+   "min": 1,
+   "max": 5,
+   "labels": {}
+  },
+  "response": {
+   "value": 1
+  },
+  "expected_earned": null,
+  "expected_status": "ungraded"
+ },
+ {
+  "name": "scale zero is an answer",
+  "type": "scale",
+  "spec": {
+   "points": 0,
+   "case": "insensitive",
+   "min": 0,
+   "max": 5,
+   "labels": {}
+  },
+  "response": {
+   "value": 0
+  },
+  "expected_earned": null,
+  "expected_status": "ungraded"
+ },
+ {
+  "name": "scale unanswered",
+  "type": "scale",
+  "spec": {
+   "points": 0,
+   "case": "insensitive",
+   "min": 1,
+   "max": 5,
+   "labels": {}
+  },
+  "response": null,
+  "expected_earned": null,
+  "expected_status": "unanswered"
+ },
+ {
+  "name": "scale value null",
+  "type": "scale",
+  "spec": {
+   "points": 0,
+   "case": "insensitive",
+   "min": 1,
+   "max": 5,
+   "labels": {}
+  },
+  "response": {
+   "value": null
+  },
+  "expected_earned": null,
+  "expected_status": "unanswered"
+ },
+ {
+  "name": "scale without ungraded flag",
+  "type": "scale",
+  "spec": {
+   "points": 0,
+   "case": "insensitive",
+   "min": 1,
+   "max": 5,
+   "labels": {}
+  },
+  "response": {
+   "value": 3
+  },
+  "expected_earned": null,
+  "expected_status": "ungraded"
+ },
+ {
+  "name": "single right with follow-up text",
+  "type": "single",
+  "spec": {
+   "points": 1,
+   "case": "insensitive",
+   "correct": 1
+  },
+  "response": {
+   "choice": 1,
+   "inputs": {
+    "1": "a hackathon"
+   }
+  },
+  "expected_earned": 1,
+  "expected_status": "correct"
+ },
+ {
+  "name": "single wrong with follow-up text",
+  "type": "single",
+  "spec": {
+   "points": 1,
+   "case": "insensitive",
+   "correct": 1
+  },
+  "response": {
+   "choice": 0,
+   "inputs": {
+    "0": "because"
+   }
+  },
+  "expected_earned": 0,
+  "expected_status": "incorrect"
+ },
+ {
+  "name": "single right without follow-up text",
+  "type": "single",
+  "spec": {
+   "points": 1,
+   "case": "insensitive",
+   "correct": 1
+  },
+  "response": {
+   "choice": 1
+  },
+  "expected_earned": 1,
+  "expected_status": "correct"
+ },
+ {
+  "name": "single hidden text for an unselected choice",
+  "type": "single",
+  "spec": {
+   "points": 1,
+   "case": "insensitive",
+   "correct": 1
+  },
+  "response": {
+   "choice": 1,
+   "inputs": {
+    "0": "left over"
+   }
+  },
+  "expected_earned": 1,
+  "expected_status": "correct"
+ },
+ {
+  "name": "single text without a choice is unanswered",
+  "type": "single",
+  "spec": {
+   "points": 1,
+   "case": "insensitive",
+   "correct": 1
+  },
+  "response": {
+   "choice": null,
+   "inputs": {
+    "2": "typed"
+   }
+  },
+  "expected_earned": 0,
+  "expected_status": "unanswered"
+ },
+ {
+  "name": "single follow-up text on the null response",
+  "type": "single",
+  "spec": {
+   "points": 1,
+   "case": "insensitive",
+   "correct": 1
+  },
+  "response": null,
+  "expected_earned": 0,
+  "expected_status": "unanswered"
+ },
+ {
+  "name": "multi right with follow-up text",
+  "type": "multi",
+  "spec": {
+   "points": 2,
+   "case": "insensitive",
+   "correct": [
+    0,
+    2
+   ]
+  },
+  "response": {
+   "choices": [
+    0,
+    2
+   ],
+   "inputs": {
+    "2": "details"
+   }
+  },
+  "expected_earned": 2,
+  "expected_status": "correct"
+ },
+ {
+  "name": "multi partial with follow-up text",
+  "type": "multi",
+  "spec": {
+   "points": 2,
+   "case": "insensitive",
+   "correct": [
+    0,
+    2
+   ]
+  },
+  "response": {
+   "choices": [
+    0
+   ],
+   "inputs": {
+    "0": "x"
+   }
+  },
+  "expected_earned": 1,
+  "expected_status": "partial"
+ },
+ {
+  "name": "multi hidden text for an unselected choice",
+  "type": "multi",
+  "spec": {
+   "points": 2,
+   "case": "insensitive",
+   "correct": [
+    0,
+    2
+   ]
+  },
+  "response": {
+   "choices": [
+    0,
+    2
+   ],
+   "inputs": {
+    "1": "left over"
+   }
+  },
+  "expected_earned": 2,
+  "expected_status": "correct"
+ },
+ {
+  "name": "multi empty choices with text is unanswered",
+  "type": "multi",
+  "spec": {
+   "points": 2,
+   "case": "insensitive",
+   "correct": [
+    0,
+    2
+   ]
+  },
+  "response": {
+   "choices": [],
+   "inputs": {
+    "2": "typed"
+   }
+  },
+  "expected_earned": 0,
+  "expected_status": "unanswered"
+ },
+ {
+  "name": "ungraded single with follow-up text",
+  "type": "single",
+  "spec": {
+   "points": 0,
+   "case": "insensitive",
+   "ungraded": true
+  },
+  "response": {
+   "choice": 2,
+   "inputs": {
+    "2": "a hackathon"
+   }
+  },
+  "expected_earned": null,
+  "expected_status": "ungraded"
+ },
+ {
+  "name": "ungraded single unselected with hidden text",
+  "type": "single",
+  "spec": {
+   "points": 0,
+   "case": "insensitive",
+   "ungraded": true
+  },
+  "response": {
+   "choice": null,
+   "inputs": {
+    "2": "typed"
+   }
+  },
+  "expected_earned": null,
+  "expected_status": "unanswered"
+ },
+ {
+  "name": "ungraded multi with follow-up text",
+  "type": "multi",
+  "spec": {
+   "points": 0,
+   "case": "insensitive",
+   "ungraded": true
+  },
+  "response": {
+   "choices": [
+    1,
+    2
+   ],
+   "inputs": {
+    "2": "x"
+   }
+  },
+  "expected_earned": null,
+  "expected_status": "ungraded"
+ }
+]

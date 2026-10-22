@@ -1,0 +1,1137 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>fullmark user guide</title>
+  <style>
+
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+
+ul.task-list[class]{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+font-size: inherit;
+width: 0.8em;
+margin: 0 0.8em 0.2em -1.6em;
+vertical-align: middle;
+}
+
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+  <style type="text/css">:root{--bg:#eceae5;--surface:#f4f3ef;--card:#fcfcfa;--sunken:#e4e2dc;--line:#d6d4cd;--line-strong:#8c8b83;--text:#2a2b31;--muted:#55554f;--accent:#4f6a94;--on-accent:#fcfcfa;--ok:#4f7f58;--bad:#a8504f;--warn:#a38538;--info:#3f6a97;--flag:#b5708f;--hint:#5d8fae;--orange:#b8793f;}@media (prefers-color-scheme: dark){:root{--bg:#1b1d22;--surface:#262a31;--card:#2c3038;--sunken:#15171b;--line:#464c57;--line-strong:#7b8394;--text:#d9dce2;--muted:#a9afba;--accent:#8fa8d4;--on-accent:#15171b;--ok:#92b99a;--bad:#d08a88;--warn:#cfb277;--info:#8fb0d6;--flag:#cf9bb4;--hint:#8dbad6;--orange:#d2a373;}}html{background:var(--bg)}body{max-width:50rem;margin:0 auto;padding:1.5rem 16px 4rem;background:var(--bg);color:var(--text);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}header#title-block-header h1.title{color:var(--accent);margin-bottom:.2rem}header#title-block-header p.subtitle{color:var(--muted);margin-top:0;font-size:1.1rem}h1,h2,h3{line-height:1.25}h2{margin-top:2.4rem;padding-bottom:.25rem;border-bottom:2px solid var(--line);color:var(--info)}h3{margin-top:1.8rem;color:var(--accent)}a{color:var(--info)}nav#TOC{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:.6rem 1.2rem;margin:1.5rem 0}nav#TOC ul{list-style:none;padding-left:1rem;margin:.2rem 0}nav#TOC>ul{padding-left:0}code{font-family:ui-monospace,"Cascadia Code",Consolas,Menlo,monospace;font-size:.9em;background:var(--sunken);border-radius:4px;padding:.05em .3em}pre{background:var(--sunken);border:1px solid var(--line);border-radius:10px;padding:.8rem 1rem;overflow-x:auto}pre code{background:none;padding:0}table{border-collapse:collapse;display:block;overflow-x:auto;max-width:100%;margin:1rem 0}th,td{border:1px solid var(--line);padding:.35rem .7rem;text-align:left;vertical-align:top}th{background:var(--surface)}blockquote{margin:1rem 0;padding:.1rem 1rem;border-left:4px solid var(--accent);color:var(--muted)}:focus-visible{outline:3px solid var(--accent);outline-offset:2px}@media print{body{background:none}}</style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">fullmark user guide</h1>
+<p class="subtitle">Write a quiz in Markdown, take it in the browser,
+get it graded</p>
+</header>
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a href="#what-fullmark-is" id="toc-what-fullmark-is">1. What
+fullmark is</a></li>
+<li><a href="#install" id="toc-install">2. Install</a></li>
+<li><a href="#quick-start" id="toc-quick-start">3. Quick start</a></li>
+<li><a href="#writing-a-quiz" id="toc-writing-a-quiz">4. Writing a
+quiz</a></li>
+<li><a href="#taking-a-quiz" id="toc-taking-a-quiz">5. Taking a
+quiz</a></li>
+<li><a href="#exporting-and-grading" id="toc-exporting-and-grading">6.
+Exporting and grading</a></li>
+<li><a href="#keep-a-library" id="toc-keep-a-library">7. Keep a
+library</a></li>
+<li><a href="#command-reference" id="toc-command-reference">8. Command
+reference</a></li>
+<li><a href="#how-it-is-built" id="toc-how-it-is-built">9. How it is
+built</a></li>
+<li><a href="#testing" id="toc-testing">10. Testing</a></li>
+<li><a href="#limits-and-tips" id="toc-limits-and-tips">11. Limits and
+tips</a></li>
+</ul>
+</nav>
+<h2 id="what-fullmark-is">1. What fullmark is</h2>
+<p>fullmark turns <strong>one Markdown file</strong> into <strong>one
+HTML file</strong> that is a complete quiz. You open the HTML by
+double-click. It needs no server and no internet, works on a phone,
+grades itself, and can export your answers as a JSON file so an AI can
+review them.</p>
+<p>The usual loop:</p>
+<ol type="1">
+<li>An AI (or you) writes the quiz as Markdown.</li>
+<li><code>quiz check</code> finds mistakes, with line numbers.</li>
+<li><code>quiz build</code> makes the HTML.</li>
+<li>The learner answers, submits, and exports
+<code>results.json</code>.</li>
+<li><code>quiz grade</code> turns that file into a Markdown report; an
+AI grades essays and code from it.</li>
+</ol>
+<p>The page uses a muted pastel palette: soft paper in light mode and
+soft slate in dark mode. Set <code>theme: light</code> or
+<code>theme: dark</code> in the front matter to lock it.</p>
+<h2 id="install">2. Install</h2>
+<div class="sourceCode" id="cb1"><pre class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>uv tool install <span class="op">--</span>editable <span class="op">&lt;</span>path to this repo<span class="op">&gt;</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>quiz <span class="op">--</span>help</span></code></pre></div>
+<p>Open a new terminal after installing. After pulling a version that
+adds a dependency (0.9.0 adds <code>tomli-w</code> and
+<code>rich</code>), run
+<code>uv tool install --editable &lt;path to this repo&gt; --reinstall</code>,
+or the installed <code>quiz</code> fails with
+<code>ModuleNotFoundError</code>. For development, run
+<code>uv sync</code> inside the project and use
+<code>uv run quiz ...</code> and <code>uv run pytest</code>.</p>
+<h2 id="quick-start">3. Quick start</h2>
+<div class="sourceCode" id="cb2"><pre class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>mkdir <span class="va">$HOME</span>\quiz-try<span class="op">;</span> <span class="fu">cd</span> <span class="va">$HOME</span>\quiz-try</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>quiz new calculus</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>quiz check calculus-1<span class="op">.</span><span class="fu">md</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>quiz build calculus-1<span class="op">.</span><span class="fu">md</span> <span class="op">--</span>open</span></code></pre></div>
+<p><code>quiz new</code> copies a template and its images.
+<code>quiz check</code> should print
+<code>0 error(s), 0 warning(s)</code>. <code>quiz build --open</code>
+writes <code>calculus-1.html</code> and opens it in your browser.</p>
+<p>The templates:</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>Template</th>
+<th>Shows</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>calculus</code></td>
+<td>LaTeX math, numeric and labeled-field answers, blanks, a graph,
+instant feedback</td>
+</tr>
+<tr>
+<td><code>rust</code></td>
+<td>Highlighted code, blanks inside code, a code answer, shuffled
+choices</td>
+</tr>
+<tr>
+<td><code>ielts</code></td>
+<td>A 60-minute timer, two essays, auto-submit, a band-score report</td>
+</tr>
+<tr>
+<td><code>medical</code></td>
+<td>Anatomy and physiology: an ordered pathway, matching, calculations
+with units, labeled fields, an essay with a rubric</td>
+</tr>
+<tr>
+<td><code>exam</code></td>
+<td>A closed-book exam: 20-minute auto-submit, no feedback until the
+end, shuffling, a question bank, a pass mark</td>
+</tr>
+<tr>
+<td><code>survey</code></td>
+<td>A questionnaire: no score, choices, scales, a ranking and free text;
+read it with <code>quiz grade</code></td>
+</tr>
+<tr>
+<td><code>blank</code></td>
+<td>A short skeleton with one example of every question type</td>
+</tr>
+</tbody>
+</table>
+<h2 id="writing-a-quiz">4. Writing a quiz</h2>
+<p>A quiz file has three layers:</p>
+<ul>
+<li><strong>Front matter</strong> (YAML between <code>---</code> lines):
+the title and settings.</li>
+<li><strong>Sections</strong>: optional <code>#</code> headings.</li>
+<li><strong>Questions</strong>: <code>##</code> headings. The heading
+text is the question.</li>
+</ul>
+<div class="sourceCode" id="cb3"><pre class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> &quot;Capitals: Europe&quot;</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="an">time_limit:</span><span class="co"> 10m</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="an">feedback:</span><span class="co"> instant</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="fu"># Easy ones</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="fu">## What is the capital of France? {tags=geography}</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="va">[ ]</span> Lyon</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="va">[x]</span> Paris</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="va">[ ]</span> Nice</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; </span><span class="co">[</span><span class="ot">!hint</span><span class="co">]</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; It has a famous tower.</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; </span><span class="co">[</span><span class="ot">!explanation</span><span class="co">]</span></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; Paris has been the capital since 987.</span></span></code></pre></div>
+<p>Put a colon inside a YAML value in quotes, as in the title above.</p>
+<h3 id="question-types">Question types</h3>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>Type</th>
+<th>How to write it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>single</code></td>
+<td>A task list with exactly one <code>[x]</code> (type is
+inferred)</td>
+</tr>
+<tr>
+<td><code>multi</code></td>
+<td>A task list with two or more <code>[x]</code> (inferred), or
+<code>{type=multi}</code></td>
+</tr>
+<tr>
+<td><code>truefalse</code></td>
+<td><code>{type=truefalse}</code> and an <code>answer</code> block with
+<code>value: true</code></td>
+</tr>
+<tr>
+<td><code>numeric</code></td>
+<td><code>{type=numeric}</code> and an <code>answer</code> block with
+<code>value</code>, <code>tolerance</code></td>
+</tr>
+<tr>
+<td><code>short</code></td>
+<td><code>{type=short}</code> and an <code>answer</code> block with
+<code>accept</code> and optional <code>patterns</code></td>
+</tr>
+<tr>
+<td><code>blanks</code></td>
+<td><code>{type=blanks}</code> and <code>[[answer\|variant]]</code>
+written inline in the text</td>
+</tr>
+<tr>
+<td><code>fields</code></td>
+<td><code>{type=fields}</code> and an <code>answer</code> block listing
+labeled boxes</td>
+</tr>
+<tr>
+<td><code>ordering</code></td>
+<td><code>{type=ordering}</code> and a list written in the correct
+order; the page shuffles it</td>
+</tr>
+<tr>
+<td><code>matching</code></td>
+<td><code>{type=matching}</code> and a list of
+<code>left :: right</code> bullets; <code>:: right</code> adds a
+distractor</td>
+</tr>
+<tr>
+<td><code>essay</code></td>
+<td><code>{type=essay}</code>, an <code>answer</code> block with
+<code>min_words</code> and a <code>rubric</code></td>
+</tr>
+<tr>
+<td><code>code</code></td>
+<td><code>{type=code}</code>, an <code>answer</code> block with
+<code>language</code>, <code>starter</code>, <code>rubric</code></td>
+</tr>
+<tr>
+<td><code>scale</code></td>
+<td><code>{type=scale}</code> and an optional <code>answer</code> block
+with <code>min</code>, <code>max</code>, <code>labels</code>; always
+ungraded</td>
+</tr>
+</tbody>
+</table>
+<p>An <code>answer</code> block is a fenced block whose info string is
+<code>answer</code>, containing YAML:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">## Evaluate $\int_0^1 x^2\,dx$. {type=numeric}</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="in">```answer</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="in">value: 0.3333</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="in">tolerance: 0.001</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div>
+<p>Numeric answers accept integers, decimals, <code>1e-3</code> and
+fractions such as <code>1/3</code>. Short answers ignore case and extra
+spaces unless you add <code>{case=sensitive}</code>.</p>
+<h3 id="follow-up-text-on-a-choice">Follow-up text on a choice</h3>
+<p>End a choice with <code>{input}</code> or
+<code>{input=&quot;Prompt text&quot;}</code> (default prompt “Please specify”) to
+ask for a few words when it is picked, for example “Something else”
+followed by “What is it?”. It works on <code>single</code> and
+<code>multi</code> questions in quizzes and surveys, graded or not.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="va">[ ]</span> A lab project</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="va">[ ]</span> Something else {input=&quot;What is it?&quot;}</span></code></pre></div>
+<p>A labelled text field appears under the choice while it is selected
+and takes focus; unselect the choice and the field hides but keeps the
+text. The text is never graded. It is exported as <code>inputs</code>
+next to <code>choice</code> or <code>choices</code> (keys are the
+original choice numbers), and <code>quiz grade</code> shows
+<code>Something else: a hackathon</code>. <code>{input}</code> must end
+the line, the prompt is plain text in double quotes, and it is an error
+on any other question type.</p>
+<h3 id="math-code-and-media">Math, code and media</h3>
+<ul>
+<li>Math: <code>$inline$</code> and <code>$$display$$</code> (rendered
+with KaTeX, embedded only when used).</li>
+<li>Code: fenced blocks with a language are highlighted. Blanks
+<code>[[mut]]</code> also work inside them.</li>
+<li>Blanks: every blank in a question starts at the same width, set by
+the longest answer, and grows as the learner types.</li>
+<li>Images: <code>![alt text](assets/chart.png)</code>. Audio uses the
+same syntax with <code>.mp3</code>, <code>.ogg</code>, <code>.wav</code>
+or <code>.m4a</code>.</li>
+</ul>
+<p>Everything is embedded in the HTML as data, so the file stays
+self-contained. Video and web URLs are not supported.</p>
+<h3 id="settings-you-will-use-most">Settings you will use most</h3>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>Key</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>mode</code></td>
+<td><code>quiz</code> (default) or <code>survey</code> (every question
+ungraded, no score)</td>
+</tr>
+<tr>
+<td><code>time_limit</code></td>
+<td><code>90s</code>, <code>45m</code>, <code>1h30m</code>; leave out
+for untimed</td>
+</tr>
+<tr>
+<td><code>on_timeout</code></td>
+<td><code>submit</code> (default) or <code>warn</code></td>
+</tr>
+<tr>
+<td><code>feedback</code></td>
+<td><code>end</code> (default) or <code>instant</code></td>
+</tr>
+<tr>
+<td><code>theme</code></td>
+<td><code>auto</code> (default, with a toggle), or <code>light</code> /
+<code>dark</code> to lock it</td>
+</tr>
+<tr>
+<td><code>pick</code></td>
+<td>question bank: draw this many questions at random per attempt (see
+below)</td>
+</tr>
+<tr>
+<td><code>shuffle_choices</code></td>
+<td>shuffle the order of choices</td>
+</tr>
+<tr>
+<td><code>pass_mark</code></td>
+<td>percent of auto-graded points needed to pass</td>
+</tr>
+</tbody>
+</table>
+<p>Lock <code>theme: light</code> for an exam simulation whose real
+paper is printed (the IELTS template does); leave <code>auto</code> for
+practice drills.</p>
+<p>The complete reference is one command away:
+<code>quiz guide</code>.</p>
+<h3 id="question-banks">Question banks</h3>
+<p>Write more questions than one attempt needs and let fullmark draw a
+random subset each time the learner presses Start. Two ways, which
+cannot be mixed:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> Calculus bank</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="an">pick:</span><span class="co"> 10              # draw 10 of all questions</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span></code></pre></div>
+<p>or per section, where sections without <code>pick</code> keep every
+question:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu"># Limits {pick=3}</span></span></code></pre></div>
+<p>The draw is saved with the attempt, so reloading or resuming shows
+the same questions. Scores, the progress counter and the export cover
+the drawn questions only. The export records <code>attempt.bank</code>
+(<code>seed</code>, <code>pool</code>, <code>drawn</code>), and
+<code>quiz grade</code> checks the draw against the quiz settings and
+warns if it does not fit. <code>quiz check</code> rejects a
+<code>pick</code> larger than its pool.</p>
+<h3 id="questionnaires">Questionnaires</h3>
+<p>Not every question has a right answer. Two front-matter and heading
+settings turn fullmark into a questionnaire tool:</p>
+<ul>
+<li><code>graded=false</code> on a <code>##</code> heading makes that
+one question <strong>ungraded</strong>: it collects an answer, adds
+nothing to the score and shows no right or wrong. Use it for “how sure
+are you?” questions inside a real quiz.</li>
+<li><code>mode: survey</code> makes every question ungraded. The page
+shows no score, the button reads <strong>Finish</strong>, and the
+results screen offers <strong>Export answers</strong>.</li>
+<li><code>{type=scale}</code> is a rating row, always ungraded. Its
+<code>answer</code> block takes <code>min</code>, <code>max</code> (a
+span of 1 to 10) and optional <code>labels</code>.</li>
+</ul>
+<p>Ungraded questions can be <code>single</code>, <code>multi</code>
+(write no <code>[x]</code>, and add <code>{type=multi}</code>),
+<code>short</code> (no <code>answer</code> block), <code>fields</code>
+(labels only), <code>essay</code> (no rubric), <code>ordering</code> (a
+ranking, shown in the written order) and <code>scale</code>. The other
+types need a right answer and are errors. <code>[x]</code>,
+<code>pass_mark</code>, <code>pick</code>,
+<code>feedback: instant</code> and <code>multi_scoring</code> are errors
+in a survey. Branching, answers from several people and required answers
+are not supported.</p>
+<p><code>quiz grade results.json --quiz quiz.md</code> turns the export
+into a report titled “Answers” for a survey, or adds an
+<strong>Answers</strong> section to a quiz report; <code>--json</code>
+gives each answer as <code>answer_text</code>. Start from
+<code>quiz new survey</code>. The details, with examples, are in
+<code>quiz guide</code>.</p>
+<h3 id="collect-answers-directly">Collect answers directly</h3>
+<p>When a tool or an agent is waiting for the answers, skip the
+download. <code>quiz serve quiz.md --open</code> builds the page in
+memory, serves it on <code>127.0.0.1</code> (a free port, this machine
+only) and opens it. After the usual confirm step,
+<strong>Finish</strong> or <strong>Submit</strong> also sends the
+results to the server, which checks them against
+<code>results-v1.schema.json</code> and the quiz id, writes
+<code>&lt;quiz-id&gt;-results-&lt;timestamp&gt;.json</code> next to the
+source (or <code>--out</code>; an existing file is never overwritten,
+<code>-2</code> is added instead) and prints the path. The page then
+says “Answers sent. You can close this tab.” and <strong>Export
+answers</strong> stays available. If the send fails it says “Could not
+send; use Export answers” and nothing is lost.</p>
+<ul>
+<li><code>--once</code> exits 0 after the first accepted submit. It is
+the default when stdout is not a terminal, so scripts and agents never
+hang. Without it in a terminal, the server keeps accepting attempts (one
+file each) until Ctrl+C.</li>
+<li><code>--timeout SECONDS</code> (default 1800) exits 2 if nothing
+arrives; <code>0</code> waits for ever. <code>--port N</code> picks the
+port. <code>--autosave PROGRESS.json</code> keeps the attempt in
+progress (see below). <code>--json</code> prints
+<code>{&quot;status&quot;: &quot;submitted&quot; | &quot;timeout&quot;, &quot;path&quot;: ...}</code> on
+exit.</li>
+<li><code>--autosave PROGRESS.json</code> keeps the attempt in progress
+in that file, so it resumes after the server, the terminal or the
+browser closes, even in a new browser or on a new port (a served page is
+a new browser origin each run, so the browser’s own copy would be lost).
+The page sends its state to the server as you answer; reloading or
+reopening shows <strong>Resume</strong>. The file is deleted when the
+answers are accepted or you press <strong>Start over</strong>. Progress
+saved for an edited quiz (a different version) is ignored and left
+alone, and so is a damaged file. The copy in the browser still works,
+and the newer of the two wins.</li>
+<li>The URL carries a random token, and the server rejects posts without
+it or from another origin. The file on disk and normal builds still
+never touch the network; only the copy served here is allowed to talk to
+its own server. <code>quiz serve</code> also accepts a built
+<code>.html</code> file.</li>
+</ul>
+<h3 id="review-a-quiz-an-agent-wrote">Review a quiz an agent wrote</h3>
+<p>The risk in an agent-written quiz is a wrong answer key, or a
+question that is not in your material.
+<code>quiz review quiz.md [--out review.json] [--since review.json] [--once] [--open] [--timeout 1800] [--json]</code>
+serves a review form: one card per question, showing the question as it
+is rendered, its answer key, explanation, points, tags and source line.
+The learner chooses <strong>Keep</strong>, <strong>Fix</strong> (what
+should change?) or <strong>Drop</strong> (why?), may tick problems
+(<code>key-wrong</code>, <code>not-in-material</code>,
+<code>unclear</code>, <code>too-easy</code>, <code>too-hard</code>,
+<code>duplicate</code>) and add a note. Cards with no verdict count as
+not reviewed. The page counts cards, not fields: the header reads
+<code>Reviewed N/M</code>, the question nav has one button per card, and
+a card is reviewed only when it has a verdict (problems and a note alone
+do not count). The flag checkbox is hidden. <strong>Finish</strong>
+writes <code>review.json</code> beside the quiz (never over an existing
+file: <code>review-2.json</code>; with <code>--out</code> or
+<code>--since</code> it is merged into that file).
+<code>--since review.json</code> asks only about questions that are new
+or changed since that review.</p>
+<p><code>quiz check quiz.md --review review.json</code> then fails (exit
+1) while a flagged question is still wrong:</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Rule</th>
+<th>Level</th>
+<th>When</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>review.drop</code></td>
+<td>error</td>
+<td>a question marked drop is still in the quiz</td>
+</tr>
+<tr>
+<td><code>review.fix</code></td>
+<td>error</td>
+<td>a question marked fix is unchanged (the message has the reviewer’s
+text)</td>
+</tr>
+<tr>
+<td><code>review.key-wrong</code></td>
+<td>error</td>
+<td><code>key-wrong</code> is ticked and the question is unchanged,
+whatever the verdict</td>
+</tr>
+<tr>
+<td><code>review.changed</code></td>
+<td>info</td>
+<td>a fix question changed; re-review it with <code>--since</code></td>
+</tr>
+<tr>
+<td><code>review.unreviewed</code></td>
+<td>warning</td>
+<td>no verdict, or the question changed after it was kept</td>
+</tr>
+</tbody>
+</table>
+<p>Questions match review items by id first, then by a hash of their
+source block, so a review survives reordering. Add <code>{id=...}</code>
+to the headings: without them a review finds a question again only by
+its text. <code>quiz inspect quiz.md --review review.json</code> shows
+the counts. Only <code>quiz review</code> writes
+<code>review.json</code>; never edit it by hand. A terminal form
+(<code>--tui</code>) is not built yet.</p>
+<h3 id="brief-a-quiz-before-an-agent-writes-it">Brief a quiz before an
+agent writes it</h3>
+<p><code>quiz brief DIR [--purpose ...] [--scope ...] [--count N] [--minutes N] [--mix ...] [--difficulty ...] [--mode ...] [--weak-topics yes|no] [--language en|vi] [--kinds ...] [--elsewhere ...] [--request ...] [--web] [--accept-defaults] [--json]</code>
+writes <code>DIR/brief.yaml</code> and <code>DIR/content/</code> (with a
+README) for an agent to read. It does not write the quiz. Every flag is
+also a question in the form that <code>--web</code> serves
+(<code>--no-open</code> prints the address instead of opening the
+browser). <code>--tui</code> exits 2: the terminal form is not built
+yet.</p>
+<ul>
+<li><strong>Human-only values:</strong> <code>purpose</code>
+(self-study, exam-prep, classmates, survey) and <code>scope</code>
+(which chapters, lectures or topics). When either is missing and no form
+was asked for, nothing is written and the exit code is 3;
+<code>--json</code> lists what is missing and the form command.
+<code>--accept-defaults</code> hands <code>purpose</code> over (default
+<code>self-study</code>, recorded as <code>decided_by: agent</code>) but
+never <code>scope</code>: it has no default.</li>
+<li>Everything else has a default (20 questions, no time limit, mix
+<code>recall,understanding</code>, difficulty
+<code>like-the-exam</code>, feedback <code>at-the-end</code>, language
+<code>en</code>). <code>decided_by</code> in <code>brief.yaml</code>
+says for each value whether the user, the default or the agent decided
+it. <code>quiz brief</code> never overwrites an existing
+<code>brief.yaml</code>.</li>
+<li><strong>Material:</strong> put the files in <code>content/</code>
+and tick their <code>--kinds</code> (<code>lecture-slides</code>,
+<code>textbook</code>, <code>notes</code>, <code>past-exams</code>,
+<code>lab-manual</code>, <code>other</code> with
+<code>--kinds-other TEXT</code>). Material that lives elsewhere goes in
+<code>--elsewhere</code>. Past exams are mirrored in structure: types,
+split of marks, length.</li>
+<li><strong>Weak topics:</strong> if the folder holds results files
+(<code>*-results-*.json</code>) of a quiz, <code>weak_topics</code>
+defaults to yes and <code>focus_tags</code> lists the topics under 80%
+in the latest attempt (the data of <code>quiz stats</code>, at most
+three).</li>
+<li>The last line says what to tell Claude:
+<code>Next: tell Claude: &quot;Write the quiz in DIR (brief.yaml is ready).&quot;</code></li>
+<li><strong><code>quiz check</code> reads the brief.</strong> With a
+<code>brief.yaml</code> beside the quiz it adds warnings:
+<code>brief.count</code> (the question count is outside 20% of
+<code>count</code>), <code>brief.mix</code> (a kind of question in
+<code>mix</code> is missing), <code>brief.past-exams</code> (past exams
+are ticked but no question has a <code>Source:</code> note) and
+<code>brief.content-kinds</code> (a ticked kind has no matching file in
+<code>content/</code>).</li>
+</ul>
+<h3 id="checking-your-file">Checking your file</h3>
+<p><code>quiz check quiz.md</code> prints one line per finding:</p>
+<pre class="text"><code>quiz.md:37: error: q4 (numeric): &#39;value&#39; must be a number, got &#39;one&#39;
+quiz.md:52: warning: q6 (single): no explanation</code></pre>
+<p>Errors stop the build; warnings do not. Besides structural problems,
+<code>quiz check</code> warns about weak questions: a missing or very
+short explanation, duplicate choices, “all/none of the above”, a correct
+choice much longer than every distractor, a question text that already
+contains the answer, and a single-choice key that favors one position
+(when choices are not shuffled). Exit code 0 means no errors, 1 means
+errors, 2 means a usage or file problem. Add <code>--json</code> for
+machine-readable output. Add <code>--strict</code> (also on
+<code>quiz build</code>) to treat warnings as errors, for CI: the exit
+code is 1 if there is any finding, and <code>quiz build --strict</code>
+writes nothing.</p>
+<h2 id="taking-a-quiz">5. Taking a quiz</h2>
+<ol type="1">
+<li><strong>Start screen</strong>: shows the number of questions, points
+and the time limit. If you have an attempt in progress on this device
+you can <strong>Resume</strong> it or <strong>Start over</strong>.</li>
+<li><strong>Questions</strong>: all on one page, grouped by section. The
+numbered pills show what you answered and what you flagged: in a panel
+on the right of a wide screen (with the timer, “Answered 7/20”, a
+progress bar and a key), in a row under the title on a narrow one. After
+you submit, each pill also shows its result with a symbol (✓ correct, ✗
+wrong, ½ partly correct, ? waiting for AI grading, – not answered), and
+the panel shows your score. Use <strong>Flag for review</strong> to mark
+a question you want to come back to. <strong>Focus</strong> (where the
+browser allows fullscreen) fills the screen, hides the text size, theme
+and export buttons and shows a clock; press Esc to leave. It only
+removes clutter, it does not lock anything.</li>
+<li><strong>Hints</strong> are hidden behind a button.</li>
+<li><strong>Instant feedback</strong> quizzes have a
+<strong>Check</strong> button per question. It locks the answer, shows
+right or wrong, the correct answer and the explanation. Pressing
+<strong>Enter</strong> in a one-line answer box does the same.</li>
+<li><strong>Timer</strong>: it keeps counting if you reload the page. It
+warns at 5 minutes and 1 minute. When time runs out, the quiz either
+submits automatically or counts overtime, depending on
+<code>on_timeout</code>.</li>
+<li><strong>Submit</strong> shows the score, a per-topic breakdown, and
+which questions still wait for AI review (essays and code). In a survey
+the button reads <strong>Finish</strong> and the page shows no score at
+all, only <strong>Export answers</strong>.</li>
+</ol>
+<p>Keyboard and accessibility: everything works with the keyboard. In a
+code box, <strong>Tab</strong> indents; press <strong>Esc</strong> and
+then <strong>Tab</strong> to leave the box. The theme button switches
+between light and dark (hidden when the quiz locks its theme) and
+remembers your choice. <strong>A−</strong> and <strong>A+</strong> make
+all text smaller or larger in five steps; the size is remembered on this
+device for every quiz.</p>
+<p>Progress is saved in your browser (<code>localStorage</code>) for
+this exact quiz file. If the browser blocks storage the quiz still
+works, you just cannot resume.</p>
+<h2 id="exporting-and-grading">6. Exporting and grading</h2>
+<p>After you start, <strong>Export answers</strong> is always available.
+It offers a download
+(<code>&lt;id&gt;-results-&lt;date&gt;.json</code>), a <strong>Copy
+JSON</strong> button, and a text box if the clipboard is blocked.</p>
+<p>Then:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>quiz grade results<span class="op">.</span><span class="fu">json</span> <span class="op">--</span>quiz quiz<span class="op">.</span><span class="fu">md</span></span></code></pre></div>
+<p>This writes <code>results-report.md</code> next to the results file.
+The report contains:</p>
+<ol type="1">
+<li>A summary: score, time used, pass or fail, points still
+pending.</li>
+<li>A table by topic (tags).</li>
+<li>A table of all questions.</li>
+<li><strong>Review these</strong>: every wrong or partial answer with
+your answer, the correct one and the explanation.</li>
+<li><strong>Pending AI review</strong>: each essay and code answer with
+the prompt, the rubric and your full response, and an empty
+<strong>Grading</strong> block for the AI to fill in.</li>
+</ol>
+<p>A quiz with ungraded questions also has an <strong>Answers</strong>
+section (after the question table), listing each ungraded question and
+the answer. A survey (<code>mode: survey</code>) has no score: its
+report is titled “Answers” and lists every question by section with its
+answer. Ungraded questions never appear under Pending AI review and
+never get a grade.</p>
+<p>To record an AI’s scores in the report, run
+<code>quiz grade results.json --json</code>: it also writes
+<code>results-grades.json</code>, an empty template. Fill in the scores,
+then run
+<code>quiz grade results.json --grades results-grades.json</code> (add
+<code>--json</code> for the JSON report). The report then shows the
+grades and a final score that includes them. Band-scored essays show
+their band but do not add points.</p>
+<p>To compare several attempts at the same quiz, run
+<code>quiz stats results1.json results2.json ... --quiz quiz.md</code>.
+It lists the scores by date, the percent per topic in each attempt and
+the change, and the three weakest topics of the latest attempt. Ungraded
+questions are left out of the scores; an <strong>Answers over
+time</strong> table follows each <code>scale</code> and ungraded
+<code>single</code> question across the attempts, and works for surveys
+too. Add <code>--json</code> for data.</p>
+<p>Python grades again from the quiz source and is the authority: if the
+browser’s score differs, the command warns and uses its own result. It
+also warns if the quiz file was edited after the attempt.</p>
+<p>With Claude Code, the <code>/quiz</code> skill does all of this for
+you: ask it to make a quiz from your notes, and later to grade the
+exported results.</p>
+<h3 id="results-and-report-files">Results and report files</h3>
+<p>Both files are plain JSON with a <code>format</code> and a
+<code>version</code> field, and both have a JSON Schema in
+<code>src/fullmark/schemas/</code> (also installed with the
+package):</p>
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr>
+<th>File</th>
+<th><code>format</code></th>
+<th>Written by</th>
+<th>Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>&lt;id&gt;-results-&lt;date&gt;.json</code></td>
+<td><code>fullmark-results</code></td>
+<td>the page, on Export answers</td>
+<td><code>results-v1.schema.json</code></td>
+</tr>
+<tr>
+<td><code>&lt;name&gt;-report.json</code></td>
+<td><code>fullmark-report</code></td>
+<td><code>quiz grade --json</code></td>
+<td><code>report-v1.schema.json</code></td>
+</tr>
+</tbody>
+</table>
+<p>A response has one shape per question type (<code>single</code>:
+<code>choice</code>; <code>multi</code>: <code>choices</code>;
+<code>truefalse</code>: <code>value</code>; <code>numeric</code>:
+<code>raw</code> and <code>value</code>; <code>short</code>:
+<code>text</code>; <code>blanks</code>: <code>blanks</code>;
+<code>fields</code>: <code>fields</code>; <code>ordering</code>:
+<code>order</code> (item numbers in source order, so the correct answer
+is 0, 1, 2, …); <code>matching</code>: <code>pairs</code> (for each left
+item, the number of the chosen right-hand item, or null);
+<code>essay</code>: <code>text</code> and <code>word_count</code>;
+<code>code</code>: <code>language</code> and <code>code</code>;
+<code>scale</code>: <code>value</code>). An answered ungraded question
+has <code>status: &quot;ungraded&quot;</code> and <code>earned: null</code>;
+<code>attempt.mode</code> is <code>quiz</code> or <code>survey</code>.
+The tests validate every export against the schemas.</p>
+<p>Compatibility rule: a new optional field keeps
+<code>version: 1</code>. Removing or renaming a field, or changing its
+meaning, bumps the version, and <code>quiz grade</code> refuses a
+version it does not know.</p>
+<h2 id="keep-a-library">7. Keep a library</h2>
+<p>By default a quiz is a file: you build it, hand it out and the
+answers land wherever the browser saves them. The
+<strong>library</strong> is the other way to work. It is one folder on a
+drive you choose, under git, that owns your own quizzes and files every
+result next to the version you answered. Core commands stay as they are
+and need no library. The library commands are <code>init</code>,
+<code>status</code>, <code>register</code>, <code>list</code>,
+<code>take</code>, <code>share</code>, <code>path</code>,
+<code>grade</code>, <code>stats</code>, <code>rename</code> and
+<code>rm</code>.</p>
+<h3 id="set-it-up-init">Set it up: <code>init</code></h3>
+<div class="sourceCode" id="cb10"><pre class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>quiz library init D<span class="op">:</span>\quizzes</span></code></pre></div>
+<ul>
+<li><code>init PATH</code> (default: the current folder) makes PATH this
+machine’s library, runs <code>git init</code> and commits, and records
+the folder in a config file (<code>%APPDATA%\fullmark\config.toml</code>
+on Windows, <code>~/.config/fullmark/config.toml</code> on Linux).
+<code>FULLMARK_CONFIG</code> points to another config file and
+<code>FULLMARK_LIBRARY</code> to another folder for one shell; the
+environment wins over the config.</li>
+<li>A <strong>new or empty folder</strong> is set up. A folder that
+<strong>has other files and is not a library is refused</strong>:
+nothing is written, not even the config, and the message suggests a new
+folder such as <code>PATH\fullmark-library</code>. There is no
+override.</li>
+<li>A folder that <strong>already is a library</strong> is adopted: only
+the config is written. Use this on a second machine for a folder that a
+sync service (OneDrive, Syncthing) keeps in step; its git state is left
+alone.</li>
+<li>A machine has one library. A second <code>init</code> elsewhere
+exits 2 and changes nothing; <code>--force</code> switches the config to
+the new folder and leaves the old one as it is.</li>
+<li><code>--no-git</code> skips the repository. Inside another git
+repository no nested repository is made, and fullmark will not commit
+there.</li>
+</ul>
+<h3 id="add-a-quiz-register">Add a quiz: <code>register</code></h3>
+<p><code>quiz library register quiz.md</code> checks the file as
+<code>quiz check</code> does (it refuses on errors;
+<code>--strict</code> also refuses on warnings;
+<code>--review review.json</code> applies a review), then copies the
+source, its images and its <code>brief.yaml</code> into the library and
+commits. No HTML is stored. The original file can then be deleted: a
+scratch folder is fine.</p>
+<ul>
+<li><code>-n NAME</code> sets the name (default: the title as a slug,
+cut to 24 characters at a word break). Commands take the name, the id,
+or the first 3 or more characters of the id. A name already taken exits
+1 and suggests a free one.</li>
+<li>The same file path again, without <code>--update</code>, exits 1 and
+names the quiz it was registered as.</li>
+<li><strong><code>--update NAME</code></strong> adds a version of an
+existing quiz: <code>unchanged</code> when nothing changed,
+<code>replaced</code> when nobody has taken the current version yet (so
+fixing a quiz does not pile up versions), <code>new-version</code> when
+an attempt exists, <code>updated-assets</code> when only an image or the
+brief changed.</li>
+<li>Images and audio must sit <strong>inside the quiz’s folder</strong>
+and be referenced relatively (<code>assets/x.png</code>): no drive
+letter, no leading slash, no <code>..</code> above the folder.
+<code>register</code> refuses anything else.</li>
+<li>With no library on the machine <code>register</code> exits 3 and
+says to run <code>quiz library init PATH</code>: where the library goes
+is your decision.</li>
+</ul>
+<h3 id="take-a-quiz-take">Take a quiz: <code>take</code></h3>
+<p><code>quiz library take NAME</code> builds the page on the spot with
+the installed fullmark, serves it on 127.0.0.1 and opens the browser.
+<strong>Submit</strong> (or <strong>Finish</strong>) files the result as
+<code>quizzes/&lt;id&gt;/results/&lt;date-time&gt;.json</code> in the
+library and commits. An attempt in progress is saved in the library too,
+so closing the tab or the terminal and running <code>take</code> again
+offers <strong>Resume</strong>. If the original source still exists and
+has changed since you registered it, <code>take</code> warns and serves
+the registered version; run <code>register --update</code> to adopt the
+change. <code>--no-open</code> prints the address instead of opening the
+browser, <code>--timeout SECONDS</code> stops waiting (default: no
+limit).</p>
+<h3 id="see-what-you-have-list-and-status">See what you have:
+<code>list</code> and <code>status</code></h3>
+<ul>
+<li><code>quiz library list</code> prints one row per quiz: id, name,
+title, versions, attempts, last taken and last score (a percent, or
+<code>survey</code>), with a note when the source changed.</li>
+<li><code>quiz library status</code> is the health check: the config,
+the library, git (own repository or not, uncommitted changes, remote or
+none), the counts, and problems such as a snapshot or image whose
+content no longer matches its hash. Exit 0 is healthy, 1 means problems,
+2 means no library. With no git repository it says how to add history:
+<code>git -C &quot;PATH&quot; init</code>. The next <code>register</code> or
+<code>take</code> then commits.</li>
+<li>In a terminal both print colored tables; every state also carries a
+symbol or a word, so color is never the only signal.
+<code>--plain</code> (or a non-empty <code>NO_COLOR</code>) prints plain
+text, and <code>--json</code> is for scripts and agents.</li>
+</ul>
+<h3 id="share-and-edit-share">Share and edit: <code>share</code></h3>
+<ul>
+<li><code>quiz library share NAME -o DIR</code> writes
+<code>DIR/NAME.html</code>, the normal standalone page (never
+overwriting a file). <code>--version HASH</code> shares an older
+version.</li>
+<li><code>quiz library share NAME --source -o DIR</code> writes the
+editable source instead:
+<code>DIR/NAME/&lt;original file name&gt;</code>, its
+<code>assets/</code> and <code>brief.yaml</code>. Edit it, then
+<code>quiz library register DIR/NAME/&lt;file&gt; --update NAME</code>.
+Quizzes are never edited inside the library.</li>
+</ul>
+<h3 id="grade-and-follow-progress-grade-and-stats">Grade and follow
+progress: <code>grade</code> and <code>stats</code></h3>
+<ul>
+<li><code>quiz library grade NAME</code> grades the newest attempt
+against the version it was taken on, even if the quiz was updated since.
+<code>--attempt STAMP</code> picks another one (a results file name, or
+a prefix of 4 or more characters). The report goes into
+<code>quizzes/&lt;id&gt;/reports/&lt;stamp&gt;-report.md</code>
+(<code>--json</code> writes <code>-report.json</code> and, when essays
+or code need grading, an empty <code>&lt;stamp&gt;-grades.json</code>
+beside it). Reports never go into <code>results/</code>, which holds
+only attempts. When the version is no longer in the library, it warns
+and uses the grades the browser gave.</li>
+<li>The grading flow for an agent:
+<code>quiz library grade NAME --json</code>, fill in
+<code>reports/&lt;stamp&gt;-grades.json</code>, then
+<code>quiz library grade NAME --grades &lt;that file&gt; --json</code>.</li>
+<li><code>quiz library stats NAME [--json]</code> shows scores by date
+and percent per topic over all attempts. When every attempt was taken on
+one stored version it re-grades with it; when they span several versions
+it keeps the grades each attempt was made with and says so.</li>
+</ul>
+<h3 id="rename-and-delete-rename-and-rm">Rename and delete:
+<code>rename</code> and <code>rm</code></h3>
+<ul>
+<li><code>quiz library rename OLD NEW</code> changes the name only; the
+id, the folder and the results stay. The new name must follow the name
+rule and not be another quiz’s name or id.</li>
+<li><code>quiz library rm NAME</code> <strong>deletes</strong> the quiz
+folder (versions, results, progress) and its entry, then commits, so
+<code>git -C LIBRARY revert HEAD</code> restores it. It refuses (exit 2,
+nothing deleted) when the library is not its own git repository, or when
+<code>quizzes/&lt;id&gt;</code> has uncommitted changes;
+<code>--force</code> skips both checks. In a terminal it asks
+<code>[y/N]</code>; without a terminal it needs <code>--yes</code>.
+Images in <code>assets/</code> stay and show as unused in
+<code>status</code>.</li>
+</ul>
+<h3 id="git-and-backups">Git and backups</h3>
+<p>fullmark commits after each <code>init</code>, <code>register</code>,
+<code>take</code>, <code>grade</code>, <code>rename</code> and
+<code>rm</code> when the library folder is its own repository, and it
+<strong>never pushes</strong>. The history protects against mistakes,
+not against losing the drive; <code>status</code> says “no remote” until
+you add one or keep the folder in a synced folder. Results hold your
+answers and the snapshots hold the answer keys, so <strong>any remote
+must be private</strong>. Snapshots are read-only, and
+<code>status</code> reports an edited one; restoring is your step
+(<code>git restore</code>). To push automatically, add a
+<code>post-commit</code> hook to the library’s <code>.git/hooks</code>:
+that hook is yours, not fullmark’s.</p>
+<p>Results and snapshots are plain files.
+<code>quiz library path NAME</code> prints a quiz’s folder, and core
+<code>quiz grade</code> and <code>quiz stats</code> still work on the
+files in it; <code>quiz library grade</code> and <code>stats</code> just
+pick the matching snapshot for you.</p>
+<h2 id="command-reference">8. Command reference</h2>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>Command</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>quiz check FILE [--json] [--strict] [--review REVIEW]</code></td>
+<td>Validate a quiz file; <code>--strict</code> fails on warnings too;
+<code>--review</code> also holds it to a <code>review.json</code></td>
+</tr>
+<tr>
+<td><code>quiz build FILE [-o OUT] [--open] [--strict]</code></td>
+<td>Validate, then write the HTML; <code>--strict</code> fails on
+warnings and writes nothing</td>
+</tr>
+<tr>
+<td><code>quiz watch FILE [-o OUT] [--open] [--serve]</code></td>
+<td>Rebuild whenever the quiz or its <code>assets/</code> change; keeps
+the last good build when a save has errors. Reload the page after each
+rebuild, or add <code>--serve</code> to serve it on 127.0.0.1 and reload
+the browser automatically (only the served copy gets the reload code;
+the file you hand out is unchanged)</td>
+</tr>
+<tr>
+<td><code>quiz serve FILE [--out RESULTS] [--once] [--timeout SECONDS] [--open] [--port N] [--autosave PROGRESS] [--json]</code></td>
+<td>Serve the quiz page on 127.0.0.1 and wait for the answers:
+<strong>Finish</strong> or <strong>Submit</strong> sends the results to
+the server, which checks them and writes the JSON file, then exits.
+<code>--autosave</code> keeps an attempt in progress so it resumes after
+the server or browser closes</td>
+</tr>
+<tr>
+<td><code>quiz review FILE [--out REVIEW] [--since REVIEW] [--once] [--open] [--timeout SECONDS] [--port N] [--json]</code></td>
+<td>Serve a review form (keep, fix or drop each question) and write
+<code>review.json</code> when the learner presses Finish</td>
+</tr>
+<tr>
+<td><code>quiz brief DIR [--purpose P] [--scope S] [--count N] [--mix M] [--web] [--accept-defaults] [--json] ...</code></td>
+<td>Write <code>brief.yaml</code> and <code>content/</code> for a quiz
+an agent will write; exit 3 when the purpose or scope is missing and no
+form was asked for</td>
+</tr>
+<tr>
+<td><code>quiz grade RESULTS [--quiz FILE] [-o OUT] [--grades GRADES] [--json]</code></td>
+<td>Re-grade and write the Markdown report; <code>--json</code> writes
+<code>*-report.json</code> and an empty grades template instead;
+<code>--grades</code> folds a filled-in grades file into the report</td>
+</tr>
+<tr>
+<td><code>quiz stats RESULTS... [--quiz FILE] [--json]</code></td>
+<td>Compare several attempts at one quiz: scores by date, percent per
+topic, the weakest topics</td>
+</tr>
+<tr>
+<td><code>quiz inspect FILE [--json] [--review REVIEW]</code></td>
+<td>Summarize a quiz: questions and points by type, section and tag, and
+where the single-choice answers sit. Use it to check coverage before
+handing a quiz out</td>
+</tr>
+<tr>
+<td><code>quiz new TEMPLATE [PATH]</code></td>
+<td>Copy a template (never overwrites)</td>
+</tr>
+<tr>
+<td><code>quiz templates</code></td>
+<td>List the templates</td>
+</tr>
+<tr>
+<td><code>quiz guide</code></td>
+<td>Print the authoring reference</td>
+</tr>
+<tr>
+<td><code>quiz agent-guide</code></td>
+<td>Print the instructions for AI agents (the same text as
+<code>AGENTS.md</code>, shipped in the package)</td>
+</tr>
+<tr>
+<td><code>quiz library</code></td>
+<td><code>init</code>, <code>status</code>, <code>register</code>,
+<code>list</code>, <code>take</code>, <code>share</code> and
+<code>path</code>: keep quizzes and results in one folder under git.
+<code>take NAME</code> serves a quiz and files the result in the
+library; <code>share NAME</code> writes a standalone page, or with
+<code>--source</code> an editable folder; <code>path [NAME]</code>
+prints the library or a quiz folder (see section 7). <code>status</code>
+and <code>list</code> print colored tables in a terminal;
+<code>--plain</code> or <code>NO_COLOR</code> gives plain text,
+<code>--json</code> is for scripts</td>
+</tr>
+</tbody>
+</table>
+<h2 id="how-it-is-built">9. How it is built</h2>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>Part</th>
+<th>Library</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Markdown parsing</td>
+<td><code>markdown-it-py</code> with <code>mdit-py-plugins</code></td>
+</tr>
+<tr>
+<td>Front matter</td>
+<td><code>PyYAML</code> (<code>safe_load</code> only)</td>
+</tr>
+<tr>
+<td>Models and validation</td>
+<td><code>pydantic</code> v2</td>
+</tr>
+<tr>
+<td>Code highlighting</td>
+<td><code>Pygments</code> with custom pastel styles</td>
+</tr>
+<tr>
+<td>HTML assembly</td>
+<td><code>Jinja2</code></td>
+</tr>
+<tr>
+<td>Math</td>
+<td>KaTeX 0.16.47, vendored</td>
+</tr>
+<tr>
+<td>Browser runtime</td>
+<td>plain JavaScript and CSS, no framework, no build step</td>
+</tr>
+</tbody>
+</table>
+<p>Source layout (under <code>src/fullmark/</code>):</p>
+<ul>
+<li><code>parser.py</code>, <code>models.py</code>,
+<code>validate.py</code>: Markdown to models, with line numbers.</li>
+<li><code>grading.py</code> and <code>static/quiz.js</code>: the same
+grading rules in Python and JavaScript.</li>
+<li><code>render.py</code>, <code>build.py</code>,
+<code>theme.py</code>, <code>templates/</code>, <code>static/</code>:
+the HTML page.</li>
+<li><code>report.py</code>: the Markdown report.</li>
+<li><code>library/</code>: the <code>quiz library</code> commands
+(config, registry, git, terminal tables). It imports the modules above;
+none of them imports it, and a test enforces that.</li>
+<li><code>examples/</code>: the seven templates (<code>calculus</code>,
+<code>rust</code>, <code>ielts</code>, <code>medical</code>,
+<code>exam</code>, <code>survey</code>, <code>blank</code>) and their
+images.</li>
+</ul>
+<p>The design decisions are in <a href="SPEC.md">SPEC.md</a>.</p>
+<h2 id="testing">10. Testing</h2>
+<div class="sourceCode" id="cb11"><pre class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cd</span> <span class="op">&lt;</span>path to this repo<span class="op">&gt;</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>uv run pytest <span class="op">-</span>q                       <span class="co"># everything (about 30 seconds)</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>uv run pytest <span class="op">-</span>q <span class="op">--</span>ignore<span class="op">=</span>tests<span class="op">/</span>e2e    <span class="co"># skip the browser tests</span></span></code></pre></div>
+<p>The tests cover validation (one fixture per error), the grader (over
+100 golden cases run through both Python and JavaScript), the build, the
+report, the examples, and real-browser end-to-end flows on
+<code>file://</code> pages. They also check that the page makes no
+network requests and that text colors meet contrast limits in both
+themes.</p>
+<h2 id="limits-and-tips">11. Limits and tips</h2>
+<ul>
+<li><strong>Not a secure exam.</strong> The answer key is inside the
+HTML, only lightly scrambled. Anyone determined can read it.</li>
+<li>Code answers are exported, never run.</li>
+<li>Math answers are compared numerically, not symbolically:
+<code>2x</code> and <code>x*2</code> are different strings. List
+accepted variants.</li>
+<li>Large images and audio make the HTML large. You get a warning above
+20 MB.</li>
+<li>Write explanations. They are what makes a quiz teach, and
+<code>quiz check</code> warns when one is missing.</li>
+<li><code>{input}</code> goes at the very end of a <code>- [ ]</code>
+choice line, and a prompt needs double quotes:
+<code>{input=&quot;What is it?&quot;}</code>.</li>
+<li>If something looks wrong, run <code>quiz check</code> first. Most
+problems are a missing <code>[x]</code>, a missing <code>answer</code>
+block, or an unquoted colon in the front matter.</li>
+</ul>
+</body>
+</html>

@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://fullmark.local/schemas/review-v1.schema.json",
+  "title": "fullmark review (version 1)",
+  "description": "The file quiz review writes: the learner's verdict on each question. Only quiz review writes it; agents read it and never edit it. New optional fields keep version 1.",
+  "type": "object",
+  "required": ["version", "by", "quiz", "reviewed_at", "items"],
+  "properties": {
+    "version": { "const": 1 },
+    "by": { "const": "quiz review" },
+    "quiz": {
+      "type": "object",
+      "required": ["id", "source_hash"],
+      "properties": {
+        "id": { "type": "string" },
+        "source_hash": { "type": "string", "description": "Hash of the whole quiz source at the last review." }
+      }
+    },
+    "reviewed_at": { "type": "string" },
+    "items": {
+      "description": "Keyed by the question id at review time.",
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["hash", "verdict", "text", "problems", "note"],
+        "properties": {
+          "hash": { "type": "string", "description": "First 16 hex characters of SHA-256 of the question's normalized source block." },
+          "verdict": { "enum": ["keep", "fix", "drop"] },
+          "text": { "type": "string", "description": "What should change (fix) or why (drop); empty for keep." },
+          "problems": {
+            "type": "array",
+            "items": { "enum": ["key-wrong", "not-in-material", "unclear", "too-easy", "too-hard", "duplicate"] }
+          },
+          "note": { "type": "string" }
+        }
+      }
+    }
+  }
+}

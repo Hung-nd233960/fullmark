@@ -1,0 +1,185 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://fullmark.local/schemas/results-v1.schema.json",
+  "title": "fullmark results (version 1)",
+  "description": "The file the quiz page writes when the learner presses Export answers. New optional fields keep version 1; removing or renaming a field bumps the version.",
+  "type": "object",
+  "required": ["format", "version", "quiz", "attempt", "score", "questions"],
+  "properties": {
+    "format": { "const": "fullmark-results" },
+    "version": { "const": 1 },
+    "quiz": {
+      "type": "object",
+      "required": ["id", "title", "hash"],
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "hash": { "type": "string", "description": "Hash of the quiz source the page was built from." },
+        "source_file": { "type": ["string", "null"] },
+        "built_at": { "type": "string" },
+        "fullmark_version": { "type": "string" }
+      }
+    },
+    "attempt": {
+      "type": "object",
+      "required": ["submitted"],
+      "properties": {
+        "mode": {
+          "enum": ["quiz", "survey"],
+          "description": "survey: every question is ungraded and the score object is all zeros. Absent in older exports, which mean quiz."
+        },
+        "bank": {
+          "description": "The question-bank draw; null when the quiz has no bank.",
+          "type": ["object", "null"],
+          "required": ["seed", "pool", "drawn"],
+          "properties": {
+            "seed": {},
+            "pool": { "type": "integer", "minimum": 0 },
+            "drawn": { "type": "array", "items": { "type": "string" } }
+          }
+        },
+        "retry_of": {
+          "description": "The started_at of the attempt this one retries (only its missed questions, listed in bank.drawn); null otherwise.",
+          "type": ["string", "null"]
+        },
+        "submitted": { "type": "boolean" },
+        "started_at": { "type": ["string", "null"] },
+        "submitted_at": { "type": ["string", "null"] },
+        "elapsed_seconds": { "type": ["integer", "null"], "minimum": 0 },
+        "time_limit_seconds": { "type": ["integer", "null"], "minimum": 0 },
+        "timed_out": { "type": "boolean" },
+        "overtime_seconds": { "type": "number", "minimum": 0 },
+        "user_agent": { "type": "string" }
+      }
+    },
+    "score": {
+      "type": "object",
+      "required": ["earned", "possible_auto", "percent_auto"],
+      "properties": {
+        "earned": { "type": "number" },
+        "possible_auto": { "type": "number" },
+        "pending_points": { "type": "number" },
+        "possible_total": { "type": "number" },
+        "percent_auto": { "type": ["number", "null"], "description": "Null when nothing is auto-graded." },
+        "passed": { "type": ["boolean", "null"], "description": "Null when the quiz has no pass_mark." }
+      }
+    },
+    "questions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "type", "points", "status"],
+        "properties": {
+          "id": { "type": "string" },
+          "index": { "type": "integer", "minimum": 1 },
+          "section": { "type": ["string", "null"] },
+          "type": {
+            "enum": ["single", "multi", "truefalse", "numeric", "short", "blanks", "fields", "ordering", "matching", "essay", "code", "scale"]
+          },
+          "title": { "type": "string" },
+          "points": { "type": "number", "minimum": 0 },
+          "tags": { "type": "array", "items": { "type": "string" } },
+          "flagged": { "type": "boolean" },
+          "status": {
+            "enum": ["correct", "partial", "incorrect", "unanswered", "pending", "ungraded"],
+            "description": "ungraded: the question collects an answer with no right one; earned is null and it counts toward no total."
+          },
+          "earned": { "type": ["number", "null"], "description": "Null for essay and code (graded later) and for ungraded questions." },
+          "response": {
+            "type": ["object", "null"],
+            "description": "What the learner answered; null when unanswered. The shape depends on the type (see allOf)."
+          },
+          "correct": { "type": ["object", "null"], "description": "The key as the page knew it; null for essay, code and ungraded questions." },
+          "first_answered_at": { "type": ["string", "null"] },
+          "last_changed_at": { "type": ["string", "null"] },
+          "changes": { "type": "integer", "minimum": 0 }
+        },
+        "allOf": [
+          { "if": { "properties": { "type": { "const": "single" } } }, "then": { "properties": { "response": { "$ref": "#/$defs/single" } } } },
+          { "if": { "properties": { "type": { "const": "multi" } } }, "then": { "properties": { "response": { "$ref": "#/$defs/multi" } } } },
+          { "if": { "properties": { "type": { "const": "truefalse" } } }, "then": { "properties": { "response": { "$ref": "#/$defs/truefalse" } } } },
+          { "if": { "properties": { "type": { "const": "numeric" } } }, "then": { "properties": { "response": { "$ref": "#/$defs/numeric" } } } },
+          { "if": { "properties": { "type": { "const": "short" } } }, "then": { "properties": { "response": { "$ref": "#/$defs/short" } } } },
+          { "if": { "properties": { "type": { "const": "blanks" } } }, "then": { "properties": { "response": { "$ref": "#/$defs/blanks" } } } },
+          { "if": { "properties": { "type": { "const": "fields" } } }, "then": { "properties": { "response": { "$ref": "#/$defs/fields" } } } },
+          { "if": { "properties": { "type": { "const": "ordering" } } }, "then": { "properties": { "response": { "$ref": "#/$defs/ordering" } } } },
+          { "if": { "properties": { "type": { "const": "matching" } } }, "then": { "properties": { "response": { "$ref": "#/$defs/matching" } } } },
+          { "if": { "properties": { "type": { "const": "essay" } } }, "then": { "properties": { "response": { "$ref": "#/$defs/essay" } } } },
+          { "if": { "properties": { "type": { "const": "code" } } }, "then": { "properties": { "response": { "$ref": "#/$defs/code" } } } },
+          { "if": { "properties": { "type": { "const": "scale" } } }, "then": { "properties": { "response": { "$ref": "#/$defs/scale" } } } }
+        ]
+      }
+    }
+  },
+  "$defs": {
+    "single": {
+      "type": ["object", "null"],
+      "properties": { "choice": { "type": "integer", "minimum": 0, "description": "Index of the chosen item, in source order." }, "inputs": { "type": "object", "description": "Follow-up text typed under selected choices that have {input}; keys are original choice indices. Optional; never affects the score.", "patternProperties": { "^[0-9]+$": { "type": "string" } }, "additionalProperties": false } }
+    },
+    "multi": {
+      "type": ["object", "null"],
+      "properties": { "choices": { "type": "array", "items": { "type": "integer", "minimum": 0 } }, "inputs": { "type": "object", "description": "Follow-up text typed under selected choices that have {input}; keys are original choice indices. Optional; never affects the score.", "patternProperties": { "^[0-9]+$": { "type": "string" } }, "additionalProperties": false } }
+    },
+    "truefalse": {
+      "type": ["object", "null"],
+      "properties": { "value": { "type": "boolean" } }
+    },
+    "numeric": {
+      "type": ["object", "null"],
+      "properties": {
+        "raw": { "type": "string", "description": "Exactly what the learner typed." },
+        "value": { "type": ["number", "null"], "description": "The parsed number; null if it did not parse." }
+      }
+    },
+    "short": {
+      "type": ["object", "null"],
+      "properties": { "text": { "type": "string" } }
+    },
+    "blanks": {
+      "type": ["object", "null"],
+      "properties": { "blanks": { "type": "array", "items": { "type": "string" } } }
+    },
+    "fields": {
+      "type": ["object", "null"],
+      "properties": { "fields": { "type": "array", "items": { "type": "string" } } }
+    },
+    "ordering": {
+      "type": ["object", "null"],
+      "properties": {
+        "order": {
+          "type": "array",
+          "items": { "type": "integer", "minimum": 0 },
+          "description": "Item indexes (position in the quiz source, 0-based) in the order the learner put them. The correct order is 0, 1, 2, ..."
+        }
+      }
+    },
+    "matching": {
+      "type": ["object", "null"],
+      "properties": {
+        "pairs": {
+          "type": "array",
+          "items": { "type": ["integer", "null"], "minimum": 0 },
+          "description": "For each left item in source order, the index of the chosen right-hand item (source order, distractors included), or null."
+        }
+      }
+    },
+    "essay": {
+      "type": ["object", "null"],
+      "properties": {
+        "text": { "type": "string" },
+        "word_count": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "scale": {
+      "type": ["object", "null"],
+      "properties": { "value": { "type": "integer", "description": "The number the respondent picked." } }
+    },
+    "code": {
+      "type": ["object", "null"],
+      "properties": {
+        "language": { "type": "string" },
+        "code": { "type": "string" }
+      }
+    }
+  }
+}

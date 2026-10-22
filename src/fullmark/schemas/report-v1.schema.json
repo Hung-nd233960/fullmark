@@ -1,0 +1,114 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://fullmark.local/schemas/report-v1.schema.json",
+  "title": "fullmark report (version 1)",
+  "description": "The file written by `quiz grade --json`. New optional fields keep version 1; removing or renaming a field bumps the version.",
+  "type": "object",
+  "required": ["format", "version", "quiz", "attempt", "graded_from_source", "summary", "warnings", "by_topic", "questions"],
+  "properties": {
+    "format": { "const": "fullmark-report" },
+    "version": { "const": 1 },
+    "quiz": { "type": "object", "required": ["id", "title"], "description": "Copied from the results file." },
+    "attempt": { "type": "object", "description": "Copied from the results file." },
+    "results_hash": { "type": "string", "description": "Fingerprint of the results file; the grades template carries the same value." },
+    "graded_from_source": { "type": "boolean", "description": "False when --quiz was not given and the browser grades were used." },
+    "question_bank": {
+      "type": ["object", "null"],
+      "properties": {
+        "seed": {},
+        "pool": { "type": "integer" },
+        "drawn": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "required": ["earned", "possible_auto", "pending", "percent", "passed", "pass_mark"],
+      "properties": {
+        "earned": { "type": "number" },
+        "possible_auto": { "type": "number" },
+        "pending": { "type": "number", "description": "Points waiting for AI or human grading." },
+        "percent": { "type": ["number", "null"] },
+        "passed": { "type": ["boolean", "null"] },
+        "pass_mark": { "type": ["number", "null"] },
+        "final_earned": { "type": "number", "description": "Only with --grades: earned plus AI scores (band questions never count)." },
+        "final_possible": { "type": "number" },
+        "final_percent": { "type": ["number", "null"] }
+      }
+    },
+    "warnings": { "type": "array", "items": { "type": "string" } },
+    "by_topic": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["topic", "earned", "possible", "percent"],
+        "properties": {
+          "topic": { "type": "string" },
+          "earned": { "type": "number" },
+          "possible": { "type": "number" },
+          "percent": { "type": "number" }
+        }
+      }
+    },
+    "questions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["index", "id", "type", "status", "earned", "points", "tags", "prompt", "your_answer", "needs_review", "needs_ai_grading"],
+        "properties": {
+          "index": { "type": "integer", "minimum": 1 },
+          "id": { "type": "string" },
+          "type": {
+            "enum": ["single", "multi", "truefalse", "numeric", "short", "blanks", "fields", "ordering", "matching", "essay", "code", "scale"]
+          },
+          "status": {
+            "enum": ["correct", "partial", "incorrect", "unanswered", "pending", "ungraded"],
+            "description": "ungraded: an answered question that has no right answer (graded=false, scale, or survey mode)."
+          },
+          "earned": { "type": ["number", "null"] },
+          "points": { "type": "number" },
+          "tags": { "type": "array", "items": { "type": "string" } },
+          "prompt": { "type": "string" },
+          "your_answer": { "type": "string" },
+          "correct_answer": { "type": "string", "description": "Present for auto-graded types only." },
+          "explanation": { "type": "string", "description": "Present when the quiz has an explanation." },
+          "needs_review": { "type": "boolean" },
+          "needs_ai_grading": { "type": "boolean" },
+          "ungraded": { "const": true, "description": "Present on questions that collect an answer with no right one; they have no earned points and are never AI graded." },
+          "section": { "type": ["string", "null"], "description": "Present on ungraded questions." },
+          "response": { "type": ["object", "null"], "description": "The raw response, present on ungraded questions." },
+          "answer_text": { "type": "string", "description": "A readable answer, present on ungraded questions and on choice questions with follow-up text. Rankings are numbered lines; scales read '4 / 5 (label)'; a choice with follow-up text reads 'Something else: a hackathon'." },
+          "inputs": { "type": "object", "description": "The raw follow-up text typed under choices that have {input}; keys are original choice indices. Present only when there is some.", "additionalProperties": { "type": "string" } },
+          "ai_grading": { "$ref": "#/$defs/ai_grading", "description": "Present when needs_ai_grading is true." }
+        },
+        "if": { "properties": { "needs_ai_grading": { "const": true } } },
+        "then": { "required": ["ai_grading"] }
+      }
+    }
+  },
+  "$defs": {
+    "ai_grading": {
+      "type": "object",
+      "required": ["rubric", "criteria", "scoring"],
+      "properties": {
+        "rubric": { "type": "array", "items": { "type": "string" } },
+        "criteria": { "type": "array", "items": { "type": "string" } },
+        "scoring": { "enum": ["points", "band"] },
+        "response": { "type": "string", "description": "Essay text or code." },
+        "word_count": { "type": "integer" },
+        "min_words": { "type": "integer" },
+        "max_words": { "type": "integer" },
+        "language": { "type": "string" },
+        "executed": { "const": false, "description": "Code is never run." },
+        "result": { "type": "object", "description": "The agent's grade for this question; only with --grades." },
+        "ungraded_fields": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["label", "value"],
+            "properties": { "label": { "type": "string" }, "value": { "type": "string" } }
+          }
+        }
+      }
+    }
+  }
+}

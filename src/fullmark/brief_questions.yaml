@@ -1,0 +1,239 @@
+# The quiz brief, defined once. `quiz brief` builds from this file:
+#   - the flags and their defaults (cli.py),
+#   - the fullmark survey for `--web` (brief.py: survey_markdown),
+#   - the fields of brief.yaml (brief.py: Brief).
+# tests/test_brief.py checks that the three agree. The idea is presentation-kit's
+# brief_questions.yaml; the questions are the quiz ones.
+#
+# Fields
+#   id          stable id; also the survey question id
+#   section     material | quiz | detail: the heading it sits under in the form
+#   type        choice | multi | number | text
+#   label       short name; help: one or two sentences shown with it
+#   flag        the `quiz brief` flag (comma list for multi)
+#   field       the brief.yaml field it fills (a dotted path for nested fields)
+#   default     used for every missing value that may be defaulted; null = no default
+#   min         number only: the smallest allowed value
+#   delegable   false = a human-only value. A missing one makes `quiz brief` exit 3.
+#               --accept-defaults hands a human-only value with a default to the agent
+#               (recorded as decided_by: agent); one with no default stays missing.
+#   choices     value, label, hint (one line, shown beside the choice)
+#   multiline   text only: a longer answer (an essay question in the survey)
+#   followup    multi only: a text box for one choice (value, prompt, flag, field);
+#               in the survey it is `{input="prompt"}`
+#   to          bool: choices yes/no become a boolean
+#   dynamic     the default is worked out when the brief is made (see brief.py)
+
+- id: purpose
+  section: quiz
+  type: choice
+  label: What is the quiz for?
+  help: The purpose decides the tone, the difficulty and whether answers are scored.
+  flag: --purpose
+  field: purpose
+  default: self-study
+  delegable: false
+  choices:
+    - value: self-study
+      label: Self-study
+      hint: Practise and find the gaps; feedback matters more than the mark
+    - value: exam-prep
+      label: Exam prep
+      hint: Mirror the exam in types, length and difficulty
+    - value: classmates
+      label: Quizzing classmates
+      hint: Shareable and friendly; one HTML file to send
+    - value: survey
+      label: A survey or form
+      hint: No score; the answers are read, not graded
+
+- id: scope
+  section: quiz
+  type: text
+  label: Which chapters, lectures or topics?
+  help: What the questions may cover. Be as exact as you can, for example "lectures 3 to 5, the Fourier transform".
+  flag: --scope
+  field: scope
+  default: null
+  delegable: false
+
+- id: kinds
+  section: material
+  type: multi
+  label: What is the quiz built from?
+  help: Tick everything that applies. Put the files in content/ (quiz brief makes the folder).
+  flag: --kinds
+  field: content.kinds
+  default: []
+  delegable: true
+  followup:
+    value: other
+    prompt: What is it?
+    flag: --kinds-other
+    field: content.kinds_other
+  choices:
+    - value: lecture-slides
+      label: Lecture slides
+      hint: PDF or PowerPoint files
+    - value: textbook
+      label: A textbook chapter
+      hint: A PDF, or page numbers in the scope
+    - value: notes
+      label: My notes
+      hint: Markdown, text, Word or PDF
+    - value: past-exams
+      label: Past exams
+      hint: 'Their structure is mirrored: types, split of marks, length'
+    - value: lab-manual
+      label: A lab manual
+      hint: A PDF or Word file
+    - value: other
+      label: Something else
+      hint: Say what it is
+
+- id: elsewhere
+  section: material
+  type: text
+  label: Material that is not in content/ yet, or lives elsewhere
+  help: Where to find it, for example a link, a Zotero collection or a folder path.
+  flag: --elsewhere
+  field: content.elsewhere
+  default: ''
+  delegable: true
+
+- id: count
+  section: quiz
+  type: number
+  label: Number of questions
+  help: How many questions the quiz has. A question bank (pick) can draw fewer per attempt.
+  flag: --count
+  min: 1
+  field: count
+  default: 20
+  delegable: true
+
+- id: minutes
+  section: quiz
+  type: number
+  label: Time limit in minutes
+  help: 0 for no time limit.
+  flag: --minutes
+  min: 0
+  field: minutes
+  default: 0
+  delegable: true
+
+- id: mix
+  section: quiz
+  type: multi
+  label: What kinds of question?
+  help: Tick everything the quiz should include.
+  flag: --mix
+  field: mix
+  default:
+    - recall
+    - understanding
+  delegable: true
+  choices:
+    - value: recall
+      label: Recall
+      hint: Facts and definitions; choice, true or false, short answers, blanks
+    - value: understanding
+      label: Understanding
+      hint: Why and how; choice, ordering, matching
+    - value: calculation
+      label: Calculation
+      hint: Numeric answers with a tolerance, or several fields
+    - value: code
+      label: Code
+      hint: Write or complete code
+    - value: essay
+      label: Essay
+      hint: Open answers, graded against a rubric afterwards
+
+- id: difficulty
+  section: quiz
+  type: choice
+  label: Difficulty
+  help: How hard the questions are, compared with the real thing.
+  flag: --difficulty
+  field: difficulty
+  default: like-the-exam
+  delegable: true
+  choices:
+    - value: warm-up
+      label: Warm-up
+      hint: Easier than the exam, to build confidence
+    - value: like-the-exam
+      label: Like the exam
+      hint: The same level as the real exam
+    - value: harder
+      label: Harder than the exam
+      hint: Stretch questions, so the exam feels easy
+
+- id: mode
+  section: quiz
+  type: choice
+  label: Feedback
+  help: When the learner sees whether an answer was right.
+  flag: --mode
+  field: mode
+  default: at-the-end
+  delegable: true
+  choices:
+    - value: each-question
+      label: After each question
+      hint: feedback instant; a drill
+    - value: at-the-end
+      label: Only at the end
+      hint: feedback end; the default
+    - value: timed-exam
+      label: A timed exam
+      hint: A time limit, no feedback until the end
+
+- id: weak_topics
+  section: quiz
+  type: choice
+  label: Focus on weak topics from earlier attempts
+  help: Uses the results files in the folder (quiz stats). The default is yes when there are results, no otherwise.
+  flag: --weak-topics
+  field: weak_topics
+  default: 'no'
+  dynamic: yes when the folder has results files
+  delegable: true
+  to: bool
+  choices:
+    - value: 'yes'
+      label: 'Yes'
+      hint: Extra questions on the topics with the lowest scores
+    - value: 'no'
+      label: 'No'
+      hint: Cover the scope evenly
+
+- id: language
+  section: quiz
+  type: choice
+  label: Language
+  help: The language of the questions.
+  flag: --language
+  field: language
+  default: en
+  delegable: true
+  choices:
+    - value: en
+      label: English
+      hint: Questions in English
+    - value: vi
+      label: Tiếng Việt
+      hint: Questions in Vietnamese
+
+- id: request
+  section: quiz
+  type: text
+  label: What should Claude do? What to stress, what to avoid
+  help: In your own words. Claude reads this first and will not ask the brief questions again.
+  flag: --request
+  field: request
+  default: ''
+  delegable: true
+  multiline: true

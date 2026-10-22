@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src data:; media-src data:; font-src data:; style-src 'unsafe-inline'; script-src 'unsafe-inline'">
+<title>{{ title }}</title>
+<script>
+(function () {
+  var t = null, locked = "{{ theme }}";
+  if (locked === "light" || locked === "dark") {
+    t = locked;
+  } else {
+    try { t = localStorage.getItem("fullmark:theme"); } catch (e) {}
+  }
+  if (t !== "light" && t !== "dark") {
+    t = window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  }
+  document.documentElement.setAttribute("data-theme", t);
+  try {
+    var f = localStorage.getItem("fullmark:fontscale");
+    if (["0.875", "1", "1.125", "1.25", "1.5"].indexOf(f) >= 0) {
+      document.documentElement.style.setProperty("--qm-scale", f);
+    }
+  } catch (e) {}
+})();
+</script>
+<style>
+{{ theme_css }}
+{{ pygments_css }}
+{{ css }}
+{% if has_math %}{{ katex_css }}{% endif %}
+</style>
+</head>
+<body>
+<noscript><p class="qm-noscript">This quiz needs JavaScript. Please enable it and reload.</p></noscript>
+<div id="app"></div>
+<script type="application/json" id="quiz-data">{{ data_json }}</script>
+<script type="text/plain" id="quiz-key">{{ key_blob }}</script>
+{% if has_math %}
+<script>{{ katex_js }}</script>
+<script>{{ auto_js }}</script>
+{% endif %}
+<script>
+{{ js }}
+</script>
+</body>
+</html>

@@ -1,0 +1,1574 @@
+/* fullmark runtime styles. Colors come only from the palette variables defined by the build (theme.py). */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  font-size: calc(100% * var(--qm-scale, 1));
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font:
+    1.125rem / 1.6 system-ui,
+    -apple-system,
+    "Segoe UI",
+    Roboto,
+    sans-serif;
+  overflow-wrap: anywhere;
+}
+
+a {
+  color: var(--accent);
+}
+
+:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+.qm-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.qm-noscript {
+  margin: 1rem;
+  padding: 1rem;
+  background: var(--card);
+  border: 1px solid var(--bad);
+  border-radius: 8px;
+}
+
+.qm-wrap {
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: 0 16px 4rem;
+}
+
+/* Text blocks stop at about 80 characters, so lines stay readable on wide screens.
+   Code, tables, images and answer controls keep the full width. */
+:where(.qm-title, .qm-body, .qm-intro, .qm-hint-body, .qm-explain, .qm-prose) > :is(p, ul, ol, blockquote) {
+  max-width: 80ch;
+}
+
+/* ---------- buttons and inputs ---------- */
+
+.qm-btn {
+  font: inherit;
+  font-weight: 600;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+  min-height: 2.5rem;
+}
+
+.qm-btn:hover:not(:disabled) {
+  background: var(--sunken);
+}
+
+.qm-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.qm-btn-primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--on-accent);
+}
+
+.qm-btn-primary:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--accent) 85%, var(--text));
+}
+
+.qm-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding-inline: 0.55rem;
+}
+
+.qm-btn-small {
+  padding: 0.25rem 0.7rem;
+  min-height: 2rem;
+  font-size: 0.9rem;
+}
+
+.qm-input,
+.qm-textarea {
+  font: inherit;
+  color: var(--text);
+  background: var(--sunken);
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  padding: 0.45rem 0.7rem;
+  max-width: 100%;
+}
+
+.qm-input {
+  width: min(100%, 28rem);
+}
+
+.qm-input:focus,
+.qm-textarea:focus,
+.qm-blank:focus {
+  border-color: var(--accent);
+}
+
+.qm-textarea {
+  display: block;
+  width: 100%;
+  min-height: 12rem;
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.qm-textarea.qm-code-input {
+  font-family: ui-monospace, "Cascadia Code", Consolas, Menlo, monospace;
+  font-size: 0.92rem;
+  tab-size: 4;
+  white-space: pre;
+  overflow: auto;
+}
+
+.qm-blank {
+  font:
+    0.95em ui-monospace,
+    "Cascadia Code",
+    Consolas,
+    Menlo,
+    monospace;
+  color: var(--text);
+  background: var(--sunken);
+  border: 1px solid var(--line-strong);
+  border-bottom: 2px solid var(--accent);
+  border-radius: 4px;
+  field-sizing: content;
+  min-width: 10ch;
+  max-width: min(30ch, 100%);
+  padding: 0 0.3rem;
+  margin: 0 0.15rem;
+  text-align: center;
+}
+
+.qm-blank.is-ok,
+.qm-input.is-ok {
+  border-color: var(--ok);
+  border-bottom-width: 3px;
+}
+
+.qm-blank.is-bad,
+.qm-input.is-bad {
+  border-color: var(--bad);
+  border-bottom-width: 3px;
+}
+
+input:disabled,
+textarea:disabled {
+  opacity: 0.85;
+  cursor: not-allowed;
+}
+
+/* ---------- start screen ---------- */
+
+.qm-start {
+  max-width: 40rem;
+  margin: clamp(2rem, 12vh, 8rem) auto 3rem;
+}
+
+/* The one loud moment: size, weight and tight tracking, no ornament. */
+.qm-start h1 {
+  margin: 0 0 1.2rem;
+  font-size: clamp(2.4rem, 8vw, 3.75rem);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+  color: var(--text);
+}
+
+.qm-start .qm-prose {
+  color: var(--muted);
+}
+
+.qm-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(8.5rem, 1fr));
+  gap: 0.6rem;
+  margin: 1.8rem 0 2rem;
+  padding: 0;
+  list-style: none;
+}
+
+.qm-stats li {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  padding: 0.7rem 0.9rem;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  font-size: 0.85rem;
+  line-height: 1.3;
+  color: var(--muted);
+}
+
+.qm-stats strong {
+  font-size: 1.35rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--text);
+}
+
+.qm-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  align-items: center;
+}
+
+.qm-card > .qm-actions {
+  margin-top: 1rem;
+}
+
+.qm-saved {
+  margin: 0 0 1rem;
+  padding: 0.6rem 0.9rem;
+  border-left: 4px solid var(--info);
+  background: color-mix(in srgb, var(--info) 12%, var(--card));
+  border-radius: 6px;
+}
+
+/* ---------- header and navigator ---------- */
+
+.qm-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  margin: 0 -16px;
+  padding: 0.5rem 16px;
+  /* the bar and its bottom line run the full window width; the contents stay in the
+     column. border-image outset paints outside the box without adding horizontal
+     scroll or clipping the Aa menu, which hangs below the bar */
+  border-image: linear-gradient(var(--card) calc(100% - 1px), var(--line) 0) fill 0 / 0 / 0 100vmax;
+}
+
+.qm-header-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem 0.9rem;
+}
+
+/* the tool's name and version, in the empty bar left of the column; only shown
+   when that strip is wide enough (the column is 72rem) */
+.qm-brand {
+  display: none;
+}
+
+@media (min-width: 1440px) {
+  .qm-brand {
+    display: flex;
+    align-items: center;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: calc(100% + 1rem);
+    color: var(--muted);
+    font-size: 0.85rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+}
+
+.qm-header-title {
+  flex: 1 1 12rem;
+  min-width: 0;
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--accent);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.qm-timer,
+.qm-clock,
+.qm-progress {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  background: var(--sunken);
+  border: 1px solid transparent;
+}
+
+.qm-timer.warn5 {
+  background: color-mix(in srgb, var(--warn) 28%, var(--card));
+  border-color: var(--warn);
+}
+
+.qm-timer.warn1,
+.qm-timer.over {
+  background: color-mix(in srgb, var(--bad) 24%, var(--card));
+  border-color: var(--bad);
+}
+
+/* "Aa" display menu: a plain button and a positioned panel, shared by the start screen and header. */
+.qm-aa {
+  position: relative;
+  display: inline-block;
+}
+
+.qm-aa-pop {
+  position: absolute;
+  top: calc(100% + 0.4rem);
+  left: 0;
+  z-index: 30;
+  display: grid;
+  gap: 0.6rem;
+  min-width: 12rem;
+  padding: 0.7rem 0.8rem;
+  background: var(--card);
+  border: 1px solid var(--line-strong);
+  border-radius: 10px;
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--text) 16%, transparent);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.qm-aa-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.qm-aa-btns {
+  display: inline-flex;
+  gap: 0.3rem;
+}
+
+.qm-aa > button[aria-expanded="true"] {
+  background: var(--sunken);
+}
+
+.qm-header-actions {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.qm-nav {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin-top: 0.5rem;
+}
+
+/* one scrolling row of question pills, so the sticky header stays short */
+.qm-nav-scroll {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  padding: 6px 6px 4px 6px; /* room for the flag dot and the state symbol, which sit outside the pill */
+}
+
+.qm-nav-scroll .qm-pill {
+  flex: 0 0 auto;
+}
+
+.qm-pill[aria-current="true"] {
+  box-shadow: 0 0 0 2px var(--accent);
+  text-decoration: underline;
+}
+
+.qm-pill {
+  position: relative;
+  min-width: 2rem;
+  height: 2rem;
+  padding: 0 0.35rem;
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.qm-pill.answered {
+  background: color-mix(in srgb, var(--accent) 18%, var(--card));
+  border-color: var(--accent);
+}
+
+.qm-pill.flagged::after {
+  content: "";
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--flag);
+  border: 2px solid var(--card);
+}
+
+/* After feedback the pill shows the result: a tint, a border and a corner symbol
+   (set from data-sym), so colour is never the only signal. */
+.qm-pill.st-correct,
+.qm-sw.st-correct {
+  border-color: var(--ok);
+  background: color-mix(in srgb, var(--ok) 22%, var(--card));
+}
+
+.qm-pill.st-incorrect,
+.qm-sw.st-incorrect {
+  border-color: var(--bad);
+  background: color-mix(in srgb, var(--bad) 22%, var(--card));
+}
+
+.qm-pill.st-partial,
+.qm-sw.st-partial {
+  border-color: var(--warn);
+  background: color-mix(in srgb, var(--warn) 22%, var(--card));
+}
+
+.qm-pill.st-pending,
+.qm-sw.st-pending {
+  border-color: var(--info);
+  background: color-mix(in srgb, var(--info) 22%, var(--card));
+}
+
+.qm-pill.st-unanswered {
+  border-color: var(--line-strong);
+  background: transparent;
+}
+
+.qm-pill[data-sym]::before,
+.qm-sw[data-sym]::before {
+  content: attr(data-sym);
+  position: absolute;
+  top: -6px;
+  left: -5px;
+  min-width: 14px;
+  height: 14px;
+  padding: 0 1px;
+  box-sizing: border-box;
+  font-size: 0.65rem;
+  line-height: 12px;
+  text-align: center;
+  border-radius: 7px;
+  color: var(--text);
+  background: var(--card);
+  border: 1px solid var(--line-strong);
+}
+
+/* ---------- progress panel (wide screens) ---------- */
+
+.qm-layout {
+  display: block;
+}
+
+.qm-panel {
+  display: none;
+}
+
+.qm-clock {
+  display: none;
+}
+
+body.qm-focus .qm-clock {
+  display: block;
+}
+
+/* Focus mode keeps the title, Submit and the panel; the rest waits outside it. */
+body.qm-focus .qm-aa,
+body.qm-focus #export-btn {
+  display: none;
+}
+
+.qm-bar {
+  height: 0.5rem;
+  border-radius: 4px;
+  background: var(--sunken);
+  overflow: hidden;
+}
+
+.qm-bar-fill {
+  height: 100%;
+  width: 0;
+  background: var(--accent);
+}
+
+.qm-legend-box {
+  margin-top: 0.9rem;
+  padding-top: 0.6rem;
+  border-top: 1px solid var(--line);
+  font-size: 0.8rem;
+}
+
+.qm-legend-box > summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.qm-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin: 0.7rem 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.8rem;
+}
+
+.qm-legend li {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.qm-sw {
+  position: relative;
+  flex: 0 0 auto;
+  width: 1.1rem;
+  height: 1.1rem;
+  box-sizing: border-box;
+  border: 1px solid var(--line-strong);
+  border-radius: 4px;
+  background: transparent;
+}
+
+.qm-sw.answered {
+  background: color-mix(in srgb, var(--accent) 18%, var(--card));
+  border-color: var(--accent);
+}
+
+.qm-sw.flagged::after {
+  content: "";
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--flag);
+  border: 1px solid var(--card);
+}
+
+/* keep this breakpoint equal to wideMq in quiz.js */
+@media (min-width: 1000px) {
+  .qm-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 16rem;
+    gap: 1.5rem;
+    align-items: start;
+  }
+
+  .qm-main {
+    min-width: 0;
+  }
+
+  .qm-panel {
+    display: block;
+    position: sticky;
+    top: calc(var(--qm-header-h, 3.5rem) + 0.75rem);
+    max-height: calc(100vh - var(--qm-header-h, 3.5rem) - 1.5rem);
+    overflow-y: auto;
+    margin-top: 0.75rem;
+    padding: 0.9rem 0.8rem;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+  }
+
+  .qm-panel > .qm-timer,
+  .qm-panel > .qm-clock {
+    margin-bottom: 0.6rem;
+    text-align: center;
+  }
+
+  .qm-panel-score {
+    margin: 0 0 0.6rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .qm-panel-progress {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 0.3rem 0.5rem;
+    margin-bottom: 0.9rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .qm-panel .qm-progress {
+    padding: 0;
+    background: none;
+  }
+
+  .qm-panel .qm-bar {
+    grid-column: 1 / -1;
+  }
+
+  .qm-panel .qm-nav {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 0.5rem 0.4rem;
+    margin: 0;
+    padding: 6px 4px 4px 6px;
+    overflow: visible;
+  }
+
+  /* more than 40 questions: about 8.5 rows show, the half row hints that it scrolls */
+  .qm-panel .qm-nav.qm-nav-long {
+    max-height: calc(8.5 * 2rem + 8 * 0.5rem + 10px);
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .qm-panel .qm-pill {
+    width: 100%;
+    min-width: 0;
+    padding: 0;
+  }
+}
+
+/* ---------- sections and cards ---------- */
+
+.qm-section-title {
+  margin: 2.2rem 0 0.4rem;
+  font-size: 1.35rem;
+  color: var(--accent);
+}
+
+.qm-section-time {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.qm-intro {
+  margin: 0 0 1rem;
+  color: var(--text);
+}
+
+.qm-card {
+  margin: 1rem 0;
+  padding: 1rem 1.1rem 1.1rem;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  scroll-margin-top: calc(var(--qm-header-h, 6rem) + 0.5rem);
+}
+
+.qm-card.locked {
+  border-color: var(--st, var(--line-strong));
+}
+
+.qm-card-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem 0.7rem;
+  margin-bottom: 0.6rem;
+  color: var(--muted);
+  font-size: 1rem;
+}
+
+.qm-num {
+  font-weight: 800;
+  color: var(--on-accent);
+  background: var(--accent);
+  border-radius: 6px;
+  padding: 0.05rem 0.5rem;
+}
+
+.qm-tag {
+  padding: 0 0.5rem;
+  border-radius: 999px;
+  background: var(--sunken);
+  color: var(--text);
+  font-size: 0.8rem;
+}
+
+.qm-flag {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+}
+
+.qm-title {
+  font-size: 1.25rem;
+  font-weight: 650;
+  margin-bottom: 0.4rem;
+}
+
+.qm-body > :first-child {
+  margin-top: 0;
+}
+
+.qm-body img,
+.qm-img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  background: var(--sunken);
+}
+
+.qm-body table {
+  border-collapse: collapse;
+  max-width: 100%;
+  display: block;
+  overflow-x: auto;
+}
+
+.qm-body th,
+.qm-body td {
+  border: 1px solid var(--line-strong);
+  padding: 0.3rem 0.6rem;
+}
+
+.qm-intro blockquote {
+  margin: 0.8rem 0;
+  padding: 0.1rem 1rem;
+  border-left: 4px solid var(--line-strong);
+  background: var(--sunken);
+}
+
+.qm-body blockquote {
+  margin: 0.8rem 0;
+  padding: 0.1rem 1rem;
+  border-left: 4px solid var(--line-strong);
+  color: var(--muted);
+}
+
+code {
+  font-family: ui-monospace, "Cascadia Code", Consolas, Menlo, monospace;
+  font-size: 0.9em;
+  background: var(--sunken);
+  border-radius: 4px;
+  padding: 0.05em 0.3em;
+}
+
+pre.qm-code {
+  margin: 0.7rem 0;
+  padding: 0.8rem 1rem;
+  overflow-x: auto;
+  max-width: 100%;
+  background: var(--sunken);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  line-height: 1.45;
+}
+
+pre.qm-code code {
+  background: none;
+  padding: 0;
+  font-size: 0.9rem;
+  white-space: pre;
+  overflow-wrap: normal;
+}
+
+/* Start width: one bucket per question, set by its longest answer (never per blank). */
+.qm-blank-s {
+  min-width: 6ch;
+}
+
+.qm-blank-m {
+  min-width: 10ch;
+}
+
+.qm-blank-l {
+  min-width: 16ch;
+}
+
+.qm-blank-xl {
+  min-width: 24ch;
+}
+
+.qm-audio {
+  display: block;
+  margin: 0.6rem 0;
+}
+
+.qm-audio audio {
+  width: 100%;
+  max-width: 26rem;
+}
+
+.qm-caption {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.qm-math.qm-display {
+  overflow-x: auto;
+  overflow-y: hidden;
+  max-width: 100%;
+}
+
+.qm-hint {
+  margin: 0.7rem 0;
+}
+
+.qm-hint-body {
+  margin-top: 0.4rem;
+  padding: 0.5rem 0.9rem;
+  border-left: 4px solid var(--hint);
+  background: color-mix(in srgb, var(--hint) 12%, var(--card));
+  border-radius: 6px;
+}
+
+.qm-hint-body > :first-child {
+  margin-top: 0;
+}
+
+.qm-hint-body > :last-child {
+  margin-bottom: 0;
+}
+
+.qm-answer {
+  margin-top: 0.9rem;
+}
+
+/* ---------- answer controls ---------- */
+
+.qm-choice {
+  display: flex;
+  gap: 0.7rem;
+  align-items: flex-start;
+  margin: 0.4rem 0;
+  padding: 0.6rem 0.8rem;
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.qm-choice:hover {
+  border-color: var(--accent);
+}
+
+/* The inset ring thickens the border without moving the layout. */
+.qm-choice.sel {
+  border-color: var(--accent);
+  box-shadow: inset 0 0 0 1px var(--accent);
+  background: color-mix(in srgb, var(--accent) 18%, var(--card));
+}
+
+/* Custom radio and checkbox: sized in em so they follow the A-/A+ text size, and
+   centred on the first line of the answer. The dot and tick keep the selected state
+   readable without color. */
+.qm-choice input {
+  appearance: none;
+  -webkit-appearance: none;
+  display: inline-grid;
+  place-content: center;
+  flex: none;
+  box-sizing: border-box;
+  font: inherit; /* form controls ignore the page text size unless told to follow it */
+  width: 1.3em;
+  height: 1.3em;
+  margin: 0.1em 0 0;
+  margin-top: calc((1lh - 1.3em) / 2); /* centre on the first line of the answer */
+  background: var(--card);
+  border: 2px solid var(--line-strong);
+  cursor: pointer;
+}
+
+.qm-choice input[type="radio"] {
+  border-radius: 50%;
+}
+
+.qm-choice input[type="checkbox"] {
+  border-radius: 0.3em;
+}
+
+.qm-choice:hover input {
+  border-color: var(--accent);
+}
+
+.qm-choice input:checked {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.qm-choice input[type="radio"]::before {
+  content: "";
+  width: 0.5em;
+  height: 0.5em;
+  border-radius: 50%;
+  background: var(--on-accent);
+  transform: scale(0);
+}
+
+.qm-choice input[type="radio"]:checked::before {
+  transform: scale(1);
+}
+
+.qm-choice input[type="checkbox"]::before {
+  content: "";
+  width: 0.32em;
+  height: 0.62em;
+  border: solid var(--on-accent);
+  border-width: 0 0.16em 0.16em 0;
+  transform: translateY(-0.06em) rotate(45deg) scale(0);
+}
+
+.qm-choice input[type="checkbox"]:checked::before {
+  transform: translateY(-0.06em) rotate(45deg) scale(1);
+}
+
+.qm-choice input:disabled {
+  cursor: default;
+}
+
+.qm-choice-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.qm-choice-body > :first-child {
+  margin-top: 0;
+}
+
+.qm-choice-body > :last-child {
+  margin-bottom: 0;
+}
+
+.qm-choice.ok {
+  border-color: var(--ok);
+  box-shadow: inset 0 0 0 1px var(--ok);
+  background: color-mix(in srgb, var(--ok) 16%, var(--card));
+}
+
+.qm-choice.bad {
+  border-color: var(--bad);
+  box-shadow: inset 0 0 0 1px var(--bad);
+  background: color-mix(in srgb, var(--bad) 14%, var(--card));
+}
+
+.qm-choice .qm-mark {
+  font-weight: 800;
+}
+
+/* Follow-up text under a choice ("Something else" -> "What is it?"). */
+.qm-followup {
+  display: block;
+  margin: -0.15rem 0 0.6rem 1.4rem;
+  padding: 0.2rem 0 0.2rem 0.9rem;
+  border-left: 3px solid var(--accent);
+}
+
+.qm-followup[hidden] {
+  display: none;
+}
+
+.qm-followup label {
+  display: block;
+  margin-bottom: 0.3rem;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.qm-followup .qm-input {
+  display: block;
+  width: min(100%, 30rem);
+  box-sizing: border-box;
+}
+
+.qm-tf {
+  display: flex;
+  gap: 0.6rem;
+}
+
+.qm-tf .qm-choice {
+  flex: 1;
+  justify-content: center;
+  margin: 0;
+  font-weight: 600;
+}
+
+.qm-field {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem 0.7rem;
+  margin: 0.5rem 0;
+}
+
+.qm-field > label {
+  flex: 1 1 14rem;
+}
+
+.qm-field > .qm-input {
+  flex: 1 1 10rem;
+  width: auto;
+}
+
+.qm-select {
+  flex: 1 1 10rem;
+  width: auto;
+}
+
+.qm-select.is-ok {
+  border-color: var(--ok);
+  border-bottom-width: 3px;
+}
+
+.qm-select.is-bad {
+  border-color: var(--bad);
+  border-bottom-width: 3px;
+}
+
+.qm-order {
+  margin: 0.4rem 0;
+  padding: 0;
+  list-style: none;
+}
+
+.qm-order-item {
+  display: flex;
+  gap: 0.7rem;
+  align-items: center;
+  margin: 0.4rem 0;
+  padding: 0.5rem 0.8rem;
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+
+.qm-order-grip {
+  flex: none;
+  color: var(--muted);
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  line-height: 1;
+}
+
+.qm-order-item.qm-dragging {
+  border-color: var(--accent);
+  box-shadow: 0 6px 18px color-mix(in srgb, var(--text) 25%, transparent);
+  cursor: grabbing;
+}
+
+.qm-order-item.qm-dragging .qm-order-grip,
+.qm-drag-active {
+  cursor: grabbing;
+}
+
+.qm-drag-active {
+  user-select: none;
+}
+
+.qm-order-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.qm-order-body > :first-child {
+  margin-top: 0;
+}
+
+.qm-order-body > :last-child {
+  margin-bottom: 0;
+}
+
+.qm-order-btns {
+  display: flex;
+  gap: 0.3rem;
+}
+
+.qm-order-item.ok {
+  border-color: var(--ok);
+  background: color-mix(in srgb, var(--ok) 16%, var(--card));
+}
+
+.qm-order-item.bad {
+  border-color: var(--bad);
+  background: color-mix(in srgb, var(--bad) 14%, var(--card));
+}
+
+.qm-order-item .qm-mark,
+.qm-match-row .qm-mark {
+  font-weight: 800;
+}
+
+.qm-unit {
+  color: var(--muted);
+  margin-left: 0.4rem;
+}
+
+.qm-numeric-hint {
+  margin: 0.3rem 0 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.qm-counter {
+  margin-top: 0.3rem;
+  font-size: 0.9rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--muted);
+}
+
+.qm-counter.low {
+  color: var(--text);
+  border-left: 4px solid var(--warn);
+  padding-left: 0.5rem;
+}
+
+.qm-counter.high {
+  color: var(--text);
+  border-left: 4px solid var(--bad);
+  padding-left: 0.5rem;
+}
+
+.qm-tabhint {
+  margin: 0.3rem 0 0;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+/* ---------- scale (ungraded rating row) ---------- */
+
+.qm-scale {
+  display: grid;
+  gap: 0.3rem 0.15rem;
+  margin: 0.4rem 0;
+}
+
+.qm-scale-opt {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+}
+
+/* The real radio covers the whole option, invisibly, so the group keeps native
+   arrow-key behaviour and every part of the option is clickable. */
+.qm-scale-opt input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: inherit;
+}
+
+.qm-scale-num {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 2.8em;
+  aspect-ratio: 1;
+  font-weight: 700;
+  color: var(--text);
+  background: transparent;
+  border: 2px solid var(--line-strong);
+  border-radius: 50%;
+}
+
+.qm-scale-opt:hover .qm-scale-num {
+  border-color: var(--accent);
+}
+
+.qm-scale-opt input:checked + .qm-scale-num {
+  color: var(--on-accent);
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.qm-scale-opt input:focus-visible + .qm-scale-num {
+  outline: 3px solid var(--text);
+  outline-offset: 2px;
+}
+
+.qm-scale-label {
+  font-size: 0.85rem;
+  line-height: 1.25;
+  text-align: center;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+
+.qm-scale-opt:has(input:disabled) {
+  cursor: default;
+}
+
+.qm-keep-order {
+  margin-top: 0.6rem;
+}
+
+/* ---------- ungraded answers ---------- */
+
+.st-ungraded {
+  --st: var(--accent);
+}
+
+.qm-pill.st-ungraded {
+  border-color: var(--accent);
+}
+
+.qm-badge-plain {
+  font-weight: 700;
+}
+
+.qm-answer-text,
+.qm-no-answer {
+  margin: 0.3rem 0 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.qm-answer-list {
+  margin: 0.3rem 0 0;
+  padding-left: 1.3rem;
+}
+
+.qm-why {
+  margin: 0 0 0.3rem;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.qm-survey-done {
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+/* ---------- feedback ---------- */
+
+.st-correct {
+  --st: var(--ok);
+}
+
+.st-partial {
+  --st: var(--warn);
+}
+
+.st-incorrect {
+  --st: var(--bad);
+}
+
+.st-pending {
+  --st: var(--info);
+}
+
+.st-unanswered {
+  --st: var(--muted);
+}
+
+.qm-feedback {
+  margin-top: 0.9rem;
+  padding: 0.7rem 1rem;
+  border-left: 5px solid var(--st);
+  background: color-mix(in srgb, var(--st) 13%, var(--card));
+  border-radius: 8px;
+}
+
+.qm-feedback p:first-child {
+  margin-top: 0;
+}
+
+.qm-badge {
+  font-weight: 700;
+}
+
+.qm-badge::before {
+  display: inline-block;
+  margin-right: 0.4rem;
+  font-weight: 800;
+}
+
+.st-correct .qm-badge::before {
+  content: "\2713";
+}
+
+.st-incorrect .qm-badge::before {
+  content: "\2717";
+}
+
+.st-partial .qm-badge::before {
+  content: "\25D0";
+}
+
+.st-pending .qm-badge::before {
+  content: "\23F3";
+}
+
+.st-unanswered .qm-badge::before {
+  content: "\2013";
+}
+
+.qm-correct-answer {
+  margin: 0.4rem 0;
+}
+
+.qm-correct-answer strong {
+  font-weight: 700;
+}
+
+.qm-explain {
+  margin-top: 0.5rem;
+}
+
+.qm-explain > :last-child {
+  margin-bottom: 0;
+}
+
+.qm-reveal {
+  margin-top: 0.6rem;
+}
+
+.qm-reveal h4 {
+  margin: 0 0 0.3rem;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+/* ---------- results ---------- */
+
+.qm-results {
+  margin: 1.2rem 0;
+  padding: 1.2rem 1.3rem;
+  background: var(--card);
+  border: 2px solid var(--accent);
+  border-radius: 14px;
+  scroll-margin-top: calc(var(--qm-header-h, 6rem) + 0.5rem);
+}
+
+.qm-filter .qm-btn[aria-pressed="true"] {
+  border-color: var(--accent);
+  font-weight: 700;
+}
+
+.qm-filter .qm-btn[aria-pressed="true"]::before {
+  content: "✓ ";
+}
+
+.qm-results h2 {
+  margin: 0 0 0.3rem;
+  color: var(--accent);
+}
+
+.qm-score {
+  font-size: 2.2rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.qm-verdict {
+  display: inline-block;
+  margin-left: 0.6rem;
+  padding: 0.1rem 0.7rem;
+  border-radius: 999px;
+  font-size: 1rem;
+  font-weight: 700;
+  border: 2px solid var(--st);
+}
+
+.qm-sent {
+  margin: 0.4rem 0;
+  font-weight: 700;
+  color: var(--text);
+  border-left: 5px solid var(--muted);
+  padding-left: 0.6rem;
+}
+
+.qm-sent-ok {
+  border-left-color: var(--ok);
+}
+
+.qm-sent-fail {
+  border-left-color: var(--bad);
+}
+
+.qm-timeup {
+  margin: 0.4rem 0;
+  font-weight: 700;
+  color: var(--text);
+  border-left: 5px solid var(--bad);
+  padding-left: 0.6rem;
+}
+
+.qm-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0.8rem 0;
+  font-size: 0.95rem;
+}
+
+.qm-table th,
+.qm-table td {
+  padding: 0.35rem 0.5rem;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+}
+
+.qm-table th {
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.qm-table td.num,
+.qm-table th.num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.qm-bar {
+  display: block;
+  height: 0.5rem;
+  min-width: 4rem;
+  border-radius: 999px;
+  background: var(--sunken);
+  overflow: hidden;
+}
+
+.qm-bar > span {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+}
+
+.qm-results h3 {
+  margin: 1.2rem 0 0.2rem;
+  font-size: 1.05rem;
+  color: var(--accent);
+}
+
+/* ---------- dialog ---------- */
+
+dialog.qm-dialog {
+  max-width: min(36rem, calc(100vw - 32px));
+  width: 100%;
+  padding: 1.2rem;
+  color: var(--text);
+  background: var(--card);
+  border: 1px solid var(--line-strong);
+  border-radius: 14px;
+}
+
+dialog.qm-dialog::backdrop {
+  background: color-mix(in srgb, var(--sunken) 70%, transparent);
+}
+
+dialog.qm-dialog textarea {
+  width: 100%;
+  min-height: 12rem;
+  font:
+    0.85rem ui-monospace,
+    Consolas,
+    monospace;
+  color: var(--text);
+  background: var(--sunken);
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+}
+
+dialog.qm-dialog .qm-actions {
+  justify-content: flex-end;
+  margin-top: 1rem;
+}
+
+/* ---------- small screens and print ---------- */
+
+@media (max-width: 600px) {
+  /* one scrolling row of question pills, so the sticky header stays short */
+  .qm-nav {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding: 6px 6px 4px 6px; /* room for the flag dot and the state symbol, which sit outside the pill */
+  }
+
+  .qm-pill {
+    flex: 0 0 auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .qm-card {
+    padding: 0.8rem;
+  }
+
+  .qm-tf {
+    flex-direction: column;
+  }
+
+  .qm-header-title {
+    flex-basis: 100%;
+  }
+}
+
+.qm-key-only {
+  display: none;
+}
+
+@media print {
+  body.qm-print-key .qm-key-only {
+    display: block;
+  }
+
+  body {
+    background: none;
+    color: var(--text);
+  }
+
+  .qm-header,
+  .qm-panel,
+  .qm-actions,
+  .qm-hint,
+  .qm-flag,
+  .qm-start,
+  .qm-no-print,
+  .qm-order-grip {
+    display: none !important;
+  }
+
+  .qm-card {
+    break-inside: avoid;
+  }
+
+  .qm-results {
+    break-after: page;
+  }
+}

@@ -1,0 +1,282 @@
+{
+  "fm-missing-title": {
+    "line": 1,
+    "message": "missing required key 'title'"
+  },
+  "fm-unknown-key": {
+    "line": 3,
+    "message": "unknown key 'time_limt'"
+  },
+  "fm-bad-time-limit": {
+    "line": 3,
+    "message": "bad duration"
+  },
+  "fm-bad-enum": {
+    "line": 3,
+    "message": "feedback"
+  },
+  "fm-no-front-matter": {
+    "line": 1,
+    "message": "missing YAML front matter"
+  },
+  "heading-h3": {
+    "line": 5,
+    "message": "use ## for questions"
+  },
+  "duplicate-id": {
+    "line": 10,
+    "message": "duplicate question id"
+  },
+  "ordering-one-item": {
+    "line": 5,
+    "message": "at least two items"
+  },
+  "ordering-no-list": {
+    "line": 5,
+    "message": "at least two items"
+  },
+  "ordering-duplicate-item": {
+    "line": 9,
+    "message": "duplicate ordering item"
+  },
+  "ordering-answer-block": {
+    "line": 10,
+    "message": "take no ```answer block"
+  },
+  "matching-missing-separator": {
+    "line": 8,
+    "message": "needs '::'"
+  },
+  "matching-empty-right": {
+    "line": 7,
+    "message": "nothing after '::'"
+  },
+  "matching-duplicate-right": {
+    "line": 8,
+    "message": "duplicate right-hand item"
+  },
+  "matching-one-pair": {
+    "line": 5,
+    "message": "at least two 'left :: right' pairs"
+  },
+  "single-two-checked-explicit": {
+    "line": 5,
+    "message": "exactly one choice"
+  },
+  "single-one-item": {
+    "line": 5,
+    "message": "at least two choices"
+  },
+  "single-none-checked": {
+    "line": 5,
+    "message": "no correct choice"
+  },
+  "multi-none-checked": {
+    "line": 5,
+    "message": "at least one choice"
+  },
+  "multi-one-item": {
+    "line": 5,
+    "message": "at least two choices"
+  },
+  "answer-missing": {
+    "line": 5,
+    "message": "missing ```answer block"
+  },
+  "answer-on-choice": {
+    "line": 10,
+    "message": "take no ```answer block"
+  },
+  "answer-yaml-error": {
+    "line": 9,
+    "message": "not valid YAML"
+  },
+  "numeric-not-number": {
+    "line": 8,
+    "message": "'value' must be a number, got 'one'"
+  },
+  "numeric-negative-tolerance": {
+    "line": 7,
+    "message": "must not be negative"
+  },
+  "numeric-both-tolerances": {
+    "line": 7,
+    "message": "not both"
+  },
+  "short-empty-accept": {
+    "line": 7,
+    "message": "at least one 'accept'"
+  },
+  "short-bad-regex": {
+    "line": 8,
+    "message": "invalid regex"
+  },
+  "short-lookbehind": {
+    "line": 8,
+    "message": "lookbehind"
+  },
+  "short-named-group": {
+    "line": 8,
+    "message": "named groups"
+  },
+  "fields-bad-regex": {
+    "line": 10,
+    "message": "invalid regex"
+  },
+  "fields-empty": {
+    "line": 8,
+    "message": "at least one entry"
+  },
+  "blanks-none": {
+    "line": 5,
+    "message": "at least one [[answer]]"
+  },
+  "blanks-in-wrong-type": {
+    "line": 7,
+    "message": "only work in type=blanks"
+  },
+  "blanks-in-math": {
+    "line": 7,
+    "message": "inside math"
+  },
+  "blanks-with-answer-block": {
+    "line": 9,
+    "message": "take no ```answer block"
+  },
+  "media-missing": {
+    "line": 7,
+    "message": "file not found"
+  },
+  "media-bad-ext": {
+    "line": 7,
+    "message": "unsupported media type"
+  },
+  "media-video": {
+    "line": 7,
+    "message": "video is not supported"
+  },
+  "media-remote": {
+    "line": 7,
+    "message": "remote or absolute URL"
+  },
+  "unknown-type": {
+    "line": 5,
+    "message": "unknown type"
+  },
+  "unknown-attribute": {
+    "line": 5,
+    "message": "unknown attribute 'pts'"
+  },
+  "no-type-no-choices": {
+    "line": 5,
+    "message": "cannot infer the question type"
+  },
+  "no-questions": {
+    "line": 1,
+    "message": "no questions"
+  },
+  "truefalse-not-bool": {
+    "line": 8,
+    "message": "true or false"
+  },
+  "fm-bad-mode": {
+    "line": 3,
+    "message": "mode"
+  },
+  "survey-correct-choice": {
+    "line": 8,
+    "message": "survey questions have no correct choice; remove the [x]"
+  },
+  "survey-pass-mark": {
+    "line": 4,
+    "message": "pass_mark is not allowed in survey mode"
+  },
+  "survey-pick": {
+    "line": 4,
+    "message": "pick is not allowed in survey mode"
+  },
+  "survey-section-pick": {
+    "line": 6,
+    "message": "pick is not allowed in survey mode"
+  },
+  "survey-instant-feedback": {
+    "line": 4,
+    "message": "feedback: instant is not allowed in survey mode"
+  },
+  "survey-multi-scoring": {
+    "line": 4,
+    "message": "multi_scoring is not allowed in survey mode"
+  },
+  "survey-graded-attr": {
+    "line": 6,
+    "message": "survey mode makes every question ungraded"
+  },
+  "survey-truefalse": {
+    "line": 6,
+    "message": "survey mode is not supported for truefalse"
+  },
+  "ungraded-numeric": {
+    "line": 5,
+    "message": "`graded=false` is not supported for numeric; use single, short or fields"
+  },
+  "ungraded-correct-choice": {
+    "line": 7,
+    "message": "ungraded questions have no correct choice; remove the [x]"
+  },
+  "ungraded-short-answer-block": {
+    "line": 7,
+    "message": "an ungraded short question takes no ```answer block"
+  },
+  "ungraded-fields-with-value": {
+    "line": 7,
+    "message": "an ungraded fields question takes no value/accept/patterns"
+  },
+  "ungraded-essay-rubric": {
+    "line": 8,
+    "message": "an ungraded essay takes no rubric"
+  },
+  "graded-not-bool": {
+    "line": 5,
+    "message": "graded must be true or false"
+  },
+  "scale-range-too-wide": {
+    "line": 7,
+    "message": "max - min must be between 1 and 10"
+  },
+  "scale-label-outside": {
+    "line": 8,
+    "message": "scale label 9 is outside the range 1 to 5"
+  },
+  "scale-graded-true": {
+    "line": 5,
+    "message": "scale questions are always ungraded"
+  },
+  "code-no-language": {
+    "line": 7,
+    "message": "missing required key 'language'"
+  },
+  "input-on-ordering": {
+    "line": 8,
+    "message": "{input} only works on the choices"
+  },
+  "input-on-truefalse-choice-list": {
+    "line": 7,
+    "message": "{input} only works on single/multi"
+  },
+  "input-on-heading": {
+    "line": 5,
+    "message": "not on the question heading"
+  },
+  "input-empty-prompt": {
+    "line": 8,
+    "message": "empty prompt"
+  },
+  "input-unquoted-prompt": {
+    "line": 8,
+    "message": "write {input} or {input=\"Prompt text\"}"
+  },
+  "input-unclosed-quote": {
+    "line": 8,
+    "message": "cannot parse"
+  }
+}
