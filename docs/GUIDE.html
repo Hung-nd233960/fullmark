@@ -866,7 +866,12 @@ or the first 3 or more characters of the id. A name already taken exits
 1 and suggests a free one.</li>
 <li>The same file path again, without <code>--update</code>, exits 1 and
 names the quiz it was registered as.</li>
-<li><strong><code>--update NAME</code></strong> adds a version of an
+<li><strong><code>--update NAME</code></strong> warns (stderr, and
+<code>warnings</code> in <code>--json</code>) when
+<code>quiz library take</code> saved an unfinished attempt on the
+version it replaces: that progress is ignored by the new version, and a
+page still open for the old one can no longer save, so close it and run
+<code>quiz library take NAME</code> again. It adds a version of an
 existing quiz: <code>unchanged</code> when nothing changed,
 <code>replaced</code> when nobody has taken the current version yet (so
 fixing a quiz does not pile up versions), <code>new-version</code> when

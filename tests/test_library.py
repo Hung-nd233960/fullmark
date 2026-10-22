@@ -1869,3 +1869,27 @@ def test_rm_prompt_with_no_input_refuses(lib, capsys, monkeypatch):
     code, _, err = run(capsys, "rm", "gr")
     assert code == 2 and "pass --yes to confirm" in err
     assert (library / "quizzes" / entry["id"]).is_dir()
+
+
+def test_update_warns_about_an_attempt_in_progress(lib, capsys):
+    library = make_library(capsys, lib)
+    src = calc(lib)
+    _, first, _ = reg_json(capsys, str(src))
+    name = first["name"]
+    progress = library / "quizzes" / first["id"] / "progress.json"
+    progress.write_text(
+        json.dumps({"hash": first["hash"], "state": {"answers": {}}}), "utf-8"
+    )
+
+    src.write_text(src.read_text("utf-8").replace("Limits", "Limit"), "utf-8")
+    code, res, err = reg_json(capsys, str(src), "--update", name)
+    assert code == 0 and res["status"] == "replaced"
+    assert len(res["warnings"]) == 1
+    assert "attempt in progress" in res["warnings"][0]
+    assert f"quiz library take {name}" in res["warnings"][0]
+    assert "attempt in progress" in err
+
+    # The old progress belongs to the old hash: no second warning.
+    src.write_text(src.read_text("utf-8").replace("Limit", "Limits"), "utf-8")
+    code, res, err = reg_json(capsys, str(src), "--update", name)
+    assert res["warnings"] == [] and "in progress" not in err

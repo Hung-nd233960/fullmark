@@ -161,6 +161,22 @@ def _writable(path: Path) -> bool:
     return True
 
 
+def _progress_in_flight(library: Path, qid: str, hash_: str) -> bool:
+    """True when `quiz library take` saved an unsubmitted attempt for this version."""
+    try:
+        data = json.loads(
+            (quizzes.qdir(library, qid) / "progress.json").read_text(encoding="utf-8")
+        )
+    except (OSError, ValueError):
+        return False
+    state = data.get("state") if isinstance(data, dict) else None
+    return (
+        isinstance(state, dict)
+        and data.get("hash") == hash_
+        and not state.get("submitted")
+    )
+
+
 def _count_files(root: Path, pattern: str) -> int:
     return sum(1 for p in root.glob(pattern) if p.is_file())
 
@@ -602,6 +618,14 @@ def register(args: argparse.Namespace) -> int:
                 status = "unchanged"
             else:
                 attempts = quizzes.attempts_for(library, qid, current)
+                if hash_ != current and _progress_in_flight(library, qid, current):
+                    warnings.append(
+                        f"{name} has an attempt in progress on the old version "
+                        f"({current[:7]}); it is ignored by the new version "
+                        f"({hash_[:7]}), and a quiz page still open for the old one "
+                        f"can no longer save. Close it and start again with: "
+                        f"quiz library take {name}"
+                    )
                 if attempts == 0:
                     status = "replaced"
                 elif hash_ == current:
@@ -661,6 +685,9 @@ def register(args: argparse.Namespace) -> int:
         print(f"{status} {name} ({qid}), version {hash_[:7]}; take it with: {take}")
         for w in warnings:
             print(f"warning: {w}")
+    if args.json:
+        for w in warnings:
+            print(f"warning: {w}", file=sys.stderr)
     return 0
 
 

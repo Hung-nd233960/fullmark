@@ -308,7 +308,7 @@ quiz library init D:\quizzes
 
 - `-n NAME` sets the name (default: the title as a slug, cut to 24 characters at a word break). Commands take the name, the id, or the first 3 or more characters of the id. A name already taken exits 1 and suggests a free one.
 - The same file path again, without `--update`, exits 1 and names the quiz it was registered as.
-- **`--update NAME`** adds a version of an existing quiz: `unchanged` when nothing changed, `replaced` when nobody has taken the current version yet (so fixing a quiz does not pile up versions), `new-version` when an attempt exists, `updated-assets` when only an image or the brief changed.
+- **`--update NAME`** warns (stderr, and `warnings` in `--json`) when `quiz library take` saved an unfinished attempt on the version it replaces: that progress is ignored by the new version, and a page still open for the old one can no longer save, so close it and run `quiz library take NAME` again. It adds a version of an existing quiz: `unchanged` when nothing changed, `replaced` when nobody has taken the current version yet (so fixing a quiz does not pile up versions), `new-version` when an attempt exists, `updated-assets` when only an image or the brief changed.
 - Images and audio must sit **inside the quiz's folder** and be referenced relatively (`assets/x.png`): no drive letter, no leading slash, no `..` above the folder. `register` refuses anything else.
 - With no library on the machine `register` exits 3 and says to run `quiz library init PATH`: where the library goes is your decision.
 
