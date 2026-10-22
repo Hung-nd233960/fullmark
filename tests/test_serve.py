@@ -463,3 +463,26 @@ def test_serve_help_lists_autosave(capsys):
     with pytest.raises(SystemExit):
         main(["serve", "--help"])
     assert "--autosave" in capsys.readouterr().out
+
+
+def test_focus_is_injected_only_when_asked(tmp_path):
+    for focus in (False, True):
+        server = SubmitServer(
+            "<html><body></body></html>", "q", tmp_path / "r.json", focus=focus
+        )
+        server.start()
+        try:
+            url = f"http://127.0.0.1:{server.port}/?t={server.token}"
+            page = urllib.request.urlopen(url, timeout=5).read().decode()
+        finally:
+            server.stop()
+        assert injected(page)["focus"] is focus
+
+
+def test_serve_and_take_accept_focus():
+    from fullmark.cli import build_parser
+
+    parser = build_parser()
+    assert parser.parse_args(["serve", "q.md", "--focus"]).focus is True
+    assert parser.parse_args(["library", "take", "x", "--focus"]).focus is True
+    assert parser.parse_args(["serve", "q.md"]).focus is False

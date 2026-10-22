@@ -846,6 +846,7 @@ def take(args: argparse.Namespace, should_stop=lambda: False, ready=None) -> int
         timeout=args.timeout,
         port=args.port,
         autosave=str(progress),
+        focus=getattr(args, "focus", False),
     )
     try:
         out.parent.mkdir(parents=True, exist_ok=True)

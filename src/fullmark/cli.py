@@ -836,6 +836,11 @@ def build_parser() -> argparse.ArgumentParser:
     )
     s.add_argument("--open", action="store_true", help="open the page in the browser")
     s.add_argument(
+        "--focus",
+        action="store_true",
+        help="turn on Focus mode (fullscreen with a clock) on the start screen",
+    )
+    s.add_argument(
         "--autosave",
         metavar="PROGRESS.json",
         help="keep the attempt in progress in PATH so it can be resumed after the server or "
@@ -1032,6 +1037,11 @@ def build_parser() -> argparse.ArgumentParser:
     )
     lt.add_argument("name", help="the quiz name or id")
     lt.add_argument("--no-open", action="store_true", help="do not open the browser")
+    lt.add_argument(
+        "--focus",
+        action="store_true",
+        help="turn on Focus mode (fullscreen with a clock) on the start screen",
+    )
     lt.add_argument(
         "--timeout",
         type=float,

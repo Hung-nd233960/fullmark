@@ -484,6 +484,9 @@ port. <code>--autosave PROGRESS.json</code> keeps the attempt in
 progress (see below). <code>--json</code> prints
 <code>{&quot;status&quot;: &quot;submitted&quot; | &quot;timeout&quot;, &quot;path&quot;: ...}</code> on
 exit.</li>
+<li><code>--focus</code> turns on the start screen’s Focus mode switch,
+so Start goes fullscreen with a clock. It works for
+<code>quiz library take</code> too.</li>
 <li><code>--autosave PROGRESS.json</code> keeps the attempt in progress
 in that file, so it resumes after the server, the terminal or the
 browser closes, even in a new browser or on a new port (a served page is
@@ -637,9 +640,17 @@ code is 1 if there is any finding, and <code>quiz build --strict</code>
 writes nothing.</p>
 <h2 id="taking-a-quiz">5. Taking a quiz</h2>
 <ol type="1">
-<li><strong>Start screen</strong>: shows the number of questions, points
-and the time limit. If you have an attempt in progress on this device
-you can <strong>Resume</strong> it or <strong>Start over</strong>.</li>
+<li><strong>Start screen</strong>: a cover sheet with the number of
+questions, the points, the time allowed and the feedback mode, then the
+sections with their suggested times and the total. It says when the
+attempt would end if you start now: with a time limit, when the time
+runs out; without one, when you would finish at the suggested pace. Turn
+on <strong>Focus mode</strong> there to go fullscreen with a clock when
+you press Start (the browser only allows fullscreen from a click; the
+page remembers the choice). If you have an attempt in progress on this
+device you can <strong>Resume</strong> it or <strong>Start
+over</strong>; with a time limit it shows when that attempt’s time runs
+out.</li>
 <li><strong>Questions</strong>: all on one page, grouped by section. The
 numbered pills show what you answered and what you flagged: in a panel
 on the right of a wide screen (with the timer, “Answered 7/20”, a
@@ -854,8 +865,8 @@ offers <strong>Resume</strong>. If the original source still exists and
 has changed since you registered it, <code>take</code> warns and serves
 the registered version; run <code>register --update</code> to adopt the
 change. <code>--no-open</code> prints the address instead of opening the
-browser, <code>--timeout SECONDS</code> stops waiting (default: no
-limit).</p>
+browser, <code>--focus</code> turns on Focus mode on the start screen,
+<code>--timeout SECONDS</code> stops waiting (default: no limit).</p>
 <h3 id="see-what-you-have-list-and-status">See what you have:
 <code>list</code> and <code>status</code></h3>
 <ul>
@@ -975,7 +986,7 @@ the browser automatically (only the served copy gets the reload code;
 the file you hand out is unchanged)</td>
 </tr>
 <tr>
-<td><code>quiz serve FILE [--out RESULTS] [--once] [--timeout SECONDS] [--open] [--port N] [--autosave PROGRESS] [--json]</code></td>
+<td><code>quiz serve FILE [--out RESULTS] [--once] [--timeout SECONDS] [--open] [--focus] [--port N] [--autosave PROGRESS] [--json]</code></td>
 <td>Serve the quiz page on 127.0.0.1 and wait for the answers:
 <strong>Finish</strong> or <strong>Submit</strong> sends the results to
 the server, which checks them and writes the JSON file, then exits.

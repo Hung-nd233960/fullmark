@@ -192,18 +192,19 @@ textarea:disabled {
 
 /* ---------- start screen ---------- */
 
+/* A cover sheet: title, the facts and the sections set with dotted leaders like a
+   printed exam paper, then Focus mode and Start. The leaders are the one ornament. */
 .qm-start {
   max-width: 40rem;
-  margin: clamp(2rem, 12vh, 8rem) auto 3rem;
+  margin: clamp(2rem, 10vh, 6rem) auto 3rem;
 }
 
-/* The one loud moment: size, weight and tight tracking, no ornament. */
 .qm-start h1 {
-  margin: 0 0 1.2rem;
-  font-size: clamp(2.4rem, 8vw, 3.75rem);
+  margin: 0 0 1rem;
+  font-size: clamp(2.1rem, 6.5vw, 3.1rem);
   font-weight: 700;
-  line-height: 1.05;
-  letter-spacing: -0.03em;
+  line-height: 1.08;
+  letter-spacing: -0.025em;
   text-wrap: balance;
   color: var(--text);
 }
@@ -212,33 +213,192 @@ textarea:disabled {
   color: var(--muted);
 }
 
-.qm-stats {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(8.5rem, 1fr));
+/* A row: label, a dotted leader that fills the gap, the value. */
+.qm-facts {
+  margin: 2rem 0 0;
+  padding: 0.55rem 0;
+  border-block: 2px solid var(--line-strong);
+}
+
+.qm-facts > div,
+.qm-contents li,
+.qm-contents-total {
+  display: flex;
+  align-items: baseline;
   gap: 0.6rem;
-  margin: 1.8rem 0 2rem;
+  padding: 0.3rem 0;
+}
+
+.qm-facts dt {
+  display: flex;
+  flex: 1;
+  align-items: baseline;
+  gap: 0.6rem;
+  color: var(--muted);
+}
+
+.qm-facts dt::after,
+.qm-leader {
+  content: "";
+  flex: 1;
+  min-width: 1.5rem;
+  border-bottom: 2px dotted var(--line-strong);
+  transform: translateY(-0.3em);
+}
+
+.qm-facts dd {
+  margin: 0;
+  font-weight: 650;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.qm-contents {
+  margin: 2rem 0 0;
+}
+
+.qm-contents h2 {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin: 0 0 0.3rem;
+  font-size: 1rem;
+  font-weight: 650;
+  color: var(--text);
+}
+
+.qm-contents-note {
+  font-size: 0.85rem;
+  font-weight: 400;
+  color: var(--muted);
+}
+
+.qm-contents ol {
+  margin: 0;
   padding: 0;
   list-style: none;
 }
 
-.qm-stats li {
-  display: flex;
-  flex-direction: column;
-  gap: 0.1rem;
-  padding: 0.7rem 0.9rem;
+.qm-sec-num {
+  min-width: 1.6em;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.qm-sec-title {
+  flex: 0 1 auto;
+}
+
+.qm-sec-side {
+  flex: none;
+  text-align: right;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.qm-contents-total {
+  margin: 0.2rem 0 0;
+  border-top: 1px solid var(--line);
+  padding-top: 0.5rem;
+  font-weight: 650;
+}
+
+.qm-contents-total .qm-sec-side {
+  color: var(--text);
+}
+
+/* Focus mode and the end time: the last thing read before Start. */
+.qm-ready {
+  margin: 2rem 0 1.25rem;
+  padding: 1rem 1.1rem;
   background: var(--card);
   border: 1px solid var(--line);
-  border-radius: 10px;
-  font-size: 0.85rem;
-  line-height: 1.3;
+  border-radius: 12px;
+}
+
+.qm-focus-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem 1rem;
+}
+
+.qm-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.qm-switch input {
+  appearance: none;
+  position: relative;
+  flex: none;
+  width: 2.75rem;
+  height: 1.6rem;
+  margin: 0;
+  border: 2px solid var(--line-strong);
+  border-radius: 999px;
+  background: var(--sunken);
+  cursor: pointer;
+}
+
+.qm-switch input::before {
+  content: "";
+  position: absolute;
+  top: 0.15rem;
+  left: 0.15rem;
+  width: 1.1rem;
+  height: 1.1rem;
+  border-radius: 50%;
+  background: var(--line-strong);
+}
+
+.qm-switch input:checked {
+  border-color: var(--accent);
+  background: var(--accent);
+}
+
+.qm-switch input:checked::before {
+  background: var(--on-accent);
+  transform: translateX(1.15rem);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .qm-switch input::before {
+    transition: transform 0.15s ease;
+  }
+}
+
+.qm-focus-note {
+  font-size: 0.9rem;
   color: var(--muted);
 }
 
-.qm-stats strong {
-  font-size: 1.35rem;
-  font-weight: 700;
+.qm-eta {
+  margin: 0;
   font-variant-numeric: tabular-nums;
-  color: var(--text);
+}
+
+.qm-focus-row + .qm-eta {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--line);
+}
+
+.qm-eta strong {
+  font-size: 1.15em;
+}
+
+.qm-start > .qm-saved {
+  margin-top: 2rem;
+}
+
+.qm-start > .qm-saved + .qm-actions,
+.qm-start > .qm-contents + .qm-actions,
+.qm-start > .qm-facts + .qm-actions {
+  margin-top: 2rem;
 }
 
 .qm-actions {

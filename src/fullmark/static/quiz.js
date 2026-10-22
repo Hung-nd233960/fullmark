@@ -726,98 +726,214 @@
     // =================================================================
     // Start screen
     // =================================================================
+    // The start screen is a cover sheet: the facts and the sections set with dotted
+    // leaders like a printed paper, then Focus mode and when the attempt would end.
+    let etaHandle = null;
+    const atClock = (ms) => new Date(ms).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+
+    function coverFacts() {
+      const n = nominal();
+      const rows = [
+        ["Questions", n.count + (bank ? " (random draw from " + QALL.length + ")" : "")],
+        !SURVEY && n.points > 0 ? ["Points", (n.approx ? "about " : "") + pts(n.points)] : null,
+        ["Time allowed", limit ? fmtSpan(limit) : "No limit"],
+        SURVEY
+          ? ["Answers", "Not scored"]
+          : ["Feedback", DATA.feedback === "instant" ? "As you check each answer" : "After you submit"],
+      ].filter(Boolean);
+      return h(
+        "dl",
+        { class: "qm-facts" },
+        rows.map(([label, value]) => h("div", null, h("dt", { text: label }), h("dd", { text: value }))),
+      );
+    }
+
+    // Titled sections with the suggested time of each, or their question count when no
+    // section suggests a time. Returns the list and the total suggested seconds (0 when
+    // any section has no time, since a partial sum would promise too little).
+    function coverSections() {
+      const secs = DATA.sections
+        .map((sec, si) => ({ sec, n: QALL.filter((q) => q.section === si).length }))
+        .filter((s) => s.sec.title && s.n);
+      if (secs.length < 2) return { list: null, total: 0 };
+      const timed = secs.some((s) => s.sec.seconds);
+      const total = secs.every((s) => s.sec.seconds) ? secs.reduce((a, s) => a + s.sec.seconds, 0) : 0;
+      const count = (s) => {
+        const k = s.sec.pick && s.sec.pick < s.n ? s.sec.pick : s.n;
+        return k + (k === 1 ? " question" : " questions");
+      };
+      // titles such as "1. Why digital?" carry their own numbers
+      const numbered = secs.every((s) => /^\d+[.):]\s/.test(s.sec.title));
+      const rows = secs.map((s, i) =>
+        h(
+          "li",
+          null,
+          numbered ? null : h("span", { class: "qm-sec-num", text: i + 1 }),
+          h("span", { class: "qm-sec-title", text: s.sec.title }),
+          h("span", { class: "qm-leader", "aria-hidden": "true" }),
+          h("span", { class: "qm-sec-side", text: s.sec.seconds ? fmtSpan(s.sec.seconds) : count(s) }),
+        ),
+      );
+      const list = h(
+        "section",
+        { class: "qm-contents", "aria-labelledby": "contents-title" },
+        h(
+          "h2",
+          { id: "contents-title" },
+          "Sections",
+          timed ? h("span", { class: "qm-contents-note", text: "suggested time" }) : null,
+        ),
+        h("ol", null, rows),
+        total
+          ? h(
+              "p",
+              { class: "qm-contents-total" },
+              h("span", { text: "Total" }),
+              h("span", { class: "qm-leader", "aria-hidden": "true" }),
+              h("span", { class: "qm-sec-side", text: fmtSpan(total) }),
+            )
+          : null,
+      );
+      return { list, total };
+    }
+
+    // When the attempt ends if it starts now (or, when resuming, when it ends anyway).
+    function etaParts(saved, suggested) {
+      const now = Date.now();
+      if (saved && saved.submitted) return null;
+      if (saved && saved.started) {
+        if (!limit) return null;
+        const end = saved.startedAt + limit * 1000;
+        if (end <= now) return ["The time limit for this attempt has passed."];
+        const left = fmtSpan(Math.ceil((end - now) / 60000) * 60);
+        return ["Time runs out at ", h("strong", { text: atClock(end) }), " (" + left + " left)."];
+      }
+      if (limit) return ["Start now and time runs out at ", h("strong", { text: atClock(now + limit * 1000) }), "."];
+      if (suggested)
+        return [
+          "At the suggested pace, starting now, you would finish around ",
+          h("strong", { text: atClock(now + suggested * 1000) }),
+          ".",
+        ];
+      return null;
+    }
+
+    function focusWanted() {
+      const asked = window.FULLMARK_SUBMIT && window.FULLMARK_SUBMIT.focus;
+      return !!asked || store("get", "fullmark:focus") === "on";
+    }
+
     function showStart() {
       setDisplayOpen(false);
+      clearInterval(etaHandle);
       wrap.replaceChildren();
+      displayBtn.textContent = "Text size and theme";
+      displayBtn.setAttribute("aria-label", "Text size and theme");
       const saved = loadSaved();
-      const hasPoints = !SURVEY && nominal().points > 0;
+      const { list, total } = coverSections();
+
+      const etaEl = h("p", { class: "qm-eta", id: "eta" });
+      const renderEta = () => {
+        if (!etaEl.isConnected && etaHandle) {
+          clearInterval(etaHandle);
+          return;
+        }
+        const parts = etaParts(saved, total);
+        etaEl.hidden = !parts;
+        etaEl.replaceChildren(...(parts || []));
+      };
+
+      const focusSwitch = h("input", {
+        type: "checkbox",
+        role: "switch",
+        id: "focus-switch",
+        checked: focusWanted(),
+        onchange: (e) => store("set", "fullmark:focus", e.target.checked ? "on" : "off"),
+      });
+      const focusRow = document.fullscreenEnabled
+        ? h(
+            "div",
+            { class: "qm-focus-row" },
+            h("label", { class: "qm-switch", for: "focus-switch" }, focusSwitch, h("span", { text: "Focus mode" })),
+            h("span", { class: "qm-focus-note", text: "Fullscreen with a clock. Esc leaves it." }),
+          )
+        : null;
+      // Fullscreen is only allowed from a click, so the Start button is what enters it.
+      const go = (fn) => () => {
+        if (focusRow && focusSwitch.checked && !document.fullscreenElement) toggleFocus();
+        fn();
+      };
+
+      const ready = focusRow || etaParts(saved, total) ? h("div", { class: "qm-ready" }, focusRow, etaEl) : null;
+      let actions;
+      if (saved) {
+        actions = h(
+          "div",
+          { class: "qm-actions" },
+          h("button", {
+            class: "qm-btn qm-btn-primary",
+            id: "resume-btn",
+            type: "button",
+            text: saved.submitted ? "View results" : "Resume",
+            onclick: go(() => {
+              state = saved;
+              applyDraw(state.drawn || drawIds(state.seed));
+              showQuiz();
+            }),
+          }),
+          h("button", {
+            class: "qm-btn",
+            id: "restart-btn",
+            type: "button",
+            text: "Start over",
+            onclick: async () => {
+              if (await confirmDialog("Delete the saved attempt and start again?", "Start over")) {
+                store("del", SKEY);
+                clearProgress();
+                state = fresh();
+                showStart();
+              }
+            },
+          }),
+          displayMenu,
+        );
+      } else {
+        actions = h(
+          "div",
+          { class: "qm-actions" },
+          h("button", {
+            class: "qm-btn qm-btn-primary",
+            id: "start-btn",
+            type: "button",
+            text: "Start",
+            onclick: go(() => begin()),
+          }),
+          displayMenu,
+        );
+      }
+
       const box = h(
         "section",
         { class: "qm-start", id: "start-screen" },
         h("h1", { text: DATA.title }),
         DATA.description_html ? h("div", { class: "qm-prose", html: DATA.description_html }) : null,
         DATA.preamble_html ? h("div", { class: "qm-prose", html: DATA.preamble_html }) : null,
-        h(
-          "ul",
-          { class: "qm-stats" },
-          h(
-            "li",
-            null,
-            h("strong", { text: nominal().count }),
-            "questions" + (bank ? " (random draw from " + QALL.length + ")" : ""),
-          ),
-          hasPoints
-            ? h("li", null, h("strong", { text: (nominal().approx ? "about " : "") + pts(nominal().points) }), "points")
-            : null,
-          h("li", null, h("strong", { text: limit ? fmtSpan(limit) : "No limit" }), "time limit"),
-          SURVEY
-            ? h("li", null, h("strong", { text: "No score" }), "answers are not graded")
-            : h(
-                "li",
-                null,
-                h("strong", { text: DATA.feedback === "instant" ? "Instant" : "After submit" }),
-                "feedback",
-              ),
-        ),
+        coverFacts(),
+        list,
+        saved
+          ? h("p", {
+              class: "qm-saved",
+              text: saved.submitted
+                ? "You have a finished attempt saved on this device."
+                : "You have an attempt in progress on this device.",
+            })
+          : null,
+        ready,
+        actions,
       );
-      if (saved) {
-        box.append(
-          h("p", {
-            class: "qm-saved",
-            text: saved.submitted
-              ? "You have a finished attempt saved on this device."
-              : "You have an attempt in progress on this device.",
-          }),
-        );
-        box.append(
-          h(
-            "div",
-            { class: "qm-actions" },
-            h("button", {
-              class: "qm-btn qm-btn-primary",
-              id: "resume-btn",
-              type: "button",
-              text: saved.submitted ? "View results" : "Resume",
-              onclick: () => {
-                state = saved;
-                applyDraw(state.drawn || drawIds(state.seed));
-                showQuiz();
-              },
-            }),
-            h("button", {
-              class: "qm-btn",
-              id: "restart-btn",
-              type: "button",
-              text: "Start over",
-              onclick: async () => {
-                if (await confirmDialog("Delete the saved attempt and start again?", "Start over")) {
-                  store("del", SKEY);
-                  clearProgress();
-                  state = fresh();
-                  showStart();
-                }
-              },
-            }),
-            displayMenu,
-          ),
-        );
-      } else {
-        box.append(
-          h(
-            "div",
-            { class: "qm-actions" },
-            h("button", {
-              class: "qm-btn qm-btn-primary",
-              id: "start-btn",
-              type: "button",
-              text: "Start",
-              onclick: () => begin(),
-            }),
-            displayMenu,
-          ),
-        );
-      }
       wrap.append(box);
+      renderEta();
+      if (ready) etaHandle = setInterval(renderEta, 15000);
       typeset(box);
     }
 
@@ -856,7 +972,11 @@
 
     function showQuiz() {
       setDisplayOpen(false);
+      clearInterval(etaHandle);
+      displayBtn.textContent = "Aa";
+      displayBtn.setAttribute("aria-label", "Display settings");
       wrap.replaceChildren();
+      window.scrollTo(0, 0);
       cards = {};
       pills = {};
       timerEl = h("span", { class: "qm-timer", id: "timer", role: "timer" });

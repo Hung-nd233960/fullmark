@@ -571,7 +571,9 @@ def test_bank_draws_a_subset_and_resumes_the_same_draw(page, tmp_path):
     _src, html = _bank_html(tmp_path)
     page.goto(html.as_uri())
     assert "(random draw from 4)" in page.inner_text("#start-screen")
-    assert "3" in page.inner_text(".qm-stats li")  # 2 from limits + 1 from rules
+    assert page.inner_text(".qm-facts dd").startswith(
+        "3"
+    )  # 2 from limits + 1 from rules
     draws = set()
     for i in range(12):
         if i:
@@ -1752,14 +1754,14 @@ def test_display_menu_opens_and_closes(browser, kitchen_html):
     pg = ctx.new_page()
     pg.goto(kitchen_html.as_uri())
     btn = pg.locator("#display-btn")
-    assert (
-        btn.inner_text() == "Aa"
-        and btn.get_attribute("aria-label") == "Display settings"
-    )
+    # spelled out on the start screen, compact in the quiz header
+    assert btn.inner_text() == btn.get_attribute("aria-label") == "Text size and theme"
     assert btn.get_attribute("aria-controls") == "display-pop"
     for where in ("start", "quiz"):
         if where == "quiz":
             pg.click("#start-btn")
+            assert btn.inner_text() == "Aa"
+            assert btn.get_attribute("aria-label") == "Display settings"
         assert btn.get_attribute("aria-expanded") == "false"
         assert pg.locator("#font-larger").is_hidden()
         btn.click()  # open, then close by toggling

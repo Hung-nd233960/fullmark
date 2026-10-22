@@ -402,7 +402,7 @@ The page contains one `<script type="application/json" id="quiz-data">` with: qu
 
 ### 7.2 Page structure
 
-1. **Start screen**: title, description, number of questions, total points, time limit, feedback mode, Start button. If saved progress exists for this hash: "Resume" and "Start over".
+1. **Start screen**: a cover sheet. Title, description, then the facts (questions, points, time allowed, feedback) and the titled sections (suggested time, or question count) set with dotted leaders, with the total when every section has a time. A box with the Focus mode switch and the end time: `Start now and time runs out at HH:MM` (time limit), `At the suggested pace ... around HH:MM` (no limit, all sections timed), or, when resuming a timed attempt, `Time runs out at HH:MM (N min left)`; it updates every 15 s. Fullscreen needs a user gesture, so the switch only takes effect on Start; it is remembered in localStorage (`fullmark:focus`), and `quiz serve --focus` / `quiz library take --focus` inject `FULLMARK_SUBMIT.focus` to turn it on. Start button. If saved progress exists for this hash: "Resume" and "Start over".
 2. **Quiz**: sticky header (title, timer, answered x/y, theme toggle, Export, Submit). All questions on one scrolling page, grouped by section, each in a card with number, points, tags. A compact question navigator (numbered pills, colored by answered/flagged state). A "flag for review" toggle per question.
 3. **Results** (after submit): score (auto-graded points, percent, pass/fail if `pass_mark`), pending points from essay/code, per-question status, correct answers and explanations, per-tag breakdown, Export button.
 
@@ -501,7 +501,7 @@ Decided on 2026-10-21; the idea is `deck new --web` of presentation-kit (its `br
     "hash": "3f9c2a1b7d4e5f60",
     "source_file": "ielts-writing.md",
     "built_at": "2026-10-20T09:00:00Z",
-    "fullmark_version": "0.10.0"
+    "fullmark_version": "0.10.1"
   },
   "attempt": {
     "submitted": true,

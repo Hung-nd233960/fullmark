@@ -184,6 +184,7 @@ def build_html(quiz: Quiz, base_dir: Path) -> BuildResult:
             {
                 "title": s.title,
                 "time": s.time,
+                "seconds": parse_duration(s.time) if s.time else None,
                 "pick": s.pick,
                 "intro_html": r.block(s.intro_md),
             }

@@ -295,7 +295,7 @@ Read the answers with `quiz grade results.json --quiz quiz.md` (a report titled 
 
 ## Collect answers directly
 
-`quiz serve FILE.md|FILE.html [--out results.json] [--once] [--timeout 1800] [--open] [--port 0] [--autosave progress.json] [--json]` serves the page on 127.0.0.1 and writes the results when the respondent presses Finish or Submit, then (with `--once`, the default when stdout is not a terminal) exits 0; exit 2 on timeout. The file is `<quiz-id>-results-<timestamp>.json` beside the source and is never overwritten. If sending fails the page tells the respondent to use Export answers. `--autosave` keeps an attempt in progress in the given file, so it resumes after the server or the browser closes; the file is deleted on submit.
+`quiz serve FILE.md|FILE.html [--out results.json] [--once] [--timeout 1800] [--open] [--focus] [--port 0] [--autosave progress.json] [--json]` serves the page on 127.0.0.1 and writes the results when the respondent presses Finish or Submit, then (with `--once`, the default when stdout is not a terminal) exits 0; exit 2 on timeout. The file is `<quiz-id>-results-<timestamp>.json` beside the source and is never overwritten. If sending fails the page tells the respondent to use Export answers. `--autosave` keeps an attempt in progress in the given file, so it resumes after the server or the browser closes; the file is deleted on submit.
 
 ## Review a quiz an agent wrote
 

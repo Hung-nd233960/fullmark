@@ -45,9 +45,15 @@ def inject(html: str, snippet: str = SNIPPET, early: bool = False) -> str:
 
 
 def submit_snippet(
-    token: str, autosave: bool = False, progress: dict | None = None
+    token: str,
+    autosave: bool = False,
+    progress: dict | None = None,
+    focus: bool = False,
 ) -> str:
     """Tells quiz.js where to post the results (see FULLMARK_SUBMIT in quiz.js).
+
+    `focus` turns on the start screen's Focus mode switch; the browser only allows
+    fullscreen from a click, so Start is what enters it.
 
     The progress holds the learner's own text, so `<` is escaped: an answer containing
     `</script>` must not end the script. `\\u003c` is valid JSON and JavaScript."""
@@ -56,6 +62,7 @@ def submit_snippet(
         "token": token,
         "autosave": "/progress" if autosave else None,
         "progress": progress,
+        "focus": focus,
     }
     cfg = json.dumps(cfg).replace("<", "\\u003c")
     return f"<script>window.FULLMARK_SUBMIT = {cfg};</script>"
@@ -274,12 +281,14 @@ class SubmitServer:
         *,
         autosave: Path | None = None,
         quiz_hash: str | None = None,
+        focus: bool = False,
     ):
         self.html = html
         self.quiz_id = quiz_id
         self.out = out
         self.autosave = autosave
         self.quiz_hash = quiz_hash
+        self.focus = focus
         self.token = secrets.token_urlsafe(16)
         self.paths: list[Path] = []
         self.submitted = threading.Event()
@@ -308,7 +317,10 @@ class SubmitServer:
                     self.send_error(403)
                     return
                 snippet = submit_snippet(
-                    owner.token, owner.autosave is not None, owner.progress()
+                    owner.token,
+                    owner.autosave is not None,
+                    owner.progress(),
+                    focus=owner.focus,
                 )
                 _page_response(self, inject(owner.html, snippet, early=True).encode())
 
@@ -501,6 +513,7 @@ def serve_loop(
         port=args.port,
         autosave=Path(autosave) if autosave else None,
         quiz_hash=quiz_hash,
+        focus=bool(getattr(args, "focus", False)),
     )
     server.start()
     print(f"serving {server.url}", file=info, flush=True)
