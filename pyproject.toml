@@ -1,6 +1,6 @@
 [project]
 name = "fullmark"
-version = "0.10.0"
+version = "0.10.1"
 description = "Turn a Markdown file into a self-contained, self-grading HTML quiz."
 readme = "README.md"
 license = "MIT"
@@ -69,4 +69,4 @@ include = [
   "/.markdownlint-cli2.jsonc",
   "/pyproject.toml",
 ]
-exclude = ["/docs/plans", "/docs/QC"]
+exclude = ["/docs/plans", "/docs/qc", "/docs/screenshots"]

@@ -5,3 +5,6 @@ __pycache__/
 .ruff_cache/
 dist/
 *.egg-info/
+
+# feedback screenshots for the agent, never committed
+docs/qc/

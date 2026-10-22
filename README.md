@@ -42,6 +42,22 @@ muted pastel palette: soft paper in light mode, soft slate in dark mode. A quiz 
 
 Docs: [agent guide](AGENTS.md), [user guide](docs/GUIDE.md) ([HTML](docs/GUIDE.html)), [design spec](docs/SPEC.md), and a [quiz about this project](docs/fullmark-project.html).
 
+## Screenshots
+
+The start screen: what the quiz holds, the suggested time per section, Focus mode, and when you would finish if you start now.
+
+![Start screen of a 73-question quiz with eight timed sections](https://raw.githubusercontent.com/Hung-nd233960/fullmark/main/docs/screenshots/start-screen.png)
+
+Questions, with the timer, progress and question map beside them:
+
+![A multiple-choice question with the side panel](https://raw.githubusercontent.com/Hung-nd233960/fullmark/main/docs/screenshots/questions.png)
+
+An ordering question (drag, or the Up and Down buttons) and written answers that an AI grades from a rubric:
+
+![An ordering question](https://raw.githubusercontent.com/Hung-nd233960/fullmark/main/docs/screenshots/ordering.png)
+
+![Two essay questions with word counts](https://raw.githubusercontent.com/Hung-nd233960/fullmark/main/docs/screenshots/written-answers.png)
+
 ## Fullmark and Anki
 
 They do different jobs.
@@ -76,7 +92,7 @@ Use both: Anki for what you must recall, Fullmark to check you can use it under 
 | `quiz check FILE [--json] [--strict] [--review REVIEW]` | Validate. Exit 0 = no errors (warnings allowed), 1 = errors, 2 = usage or I/O problem |
 | `quiz build FILE [-o OUT] [--open] [--strict]` | Check, then write the single-file HTML; `--strict` fails on warnings and writes nothing |
 | `quiz watch FILE [-o OUT] [--open] [--serve]` | Rebuild whenever the quiz or its `assets/` change; keeps the last good build when a save has errors. Reload the page after each rebuild, or add `--serve` to serve it on 127.0.0.1 and reload the browser automatically (only the served copy gets the reload code; the file you hand out is unchanged) |
-| `quiz serve FILE [--out RESULTS] [--once] [--timeout SECONDS] [--open] [--port N] [--autosave PROGRESS] [--json]` | Serve the page on 127.0.0.1; **Finish** or **Submit** sends the results back and the server writes the JSON file, then exits (`--once` is the default when stdout is not a terminal; exit 2 on timeout). For questionnaires that a tool or an agent is waiting on. `--autosave` keeps an attempt in progress so it resumes after the server or browser closes |
+| `quiz serve FILE [--out RESULTS] [--once] [--timeout SECONDS] [--open] [--focus] [--port N] [--autosave PROGRESS] [--json]` | Serve the page on 127.0.0.1; **Finish** or **Submit** sends the results back and the server writes the JSON file, then exits (`--once` is the default when stdout is not a terminal; exit 2 on timeout). For questionnaires that a tool or an agent is waiting on. `--autosave` keeps an attempt in progress so it resumes after the server or browser closes |
 | `quiz review FILE [--out REVIEW] [--since REVIEW] [--once] [--open] [--timeout SECONDS] [--port N] [--json]` | The learner checks each question (keep, fix or drop) in a form; **Finish** writes `review.json`. Then `quiz check FILE --review review.json` fails until the flagged questions are fixed |
 | `quiz brief DIR [--purpose P] [--scope S] [--count N] [--web] [--accept-defaults] [--json] ...` | Write `brief.yaml` and `content/` for a quiz an agent will write. A missing purpose or scope exits 3; `--web` asks in a form. `quiz check` then warns when the quiz does not match the brief |
 | `quiz grade RESULTS [--quiz FILE] [-o OUT] [--grades GRADES] [--json]` | Re-grade in Python (the authority) and write the report; `--json` writes `*-report.json` instead and an empty `*-grades.json` template; `--grades` folds a filled-in file into the report |
@@ -97,7 +113,7 @@ Eleven commands, all under `quiz library`. Exit codes: 0 done, 1 problems found 
 | `quiz library status [--json] [--plain]` | Diagnostics: config, library path, git (repo, uncommitted changes, remote), counts, snapshots whose content no longer matches their hash, orphan files. Colored in a terminal; `--plain` or `NO_COLOR` gives plain text. Exit 0 healthy, 1 problems, 2 no library |
 | `quiz library register FILE.md [-n NAME \| --update NAME] [--strict] [--review REVIEW] [--json]` | Check the quiz, then copy its source, assets and brief into the library (no HTML is stored) and commit. The source can then be deleted. `--update` adds a version to an existing quiz. The last step when an agent writes a quiz; exits 3 if no library is set up |
 | `quiz library list [--json] [--plain]` | Every quiz with versions, attempts, last score, and a note when its original source still exists and has changed |
-| `quiz library take NAME [--no-open] [--timeout SECONDS] [--port N] [--json]` | Build the page on the spot with the installed fullmark, serve it, save the result into the library and commit; resume survives closing the tab |
+| `quiz library take NAME [--no-open] [--focus] [--timeout SECONDS] [--port N] [--json]` | Build the page on the spot with the installed fullmark, serve it, save the result into the library and commit; resume survives closing the tab |
 | `quiz library share NAME [-o DIR] [--version H] [--source]` | Build the clean offline page to share (with `quiz build`, the only way to get a standalone HTML file); `--source` writes the editable source folder instead, with the original file name, its assets and the brief |
 | `quiz library grade NAME [--attempt STAMP] [--grades FILE] [--json]` | Grade an attempt (the newest by default) against the version it was taken on and write the report into `quizzes/<id>/reports/` (never `results/`); `--json` also writes the grades template there. Commits the report |
 | `quiz library stats NAME [--json]` | Progress over every attempt: scores by date, percent per topic, weakest topics. Uses the grades each attempt was made with when the attempts span several versions. Writes nothing |
