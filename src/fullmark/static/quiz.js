@@ -762,18 +762,20 @@
         const k = s.sec.pick && s.sec.pick < s.n ? s.sec.pick : s.n;
         return k + (k === 1 ? " question" : " questions");
       };
-      // titles such as "1. Why digital?" carry their own numbers
-      const numbered = secs.every((s) => /^\d+[.):]\s/.test(s.sec.title));
-      const rows = secs.map((s, i) =>
-        h(
+      // titles such as "1. Why digital?" carry their own numbers: those go in the badge
+      const own = /^(\d+)[.):]\s+(.*)$/;
+      const numbered = secs.every((s) => own.test(s.sec.title));
+      const rows = secs.map((s, i) => {
+        const m = numbered ? s.sec.title.match(own) : null;
+        return h(
           "li",
           null,
-          numbered ? null : h("span", { class: "qm-sec-num", text: i + 1 }),
-          h("span", { class: "qm-sec-title", text: s.sec.title }),
+          h("span", { class: "qm-sec-num", text: m ? m[1] : i + 1 }),
+          h("span", { class: "qm-sec-title", text: m ? m[2] : s.sec.title }),
           h("span", { class: "qm-leader", "aria-hidden": "true" }),
           h("span", { class: "qm-sec-side", text: s.sec.seconds ? fmtSpan(s.sec.seconds) : count(s) }),
-        ),
-      );
+        );
+      });
       const list = h(
         "section",
         { class: "qm-contents", "aria-labelledby": "contents-title" },

@@ -408,8 +408,9 @@ textarea:disabled {
 
 /* ---------- start screen ---------- */
 
-/* A cover sheet: title, the facts and the sections set with dotted leaders like a
-   printed exam paper, then Focus mode and Start. The leaders are the one ornament. */
+/* A cover sheet in the quiz's own dress: the facts, Focus mode and Start on a card
+   like the question panel, the sections numbered with the question badges. Dotted
+   leaders join each label to its number. */
 .qm-start {
   max-width: 40rem;
   margin: clamp(2rem, 10vh, 6rem) auto 3rem;
@@ -429,11 +430,19 @@ textarea:disabled {
   color: var(--muted);
 }
 
+.qm-cover-side {
+  margin: 2rem 0 0;
+  padding: 1rem 1.1rem 1.1rem;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+}
+
 /* A row: label, a dotted leader that fills the gap, the value. */
 .qm-facts {
-  margin: 2rem 0 0;
-  padding: 0.55rem 0;
-  border-block: 2px solid var(--line-strong);
+  margin: 0;
+  padding: 0 0 0.6rem;
+  border-bottom: 1px solid var(--line);
 }
 
 .qm-facts > div,
@@ -450,6 +459,7 @@ textarea:disabled {
   flex: 1;
   align-items: baseline;
   gap: 0.6rem;
+  white-space: nowrap; /* a long value wraps, the label never does */
   color: var(--muted);
 }
 
@@ -496,13 +506,21 @@ textarea:disabled {
 }
 
 .qm-sec-num {
-  min-width: 1.6em;
-  color: var(--muted);
+  flex: none;
+  min-width: 1.9em;
+  padding: 0.05rem 0.4rem;
+  border-radius: 6px;
+  background: var(--accent);
+  color: var(--on-accent);
+  font-weight: 800;
+  text-align: center;
   font-variant-numeric: tabular-nums;
 }
 
 .qm-sec-title {
   flex: 0 1 auto;
+  font-weight: 650;
+  color: var(--accent);
 }
 
 .qm-sec-side {
@@ -525,11 +543,10 @@ textarea:disabled {
 
 /* Focus mode and the end time: the last thing read before Start. */
 .qm-ready {
-  margin: 2rem 0 1.25rem;
-  padding: 1rem 1.1rem;
-  background: var(--card);
-  border: 1px solid var(--line);
-  border-radius: 12px;
+  margin: 1rem 0;
+  padding: 0.9rem 1rem;
+  background: var(--sunken);
+  border-radius: 10px;
 }
 
 .qm-focus-row {
@@ -608,12 +625,12 @@ textarea:disabled {
 }
 
 .qm-cover-side > .qm-saved {
-  margin-top: 2rem;
+  margin: 1rem 0 0;
 }
 
 .qm-cover-side > .qm-saved + .qm-actions,
 .qm-cover-side > .qm-facts + .qm-actions {
-  margin-top: 2rem;
+  margin-top: 1rem;
 }
 
 /* Wide screens with a section list: the list on the left, the facts, Focus mode and
@@ -625,7 +642,7 @@ textarea:disabled {
 
   .qm-start-wide .qm-cover {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) 22rem;
+    grid-template-columns: minmax(0, 1fr) 24rem;
     column-gap: 4rem;
     align-items: start;
   }
@@ -640,8 +657,7 @@ textarea:disabled {
   .qm-start-wide .qm-contents {
     grid-column: 1;
     grid-row: 1;
-    padding-top: 0.55rem;
-    border-top: 2px solid var(--line-strong);
+    padding-top: 1rem;
   }
 }
 
@@ -1983,7 +1999,7 @@ dialog.qm-dialog .qm-actions {
 <body>
 <noscript><p class="qm-noscript">This quiz needs JavaScript. Please enable it and reload.</p></noscript>
 <div id="app"></div>
-<script type="application/json" id="quiz-data">{"format":"fullmark","title":"Study habits check-in","description_html":"A two-minute check-in about how you study. There are no right answers and nothing is scored.","id":"study-habits","hash":"b55d0461cf44e20f","source_file":"quiz.md","fullmark_version":"0.10.1","built_at":"2026-10-22T12:44:19Z","time_limit":null,"on_timeout":"submit","feedback":"end","mode":"survey","review":false,"theme":"auto","shuffle_questions":false,"pass_mark":null,"bank":null,"tags":[],"total_points":0.0,"preamble_html":"\u003cp>Answer what is true for you, not what sounds best. Skip any question you prefer not to answer.\u003c/p>\n","sections":[{"title":"How you study","time":null,"seconds":null,"pick":null,"intro_html":""},{"title":"How it feels","time":null,"seconds":null,"pick":null,"intro_html":""}],"questions":[{"id":"where","index":1,"section":0,"type":"single","points":0.0,"ungraded":true,"tags":[],"title_md":"Where do you usually study?","title_html":"Where do you usually study?","prompt_html":"","hint_html":"","shuffle":false,"choices":["At home","In the library","In a classroom or lab","Somewhere else"],"n_blanks":0,"followups":{"3":"Where?"}},{"id":"prepare","index":2,"section":0,"type":"single","points":0.0,"ungraded":true,"tags":[],"title_md":"How do you usually prepare for an exam?","title_html":"How do you usually prepare for an exam?","prompt_html":"","hint_html":"","shuffle":false,"choices":["I start several weeks before","I start about a week before","I start in the last two days","It depends on the course"],"n_blanks":0},{"id":"tools","index":3,"section":0,"type":"multi","points":0.0,"ungraded":true,"tags":[],"title_md":"Which of these do you use?","title_html":"Which of these do you use?","prompt_html":"","hint_html":"","shuffle":false,"choices":["Lecture notes","Past papers","Videos","A study group","Flashcards"],"n_blanks":0},{"id":"rank","index":4,"section":0,"type":"ordering","points":0.0,"ungraded":true,"tags":[],"title_md":"Rank these by how much they help you learn","title_html":"Rank these by how much they help you learn","prompt_html":"","hint_html":"","shuffle":false,"choices":[],"n_blanks":0,"items":["Practice problems","Reading the textbook","Watching lectures","Talking it through with other people"]},{"id":"confidence","index":5,"section":1,"type":"scale","points":0.0,"ungraded":true,"tags":[],"title_md":"How confident are you about the next exam?","title_html":"How confident are you about the next exam?","prompt_html":"","hint_html":"","shuffle":false,"choices":[],"n_blanks":0,"scale":{"min":1,"max":5,"labels":{"1":"Not at all","5":"Very confident"}}},{"id":"days","index":6,"section":1,"type":"scale","points":0.0,"ungraded":true,"tags":[],"title_md":"On how many days a week do you study?","title_html":"On how many days a week do you study?","prompt_html":"","hint_html":"","shuffle":false,"choices":[],"n_blanks":0,"scale":{"min":0,"max":7,"labels":{"0":"Never","7":"Every day"}}},{"id":"routine","index":7,"section":1,"type":"fields","points":0.0,"ungraded":true,"tags":[],"title_md":"Your routine","title_html":"Your routine","prompt_html":"","hint_html":"","shuffle":false,"choices":[],"n_blanks":0,"fields":[{"label_html":"Usual time of day"},{"label_html":"Hours per week"}]},{"id":"ideas","index":8,"section":1,"type":"essay","points":0.0,"ungraded":true,"tags":[],"title_md":"What would help you study better?","title_html":"What would help you study better?","prompt_html":"\u003cp>A few sentences are plenty.\u003c/p>\n","hint_html":"","shuffle":false,"choices":[],"n_blanks":0,"min_words":0,"max_words":0}]}</script>
+<script type="application/json" id="quiz-data">{"format":"fullmark","title":"Study habits check-in","description_html":"A two-minute check-in about how you study. There are no right answers and nothing is scored.","id":"study-habits","hash":"b55d0461cf44e20f","source_file":"quiz.md","fullmark_version":"0.10.1","built_at":"2026-10-22T12:53:35Z","time_limit":null,"on_timeout":"submit","feedback":"end","mode":"survey","review":false,"theme":"auto","shuffle_questions":false,"pass_mark":null,"bank":null,"tags":[],"total_points":0.0,"preamble_html":"\u003cp>Answer what is true for you, not what sounds best. Skip any question you prefer not to answer.\u003c/p>\n","sections":[{"title":"How you study","time":null,"seconds":null,"pick":null,"intro_html":""},{"title":"How it feels","time":null,"seconds":null,"pick":null,"intro_html":""}],"questions":[{"id":"where","index":1,"section":0,"type":"single","points":0.0,"ungraded":true,"tags":[],"title_md":"Where do you usually study?","title_html":"Where do you usually study?","prompt_html":"","hint_html":"","shuffle":false,"choices":["At home","In the library","In a classroom or lab","Somewhere else"],"n_blanks":0,"followups":{"3":"Where?"}},{"id":"prepare","index":2,"section":0,"type":"single","points":0.0,"ungraded":true,"tags":[],"title_md":"How do you usually prepare for an exam?","title_html":"How do you usually prepare for an exam?","prompt_html":"","hint_html":"","shuffle":false,"choices":["I start several weeks before","I start about a week before","I start in the last two days","It depends on the course"],"n_blanks":0},{"id":"tools","index":3,"section":0,"type":"multi","points":0.0,"ungraded":true,"tags":[],"title_md":"Which of these do you use?","title_html":"Which of these do you use?","prompt_html":"","hint_html":"","shuffle":false,"choices":["Lecture notes","Past papers","Videos","A study group","Flashcards"],"n_blanks":0},{"id":"rank","index":4,"section":0,"type":"ordering","points":0.0,"ungraded":true,"tags":[],"title_md":"Rank these by how much they help you learn","title_html":"Rank these by how much they help you learn","prompt_html":"","hint_html":"","shuffle":false,"choices":[],"n_blanks":0,"items":["Practice problems","Reading the textbook","Watching lectures","Talking it through with other people"]},{"id":"confidence","index":5,"section":1,"type":"scale","points":0.0,"ungraded":true,"tags":[],"title_md":"How confident are you about the next exam?","title_html":"How confident are you about the next exam?","prompt_html":"","hint_html":"","shuffle":false,"choices":[],"n_blanks":0,"scale":{"min":1,"max":5,"labels":{"1":"Not at all","5":"Very confident"}}},{"id":"days","index":6,"section":1,"type":"scale","points":0.0,"ungraded":true,"tags":[],"title_md":"On how many days a week do you study?","title_html":"On how many days a week do you study?","prompt_html":"","hint_html":"","shuffle":false,"choices":[],"n_blanks":0,"scale":{"min":0,"max":7,"labels":{"0":"Never","7":"Every day"}}},{"id":"routine","index":7,"section":1,"type":"fields","points":0.0,"ungraded":true,"tags":[],"title_md":"Your routine","title_html":"Your routine","prompt_html":"","hint_html":"","shuffle":false,"choices":[],"n_blanks":0,"fields":[{"label_html":"Usual time of day"},{"label_html":"Hours per week"}]},{"id":"ideas","index":8,"section":1,"type":"essay","points":0.0,"ungraded":true,"tags":[],"title_md":"What would help you study better?","title_html":"What would help you study better?","prompt_html":"\u003cp>A few sentences are plenty.\u003c/p>\n","hint_html":"","shuffle":false,"choices":[],"n_blanks":0,"min_words":0,"max_words":0}]}</script>
 <script type="text/plain" id="quiz-key">+5JMU+DeNwMJE1NZbY+Li4ngVXQOJMHWsljkxADFpwqfc9S3TPDDiI2AfDsiKxhHLQhBO3M6naEY+UhWOQoIxtol+wdMFPSIitTBfmqnOg5BRDOGl1enpB3EZeZcTCUygsb21QPoMo8rggOZiW3pUr+PrTEh63pWhymkomvHgKgbRjROEksWKuqzjMl0u+sP3ygrWUu3JT3lx4RYYdiXroOghChK1+T1cB2ZsklusEnkpT5Lh6LlwAYBzz7q3Yt+aT4PLxY2o6u0ho4FbqLaeHn5kTZ2eMoouNnXq5iQghVnaLZaWJxuvDZOlisJHY3iLMHN5hO0TUM0Ve5xE6BohtvTKd94YJMHZT6NsdNqrQzva53gdl984Ag/xh49CSBO11OTWfNGdEDwwaShADo3Ma9lNGpQvcwFOBlYYwCVlL95UhP0q52eYueWZF4Z/hh7EVABiEvWO7+4bktgJ7I+cLOO2of0gSY+EDFb2572q4DJGDBOePyXfaqWGHVrEUPbVXcq76zd5i22GbTtdFUH/ROOmwb/QOI+9HQxqIWieQjcO8YV2QEgE+e2dl81E7jDnWIDPPjF9PxoQyLTlEf79t4k+OR23Amm7JqRz6zwJ1vCMrRQx39twg5fbfA7PqXAZ7bPMZTM6IPbemAR0xPOX1fGYke4rGbHQ/lT8JM3/ZFDyFl+F0oSL8zeJ8YaGz/ptt6sbaahg/l7Eo8Asn6WFcVL4qgl68T2FWy9AdpFgFNe/e6yfXAGpruAEqULcpjtWlrPDmZqoEBNctAIJ5nipKikn8vCgoeqx7sESXIs+3djDqhxurcYNMYo9FkF1sZNLQU9kJla2pkMbNBPxhDuqomQJAIz11PM068tBhC3q0B0oAC8fVewyn2vCbnjWv86TVgZfHT6Pphb7vvCbgCXyge8ExKIViApbWw9Q+ioENUU/QLq+C5thUjX3cA0X4FSTg8Jqm4EkOCrCvz/x/pU8R15viukUnYvAbNvV7rY2ZTmnBRZymKnReCSmuoyMzKC8XqiA52KcKqEWplUNzN2hByFHP0L/9wdqxFPbNK/MNEi50OXNIZBUvpBHg50I3aTCo4+ch0Ws+vgeRQ3D5lbhcvaBYU6WwbMwsrlM9QPD+VKp+TwOh/NcPjRf9YQWtkMVmpIG5M1qxY612jMrtvrLVerd49gm1Z3GiMJ/N3hQMPiII2G3JdM9btlyOWfu7TASlnS54BCtSNMwzYkt2MWH9CjSa1FtD8e/ww/xtr6ViBiTeIgttbyxJ1DXS/l0vAGxM/Kgmmc3pBugcgy7d+2AMnukqluSy2F5eXYq23dC2XTqzTKzFHufSjosUTh9aYmrNMyc4BOWmUtsG7Okbzu2c3MClz+pbAeFewdWtb72c6zefIaH4m5iVWJCD35TNXxZeMuFu63b/gkv5wLQatt0MYYSIMbmoISmQol+aaXVfChICsGb3G1bEEXMldVr0waJoOSoCp6jYVTI2L6qQ9iILjXbErcGs6BHVK9LoV7qN4xCtm+Tnvebo4aeV6Y0BAhpTvLUeMDCR5pjeLAYfHW9YUK5ZYaU9tr0P9xZVyoIXds/HSjl2kPKfEUYEH7wrLSkRBINP8mDoWD68EIqoJYCcsbPcrZaPUu+xb7qwM9wPHLqersoupYu6eyCLZVBOZ1yrgQizJQkMY2N0HtOE14jrZPp0ReYBDUl1Vh22lBhkc+vJ91RVg=</script>
 
 <script>
@@ -2751,18 +2767,20 @@ dialog.qm-dialog .qm-actions {
         const k = s.sec.pick && s.sec.pick < s.n ? s.sec.pick : s.n;
         return k + (k === 1 ? " question" : " questions");
       };
-      // titles such as "1. Why digital?" carry their own numbers
-      const numbered = secs.every((s) => /^\d+[.):]\s/.test(s.sec.title));
-      const rows = secs.map((s, i) =>
-        h(
+      // titles such as "1. Why digital?" carry their own numbers: those go in the badge
+      const own = /^(\d+)[.):]\s+(.*)$/;
+      const numbered = secs.every((s) => own.test(s.sec.title));
+      const rows = secs.map((s, i) => {
+        const m = numbered ? s.sec.title.match(own) : null;
+        return h(
           "li",
           null,
-          numbered ? null : h("span", { class: "qm-sec-num", text: i + 1 }),
-          h("span", { class: "qm-sec-title", text: s.sec.title }),
+          h("span", { class: "qm-sec-num", text: m ? m[1] : i + 1 }),
+          h("span", { class: "qm-sec-title", text: m ? m[2] : s.sec.title }),
           h("span", { class: "qm-leader", "aria-hidden": "true" }),
           h("span", { class: "qm-sec-side", text: s.sec.seconds ? fmtSpan(s.sec.seconds) : count(s) }),
-        ),
-      );
+        );
+      });
       const list = h(
         "section",
         { class: "qm-contents", "aria-labelledby": "contents-title" },

@@ -3,6 +3,7 @@
 import re
 
 import pytest
+
 from conftest import build_to
 from test_panel import stub
 
@@ -135,8 +136,9 @@ def test_a_time_limit_says_when_time_runs_out(browser, pages):
 
 def test_titles_with_their_own_numbers_are_not_numbered_twice(browser, pages):
     ctx, pg = open_start(browser, pages["numbered"])
-    assert pg.locator(".qm-contents .qm-sec-num").count() == 0
-    assert pg.locator(".qm-contents li").first.inner_text().startswith("1. Warm-up")
+    # the title's own number moves into the badge
+    assert pg.locator(".qm-contents .qm-sec-num").first.inner_text() == "1"
+    assert pg.locator(".qm-contents .qm-sec-title").first.inner_text() == "Warm-up"
     ctx.close()
 
 

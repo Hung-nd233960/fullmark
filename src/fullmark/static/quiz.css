@@ -192,8 +192,9 @@ textarea:disabled {
 
 /* ---------- start screen ---------- */
 
-/* A cover sheet: title, the facts and the sections set with dotted leaders like a
-   printed exam paper, then Focus mode and Start. The leaders are the one ornament. */
+/* A cover sheet in the quiz's own dress: the facts, Focus mode and Start on a card
+   like the question panel, the sections numbered with the question badges. Dotted
+   leaders join each label to its number. */
 .qm-start {
   max-width: 40rem;
   margin: clamp(2rem, 10vh, 6rem) auto 3rem;
@@ -213,11 +214,19 @@ textarea:disabled {
   color: var(--muted);
 }
 
+.qm-cover-side {
+  margin: 2rem 0 0;
+  padding: 1rem 1.1rem 1.1rem;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+}
+
 /* A row: label, a dotted leader that fills the gap, the value. */
 .qm-facts {
-  margin: 2rem 0 0;
-  padding: 0.55rem 0;
-  border-block: 2px solid var(--line-strong);
+  margin: 0;
+  padding: 0 0 0.6rem;
+  border-bottom: 1px solid var(--line);
 }
 
 .qm-facts > div,
@@ -234,6 +243,7 @@ textarea:disabled {
   flex: 1;
   align-items: baseline;
   gap: 0.6rem;
+  white-space: nowrap; /* a long value wraps, the label never does */
   color: var(--muted);
 }
 
@@ -280,13 +290,21 @@ textarea:disabled {
 }
 
 .qm-sec-num {
-  min-width: 1.6em;
-  color: var(--muted);
+  flex: none;
+  min-width: 1.9em;
+  padding: 0.05rem 0.4rem;
+  border-radius: 6px;
+  background: var(--accent);
+  color: var(--on-accent);
+  font-weight: 800;
+  text-align: center;
   font-variant-numeric: tabular-nums;
 }
 
 .qm-sec-title {
   flex: 0 1 auto;
+  font-weight: 650;
+  color: var(--accent);
 }
 
 .qm-sec-side {
@@ -309,11 +327,10 @@ textarea:disabled {
 
 /* Focus mode and the end time: the last thing read before Start. */
 .qm-ready {
-  margin: 2rem 0 1.25rem;
-  padding: 1rem 1.1rem;
-  background: var(--card);
-  border: 1px solid var(--line);
-  border-radius: 12px;
+  margin: 1rem 0;
+  padding: 0.9rem 1rem;
+  background: var(--sunken);
+  border-radius: 10px;
 }
 
 .qm-focus-row {
@@ -392,12 +409,12 @@ textarea:disabled {
 }
 
 .qm-cover-side > .qm-saved {
-  margin-top: 2rem;
+  margin: 1rem 0 0;
 }
 
 .qm-cover-side > .qm-saved + .qm-actions,
 .qm-cover-side > .qm-facts + .qm-actions {
-  margin-top: 2rem;
+  margin-top: 1rem;
 }
 
 /* Wide screens with a section list: the list on the left, the facts, Focus mode and
@@ -409,7 +426,7 @@ textarea:disabled {
 
   .qm-start-wide .qm-cover {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) 22rem;
+    grid-template-columns: minmax(0, 1fr) 24rem;
     column-gap: 4rem;
     align-items: start;
   }
@@ -424,8 +441,7 @@ textarea:disabled {
   .qm-start-wide .qm-contents {
     grid-column: 1;
     grid-row: 1;
-    padding-top: 0.55rem;
-    border-top: 2px solid var(--line-strong);
+    padding-top: 1rem;
   }
 }
 
