@@ -245,6 +245,11 @@ INVALID = {
         "- [x] a",
         "survey questions have no correct choice; remove the [x]",
     ),
+    "generated-by-empty": (
+        '---\ntitle: T\ngenerated_by: "  "\n---\n\n## Q\n\n- [x] a\n- [ ] b\n',
+        "generated_by",
+        "generated_by must be a non-empty one-line string",
+    ),
     "survey-pass-mark": (
         "---\ntitle: T\nmode: survey\npass_mark: 50\n---\n\n## Q\n\n- [ ] a\n- [ ] b\n",
         "pass_mark",

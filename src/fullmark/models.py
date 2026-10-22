@@ -191,6 +191,19 @@ class FrontMatter(BaseModel):
     pass_mark: float | None = None
     pick: int | None = None  # question bank: draw this many per attempt
     tags: list[str] = []
+    generated_by: str | None = None  # exact model ID that wrote this version
+
+    @field_validator("generated_by", mode="before")
+    @classmethod
+    def _gb(cls, v: Any) -> Any:
+        if v is not None and (
+            not isinstance(v, str) or not v.strip() or "\n" in v or "\r" in v
+        ):
+            raise ValueError(
+                "generated_by must be a non-empty one-line string, "
+                "the exact model ID that wrote the quiz (for example claude-opus-5-5)"
+            )
+        return v.strip() if isinstance(v, str) else v
 
     @field_validator("title")
     @classmethod

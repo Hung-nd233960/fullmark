@@ -666,6 +666,7 @@ def checked(folder: Path, capsys, *extra):
         f
         for f in json.loads(capsys.readouterr().out)
         if f.get("rule", "").startswith("brief.")
+        and f["rule"] != "brief.generated-by"  # covered in test_generated_by.py
     ]
 
 

@@ -45,6 +45,7 @@ def inspect_quiz(quiz: Quiz) -> dict:
         "untagged": sum(1 for q in qs if not q.tags),
         "single_answer_positions": dict(sorted(positions.items())),
         "time_limit": quiz.meta.time_limit,
+        "generated_by": quiz.meta.generated_by,
         "shuffle_choices": quiz.meta.shuffle_choices,
     }
 
@@ -69,6 +70,8 @@ def render_inspect(d: dict) -> str:
         pos = ", ".join(f"{k} {v}" for k, v in d["single_answer_positions"].items())
         shuf = " (choices are shuffled)" if d["shuffle_choices"] else ""
         out.append(f"Single-choice answer positions: {pos}{shuf}")
+    if d.get("generated_by"):
+        out.append(f"Written by: {d['generated_by']}")
     out += ["", "Sections:"]
     pts = d["mode"] != "survey"
     out += [

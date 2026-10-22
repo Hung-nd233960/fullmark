@@ -8,7 +8,7 @@
   "properties": {
     "format": { "const": "fullmark-report" },
     "version": { "const": 1 },
-    "quiz": { "type": "object", "required": ["id", "title"], "description": "Copied from the results file." },
+    "quiz": { "type": "object", "required": ["id", "title"], "description": "Copied from the results file, including generated_by (the model that wrote the quiz) when the quiz names one." },
     "attempt": { "type": "object", "description": "Copied from the results file." },
     "results_hash": { "type": "string", "description": "Fingerprint of the results file; the grades template carries the same value." },
     "graded_from_source": { "type": "boolean", "description": "False when --quiz was not given and the browser grades were used." },

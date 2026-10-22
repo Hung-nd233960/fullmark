@@ -2740,6 +2740,7 @@
           source_file: DATA.source_file,
           built_at: DATA.built_at,
           fullmark_version: DATA.fullmark_version,
+          ...(DATA.generated_by ? { generated_by: DATA.generated_by } : {}),
         },
         attempt: {
           mode: SURVEY ? "survey" : "quiz",

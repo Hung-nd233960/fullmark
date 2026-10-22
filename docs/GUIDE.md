@@ -143,6 +143,7 @@ Everything is embedded in the HTML as data, so the file stays self-contained. Vi
 | `pick` | question bank: draw this many questions at random per attempt (see below) |
 | `shuffle_choices` | shuffle the order of choices |
 | `pass_mark` | percent of auto-graded points needed to pass |
+| `generated_by` | the exact model ID that wrote the quiz (for example `claude-opus-5-5`); it travels into the exported results, the grade report and `quiz inspect`, and is not shown on the page |
 
 Lock `theme: light` for an exam simulation whose real paper is printed (the IELTS template does); leave `auto` for practice drills.
 

@@ -17,7 +17,8 @@
         "hash": { "type": "string", "description": "Hash of the quiz source the page was built from." },
         "source_file": { "type": ["string", "null"] },
         "built_at": { "type": "string" },
-        "fullmark_version": { "type": "string" }
+        "fullmark_version": { "type": "string" },
+        "generated_by": { "type": "string", "description": "Exact model ID that wrote the quiz (front matter generated_by); absent when the quiz does not say." }
       }
     },
     "attempt": {

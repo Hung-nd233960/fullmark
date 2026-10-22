@@ -52,6 +52,10 @@ Prefer a survey file over asking more than about five questions in chat, or when
 4. When you are waiting for the answers, do not ask for a download: run `quiz serve quiz.md --once --open --json` in the background. The respondent presses **Finish**, the answers are written next to the quiz file, and the command exits 0 (2 if `--timeout` passes). Read the path from its JSON output.
 5. Read the answers with `quiz grade results.json --quiz quiz.md --json`: each question has `answer_text`, and nothing is scored or sent for AI grading.
 
+## Provenance
+
+Set `generated_by` in the front matter to your exact model ID as your environment states it (for example `claude-opus-5-5`); never guess a version from memory; if you do not know it, leave the field out. When you edit a quiz someone else wrote, set it to yourself.
+
 ## Start from a brief
 
 The quiz `.md` can live in a scratch folder when it will be registered in the library, since the library keeps its own copy. For a new quiz, look for `brief.yaml` in the quiz folder and read it before asking anything. It records the purpose, scope, material in `content/`, count, mix, difficulty, mode, weak topics (`focus_tags`: stress these) and language. If `request` is filled in, do not ask the brief questions again.

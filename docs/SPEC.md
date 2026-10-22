@@ -122,11 +122,12 @@ shuffle_choices: false                    # default false; per-question override
 multi_scoring: partial                    # partial (default) | all_or_nothing
 review: false                            # only `quiz review` sets this (true, with mode: survey); see 5.8
 pass_mark: 70                             # optional percent of auto-gradable points
+generated_by: claude-opus-5-5             # optional; exact model ID that wrote this version (non-empty, one line)
 tags: [calculus, derivatives]             # optional
 ---
 ```
 
-Unknown keys are an error (catches typos like `time_limt`).
+Unknown keys are an error (catches typos like `time_limt`). `generated_by` records responsibility for agent-written quizzes: it is copied into the page data, `quiz.generated_by` of the results export, the grade report, `review.json` (`quiz.generated_by`) and `quiz inspect`; `quiz check` gives the info finding `brief.generated-by` when a `brief.yaml` is present and the key is missing.
 
 ### 5.2 Sections
 

@@ -91,11 +91,18 @@ def match_items(
 # ---------------------------------------------------------------- the file
 
 
+def _quiz_ref(quiz: Quiz) -> dict:
+    ref = {"id": quiz.id, "source_hash": quiz.source_hash}
+    if quiz.meta.generated_by:
+        ref["generated_by"] = quiz.meta.generated_by
+    return ref
+
+
 def new_review(quiz: Quiz) -> dict:
     return {
         "version": 1,
         "by": FORMAT_BY,
-        "quiz": {"id": quiz.id, "source_hash": quiz.source_hash},
+        "quiz": _quiz_ref(quiz),
         "reviewed_at": now(),
         "items": {},
     }
@@ -145,7 +152,7 @@ def merge(base: dict, new_items: dict[str, dict], quiz: Quiz) -> dict:
         items[key] = it
     out["items"] = items
     out["by"] = FORMAT_BY
-    out["quiz"] = {"id": quiz.id, "source_hash": quiz.source_hash}
+    out["quiz"] = _quiz_ref(quiz)
     out["reviewed_at"] = now()
     return out
 

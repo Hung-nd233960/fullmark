@@ -178,6 +178,7 @@ def build_html(quiz: Quiz, base_dir: Path) -> BuildResult:
         "pass_mark": meta.pass_mark,
         "bank": {"pick": meta.pick} if quiz.has_bank else None,
         "tags": meta.tags,
+        "generated_by": meta.generated_by,
         "total_points": quiz.total_points,
         "preamble_html": r.block(quiz.preamble_md),
         "sections": [

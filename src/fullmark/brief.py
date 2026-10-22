@@ -561,6 +561,18 @@ def brief_findings(folder: Path, quiz: Quiz, text: str, file: str) -> Findings:
                 "brief.count-near",
             )
         )
+    if not quiz.meta.generated_by:
+        found.append(
+            Finding(
+                file,
+                1,
+                "info",
+                "no generated_by: an agent-written quiz should name the model "
+                "that wrote it",
+                None,
+                "brief.generated-by",
+            )
+        )
     if brief.count and abs(n - brief.count) > COUNT_TOLERANCE * brief.count:
         lo = int(brief.count * (1 - COUNT_TOLERANCE) + 0.999)
         hi = int(brief.count * (1 + COUNT_TOLERANCE))

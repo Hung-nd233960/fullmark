@@ -187,6 +187,10 @@
     "line": 8,
     "message": "survey questions have no correct choice; remove the [x]"
   },
+  "generated-by-empty": {
+    "line": 3,
+    "message": "generated_by must be a non-empty one-line string"
+  },
   "survey-pass-mark": {
     "line": 4,
     "message": "pass_mark is not allowed in survey mode"
