@@ -4,6 +4,8 @@
 
 `fullmark`: đưa vào Markdown, nhận về một bài quiz offline tự chấm điểm.
 
+**[Làm thử các quiz mẫu ngay trên trình duyệt](https://hung-nd233960.github.io/fullmark/)**: không cần cài đặt gì.
+
 *Muốn đạt điểm tuyệt đối, phải học một lượng tương đương. Đó là định luật Trao đổi Ngang giá.*
 
 Bản dịch này theo bản tiếng Anh; nếu hai bản khác nhau, bản tiếng Anh là bản đúng.
@@ -42,7 +44,7 @@ Cách phát hành một phiên bản: [docs/RELEASING.md](../RELEASING.md) (ti�
 
 Biến một file Markdown thành **một file HTML quiz duy nhất, tự chứa mọi thứ**: mở bằng cách nhấp đúp, tự chấm điểm khi không có mạng, và xuất câu trả lời của người học ra JSON để AI xem lại. Trang dùng bảng màu dịu: nền giấy nhạt ở chế độ sáng, xám xanh ở chế độ tối. Một quiz có thể khóa giao diện (`theme: light`), như ví dụ IELTS làm để giống màn hình thi thật.
 
-Tài liệu (tiếng Anh, trừ khi ghi khác): [hướng dẫn cho agent](../../AGENTS.md) ([tiếng Việt](AGENTS.md)), [hướng dẫn sử dụng](../GUIDE.md) ([HTML](../GUIDE.html)), [đặc tả thiết kế](../SPEC.md), và một [quiz về chính dự án này](../fullmark-project.html).
+Tài liệu (tiếng Anh, trừ khi ghi khác): [hướng dẫn cho agent](../../AGENTS.md) ([tiếng Việt](AGENTS.md)), [hướng dẫn sử dụng](../GUIDE.md) ([bản web](https://hung-nd233960.github.io/fullmark/guide.html)), [đặc tả thiết kế](../SPEC.md), và một [quiz về chính dự án này](https://hung-nd233960.github.io/fullmark/fullmark-project.html).
 
 ## Ảnh chụp màn hình
 
@@ -158,5 +160,5 @@ title: Thủ đô
   `uv run python tests/fixtures/make_fixtures.py`,
   `uv run python tests/make_grading_cases.py`,
   `uv run python src/fullmark/examples/make_assets.py`,
-  `uv run python docs/build_docs.py` (dựng lại `docs/GUIDE.html` và `docs/fullmark-project.html`).
+  `uv run python docs/build_docs.py` (dựng lại `docs/GUIDE.html`, `docs/fullmark-project.html` và `docs/index.html`, trang đầu của GitHub Pages).
 - KaTeX 0.16.47 được đóng gói sẵn trong `src/fullmark/vendor/katex/` (giấy phép MIT, xem `LICENSE` của nó).

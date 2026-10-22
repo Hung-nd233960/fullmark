@@ -1,0 +1,41 @@
+name: Pages
+
+# Publishes the built guide and example quizzes, which are committed (tests fail
+# when they are stale), so nothing is built here: the files are only arranged.
+on:
+  push:
+    branches: [main]
+    paths: ["docs/*.html", "examples/*/quiz.html", ".github/workflows/pages.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Arrange the site
+        run: |
+          mkdir -p _site/examples
+          cp docs/index.html _site/index.html
+          cp docs/GUIDE.html _site/guide.html
+          cp docs/fullmark-project.html _site/fullmark-project.html
+          for d in examples/*/; do
+            name=$(basename "$d")
+            cp "$d/quiz.html" "_site/examples/$name.html"
+          done
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+      - id: deployment
+        uses: actions/deploy-pages@v4

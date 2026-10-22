@@ -55,7 +55,7 @@ def test_guide_documents_every_command():
     assert commands is not None
     for name in commands:
         assert f"quiz {name}" in guide, name
-    assert (DOCS / "SPEC.md").is_file() and "(SPEC.md)" in guide
+    assert (DOCS / "SPEC.md").is_file() and "/blob/main/docs/SPEC.md)" in guide
 
 
 ROOT = Path(__file__).parent.parent
@@ -111,3 +111,12 @@ def test_vietnamese_docs_follow_the_english():
             f"{name}: {en[0]} sections in English, {vi[0]} in docs/vi"
         )
         assert en[1] == vi[1], f"{name}: commands differ {en[1] ^ vi[1]}"
+
+
+def test_pages_index_lists_every_example():
+    # docs/index.html is the GitHub Pages front page (.github/workflows/pages.yml)
+    index = (DOCS / "index.html").read_text(encoding="utf-8")
+    for quiz in sorted((DOCS.parent / "examples").glob("*/quiz.html")):
+        assert f'href="examples/{quiz.parent.name}.html"' in index, (
+            "run: uv run python docs/build_docs.py"
+        )

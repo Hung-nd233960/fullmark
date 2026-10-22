@@ -379,7 +379,7 @@ Source layout (under `src/fullmark/`):
 - `library/`: the `quiz library` commands (config, registry, git, terminal tables). It imports the modules above; none of them imports it, and a test enforces that.
 - `examples/`: the seven templates (`calculus`, `rust`, `ielts`, `medical`, `exam`, `survey`, `blank`) and their images.
 
-The design decisions are in [SPEC.md](SPEC.md).
+The design decisions are in [SPEC.md](https://github.com/Hung-nd233960/fullmark/blob/main/docs/SPEC.md).
 
 ## 10. Testing
 

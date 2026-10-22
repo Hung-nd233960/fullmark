@@ -4,6 +4,8 @@ English | [Tiếng Việt](docs/vi/README.md)
 
 `fullmark`: Markdown in, a self-grading offline quiz out.
 
+**[Try the example quizzes in your browser](https://hung-nd233960.github.io/fullmark/)**: nothing to install.
+
 *To obtain full marks, something of equal value must be studied. That is the law of Equivalent Exchange.*
 
 ## How this was made
@@ -42,7 +44,7 @@ Turn a Markdown file into **one self-contained HTML quiz** that opens by double-
 offline, and exports the learner's answers as JSON so an AI can review them. The page follows the
 muted pastel palette: soft paper in light mode, soft slate in dark mode. A quiz can lock its theme (`theme: light`), as the IELTS example does to resemble the real exam screen.
 
-Docs: [agent guide](AGENTS.md) ([Tiếng Việt](docs/vi/AGENTS.md)), [user guide](docs/GUIDE.md) ([HTML](docs/GUIDE.html)), [design spec](docs/SPEC.md), and a [quiz about this project](docs/fullmark-project.html).
+Docs: [agent guide](AGENTS.md) ([Tiếng Việt](docs/vi/AGENTS.md)), [user guide](docs/GUIDE.md) ([web](https://hung-nd233960.github.io/fullmark/guide.html)), [design spec](docs/SPEC.md), and a [quiz about this project](https://hung-nd233960.github.io/fullmark/fullmark-project.html).
 
 ## Screenshots
 
@@ -167,5 +169,5 @@ title: Capitals
   `uv run python tests/fixtures/make_fixtures.py`,
   `uv run python tests/make_grading_cases.py`,
   `uv run python src/fullmark/examples/make_assets.py`,
-  `uv run python docs/build_docs.py` (rebuilds `docs/GUIDE.html` and `docs/fullmark-project.html`).
+  `uv run python docs/build_docs.py` (rebuilds `docs/GUIDE.html`, `docs/fullmark-project.html` and `docs/index.html`, the GitHub Pages front page).
 - KaTeX 0.16.47 is vendored in `src/fullmark/vendor/katex/` (MIT, see its `LICENSE`).
