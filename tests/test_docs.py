@@ -88,3 +88,26 @@ def test_markdown_links_resolve():
             if not (md.parent / target).exists():
                 broken.append(f"{md.relative_to(ROOT)}: {target}")
     assert not broken, "\n".join(broken)
+
+
+def _outline(path):
+    """The ## headings count and the `quiz ...` commands, ignoring code fences."""
+    text = re.sub(
+        r"^```.*?^```",
+        "",
+        path.read_text(encoding="utf-8"),
+        flags=re.MULTILINE | re.DOTALL,
+    )
+    headings = re.findall(r"^## ", text, flags=re.MULTILINE)
+    commands = set(re.findall(r"`(quiz [a-z-]+(?: [a-z-]+)?)", text))
+    return len(headings), commands
+
+
+def test_vietnamese_docs_follow_the_english():
+    root = DOCS.parent
+    for name in ("README.md", "AGENTS.md"):
+        en, vi = _outline(root / name), _outline(DOCS / "vi" / name)
+        assert en[0] == vi[0], (
+            f"{name}: {en[0]} sections in English, {vi[0]} in docs/vi"
+        )
+        assert en[1] == vi[1], f"{name}: commands differ {en[1] ^ vi[1]}"

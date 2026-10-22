@@ -1,5 +1,7 @@
 # Fullmark Alchemist
 
+English | [Tiếng Việt](docs/vi/README.md)
+
 `fullmark`: Markdown in, a self-grading offline quiz out.
 
 *To obtain full marks, something of equal value must be studied. That is the law of Equivalent Exchange.*
@@ -40,7 +42,7 @@ Turn a Markdown file into **one self-contained HTML quiz** that opens by double-
 offline, and exports the learner's answers as JSON so an AI can review them. The page follows the
 muted pastel palette: soft paper in light mode, soft slate in dark mode. A quiz can lock its theme (`theme: light`), as the IELTS example does to resemble the real exam screen.
 
-Docs: [agent guide](AGENTS.md), [user guide](docs/GUIDE.md) ([HTML](docs/GUIDE.html)), [design spec](docs/SPEC.md), and a [quiz about this project](docs/fullmark-project.html).
+Docs: [agent guide](AGENTS.md) ([Tiếng Việt](docs/vi/AGENTS.md)), [user guide](docs/GUIDE.md) ([HTML](docs/GUIDE.html)), [design spec](docs/SPEC.md), and a [quiz about this project](docs/fullmark-project.html).
 
 ## Screenshots
 
@@ -125,16 +127,18 @@ Later, when needed: `sync`, `replay`, `--web` (see [docs/PLANNED.md](docs/PLANNE
 
 ### Backups
 
-The library is a plain folder under local git history, which protects against mistakes (a hand-edited snapshot, a broken file) but not against losing the drive. fullmark commits after each `init`, `register` and `take`, and it **never pushes**. Results hold your answers and the snapshots hold the answer keys, so push only to a **private** remote. To back up automatically, add a `post-commit` hook in the library's `.git/hooks` that runs `git push`; that is your hook, not fullmark's.
+The library is a plain folder under local git history, which protects against mistakes (a hand-edited snapshot, a broken file) but not against losing the drive. fullmark commits after each `init`, `register`, `take`, `grade`, `rename` and `rm`, and it **never pushes**. Results hold your answers and the snapshots hold the answer keys, so push only to a **private** remote. To back up automatically, add a `post-commit` hook in the library's `.git/hooks` that runs `git push`; that is your hook, not fullmark's.
 
 ## Question types
 
 Single choice, multiple answer, true/false, numeric (tolerances, fractions), short answer (accepted
-strings and regexes), fill-in-the-blank (also inside code blocks), labeled fields, essay and code
-(both exported for AI grading). LaTeX math (KaTeX, embedded only when used), highlighted code,
-images and audio are embedded as data URIs. Timers, instant or end-of-quiz feedback, resume after
-reload, and a versioned JSON export are built in. A choice can ask for a few words when picked
-(`- [ ] Something else {input="What is it?"}`); the text is exported and reported but never graded.
+strings and regexes), fill-in-the-blank (also inside code blocks), labeled fields, matching, ordering,
+essay and code (both exported for AI grading). Questionnaires add ungraded questions and rating
+scales (`mode: survey`). LaTeX math (KaTeX, embedded only when used), highlighted code, images and
+audio are embedded as data URIs. Timers, instant or end-of-quiz feedback, question banks with a
+random draw, resume after reload, Focus mode, and a versioned JSON export are built in. A choice can
+ask for a few words when picked (`- [ ] Something else {input="What is it?"}`); the text is exported
+and reported but never graded.
 
 A minimal quiz:
 
