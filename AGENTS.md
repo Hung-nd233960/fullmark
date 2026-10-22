@@ -93,7 +93,7 @@ uv run pytest -q --ignore=tests/e2e    # skip the browser tests
 Working rules (every change):
 
 - Read this file before changing anything.
-- One task, one commit. Run `uv run pytest -q` before every commit; it must pass. Known flakes under load, rerun alone before treating them as failures: `tests/e2e/test_panel.py::test_narrow_screen_keeps_progress_and_pills_in_the_header` and Windows socket aborts (WinError 10053).
+- One task, one commit. Run `uv run pytest -q` before every commit; it must pass. A known flake under load: Windows socket aborts (WinError 10053); rerun the test alone before treating it as a failure. In browser tests, wait for what a resize or a click changes (`wait_for_selector`, `wait_for_function`) instead of asserting at once.
 - A change to syntax updates `src/fullmark/guide.md` **and** `docs/GUIDE.md`. A change to the page (CSS, JS, template) or a packaged example ends with `uv run python scripts/sync_examples.py`.
 - Put all localStorage access through the `store()` wrapper in `quiz.js`; it copes with blocked storage.
 - Keep `ruff check`, `ruff format --check`, `biome lint src/fullmark/static/quiz.js` and `ty check src/fullmark/library src/fullmark/serve.py` clean.

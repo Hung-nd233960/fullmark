@@ -164,6 +164,8 @@ def test_narrow_screen_keeps_progress_and_pills_in_the_header(browser, kitchen_h
     assert pg.evaluate("document.documentElement.scrollWidth") <= 400
     # crossing the breakpoint moves the same elements, with no duplicate ids
     pg.set_viewport_size({"width": 1280, "height": 800})
+    # The move runs on the media query's change event, which fires after the resize.
+    pg.wait_for_selector(".qm-panel #progress", state="attached")
     assert pg.locator(".qm-panel #progress").count() == 1
     assert pg.locator(".qm-header .qm-pill").count() == 0
     assert pg.locator("[id=progress]").count() == 1
@@ -217,6 +219,9 @@ def test_focus_mode_hides_chrome_and_shows_a_clock(browser, kitchen_html):
     assert pg.locator("#export-btn").is_visible()
     # on a narrow screen the clock sits in the header
     pg.set_viewport_size({"width": 400, "height": 800})
+    pg.wait_for_selector(
+        ".qm-header #progress", state="attached"
+    )  # moved on the change event
     btn.click()
     pg.wait_for_function("document.body.classList.contains('qm-focus')")
     assert pg.locator(".qm-header #clock").is_visible()

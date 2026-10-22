@@ -1418,6 +1418,9 @@ def test_ordering_drag_past_tall_item_follows_pointer(page, kitchen_html):
 def test_ordering_drag_autoscrolls_near_viewport_edge(page, kitchen_html):
     start(page, kitchen_html)
     page.set_viewport_size({"width": 900, "height": 500})
+    page.wait_for_selector(
+        ".qm-header #progress", state="attached"
+    )  # moved on the change event
     page.evaluate(
         "id => document.querySelector('#card-' + id).scrollIntoView({block: 'start'})",
         "ord1",

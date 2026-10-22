@@ -161,5 +161,8 @@ def test_panel_states_and_focus_mode_pass_axe(browser, scheme, tmp_path):
     audit(pg, f"panel/{scheme} focus mode, submitted")
     pg.click("#focus-btn")
     pg.set_viewport_size({"width": 400, "height": 800})
+    pg.wait_for_selector(
+        ".qm-header #progress", state="attached"
+    )  # moved on the change event
     audit(pg, f"panel/{scheme} narrow, submitted")
     ctx.close()
