@@ -1,6 +1,6 @@
 [project]
 name = "fullmark"
-version = "0.10.1"
+version = "0.10.2"
 description = "Turn a Markdown file into a self-contained, self-grading HTML quiz."
 readme = "README.md"
 license = "MIT"

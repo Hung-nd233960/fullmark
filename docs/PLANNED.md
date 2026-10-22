@@ -79,6 +79,8 @@ Deferred, each to be added only when the need shows up:
 - Publish to PyPI as `fullmark`: open again; the work order is `docs/plans/FULLMARK_PLAN.md` (rename, public repo, packaging, trusted-publishing workflow). The one-time steps are the owner's.
 - ~~CI that runs the full suite on every push.~~ Done (`.github/workflows/ci.yml`).
 - ~~Automated accessibility audit (axe) on the built example pages.~~ Done (`tests/e2e/test_accessibility.py`, axe-core 4.10.2).
+- MCP wrapper: only if fullmark is needed outside Claude Code (Claude Desktop, claude.ai). A thin layer over check, build, register and grade returning their existing JSON; no new logic. Long waits (serve/review --once) do not fit one tool call.
+- Check config: one place (e.g. a `fullmark.toml` in the quiz folder or library, or a front matter block) that sets the `quiz check` thresholds that are hard-coded today (brief count tolerance 20% in `brief.py`; in `lint.py` a correct option more than 1.8 times the longest other option and over 40 characters, an explanation under 4 words, and answer-position skew over 50% once a quiz has 8 or more single-choice questions; in `build.py` the 20 MB size warning and the 100 MB limit) and what `--strict` means: which rules fail it, which are only warnings, which are off. Rule ids such as `brief.count` are the keys. Default behaviour stays as it is now.
 - Visual snapshots of the three examples in both themes, to catch palette or layout drift.
 
 ## Should this be rewritten in Rust?

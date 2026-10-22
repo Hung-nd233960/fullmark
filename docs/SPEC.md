@@ -502,7 +502,7 @@ Decided on 2026-10-21; the idea is `deck new --web` of presentation-kit (its `br
     "hash": "3f9c2a1b7d4e5f60",
     "source_file": "ielts-writing.md",
     "built_at": "2026-10-20T09:00:00Z",
-    "fullmark_version": "0.10.1"
+    "fullmark_version": "0.10.2"
   },
   "attempt": {
     "submitted": true,
