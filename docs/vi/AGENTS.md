@@ -72,7 +72,7 @@ Cấu trúc (`src/fullmark/`):
 | `render.py`, `build.py`, `theme.py`, `templates/`, `static/quiz.css` | Trang HTML. Màu chỉ nằm trong `theme.py`; CSS dùng `var(--name)` |
 | `report.py` | Báo cáo Markdown |
 | `checking.py`, `serve.py` | Các phát hiện phía sau `quiz check`; các máy chủ cục bộ (`watch --serve`, `serve`, `review`, `take`) và `serve_loop` |
-| `library/` | `quiz library`: cấu hình, sổ đăng ký, git, bảng trong terminal. Nó import lõi; lõi không bao giờ import nó (`tests/test_layers.py`); `cli.py` chỉ import nó bên trong hàm xử lý `library` |
+| `library/` | `quiz library`: cấu hình, sổ đăng ký, git, bảng trong terminal. Nó import core; core không bao giờ import nó (`tests/test_layers.py`); `cli.py` chỉ import nó bên trong hàm xử lý `library` |
 | `cli.py`, `templates_cmd.py`, `guide.md`, `agents.md` | CLI, `quiz new`, văn bản do `quiz guide` và `quiz agent-guide` in ra |
 | `examples/` | Các mẫu đóng gói, dùng bởi `quiz new` và test |
 | `vendor/katex/` | KaTeX 0.16.47 đóng gói sẵn. Không sửa |

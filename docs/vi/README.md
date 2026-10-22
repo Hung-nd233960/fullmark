@@ -82,12 +82,12 @@ Dùng cả hai: Anki cho những gì phải nhớ, Fullmark để kiểm tra b�
 4. Người học trả lời, bấm **Submit**, rồi **Export answers** (`results.json`).
 5. `quiz grade results.json --quiz quiz.md` viết báo cáo Markdown; AI chấm phần tự luận và code dựa vào đó.
 
-## Hai tầng: lõi và thư viện
+## Hai tầng: phần cơ bản (core) và thư viện
 
-- **Lõi** (`quiz check`, `build`, `serve`, `grade`, ...) làm việc với file: đưa vào Markdown, nhận ra một trang HTML hoặc một file JSON. Không cần cài đặt hay cấu hình gì, và chỉ cần nó là đủ để làm một quiz và chia sẻ.
-- **Thư viện** (`quiz library ...`, có từ 0.9.0, thiết kế ở [docs/plans/LIBRARY_PLAN.md](../plans/LIBRARY_PLAN.md)) giữ các quiz của riêng bạn trong một thư mục có git: đăng ký quiz một lần (file nguồn có thể là file tạm), làm bài bằng `quiz library take NAME`, và mỗi kết quả được lưu cạnh đúng phiên bản bạn đã làm. Trang được dựng ngay lúc mở, nên luôn dùng bản fullmark đang cài. Thư viện gọi đến lõi và không thêm gì vào trang, nên trang chia sẻ vẫn là file offline bình thường. Lõi không bao giờ phụ thuộc vào thư viện.
+- **Phần cơ bản** (`quiz check`, `build`, `serve`, `grade`, ...) làm việc với file: đưa vào Markdown, nhận ra một trang HTML hoặc một file JSON. Không cần cài đặt hay cấu hình gì, và chỉ cần nó là đủ để làm một quiz và chia sẻ.
+- **Thư viện** (`quiz library ...`, có từ 0.9.0, thiết kế ở [docs/plans/LIBRARY_PLAN.md](../plans/LIBRARY_PLAN.md)) giữ các quiz của riêng bạn trong một thư mục có git: đăng ký quiz một lần (file nguồn có thể là file tạm), làm bài bằng `quiz library take NAME`, và mỗi kết quả được lưu cạnh đúng phiên bản bạn đã làm. Trang được dựng ngay lúc mở, nên luôn dùng bản fullmark đang cài. Thư viện gọi đến phần cơ bản và không thêm gì vào trang, nên trang chia sẻ vẫn là file offline bình thường. Phần cơ bản không bao giờ phụ thuộc vào thư viện.
 
-## Các lệnh của lõi
+## Các lệnh cơ bản
 
 | Lệnh | Tác dụng |
 |---|---|
