@@ -335,24 +335,20 @@ Exit: `0` done, `1` check errors, `2` I/O error.
 
 ### quiz new
 
-**changed**: absorbs `templates` as `--list`, adds user templates and `--from`.
+**changed**: starts from a user template or an existing quiz as well as a built-in template. `templates` is now `quiz template list`.
 
 ```text
 quiz new TEMPLATE [PATH]
 quiz new --from FILE [--skeleton] [PATH]
-quiz new --list [--json]
 ```
 
-Copies a template and its assets to `PATH` (default: the current folder). Never overwrites: an existing file exits 2. Built-in templates: `calculus`, `rust`, `ielts`, `medical`, `exam`, `survey`, `blank`.
+Copies a template and its assets to `PATH` (default: the current folder). Never overwrites: an existing file exits 2.
 
 | Option | Meaning |
 |---|---|
-| `TEMPLATE` | A user template, else a built-in one |
+| `TEMPLATE` | A built-in or user template (`quiz template list`) |
 | `--from FILE` | Start from an existing quiz `.md` and its assets, in place of a named template |
 | `--skeleton` | With `--from`: keep the structure and drop the content (below) |
-| `--list` | Every template with its source: `built-in`, or `user` and its path. `--json`: `[{"name", "source", "path"}]` |
-
-**User templates.** A `templates/` folder next to `config.toml` holds your own. Each is a folder with a quiz `.md` (the only `.md` in it) and its `assets/`, named by the folder, so `templates/signals-week/` is used as `quiz new signals-week`. A user template of the same name as a built-in one wins, and `--list` shows which. No other location is searched, not even a project folder. To make one from a quiz you already have, copy it there, or run `new --from FILE --skeleton` with `PATH` set to the new template folder.
 
 **`--from` and `--skeleton`.** Without `--skeleton`, `--from` is a copy of the quiz and its assets. With it, the copy keeps:
 
@@ -362,9 +358,38 @@ Copies a template and its assets to `PATH` (default: the current folder). Never 
 
 It drops each question's text, choices, answer key and explanation, and the question ids, so the new quiz gets fresh ones and no review or attempt history is carried over. A skeleton fails `check` until it is filled in; that is intended.
 
-`--from` takes a file, since `new` is a core command and never touches a library. To start from a library quiz, run `quiz library share NAME --source` first and pass its folder's `.md` here.
+`--from` takes a file, since `new` is a core command and never touches a library. To start from a library quiz, run `quiz library share NAME --source` first and pass its folder's `.md` here, or store it as a template with `quiz library template add`.
 
-Exit: `0` copied, `2` unknown template or target exists, `1` `--from` file does not parse.
+Exit: `0` copied, `1` the `--from` file does not parse, `2` unknown template or target exists.
+
+### quiz template
+
+**new**. Replaces `quiz templates` and keeps the templates you start quizzes from.
+
+```text
+quiz template list [--json]
+quiz template add FILE [--as NAME] [--skeleton] [--replace] [--json]
+quiz template rm NAME [--yes] [--json]
+```
+
+**User templates.** A `templates/` folder next to `config.toml` holds your own. Each is a folder with one quiz `.md` (the only `.md` in it) and its `assets/`, named by the folder, so `templates/signals-week/` is used as `quiz new signals-week`. `quiz template add` writes these folders; you can also make one by hand. No other location is searched, not even a project folder. Built-in templates: `calculus`, `rust`, `ielts`, `medical`, `exam`, `survey`, `blank`. **Built-in names are reserved**: a user template cannot take one, so a name means one template. Core commands need no library, so templates do not either.
+
+**`template list`.** Every template with its source: `built-in`, or `user` and its path. A user folder whose name is, or later becomes, a built-in one (a release added that template after you made yours) is listed as `ignored`, with a note to rename the folder; `quiz new` uses the built-in one and says that it ignored a user template. `--json`: `[{"name", "source", "path", "ignored"}]`.
+
+**`template add FILE`.** Stores a quiz and its assets as a user template. The name is `--as NAME`, else the file name slugged.
+
+| Option | Meaning |
+|---|---|
+| `--as NAME` | Template name: a slug |
+| `--skeleton` | Store the structure without the content, as for `new --from --skeleton` |
+| `--replace` | Overwrite one of your templates of that name |
+
+- **Checks.** A full quiz must pass `check` under its own profile, so a broken template does not hand its errors to every quiz started from it. A skeleton fails `check` by design, so it gets a structural check instead: the front matter parses, sections and questions are well formed, the profile exists, the assets are there. Either must hold at least one question.
+- **Name collisions.** A name taken by a built-in template is refused (exit 1) and `--replace` does not change that. A name taken by one of your templates exits 1 and suggests a free name; `--replace` overwrites it. Adding content identical to what is stored under that name is `unchanged` (exit 0).
+
+**`template rm NAME`.** Deletes a user template's folder, after asking unless `--yes`. One template per command. A built-in template is refused (exit 1).
+
+Exit: `0` listed, added, unchanged or removed, `1` check errors, name taken or a built-in refused, `2` unknown template or I/O error.
 
 ### quiz guide, quiz agent-guide
 
@@ -510,6 +535,18 @@ Writes the clean offline page to share, or with `--source` the editable folder (
 
 Exit: `0` written, `2` unknown quiz or version.
 
+### quiz library template add
+
+**new**.
+
+```text
+quiz library template add NAME [--as TEMPLATE] [--version HASH] [--skeleton] [--replace] [--json]
+```
+
+Stores a quiz from the library as a user template (`quiz template add`, for a library quiz): its source and assets at the current version, or at `--version HASH` as for `share`. The version is checked under the rules it was registered with (`check.json`), so a version that registered can be stored; the other options and the name rules are those of `quiz template add`. It reads the library and does not change it, so nothing is committed. This is the only `library template` command: templates live in your config folder, not in the library, so you list and remove them with `quiz template list` and `quiz template rm`.
+
+Exit: `0` added or unchanged, `1` check errors or name taken, `2` unknown quiz, `3` no library.
+
 ### quiz library grade
 
 **changed**: adds `--web`, and keeps every grades file.
@@ -623,6 +660,6 @@ Exit: `0` imported or unchanged, `1` a quiz refused (the others still import) or
 | 0.x | 1.0 |
 |---|---|
 | `quiz watch FILE [--serve]` | `quiz build FILE --watch [--serve]` |
-| `quiz templates` | `quiz new --list` |
+| `quiz templates` | `quiz template list` |
 | `quiz review --tui` | Dropped. Reviewing a question needs it rendered (math, code, images), which a terminal does badly; `review` stays web-only |
 | `quiz brief --tui` | Built for real (it only exited 2 in 0.x) |

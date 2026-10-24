@@ -17,7 +17,7 @@ Gaps and contradictions in the 1.0 design docs, found while writing [USER_DESIGN
 - [ ] **`proposals/shelves.md` vs the freeze.** The proposal says to decide before v1 is frozen, but [TECHNICAL_DESIGN.md](TECHNICAL_DESIGN.md) froze the v1 components on 2026-10-24, and shelves as lists would change the library format that keeps the `public` flag. Decide now or record that v1 keeps the flag.
 
 - [ ] **`new --skeleton` details** ([COMMANDS.md](COMMANDS.md), `quiz new`). The spec says what is kept (front matter, section titles, intros and times, each question's type, points and tags) and dropped (text, choices, key, explanation, ids). Check it against the real question syntax once `quiz guide` is written: banks (`pick`), rubrics and per-question options may need a rule each. Also decide whether `--skeleton` warns when it drops a rubric.
-- [ ] **Template names and completion.** User templates share a namespace with the built-in ones; `proposals/cli_integration.md` completes template names and should read the user folder too.
+- [ ] **Template names and completion.** `proposals/cli_integration.md` completes `quiz new TEMPLATE`, `quiz template rm` and `--from` names; it should read the user templates folder too.
 
 ## Dropped from USER_DESIGN.md until the design says so
 

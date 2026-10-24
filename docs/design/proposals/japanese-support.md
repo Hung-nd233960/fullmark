@@ -25,7 +25,7 @@ Every JLPT section is single-answer multiple choice, so the existing `single` qu
 
 ## Templates
 
-`jlpt-vocabulary` and `jlpt-grammar` (single-answer, four choices, one section per exam part, the exam's timing in the section times), `jlpt-reading` once passages exist. Each at one level, with sample text in Japanese and instructions in English. They are ordinary built-in templates, no different from `ielts`; user templates (COMMANDS.md, `quiz new`) already let a learner keep their own level-specific ones.
+`jlpt-vocabulary` and `jlpt-grammar` (single-answer, four choices, one section per exam part, the exam's timing in the section times), `jlpt-reading` once passages exist. Each at one level, with sample text in Japanese and instructions in English. They are ordinary built-in templates, no different from `ielts`; user templates (COMMANDS.md, `quiz template`) already let a learner keep their own level-specific ones.
 
 ## Left out
 
