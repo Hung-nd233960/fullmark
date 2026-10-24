@@ -335,16 +335,36 @@ Exit: `0` done, `1` check errors, `2` I/O error.
 
 ### quiz new
 
-**changed**: absorbs `templates` as `--list`.
+**changed**: absorbs `templates` as `--list`, adds user templates and `--from`.
 
 ```text
 quiz new TEMPLATE [PATH]
+quiz new --from FILE [--skeleton] [PATH]
 quiz new --list [--json]
 ```
 
-Copies a template and its assets to `PATH` (default: the current folder). Never overwrites: an existing file exits 2. Templates: `calculus`, `rust`, `ielts`, `medical`, `exam`, `survey`, `blank`.
+Copies a template and its assets to `PATH` (default: the current folder). Never overwrites: an existing file exits 2. Built-in templates: `calculus`, `rust`, `ielts`, `medical`, `exam`, `survey`, `blank`.
 
-Exit: `0` copied, `2` unknown template or target exists.
+| Option | Meaning |
+|---|---|
+| `TEMPLATE` | A user template, else a built-in one |
+| `--from FILE` | Start from an existing quiz `.md` and its assets, in place of a named template |
+| `--skeleton` | With `--from`: keep the structure and drop the content (below) |
+| `--list` | Every template with its source: `built-in`, or `user` and its path. `--json`: `[{"name", "source", "path"}]` |
+
+**User templates.** A `templates/` folder next to `config.toml` holds your own. Each is a folder with a quiz `.md` (the only `.md` in it) and its `assets/`, named by the folder, so `templates/signals-week/` is used as `quiz new signals-week`. A user template of the same name as a built-in one wins, and `--list` shows which. No other location is searched, not even a project folder. To make one from a quiz you already have, copy it there, or run `new --from FILE --skeleton` with `PATH` set to the new template folder.
+
+**`--from` and `--skeleton`.** Without `--skeleton`, `--from` is a copy of the quiz and its assets. With it, the copy keeps:
+
+- the front matter (profile, look, time limit, language and so on);
+- each section's title, intro and suggested time;
+- for each question: its type, points and tags.
+
+It drops each question's text, choices, answer key and explanation, and the question ids, so the new quiz gets fresh ones and no review or attempt history is carried over. A skeleton fails `check` until it is filled in; that is intended.
+
+`--from` takes a file, since `new` is a core command and never touches a library. To start from a library quiz, run `quiz library share NAME --source` first and pass its folder's `.md` here.
+
+Exit: `0` copied, `2` unknown template or target exists, `1` `--from` file does not parse.
 
 ### quiz guide, quiz agent-guide
 
