@@ -55,6 +55,12 @@ These ideas are the product, and the rewrite keeps them unchanged.
 | Lint and format | Biome | Already used by the format hook |
 | Distribution | npm package `fullmark` with the bins `quiz` and `fullmark`. A single binary later, through `bun build --compile` or Node SEA, if needed | |
 
+**Licences.** fullmark is MIT. The CLI is bundled into one file and the pages embed Preact, KaTeX and fonts, so the dependencies' own licence files do not travel with them, and their notices must:
+
+- **`quiz --acknowledgements`** prints fullmark's licence, then each third-party package in the CLI bundle or the page: name, version, licence id, copyright lines, and the licence text, each distinct text printed once. The list is generated at release from esbuild's metafile and each package's `license` field and licence file, and committed as `THIRD_PARTY_NOTICES.md`; nobody writes it by hand.
+- **Every page** carries, in one HTML comment at the end, the notices for what that page embeds and nothing else: Preact always; KaTeX only when it has maths; each font's OFL notice only when the font is embedded (`--fonts`). The MIT and OFL texts appear once each. Shiki output is plain coloured HTML and carries no code, so it needs no notice.
+- **A test fails the build** when a bundled package has no entry, or has a licence outside an allow-list (MIT, ISC, BSD, Apache-2.0, OFL-1.1). A new dependency with another licence is a decision, not an accident.
+
 ## 4. Core data model
 
 ### Quiz IR
