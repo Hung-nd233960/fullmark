@@ -1,6 +1,6 @@
 # Proposal: `--background` for the one-shot server
 
-**Status: proposal, not in v1 scope.** The seam it needs is in v1 ([DESIGN.md](../DESIGN.md), section 7, "Seams for later features"): with `--json`, every one-shot server prints `{"status": "listening", "url", "port", "pid"}` as soon as it is up, before it waits for a submit.
+**Status: proposal, not in v1 scope.** The seam it needs is in v1 ([TECHNICAL_DESIGN.md](../TECHNICAL_DESIGN.md), section 7, "Seams for later features"): with `--json`, every one-shot server prints `{"status": "listening", "url", "port", "pid"}` as soon as it is up, before it waits for a submit.
 
 ## The idea
 

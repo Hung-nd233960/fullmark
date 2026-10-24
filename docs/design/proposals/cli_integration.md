@@ -1,6 +1,6 @@
 # Proposal: shell integration (completion, prediction, tldr page, Starship)
 
-**Status: proposal, cherry on top.** [DESIGN.md](../DESIGN.md) and [COMMANDS.md](../COMMANDS.md) do not include it. It fits late in 1.0 or in a 1.x release; nothing here changes a file format. One seam is worth keeping in v1 (below), so adding it later is cheap.
+**Status: proposal, cherry on top.** [TECHNICAL_DESIGN.md](../TECHNICAL_DESIGN.md) and [COMMANDS.md](../COMMANDS.md) do not include it. It fits late in 1.0 or in a 1.x release; nothing here changes a file format. One seam is worth keeping in v1 (below), so adding it later is cheap.
 
 ## The idea
 
@@ -48,7 +48,7 @@ One candidate per line, `value<TAB>description` (shown with spaces above), then 
 Why this and not a static script baked with every flag (the way `uv` or `rg` do it):
 
 - The interesting values are dynamic: library names, stamps, profiles from `fullmark.toml`. A static script cannot know them.
-- 1.0 starts in about 0.1 s (the 150 ms budget in DESIGN.md, section 8), so a call per Tab feels instant. The Python 0.x CLI took 0.65 s, which is why this did not make sense before.
+- 1.0 starts in about 0.1 s (the 150 ms budget in TECHNICAL_DESIGN.md, section 8), so a call per Tab feels instant. The Python 0.x CLI took 0.65 s, which is why this did not make sense before.
 - A static script goes stale after an upgrade; asking the program cannot.
 
 If Tab ever feels slow, the fallback is a hybrid: bake the subcommands and flags into the shim and call `__complete` only for values.

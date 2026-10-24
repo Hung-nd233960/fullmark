@@ -1,15 +1,15 @@
 # Open: how the features combine
 
-**Status: questions only, no answers yet.** Work through these on paper before the full feature set is committed. Each answer either fits the current design, needs a seam in v1 (then it goes into DESIGN.md), or stays with its proposal.
+**Status: questions only, no answers yet.** Work through these on paper before the full feature set is committed. Each answer either fits the current design, needs a seam in v1 (then it goes into TECHNICAL_DESIGN.md), or stays with its proposal.
 
 ## The pieces
 
 | Piece | Where | In v1 |
 |---|---|---|
-| Quiz, sections, banks, Plan and Attempt | DESIGN.md 4 | yes |
-| Theme, font, `look`, `--fonts` | DESIGN.md 8 | yes |
-| Printable paper (`build --print`) | DESIGN.md 8 | yes |
-| Languages (quiz `lang`, tool `lang`) | DESIGN.md 9 | yes |
+| Quiz, sections, banks, Plan and Attempt | TECHNICAL_DESIGN.md 4 | yes |
+| Theme, font, `look`, `--fonts` | TECHNICAL_DESIGN.md 8 | yes |
+| Printable paper (`build --print`) | TECHNICAL_DESIGN.md 8 | yes |
+| Languages (quiz `lang`, tool `lang`) | TECHNICAL_DESIGN.md 9 | yes |
 | Library, `take`, `--section`, `--missed`, `replay` | COMMANDS.md | yes |
 | Shelf, `publish`, `import` | COMMANDS.md | yes, one shelf |
 | Several shelves | [shelves.md](shelves.md) | no |
@@ -54,4 +54,4 @@ Marked **easy** where the current design already implies an answer, so the paper
 
 ## When this is done
 
-Every question above has one of three outcomes written next to it: **fits** (nothing to do), **seam** (a change to DESIGN.md before building), or **later** (recorded in the relevant proposal). Only the seams affect v1.
+Every question above has one of three outcomes written next to it: **fits** (nothing to do), **seam** (a change to TECHNICAL_DESIGN.md before building), or **later** (recorded in the relevant proposal). Only the seams affect v1.

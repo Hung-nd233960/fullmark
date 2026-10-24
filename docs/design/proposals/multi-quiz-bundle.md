@@ -1,6 +1,6 @@
 # Proposal: several quizzes in one HTML file
 
-**Status: proposal, not in v1 scope.** The seams it needs are in v1 ([DESIGN.md](../DESIGN.md), section 7, "Seams for later features"), so adding it later does not touch the core. Decide on it after v1 is in use.
+**Status: proposal, not in v1 scope.** The seams it needs are in v1 ([TECHNICAL_DESIGN.md](../TECHNICAL_DESIGN.md), section 7, "Seams for later features"), so adding it later does not touch the core. Decide on it after v1 is in use.
 
 ## The case
 
@@ -35,7 +35,7 @@ Ideas beyond these, not planned:
 ## Configuration, in two stages
 
 1. **Flags only:** `quiz` and `level` with `unlock: done`. The quizzes come in the order named on the command line; `--title` names the bundle. Results are per quiz, so the bundle has no grading logic.
-2. **`bundle.yaml`:** needed only for `exam` (per-paper times, one overall result) and per-step mastery thresholds. The overall result reuses the rubric modes of DESIGN.md section 6, with papers in place of criteria (`additive` adds points, `banded` averages bands and rounds, `round: ielts` gives the IELTS overall band). The file names papers and picks a mode; it has no arithmetic of its own.
+2. **`bundle.yaml`:** needed only for `exam` (per-paper times, one overall result) and per-step mastery thresholds. The overall result reuses the rubric modes of TECHNICAL_DESIGN.md section 6, with papers in place of criteria (`additive` adds points, `banded` averages bands and rounds, `round: ielts` gives the IELTS overall band). The file names papers and picks a mode; it has no arithmetic of its own.
 
 ```yaml
 title: IELTS mock 3

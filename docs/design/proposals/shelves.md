@@ -1,10 +1,10 @@
 # Proposal: several shelves and commands to manage them
 
-**Status: proposal, not in v1 scope.** [DESIGN.md](../DESIGN.md) and [COMMANDS.md](../COMMANDS.md) keep one shelf and the `public` flag. Decide on it before v1 is frozen, because two of its seams (below) change the library format.
+**Status: proposal, not in v1 scope.** [TECHNICAL_DESIGN.md](../TECHNICAL_DESIGN.md) and [COMMANDS.md](../COMMANDS.md) keep one shelf and the `public` flag. Decide on it before v1 is frozen, because two of its seams (below) change the library format.
 
 ## The idea
 
-A **shelf** is a published folder of quizzes (see DESIGN.md, section 10). Today a library has one, and a quiz is on it or not. This proposal allows several shelves (a public one, one per class or course), each holding **copies** of quizzes. The originals and their history stay in the library, so one quiz can be on many shelves:
+A **shelf** is a published folder of quizzes (see TECHNICAL_DESIGN.md, section 10). Today a library has one, and a quiz is on it or not. This proposal allows several shelves (a public one, one per class or course), each holding **copies** of quizzes. The originals and their history stay in the library, so one quiz can be on many shelves:
 
 ```text
 library (originals + history)

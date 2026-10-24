@@ -1,6 +1,6 @@
 # fullmark 1.0: command reference
 
-The spec sheet for every command of fullmark 1.0 ([DESIGN.md](DESIGN.md)). Each entry says what the command does, what it accepts, what it writes and how it exits. 1.0 is not compatible with 0.x; the tags only say how a command relates to the prototype, as a guide to what is new work:
+The spec sheet for every command of fullmark 1.0 ([TECHNICAL_DESIGN.md](TECHNICAL_DESIGN.md)); how the commands fit together, and why, is in [USER_DESIGN.md](USER_DESIGN.md). Each entry says what the command does, what it accepts, what it writes and how it exits. 1.0 is not compatible with 0.x; the tags only say how a command relates to the prototype, as a guide to what is new work:
 
 - **same**: behaves as in 0.x.
 - **changed**: exists in 0.x but behaves differently here.
@@ -32,9 +32,9 @@ The program is `quiz`. `fullmark` runs the same program, for systems where anoth
 | `--version` | Print `fullmark X.Y.Z` (top level only) |
 | `--profile P` | The check profile, on every command that runs `check` (`check`, `build`, `serve`, `review`, `inspect`, `rules`, `library register`). Overrides the quiz's `profile:` |
 | `--config TOML` | Use this config file instead of looking for the nearest `fullmark.toml`. Same commands as `--profile` |
-| `--fonts quiz\|all\|none` | Which fonts the page embeds, on every command that writes a page (`build`, `serve`, `library take`, `library replay`, `library share`, `library publish`). `quiz`: the quiz's own font; `all`: every font, about 0.5 MB, so a learner can switch freely; `none`: no embedded font, the smallest page. Default: `fonts` in `config.toml`, else `quiz`. `publish` remembers its value in the shelf manifest. See [DESIGN.md](DESIGN.md), section 8 |
+| `--fonts quiz\|all\|none` | Which fonts the page embeds, on every command that writes a page (`build`, `serve`, `library take`, `library replay`, `library share`, `library publish`). `quiz`: the quiz's own font; `all`: every font, about 0.5 MB, so a learner can switch freely; `none`: no embedded font, the smallest page. Default: `fonts` in `config.toml`, else `quiz`. `publish` remembers its value in the shelf manifest. See [TECHNICAL_DESIGN.md](TECHNICAL_DESIGN.md), section 8 |
 
-How the profile and the config are chosen is in [DESIGN.md](DESIGN.md), section 5. A malformed config file, or an unknown profile given with `--profile`, exits 2 with the config's `file:line`.
+How the profile and the config are chosen is in [TECHNICAL_DESIGN.md](TECHNICAL_DESIGN.md), section 5. A malformed config file, or an unknown profile given with `--profile`, exits 2 with the config's `file:line`.
 
 ### Names, ids and stamps
 
@@ -50,7 +50,7 @@ How the profile and the config are chosen is in [DESIGN.md](DESIGN.md), section 
 | `FULLMARK_CONFIG` | Path of `config.toml`, in place of `%APPDATA%\fullmark\config.toml` on Windows or `~/.config/fullmark/config.toml` on Linux |
 | `FULLMARK_LIBRARY` | Library folder for this shell, overriding the config. `library status` warns when it is set |
 | `NO_COLOR` | Same as `--plain` |
-| `FULLMARK_LANG` | Tool language, `en` or `vi`, overriding `lang` in `config.toml`. Changes messages only, never rule ids, JSON keys or exit codes. The quiz page's language comes from the quiz's `lang:` instead ([DESIGN.md](DESIGN.md), section 9) |
+| `FULLMARK_LANG` | Tool language, `en` or `vi`, overriding `lang` in `config.toml`. Changes messages only, never rule ids, JSON keys or exit codes. The quiz page's language comes from the quiz's `lang:` instead ([TECHNICAL_DESIGN.md](TECHNICAL_DESIGN.md), section 9) |
 
 ### Files
 
@@ -143,7 +143,7 @@ Checks the quiz (under the profile, as `check` does), then writes one self-conta
 | `--open` | Open the page after building |
 | `--attempt RESULTS` | Build the page **already submitted** with this attempt: its answers, right and wrong, explanations, and **Retry missed** working. Exit 1 if the attempt's `quizHash` does not match `FILE`, naming the version the attempt was taken on |
 | `--grades GRADES` | With `--attempt`: show these agent grades for essays and code. Without it they show as pending |
-| `--print` | Write a static printable paper instead of the interactive page (DESIGN.md, section 8). Default output: `FILE` with `-print.html`. Print it, or save it as PDF from the browser |
+| `--print` | Write a static printable paper instead of the interactive page (TECHNICAL_DESIGN.md, section 8). Default output: `FILE` with `-print.html`. Print it, or save it as PDF from the browser |
 | `--answers` | With `--print`: `none` (default, an exam paper), `key` (an answer key on a new page after the paper) or `inline` (answers and explanations under each question) |
 | `--seed S` | With `--print`: shuffle questions and options reproducibly, so different seeds give different versions of the same exam, each with a matching key |
 | `--built-at ISO` | Pin the build time, so a build is byte-identical across runs. Default: now |
@@ -284,7 +284,7 @@ quiz grade RESULTS --quiz FILE --web [--grades GRADES] [--name NAME] [--open]
                    [--timeout SECONDS] [--port N] [--json]
 ```
 
-Re-grades an attempt with the shared grader and writes a report: score, per-section and per-tag results, every wrong answer with its explanation, and the essays and code laid out for a grader (each question's text, the answer, word count, rubric with criterion ids and maximums, and the sample answer). The rubric modes and the grades format are in [DESIGN.md](DESIGN.md), section 6.
+Re-grades an attempt with the shared grader and writes a report: score, per-section and per-tag results, every wrong answer with its explanation, and the essays and code laid out for a grader (each question's text, the answer, word count, rubric with criterion ids and maximums, and the sample answer). The rubric modes and the grades format are in [TECHNICAL_DESIGN.md](TECHNICAL_DESIGN.md), section 6.
 
 | Argument or option | Meaning |
 |---|---|

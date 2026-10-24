@@ -1,6 +1,6 @@
 # Proposal: `quiz library import --clone`
 
-**Status: proposal, not evaluated, not in v1 scope.** [DESIGN.md](../DESIGN.md) and [COMMANDS.md](../COMMANDS.md) do not include it. Decide on it after `publish` and `import` (step 5 of the work order) have been used for a while.
+**Status: proposal, not evaluated, not in v1 scope.** [TECHNICAL_DESIGN.md](../TECHNICAL_DESIGN.md) and [COMMANDS.md](../COMMANDS.md) do not include it. Decide on it after `publish` and `import` (step 5 of the work order) have been used for a while.
 
 ## The idea
 

@@ -1,6 +1,6 @@
 # Proposal: plain Markdown export for Word and Typst
 
-**Status: proposal, not in v1 scope.** v1 prints through `quiz build --print` and the browser ([DESIGN.md](../DESIGN.md), section 8, "Printable paper").
+**Status: proposal, not in v1 scope.** v1 prints through `quiz build --print` and the browser ([TECHNICAL_DESIGN.md](../TECHNICAL_DESIGN.md), section 8, "Printable paper").
 
 ## The idea
 

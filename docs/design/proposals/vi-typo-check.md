@@ -1,6 +1,6 @@
 # Proposal: Vietnamese typo checks in `check`
 
-**Status: idea, not in v1 scope.** [DESIGN.md](../DESIGN.md) and [COMMANDS.md](../COMMANDS.md) do not include it. Judged too complicated for v1; revisit if typos in Vietnamese quizzes, especially in answer keys, turn out to be a real problem in use.
+**Status: idea, not in v1 scope.** [TECHNICAL_DESIGN.md](../TECHNICAL_DESIGN.md) and [COMMANDS.md](../COMMANDS.md) do not include it. Judged too complicated for v1; revisit if typos in Vietnamese quizzes, especially in answer keys, turn out to be a real problem in use.
 
 ## The idea
 

@@ -1,6 +1,6 @@
 # Proposal: `quiz guide --web`
 
-**Status: proposal, not in v1 scope.** The seam it needs is in v1 ([DESIGN.md](../DESIGN.md), section 7, "Seams for later features"): every syntax example in the guide is a `quiz-example` block that passes `check`.
+**Status: proposal, not in v1 scope.** The seam it needs is in v1 ([TECHNICAL_DESIGN.md](../TECHNICAL_DESIGN.md), section 7, "Seams for later features"): every syntax example in the guide is a `quiz-example` block that passes `check`.
 
 ## The idea
 

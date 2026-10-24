@@ -2,13 +2,13 @@
 
 ## Decision (2026-10-24)
 
-**fullmark 1.0 is a from-scratch rewrite in TypeScript, with no compatibility with 0.x** (the Python prototype, last 0.10.2). The design is [DESIGN.md](DESIGN.md).
+**fullmark 1.0 is a from-scratch rewrite in TypeScript, with no compatibility with 0.x** (the Python prototype, last 0.10.2). The design is [TECHNICAL_DESIGN.md](TECHNICAL_DESIGN.md).
 
 What changed since the analysis below, which said "don't migrate now":
 
 - **fullmark has one user.** Compatibility would protect only the owner, who can move their own data once. So the migration's main cost, matching 0.x's every message, exit code, HTML byte and pixel (option E's "fidelity" risk, steps 1 to 3 of the strangler fig), no longer applies.
 - **The new requirements are large** (Vietnamese from day one, themes and fonts, printable papers, rubric modes, profiles). Building them in 0.x and again in 1.0 would do the work twice.
-- **What carries over is knowledge, not formats:** 0.x's grading test cases and fixtures become 1.0's first tests, and the owner's history is converted once by a throwaway script (DESIGN.md, section 12, step 6).
+- **What carries over is knowledge, not formats:** 0.x's grading test cases and fixtures become 1.0's first tests, and the owner's history is converted once by a throwaway script (TECHNICAL_DESIGN.md, section 12, step 6).
 
 TypeScript stays the choice for the reasons in the table below: one grader for the page and the CLI, markdown-it as the original of the parser already in use, and Node already installed.
 

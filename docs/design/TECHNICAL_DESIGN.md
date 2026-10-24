@@ -1,6 +1,6 @@
-# fullmark 1.0: design
+# fullmark 1.0: technical design
 
-The design of fullmark 1.0, a rewrite in TypeScript. fullmark 0.x (Python, last 0.10.2 at commit `1359b71`) was the prototype: 1.0 keeps its ideas and fixes what it could not fix cheaply. The command reference is [COMMANDS.md](COMMANDS.md); why 1.0 is a rewrite and not a migration is in [fullmark-migration.md](fullmark-migration.md).
+The design of fullmark 1.0, a rewrite in TypeScript. fullmark 0.x (Python, last 0.10.2 at commit `1359b71`) was the prototype: 1.0 keeps its ideas and fixes what it could not fix cheaply. What fullmark is for and how people and agents work with it is [USER_DESIGN.md](USER_DESIGN.md); the command reference is [COMMANDS.md](COMMANDS.md); why 1.0 is a rewrite and not a migration is in [fullmark-migration.md](fullmark-migration.md).
 
 **No compatibility with 0.x.** fullmark has one user, so 1.0 reads no 0.x quiz, results, grades or library format, and copies no 0.x behaviour for its own sake. Two things carry over as knowledge, not as compatibility: 0.x's grading test cases (`grading_cases.json`) and fixtures become 1.0's starting tests, and the owner's own history is converted once by a throwaway script outside the product (section 12).
 
@@ -616,7 +616,7 @@ English and Vietnamese from v1. Every user-facing string goes through a message 
 | Document | Languages |
 |---|---|
 | README, `quiz guide` (authoring reference), templates' sample text, form help in the brief question file | English and Vietnamese (`README.vi.md`; `guide` follows the tool language) |
-| `DESIGN.md`, `COMMANDS.md`, `AGENTS.md` (`quiz agent-guide`), JSON Schemas, code comments | English only |
+| `TECHNICAL_DESIGN.md`, `COMMANDS.md`, `AGENTS.md` (`quiz agent-guide`), JSON Schemas, code comments | English only |
 
 English is the source. Each Vietnamese document starts with the commit of the English text it translates, and a test fails when the English file has changed since, so drift is visible instead of silent.
 
