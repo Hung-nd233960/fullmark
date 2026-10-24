@@ -190,6 +190,7 @@ These are written up in `proposals/`. They are ideas, not promises, and nothing 
 | [guide-web.md](proposals/guide-web.md) | `quiz guide --web`, the guide with live examples | every guide example is a `quiz-example` block that passes `check` |
 | [markdown-export.md](proposals/markdown-export.md) | Plain Markdown paper for pandoc, Word and Typst | `build --print` |
 | [import-clone.md](proposals/import-clone.md) | `library import --clone` from a Git URL | `publish` and `import` |
+| [japanese-support.md](proposals/japanese-support.md) | JLPT N5 to N3 practice: shared reading passages, furigana, `lang="ja"` text, `jlpt-*` templates | the `single` type and embedded audio, which already suffice for vocabulary, grammar and listening |
 | [vi-typo-check.md](proposals/vi-typo-check.md) | Rules that catch impossible Vietnamese syllables | the rule registry |
 | [cli_integration.md](proposals/cli_integration.md) | Shell completion, prediction, a tldr page, a prompt segment | none needed |
 | [interactions.md](proposals/interactions.md) | Open questions about how the features combine | |
