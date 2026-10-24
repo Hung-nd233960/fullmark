@@ -473,6 +473,8 @@ Formats need nothing: a bundle exports one `results-v2` file per quiz taken, and
 
 **A visual guide** (`quiz guide --web`, [proposals/guide-web.md](proposals/guide-web.md)). Every syntax example in the authoring guide is a fenced `quiz-example` block holding a valid quiz fragment, in both languages. In v1 this already pays off: a test runs `check` on every example, so the guide cannot document syntax the parser rejects. The terminal renderer shows these blocks as ordinary highlighted Markdown.
 
+**Running the server in the background** (`--background`, [proposals/background-serve.md](proposals/background-serve.md)). With `--json`, every one-shot server prints a `listening` line (URL, port, pid) before it waits, so a background flag is only a wrapper that starts a detached copy, forwards that line and exits.
+
 ## 8. Page UI and themes
 
 ### Start from 0.x's look, build it fresh

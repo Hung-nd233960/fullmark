@@ -23,7 +23,7 @@ The program is `quiz`. `fullmark` runs the same program, for systems where anoth
 
 | Option | Meaning |
 |---|---|
-| `--json` | Print the outcome as one JSON object on stdout. Human text goes to stderr. With `--json`, a command never prompts |
+| `--json` | Print the outcome as one JSON object on stdout. Human text goes to stderr. With `--json`, a command never prompts. Commands that run the one-shot server (`serve`, `review`, `brief --web`, `grade --web`, `library take`) first print a `listening` line, so the outcome is the second line: see `serve` |
 | `--plain` | Plain text with no colours, even in a terminal. `NO_COLOR` does the same |
 | `--open` / `--no-open` | Open, or don't open, the page in the default browser |
 | `--port N` | Port on 127.0.0.1 for the one-shot server. Default: a free port |
@@ -172,7 +172,7 @@ Serves the page on 127.0.0.1. When the learner presses **Submit** (or **Finish**
 | `--focus` | Start with Focus mode on (fullscreen with a clock) |
 | `--section S` | Serve only this section. Results record `plan.source: "section"` |
 | `--autosave PROGRESS` | Keep the attempt in progress in this file, so it resumes after the server or the browser closes. Deleted on submit |
-| `--json` | `{"status": "submitted" \| "timeout", "results", "score"}` |
+| `--json` | Two JSON lines. As soon as the server is up: `{"status": "listening", "url", "port", "pid"}`. At the end: `{"status": "submitted" \| "timeout", "results", "score"}`. A caller running `serve` in the background reads the URL from the first line |
 
 Exit: `0` submitted, `1` check errors in `FILE`, `2` timeout or usage error.
 
