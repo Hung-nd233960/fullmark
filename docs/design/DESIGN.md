@@ -390,7 +390,7 @@ Everything is stored in plain files, never a database, because the library is a 
 
 | Format | For | Examples |
 |---|---|---|
-| TOML | configuration people write | `config.toml`, `library.toml`, `fullmark.toml` |
+| TOML | configuration people write | `config.toml`, `library.toml`, `fullmark.toml`, build files |
 | YAML | structured content people write | quiz front matter, `brief.yaml`, the brief question file |
 | JSON | anything the tool or the page writes | results, reports, grades, review, manifests, `check.json` |
 
@@ -676,7 +676,7 @@ Not in v1: terminal forms other than `brief --tui` (`review` needs rendered ques
 | Step | Content | Done when |
 |---|---|---|
 | 0 | Bring over 0.x's test data: `grading_cases.json`, examples and fixtures, rewritten in 1.0 syntax | The grading cases load as vitest cases; every example is valid 1.0 Markdown |
-| 1 | Core: the message catalogs (every string through them from here on), IR with ids and slugs, Plan, Attempt, rule registry with ids, config and profiles, custom checks, grade, rubric modes and `grades-v2`; `check`, `rules`, `build`, `grade` | All examples check and build; golden files reviewed and committed |
+| 1 | Core: the message catalogs (every string through them from here on), IR with ids and slugs, Plan, Attempt, rule registry with ids, config and profiles, custom checks, grade, rubric modes and `grades-v2`; `check`, `rules`, `build` (with several files and `--build-file`), `grade` | All examples check and build; golden files reviewed and committed; three quizzes, one broken, give two pages, exit 1 and the right JSON lines, through files and through a build file |
 | 2 | Page runtime: Preact components on the Attempt reducer, the theme and font registries with the five token sets and four fonts, the contrast and glyph tests, plus `build --attempt` and `build --print`; Vietnamese page chrome | Playwright and axe pass; screenshot baselines reviewed and committed; a replayed page matches the original submitted page; a `vi` example passes the same tests |
 | 3 | `serve` (with `--section`), `review`, `grade --web`, `brief` (flags, `--web`, `--tui`), `stats`, `inspect`, `new`, `build --watch` | Contract tests pass for each; the same answers through flags, `--web` and `--tui` write byte-identical `brief.yaml` files |
 | 4 | Library: init, register, take (with `--section` and `--missed`), replay and the rest | History-based tests pass |

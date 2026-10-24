@@ -63,6 +63,7 @@ How the profile and the config are chosen is in [DESIGN.md](DESIGN.md), section 
 | `*-grades.json` | `grades-v2`: the grader's identity, and per question the rubric mode with scores or bands per criterion and notes | template from `grade --json`, filled in by an agent or through `grade --web` |
 | `review.json` | `review-v1`: keep, fix or drop per question | `review` |
 | `brief.yaml` plus `content/` | brief | `brief` |
+| build file (`build.toml`) | what `build --build-file` builds: files, and per entry the `build` options | the user |
 | `fullmark.toml` | check config: default profile, custom profiles, rule levels and options, custom checks | the user (agents never edit it to make `check` pass) |
 | `config.toml` | machine config: library path, publish folder, personal profiles, tool language (`lang`), default `fonts` | `library init`, `library publish`, the user |
 | `check.json` | the resolved rules a library version was registered with | `library register` |
@@ -119,23 +120,25 @@ Exit: `0`, `2` unknown rule or profile, or malformed config.
 
 ### quiz build
 
-**changed**: absorbs `watch`, adds `--attempt`, `--grades`, `--built-at`, `--lang` and `--print`.
+**changed**: absorbs `watch`, adds several files, `--build-file`, `--attempt`, `--grades`, `--built-at`, `--lang` and `--print`.
 
 ```text
-quiz build FILE [-o OUT] [--profile P] [--config TOML] [--strict] [--open]
+quiz build FILE... [-o OUT] [--profile P] [--config TOML] [--strict] [--open]
                 [--attempt RESULTS [--grades GRADES]]
                 [--print [--answers none|key|inline] [--seed S]]
                 [--built-at ISO] [--lang en|vi]
                 [--watch [--serve] [--port N]]
                 [--json]
+quiz build --build-file BUILD [FILE...] [-o DIR] [--json]
 ```
 
-Checks the quiz (under the profile, as `check` does), then writes one self-contained HTML page. Nothing is written if `check` finds errors.
+Checks the quiz (under the profile, as `check` does), then writes one self-contained HTML page. Nothing is written if `check` finds errors. With several files, each is checked and built on its own, one page per quiz; a page holding several quizzes is a bundle, not in v1 ([proposals/multi-quiz-bundle.md](proposals/multi-quiz-bundle.md)).
 
 | Argument or option | Meaning |
 |---|---|
-| `FILE` | The quiz `.md` |
-| `-o`, `--output OUT` | Output path. Default: `FILE` with `.html` |
+| `FILE...` | One or more quiz `.md` files. Globs (`signals/*.md`) are expanded by fullmark too, since PowerShell does not expand them. A folder is refused, so a `README.md` is never built by accident |
+| `-o`, `--output OUT` | Output path. Default: `FILE` with `.html`. With several files, `OUT` is a folder (created if missing) and each page keeps its source's name; a file path exits 2 |
+| `--build-file BUILD` | Build what a build file lists (below). `FILE`s given as well build only those of its entries |
 | `--strict` | Fail on warnings and write nothing |
 | `--open` | Open the page after building |
 | `--attempt RESULTS` | Build the page **already submitted** with this attempt: its answers, right and wrong, explanations, and **Retry missed** working. Exit 1 if the attempt's `quizHash` does not match `FILE`, naming the version the attempt was taken on |
@@ -147,9 +150,40 @@ Checks the quiz (under the profile, as `check` does), then writes one self-conta
 | `--lang en\|vi` | Language of the page chrome for this build, overriding the quiz's `lang:`. The questions themselves are not translated |
 | `--watch` | Rebuild whenever `FILE` or its `assets/` change. Keeps the last good page when a save has errors. Runs until Ctrl+C |
 | `--serve` | With `--watch`: serve on 127.0.0.1 and reload the browser after each rebuild. Only the served copy gets the reload code |
-| `--json` | `{"status", "output", "bytes", "warnings"}`. With `--watch`, one JSON line per rebuild |
+| `--json` | `{"status", "output", "bytes", "warnings"}`. With `--watch`, one JSON line per rebuild. With several files, one such line per file (with `"file"`), then `{"status": "done", "built", "failed"}` |
 
-Exit: `0` built, `1` check errors, `2` I/O error.
+Exit: `0` built, `1` check errors, `2` I/O error. With several files: every file is still checked and built, and the exit is the worst one.
+
+**Several files.**
+
+- Built one after another, in the order given (globs sorted). Parallel builds wait for a measured need.
+- `--attempt`, `--grades` and `--serve` take one file; with several they exit 2. `--watch` watches them all. `--open` opens nothing and says so. `--strict` applies to each file.
+- **Progress:** on a terminal, stderr shows one updating line, `[3/12] signals.md`, then each failure in full and a summary (`10 built, 2 failed`). Nothing is shown with `--json`, `--plain` or when stderr is not a terminal. No progress-bar dependency: a build takes milliseconds.
+
+**Build file.** A TOML file listing what to build and how, so a set of pages (a course folder, a printed exam with its key) rebuilds with one command. It is named on the command line; fullmark never looks for one. Paths are relative to the build file.
+
+```toml
+# build.toml
+out = "site"                          # default folder for every entry
+built-at = "2026-10-24T09:00:00+07:00" # pins the build time: byte-identical rebuilds
+lang = "vi"
+
+[[build]]
+files = ["signals/*.md", "systems/intro.md"]
+
+[[build]]
+files = ["exam/final.md"]
+print = true
+answers = "key"
+seed = 7
+lang = "en"                           # overrides the top level
+```
+
+- **Keys are `build` flag names**, top level as defaults, each `[[build]]` entry overriding them: `out`, `profile`, `config`, `strict`, `fonts`, `lang`, `built-at`, `print`, `answers`, `seed`. `files` is required in each entry. A flag on the command line beats both.
+- **Not allowed:** `attempt`, `grades`, `watch`, `serve`, `open`, `port`: they are about one run, not about what to build. These and unknown keys exit 2 with `file:line`, as a malformed config does.
+- **`library register --build-file`** reads the same file and registers its `files`.
+- **`bundle`** is reserved: in v1 it exits 2 with "bundles are not in v1". When bundles come, `bundle = "course.html"` on an entry builds its files as one page.
+- `--watch` with a build file also watches the build file.
 
 ### quiz serve
 
@@ -364,11 +398,12 @@ Exit: `0` healthy, `1` problems, `2` no library.
 
 ### quiz library register
 
-**changed**: records the resolved rules with the version.
+**changed**: records the resolved rules with the version, and takes several files.
 
 ```text
-quiz library register FILE [-n NAME | --update NAME] [--profile P] [--config TOML]
+quiz library register FILE... [-n NAME | --update NAME] [--profile P] [--config TOML]
                            [--strict] [--review REVIEW] [--json]
+quiz library register --build-file BUILD [FILE...] [--json]
 ```
 
 Checks the quiz, then copies its source, assets and brief into the library as a version, together with the resolved rules (`check.json`), and commits. Re-checking that version later uses the stored rules, even if the config changed. The original file can be deleted afterwards.
@@ -377,9 +412,19 @@ Checks the quiz, then copies its source, assets and brief into the library as a 
 |---|---|
 | `-n`, `--name NAME` | Name for a new quiz. Default: the slugged title |
 | `--update NAME` | Add a version to this existing quiz |
+| `--build-file BUILD` | Register the files a build file lists (`quiz build`), so a folder of quizzes registers without a long command. Only `files`, `profile`, `config` and `strict` are read, top level and per entry; the delivery keys (`out`, `lang`, `print` and the rest) are for `build` and are ignored here. A file listed in several entries (a quiz built both as a page and as a printed paper) is registered once; entries that give it different `profile`, `config` or `strict` exit 2. `FILE`s given as well register only those of its entries |
 | `--profile`, `--config`, `--strict`, `--review` | As for `check`. The config is looked up from `FILE`, then from the library root |
+| `--json` | One file: `{"status": "registered", "name", "version"}`. Several: `{"status": "registered" \| "problems", "registered": [{"file", "name", "version"}], "unchanged", "refused": [{"file", "reason", "suggest"}], "committed"}` |
 
 Exit: `0` registered, `1` check errors or name taken (the output suggests a free name), `3` no library.
+
+**Several files**, for moving a folder of quizzes in at once. Globs are expanded as for `build`.
+
+- **All or nothing, like `import`.** Every file is checked and every name resolved first; if any file has check errors or a taken name (including two files in the batch slugging to the same name), nothing is registered, every problem is listed, and the exit is 1. Otherwise one commit holds them all.
+- Each quiz gets its slugged title as its name. `-n` and `--update` name one quiz, so with several files they exit 2.
+- A file whose content is already the current version of the quiz registered from it is skipped as `unchanged`, so re-running the same command after adding one quiz registers only the new one. A file registered before and since edited is refused with the `--update NAME` command to run.
+- Progress on a terminal as for `build`: `[3/12] signals.md`.
+- Updating several quizzes in one go (matching each file to the quiz registered from it) is left out until a need shows; `list` already flags changed sources.
 
 ### quiz library list
 
@@ -477,7 +522,7 @@ Exit: `0`, `2` unknown quiz or no attempts.
 quiz library rename OLD NEW [--json]
 ```
 
-Changes a quiz's name. Its id and folder stay, and it stays public if it was. Commits.
+Changes a quiz's name. Its id and folder stay, and it stays public if it was. Commits. One quiz per command: a batch rename is a pattern language for a rare job.
 
 Exit: `0`, `1` name taken, `2` unknown quiz.
 
@@ -489,7 +534,7 @@ Exit: `0`, `1` name taken, `2` unknown quiz.
 quiz library rm NAME [--yes] [--force] [--json]
 ```
 
-**Deletes** a quiz with its versions and results, and commits, so `git -C LIBRARY revert HEAD` brings it back. Asks for confirmation unless `--yes`. Refused when the library is not its own git repository or the quiz folder has uncommitted changes (`--force` skips both). A public quiz is removed from the shelf at the next `publish`.
+**Deletes** a quiz with its versions and results, and commits, so `git -C LIBRARY revert HEAD` brings it back. Asks for confirmation unless `--yes`. Refused when the library is not its own git repository or the quiz folder has uncommitted changes (`--force` skips both). A public quiz is removed from the shelf at the next `publish`. One quiz per command, on purpose: a glob or a list makes a mass deletion one typo away, and each deletion is its own commit to revert.
 
 Exit: `0` deleted, `1` refused, `2` unknown quiz.
 

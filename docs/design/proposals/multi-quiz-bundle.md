@@ -59,7 +59,7 @@ Not a plugin (that would need an extension API larger than the feature) and not 
 | Several quizzes into one page | `build/`, which already takes a list |
 | `share ... --bundle` | `library/` |
 
-No `quiz bundle` command group. The existing commands accept a bundle: `quiz check bundle.yaml`, `quiz build bundle.yaml`, and in stage 1 `quiz build a.md b.md -o course.html`. A bundle gets the same exit codes, `--json` and `--fonts` as a quiz.
+No `quiz bundle` command group. The existing commands accept a bundle: `quiz check bundle.yaml`, `quiz build bundle.yaml`, and in stage 1 `quiz build a.md b.md --bundle -o course.html`, or `bundle = "course.html"` on an entry of a build file (COMMANDS.md, `quiz build`). Without `--bundle`, several files build several pages. A bundle gets the same exit codes, `--json` and `--fonts` as a quiz.
 
 ## Open questions
 
