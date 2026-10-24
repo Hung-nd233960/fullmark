@@ -24,12 +24,12 @@ Marked **easy** where the current design already implies an answer, so the paper
 ### Bundles ×
 
 - **Printing:** one paper per quiz, or one paper for the bundle? In `exam` mode, one booklet with a cover page and per-paper sections? Where do `--seed` versions go: per quiz, or one seed for the bundle?
-- **Shelves:** can a bundle sit on a shelf when some of its quizzes are not on it? Does a shelf's index list the bundle, its quizzes, or both? When a quiz changes, is the published bundle stale?
-- **Look:** the bundle has one theme and font (decided). Does `look: locked` on one quiz lock the whole bundle? Does `--fonts quiz` mean every quiz's font, or the bundle's?
-- **Languages:** can a bundle mix `en` and `vi` quizzes? If yes, which language is the left bar in?
-- **`--missed` and replay:** does a bundle have a "missed" view across its quizzes? Does replay open one quiz or the whole bundle with every attempt?
-- **Results:** `exam` mode gives one overall result. Where does it live: a new file next to the per-quiz results, or inside one of them? Does `stats` count it?
-- **Library:** is a bundle a thing in the library (with versions and history), or only a build input (`bundle.yaml`) outside it?
+- **Shelves:** can a bundle sit on a shelf when some of its quizzes are not on it? Does a shelf's index list the bundle, its quizzes, or both? (A bundle snapshots its papers, so it is never stale.)
+- **Look:** decided: a bundle's quizzes must share kind, `look`, theme, font and `lang` (`bundle.mixed-*` rules). Does `--fonts quiz` then mean the quizzes' shared font? (easy: yes)
+- **Languages:** decided: `lang` must match (the chrome is one catalog); question text may differ.
+- **`--missed` and replay:** replay is decided: `bundle replay` opens the whole bundle with one sitting's attempts (multi-quiz-bundle.md). `--missed` is decided: a session uses each quiz's history, a bundle uses its own sittings across all its papers. Open: `--missed` on an `exam` bundle.
+- **Results:** `exam` mode gives one overall result, computed by `bundle grade` and returned in its `overall` JSON. Open: does it also get a file next to the per-quiz results, and does plain `stats` count it? (`bundle stats` does.)
+- **Library:** decided (multi-quiz-bundle.md): a bundle is a registered library object that snapshots its papers, with its own results and `stats`; a session (`library take A B C`) is not an object and files results to each quiz.
 
 ### Shelves ×
 
@@ -43,7 +43,7 @@ Marked **easy** where the current design already implies an answer, so the paper
 
 - **Sections:** `--section` for a printed paper of one part only? (easy: same Plan)
 - **Banks:** a printed paper draws from banks with `--seed`, so the key must match the draw. (easy: the key comes from the same Plan)
-- **Attempts:** print a filled-in attempt with its marks, as a graded script? Useful for a teacher; needs the attempt and grades like `build --attempt`.
+- **Attempts:** print a filled-in attempt with its marks, as a graded script? Useful for a teacher; needs the attempt and grades like `replay`.
 - **Essays with rubrics:** does `--answers key` print the rubric, the sample answer, or both?
 - **Look:** prints on white always (decided). Does the chosen font carry over? (easy: yes, decided)
 

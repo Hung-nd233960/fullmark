@@ -2,28 +2,10 @@
 
 Gaps and contradictions in the 1.0 design docs, found while writing [USER_DESIGN.md](USER_DESIGN.md). Each item says where it is and, when there is one, the suggested fix. Remove an item when the docs are fixed.
 
-## Small fixes
+## Needs its own design
 
-- [ ] **`library import` contradicts itself** ([COMMANDS.md](COMMANDS.md), `quiz library import`). The text says every quiz must pass `check` before anything is written; the exit codes say exit 1 means "a quiz refused (the others still import)". Suggested: all or nothing, as batch `library register` now is, and reword exit 1.
-- [ ] **`serve` without `--once` in a terminal** ([COMMANDS.md](COMMANDS.md), `quiz serve`). `--once` is the default only when stdout is not a terminal, but nothing says what the server does after a submit when it is. `review`'s default is "as for serve", so it inherits the gap. Say whether it keeps accepting submits (and where each is written) until Ctrl+C or the timeout.
-- [ ] **Timeout defaults** ([COMMANDS.md](COMMANDS.md)). `serve` waits 1800 s and `library take` waits forever; `review`, `brief --web` and `grade --web` state no default. State one for each.
-- [ ] **Single-file `register` of unchanged content** ([COMMANDS.md](COMMANDS.md), `quiz library register`). Only the batch form defines `unchanged`, and the single-file `--json` lists only `registered`. Make one file behave like a batch of one: skipped as `unchanged`, exit 0.
+- [ ] **The quiz syntax.** The docs fix what a quiz contains (front matter, sections, questions with type, points, tags, key and explanation, banks, rubrics: [TECHNICAL_DESIGN.md](TECHNICAL_DESIGN.md), sections 4 and 6) but not how it is written in Markdown. [USER_DESIGN.md](USER_DESIGN.md) defers it to `quiz guide`, which does not exist yet. It is the largest open piece of the design: the parser, `check`'s fixed rules, the guide and its `quiz-example` blocks, the templates, `new --skeleton` and the agent's workflow all depend on it. 1.0 reads no 0.x quiz, so the syntax is open; 0.x's syntax is a source of ideas, not a format to match. Design it in its own document (`QUIZ_SYNTAX.md`) before writing `quiz guide`, not while writing it. Mark each field as **structure** or **content**, so `--skeleton` follows from the syntax (below).
 
-## Needs a decision
+## Waits on the quiz syntax
 
-- [ ] **Agent rules for 1.0.** The 0.x `AGENTS.md` had rules the 1.0 docs only partly restate: never run `library init` unasked, `rm` and `rename` only on request, never pass `--yes` or `--force`, `generated_by`, and what to do when the user cannot reach `127.0.0.1`. 1.0 states only the `--into` rule and the `fullmark.toml` rule. `quiz agent-guide` prints `AGENTS.md`, so it needs a section in the design, probably in [USER_DESIGN.md](USER_DESIGN.md). `generated_by` appears only in `brief.generated-by` and the files table, not in the rule catalogue.
-- [ ] **`serve FILE` given a built page** ([COMMANDS.md](COMMANDS.md), `quiz serve`). `FILE` may be "a page built from it", but `--section` and exit 1 (check errors) need the source. Either drop the page form or say which options it refuses.
-- [ ] **Surveys in the library.** Nothing says whether `library take`, `library grade` and `library stats` handle surveys; only `stats`' "Answers over time" table hints that they do.
-- [ ] **`proposals/shelves.md` vs the freeze.** The proposal says to decide before v1 is frozen, but [TECHNICAL_DESIGN.md](TECHNICAL_DESIGN.md) froze the v1 components on 2026-10-24, and shelves as lists would change the library format that keeps the `public` flag. Decide now or record that v1 keeps the flag.
-
-- [ ] **`new --skeleton` details** ([COMMANDS.md](COMMANDS.md), `quiz new`). The spec says what is kept (front matter, section titles, intros and times, each question's type, points and tags) and dropped (text, choices, key, explanation, ids). Check it against the real question syntax once `quiz guide` is written: banks (`pick`), rubrics and per-question options may need a rule each. Also decide whether `--skeleton` warns when it drops a rubric.
-- [ ] **Template names and completion.** `proposals/cli_integration.md` completes `quiz new TEMPLATE`, `quiz template rm` and `--from` names; it should read the user templates folder too.
-
-## Dropped from USER_DESIGN.md until the design says so
-
-These were 0.x behaviour, and the 1.0 docs don't mention them. Add them to the design if they stay.
-
-- [ ] Agents read every page of the material as text and as an image.
-- [ ] The agent ends its message after `register` with the command to start the quiz.
-- [ ] `register --update` warns about an attempt in progress on the old version.
-- [ ] Non-goal: no symbolic maths (`2x` and `x*2` are not compared as equal).
+- [ ] **`new --skeleton` details** ([COMMANDS.md](COMMANDS.md), `quiz new`). The current keep/drop list (keep front matter, section titles, intros and times, each question's type, points and tags; drop text, choices, key, explanation, ids) was written before the syntax and does not cover banks (`pick`), rubrics or per-question options. Proposed: no per-case rules. `--skeleton` keeps every field the syntax marks as structure and drops every field marked as content. Leaning: a bank keeps its `pick` count and blanks each question; a rubric is structure and is kept whole, so no warning about dropping one is needed. Settle when the syntax is.

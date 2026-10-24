@@ -10,6 +10,13 @@ What changed since the analysis below, which said "don't migrate now":
 - **The new requirements are large** (Vietnamese from day one, themes and fonts, printable papers, rubric modes, profiles). Building them in 0.x and again in 1.0 would do the work twice.
 - **What carries over is knowledge, not formats:** 0.x's grading test cases and fixtures become 1.0's first tests, and the owner's history is converted once by a throwaway script (TECHNICAL_DESIGN.md, section 12, step 6).
 
+**Version plan (2026-10-25).** fullmark 0.10.2 stays as the MVP; from now on its main use is surveys, as a dependency of document-kit and presentation-kit. fullmark 1.0 is the main implementation of quizzes and may diverge from 0.x behaviour. One such break: `quiz serve` takes only the quiz source, not a built page ([COMMANDS.md](COMMANDS.md), `quiz serve`). Another: the 1.0 library refuses surveys (`library.survey`), since 0.x now covers surveys for those kits; `serve` and `stats` still handle them.
+
+**0.10.2 becomes `fullmark-py` (2026-10-25).** Both kits are Python and today find 0.x as `quiz` on PATH (`quiz serve --once` as a subprocess), with no declared dependency; the quizmd → fullmark rename already broke one of them (presentation-kit issue 001). So 0.10.2 is renamed `fullmark-py`, gives up the `quiz` command (1.0 keeps it), and gains one Python function the kits call, such as `serve_survey(md_path, timeout) -> answers`. Each kit pins `fullmark-py==0.10.2` in its `pyproject.toml`, so 1.0's changes cannot reach it, and neither kit needs Node. The rest of 0.10.2 stays as it is, frozen apart from survey fixes. This work happens in the 0.x repo and the two kits, not in 1.0:
+
+1. In 0.x: rename the package, drop or rename the `quiz` bin, add `serve_survey`.
+2. In document-kit and presentation-kit: depend on `fullmark-py` pinned, call `serve_survey` instead of `quiz serve`, and close presentation-kit issue 001.
+
 TypeScript stays the choice for the reasons in the table below: one grader for the page and the CLI, markdown-it as the original of the parser already in use, and Node already installed.
 
 The rest of this file is the analysis of 2026-10-23, kept as the record.

@@ -1,6 +1,6 @@
 # Proposal: several shelves and commands to manage them
 
-**Status: proposal, not in v1 scope.** [TECHNICAL_DESIGN.md](../TECHNICAL_DESIGN.md) and [COMMANDS.md](../COMMANDS.md) keep one shelf and the `public` flag. Decide on it before v1 is frozen, because two of its seams (below) change the library format.
+**Status: the seams are adopted in v1 (2026-10-25); the `shelf ...` commands remain a proposal.** The v1 library format already has shelf membership as a list of entries (`shelves = [{ shelf = "public", kind = "quiz" }]`, `version` reserved), and the per-machine shelf folder in `config.toml` is keyed by shelf name ([TECHNICAL_DESIGN.md](../TECHNICAL_DESIGN.md), amendment of 2026-10-25). v1 commands touch only the shelf named `public`, through `publish NAME --on | --off`, and keep entries they do not know. Everything below the seams section is not in v1.
 
 ## The idea
 
@@ -51,9 +51,9 @@ Taking someone else's quizzes stays `library import`, which reads their shelf in
 
 - **`library.toml`** (committed, moves with the library): the shelves' names, titles, settings and which quizzes are on each.
 - **`config.toml`** (per machine): each shelf's folder path. On a new machine, `publish` exits 3 with "shelf `public` has no folder on this machine" and the command to set it.
-- **Migration:** a 1.0 library's `public = true` becomes membership of a shelf named `public`, using the remembered publish folder. Adopting this before 1.0 ships avoids even that.
+- **Migration:** none. The seams were adopted before 1.0 shipped, so a v1 library already has its `public` entries.
 
-## Seams needed in v1 if adopted
+## Seams adopted in v1
 
 1. **Membership is a list of entries, not a flag.** Each entry is `{ shelf, kind, version? }`, so a quiz can be on several shelves.
 2. **An entry has a kind**: `quiz` in v1, `bundle` later ([multi-quiz-bundle.md](multi-quiz-bundle.md)), so a shelf can list a bundle as one item.

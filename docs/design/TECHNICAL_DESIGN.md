@@ -1,10 +1,12 @@
 # fullmark 1.0: technical design
 
-The design of fullmark 1.0, a rewrite in TypeScript. fullmark 0.x (Python, last 0.10.2 at commit `1359b71`) was the prototype: 1.0 keeps its ideas and fixes what it could not fix cheaply. What fullmark is for and how people and agents work with it is [USER_DESIGN.md](USER_DESIGN.md); the command reference is [COMMANDS.md](COMMANDS.md); why 1.0 is a rewrite and not a migration is in [fullmark-migration.md](fullmark-migration.md).
+The design of fullmark 1.0, a rewrite in TypeScript. fullmark 0.x (Python, last 0.10.2 at commit `1359b71`) was the prototype: 1.0 keeps its ideas and fixes what it could not fix cheaply. 0.10.2 stays as the MVP, now mainly for surveys, and 1.0 may diverge from its behaviour ([fullmark-migration.md](fullmark-migration.md)). What fullmark is for and how people and agents work with it is [USER_DESIGN.md](USER_DESIGN.md); the command reference is [COMMANDS.md](COMMANDS.md); why 1.0 is a rewrite and not a migration is in [fullmark-migration.md](fullmark-migration.md).
 
 **No compatibility with 0.x.** fullmark has one user, so 1.0 reads no 0.x quiz, results, grades or library format, and copies no 0.x behaviour for its own sake. Two things carry over as knowledge, not as compatibility: 0.x's grading test cases (`grading_cases.json`) and fixtures become 1.0's starting tests, and the owner's own history is converted once by a throwaway script outside the product (section 12).
 
 **Status: v1 components frozen on 2026-10-24.** New features go to `proposals/`. How the features combine (bundles, shelves, printing and the rest) is still open, in [proposals/interactions.md](proposals/interactions.md); settle it before the full feature set is committed.
+
+**Amended 2026-10-25:** the library format keeps shelf membership as a list of entries, not a `public` flag: a quiz has `shelves = [{ shelf = "public", kind = "quiz" }]`, with an optional `version` reserved, and the per-machine shelf folder in `config.toml` is keyed by shelf name. v1 commands touch only the shelf named `public` (`quiz library publish NAME --on | --off` stays the interface) and keep entries they do not know. The `shelf ...` commands stay a proposal ([proposals/shelves.md](proposals/shelves.md)). Also amended: shared pages carry no server code (section 7, foundation 9).
 
 ## 1. What stays
 
@@ -129,6 +131,7 @@ Quality rules carried over from 0.x, now with ids and options. Their defaults st
 | `code.unknown-language` | warning | |
 | `brief.count` | warning | `tolerance` (0.2) |
 | `brief.mix`, `brief.content-kinds`, `brief.past-exams` | warning | |
+| `brief.generated-by` | warning | (a quiz written from a brief by an agent must set `generated_by` in its front matter, naming the agent and model; a hand-written quiz leaves it out) |
 | `build.size` | warning | `warn-mb` (20), `max-mb` (100, always an error above it) |
 
 New quality rules, off in `default` so behaviour does not change, and used by the stricter built-in profiles:
@@ -219,6 +222,8 @@ The profile is the user's choice, like the brief's purpose. An agent never chang
 ### In the library
 
 `register` resolves the profile and stores the resolved rules with the version (`check.json`), so re-checking an old version later gives the same answer even if `fullmark.toml` changed or is gone. `share --source` and `publish` write a `fullmark.toml` holding just the custom profiles their quizzes use, and `import` reads it back.
+
+`register` and `import` also refuse a survey, with the rule `library.survey`. It is a refusal, not a check finding: `check` does not report it and no config can change it ([COMMANDS.md](COMMANDS.md), `quiz library register`).
 
 ## 6. Rubrics and grading essays and code
 
@@ -377,12 +382,12 @@ src/
     stats/       per-question and per-tag history across attempts and versions
   page/        browser runtime: Attempt reducer, components, autosave, export; imports core
   build/       IR -> HTML: shell, Shiki, KaTeX, assets as data URIs, obfuscated key, CSP
-  serve/       one-shot 127.0.0.1 server used by serve, review, brief --web, library take
+  serve/       one-shot 127.0.0.1 server used by serve, review, brief --web, library take; also the small browser module those pages get (foundation 9)
   library/     git-backed store; uses core's public API only
   cli/         commands, --json, exit codes, messages
 ```
 
-Lint rules enforce the boundaries: `core` cannot import `node:*`, and nothing in `core`, `build` or `serve` imports `library`.
+Lint rules enforce the boundaries: `core` cannot import `node:*`, and nothing in `core`, `build` or `serve` imports `library`, and `build` and `serve` stay bundle-agnostic.
 
 Data flow: `quiz.md -> parse -> Quiz -> check -> build(Quiz, plan?, attempt?) -> quiz.html`. The page writes `results.json`, and `grade(Quiz, Attempt)` writes the report. The same `grade` function runs in the page and in the CLI.
 
@@ -432,7 +437,7 @@ Decisions that change file formats, stored data or security, and so are settled 
   | audio (listening questions) | `![Track 1](track1.mp3)`, rendered as an audio player and embedded like an image |
   | line break in a table cell | a trailing `\` |
 
-- **The CSP allows only the page's own script, by hash** (`script-src 'sha256-…'`), computed at build so builds stay deterministic. `default-src 'none'`; images and fonts from `data:` only; no `connect-src` except in pages served by the one-shot server, which may post to their own origin.
+- **The CSP allows only the page's own script, by hash** (`script-src 'sha256-…'`), computed at build so builds stay deterministic. `default-src 'none'`; images and fonts from `data:` only; no `connect-src` except in pages served by the one-shot server, which may post to their own origin (foundation 9).
 - **YAML** is parsed with alias expansion capped, and quiz names are validated slugs, passed to git after `--`.
 
 **4. The one-shot server is locked down.** It binds 127.0.0.1 only, with a random token in the URL. It checks the `Host` header (against DNS rebinding) and `Origin`, accepts only the expected POST at one path, caps the body at 10 MB, and exits after one submit or the timeout.
@@ -444,6 +449,8 @@ Decisions that change file formats, stored data or security, and so are settled 
 **7. Output-shaping dependencies are pinned.** Shiki, KaTeX, the fonts and Preact decide the bytes of every page, so they are pinned through the lockfile with the Node major version, and upgrading one is a deliberate commit that updates the golden files. Install scripts stay blocked (pnpm's default).
 
 **8. Where pages work.** Desktop: evergreen browsers of the last two years, no polyfills. Phones: supported through a shelf over https (GitHub Pages). A file opened directly on a phone is best effort: iOS previews local HTML without running scripts, and Android may not keep storage. The guide says to share with phone users through a shelf.
+
+**9. Shared pages carry no server code.** Pages written by `build`, `share` and `publish` have no submit, autosave, heartbeat or reload code at all, not even dormant. The page core exposes a small attach point (events such as ready, progress and submit), and a separate server module, the browser half of `serve/`, hooks into it. The module is added only when the page is built in memory for serving: `serve`, `review`, `brief --web`, `grade --web`, `library take`, and the reload code of `build --watch --serve`. The served copy gets its own CSP, with the script hashes of the page and the module and `connect-src 'self'`; a shared page keeps its CSP without `connect-src`. **Export** works with no server present. A test checks that a `build` page is byte-identical with and without the server features built in. This is also the seam for the heartbeat of [proposals/app-window.md](proposals/app-window.md).
 
 **Budgets**, each enforced by a test:
 
@@ -474,8 +481,9 @@ Some features are not in v1 but would force a rewrite of the core if v1 assumed 
 3. **The DOM is scoped.** Element ids and URL fragments carry the quiz id (`#signals/q12`), so two quizzes in one document never collide.
 4. **Assets are stored once per page** by content hash and referenced by hash, so quizzes sharing images, fonts or KaTeX don't repeat them.
 5. **The page can render a quiz from its IR in the browser**, not only hydrate pre-rendered HTML. The same Preact components do both, so a bundle can pre-render only the open quiz.
+6. **The one-shot server takes submits keyed by quiz id and ends on a predicate.** For `serve` the predicate is "the first accepted submit"; a bundle server would supply "Finish pressed, or the last paper submitted". `serve`, `review`, `brief --web`, `grade --web` and `library take` all run on this one module, so a bundle server never reshapes it.
 
-Formats need nothing: a bundle exports one `results-v2` file per quiz taken, and the look (`theme`, `font`) belongs to the page, not to each quiz. A test checks the seams: a two-quiz page built through the internal API renders, autosaves and exports both quizzes independently.
+Formats need one reserved key: the `results-v2` schema allows an optional `bundle` object (`hash`, `sitting`), written only by bundle pages, so the files of one sitting can be grouped. It needs no version bump, since consumers ignore keys they do not know. The look (`theme`, `font`) belongs to the page, not to each quiz. A test checks the seams: a two-quiz page built through the internal API renders, autosaves and exports both quizzes independently, and a server with two quiz ids accepts both submits, writes two files and ends only when its predicate says so.
 
 **A visual guide** (`quiz guide --web`, [proposals/guide-web.md](proposals/guide-web.md)). Every syntax example in the authoring guide is a fenced `quiz-example` block holding a valid quiz fragment, in both languages. In v1 this already pays off: a test runs `check` on every example, so the guide cannot document syntax the parser rejects. The terminal renderer shows these blocks as ordinary highlighted Markdown.
 
@@ -486,7 +494,7 @@ Formats need nothing: a bundle exports one `results-v2` file per quiz taken, and
 ### Start from 0.x's look, build it fresh
 
 - **0.x's visual design is the starting point, not a constraint:** the muted colours in light and dark, the start screen with sections and suggested times, question cards, and the side panel with timer, progress and question map. It worked in use, so 1.0 begins there and changes what the new features need (the segmented map, the collapsible panel, the themes). There is no pixel comparison against 0.x.
-- **The runtime is new.** 0.x's `quiz.js` updated the DOM imperatively over HTML rendered separately in Python. 1.0's runtime is Preact components driven by the `Attempt` reducer (section 4). The same components render static HTML at build time and hydrate in the page, so there is one set of components and no template language.
+- **The runtime is new.** 0.x's `quiz.js` updated the DOM imperatively over HTML rendered separately in Python. 1.0's runtime is Preact components driven by the `Attempt` reducer (section 4). The same components render static HTML at build time and hydrate in the page, so there is one set of components and no template language. The page core knows nothing about a server: it only emits events (ready, progress, submit) that a server module can hook into (section 7, foundation 9).
 - **CSS stays hand-written** and uses only tokens (`var(--name)`). It is split per component and ordered with cascade layers. There is no Tailwind and no component library: they would add weight to every offline file and solve no problem fullmark has.
 
 ### New UI for the v1 features
@@ -665,7 +673,7 @@ Not in v1: terminal forms other than `brief --tui` (`review` needs rendered ques
 - **Starting data from 0.x:** `grading_cases.json` and 0.x's examples and fixtures, rewritten in 1.0 syntax, are the first test inputs. They carry behaviour that was already debugged; nothing is compared against 0.x's output.
 - **Contract tests** run `quiz` as a subprocess and compare with golden files (exit codes, messages, JSON, built bytes). Golden files are produced by 1.0, reviewed once, and committed; a change to one is a reviewed diff.
 - **Grader:** the 0.x grading cases plus new Unicode, BOM and decimal-comma cases. They run once, because there is one grader.
-- **Determinism:** two builds of the same input are byte-identical, and so are two publishes.
+- **Determinism:** two builds of the same input are byte-identical, and so are two publishes. A `build` page is byte-identical with and without the server features, and contains no server code.
 - **Round trip:** publish, then `import --into` an empty folder, then publish again to the same folder gives `unchanged`.
 - **Foundations:** the same quiz with CRLF, a BOM or NFD text has the same hash as with LF and NFC; two quizzes opened from `file://` never read each other's storage; a page with storage blocked still works; an asset outside the quiz folder and raw HTML are refused; the server rejects a wrong token, `Host` or `Origin`.
 - **Budgets:** CLI startup, page runtime size and the 300-question fixture are measured on every run against the limits in section 7.
@@ -681,12 +689,12 @@ Not in v1: terminal forms other than `brief --tui` (`review` needs rendered ques
 
 | Step | Content | Done when |
 |---|---|---|
-| 0 | Bring over 0.x's test data: `grading_cases.json`, examples and fixtures, rewritten in 1.0 syntax | The grading cases load as vitest cases; every example is valid 1.0 Markdown |
+| 0 | Design the quiz syntax in `QUIZ_SYNTAX.md` ([TODO.md](TODO.md)), with each field marked as structure or content. Then bring over 0.x's test data: `grading_cases.json`, examples and fixtures, rewritten in that syntax | `QUIZ_SYNTAX.md` is settled; the grading cases load as vitest cases; every example is valid 1.0 Markdown |
 | 1 | Core: the message catalogs (every string through them from here on), IR with ids and slugs, Plan, Attempt, rule registry with ids, config and profiles, custom checks, grade, rubric modes and `grades-v2`; `check`, `rules`, `build` (with several files and `--build-file`), `grade` | All examples check and build; golden files reviewed and committed; three quizzes, one broken, give two pages, exit 1 and the right JSON lines, through files and through a build file |
-| 2 | Page runtime: Preact components on the Attempt reducer, the theme and font registries with the five token sets and four fonts, the contrast and glyph tests, plus `build --attempt` and `build --print`; Vietnamese page chrome | Playwright and axe pass; screenshot baselines reviewed and committed; a replayed page matches the original submitted page; a `vi` example passes the same tests |
+| 2 | Page runtime: Preact components on the Attempt reducer, the theme and font registries with the five token sets and four fonts, the contrast and glyph tests, plus `replay` and `build --print`; Vietnamese page chrome | Playwright and axe pass; screenshot baselines reviewed and committed; a replayed page matches the original submitted page; a `vi` example passes the same tests |
 | 3 | `serve` (with `--section`), `review`, `grade --web`, `brief` (flags, `--web`, `--tui`), `stats`, `inspect`, `new`, `build --watch` | Contract tests pass for each; the same answers through flags, `--web` and `--tui` write byte-identical `brief.yaml` files |
 | 4 | Library: init, register, take (with `--section` and `--missed`), replay and the rest | History-based tests pass |
 | 5 | `publish` and `import` | The round-trip and privacy tests pass |
-| 6 | Move in: a throwaway script, written by an agent and kept outside the product, converts the owner's 0.x library (quizzes to 1.0 syntax, results and grades to the v2 formats) into a new 1.0 library. The npm package takes the `quiz` name and 0.x is archived | `stats` and `--missed` in the new library agree with 0.x's stats on the same history |
+| 6 | Move in: a throwaway script, written by an agent and kept outside the product, converts the owner's 0.x library (quizzes to 1.0 syntax, results and grades to the v2 formats) into a new 1.0 library. 0.10.2 is not archived: it stays as the survey tool for document-kit and presentation-kit ([fullmark-migration.md](fullmark-migration.md), version plan). It is renamed `fullmark-py` and gives up the `quiz` command, which 1.0 takes | `stats` and `--missed` in the new library agree with 0.x's stats on the same history |
 
 Expect several weeks, mostly on the page runtime and the forms.

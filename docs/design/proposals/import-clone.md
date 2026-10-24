@@ -13,7 +13,7 @@ Let `import` take a Git URL: clone a published fullmark shelf (a folder written 
 | **Restore your own shelf** on a new machine (a new laptop, a lab workstation) | Clone into a folder that is kept. Import the quizzes as public, and remember that folder as the publish folder, so the next `publish` writes back into it |
 | **Take someone else's quizzes** (a classmate's or a course's shelf) | Clone into a temporary folder. Import the quizzes **not public**, record where they came from, then delete the clone |
 
-The second case is the trap. If imported quizzes kept `public = true`, the next `publish` would put someone else's quizzes on your own shelf. So the safe case is the default, and restoring needs an explicit flag.
+The second case is the trap. If imported quizzes kept their `public` shelf entry, the next `publish` would put someone else's quizzes on your own shelf. So the safe case is the default, and restoring needs an explicit flag.
 
 ## Proposed commands
 
@@ -24,7 +24,7 @@ quiz library import --clone URL --shelf DIR [--into PATH] [--json]
 
 | Option | Meaning |
 |---|---|
-| `--clone URL` | Shallow `git clone` into a temporary folder, import, record `origin = URL` on each quiz in `library.toml`, leave `public` unset, delete the clone |
+| `--clone URL` | Shallow `git clone` into a temporary folder, import, record `origin = URL` on each quiz in `library.toml`, add no `public` entry, delete the clone |
 | `--shelf DIR` | Clone into `DIR` and keep it instead. Quizzes are imported as public, and `DIR` becomes the remembered publish folder. Refused (exit 2) if `DIR` exists and is not empty |
 | `--into PATH` | As for `import`: create the library at `PATH` first |
 
@@ -53,7 +53,7 @@ quiz library import --clone URL --shelf DIR [--into PATH] [--json]
 
 ## Tests, if built
 
-- A cloned shelf imports with `public` unset and `origin` set. A later `publish` does not include those quizzes.
+- A cloned shelf imports with no `public` entry and `origin` set. A later `publish` does not include those quizzes.
 - `--shelf DIR` keeps the clone, imports the quizzes as public, and remembers `DIR`. Then publish, import into an empty library, and publish again gives `unchanged`.
 - Re-running `--clone` on the same URL: no change gives `unchanged`; one edited quiz gives one new version.
 - A manifest with `../` paths, absolute paths or symlinks is refused, with nothing written.

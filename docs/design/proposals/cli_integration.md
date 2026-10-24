@@ -20,13 +20,14 @@ Agents are unaffected: everything here is opt-in per shell, and nothing changes 
 | Position | Candidates | Source |
 |---|---|---|
 | Subcommands and flags | `check`, `build`, `library take`, `--profile`, ... | the commander definitions |
-| Flag values with a fixed set | `--fonts` (`quiz`, `all`, `none`), `--lang` (`en`, `vi`), `quiz new TEMPLATE` | declared choices |
+| Flag values with a fixed set | `--fonts` (`quiz`, `all`, `none`), `--lang` (`en`, `vi`) | declared choices |
+| Templates | `quiz new TEMPLATE`: the built-in templates plus the user `templates/` folder next to `config.toml`. `quiz template rm` completes only user templates, since built-in names are reserved and cannot be removed | the built-in list and the `templates/` folder |
 | Profiles | `--profile exam` | built-in profiles plus `config.toml` and the nearest `fullmark.toml` |
 | Library quizzes | `quiz library take fou` → `fourier-basics` | the library index (name and id) |
 | Attempts, versions | stamps and hashes, newest first | the quiz's history folder |
 | Sections | `--section` slugs | the quiz's IR, only if it is cheap to read |
 | Rule ids | `quiz rules ...` | the rule registry |
-| Files | `quiz check` → `*.md`; `quiz grade` → `*-results-*.json` | a file filter, left to the shell |
+| Files | `quiz check` and `quiz new --from` → `*.md`; `quiz grade` → `*-results-*.json` | a file filter, left to the shell |
 
 Values are completed as written in [COMMANDS.md](../COMMANDS.md), never translated. A description shown next to a value follows the tool language.
 
