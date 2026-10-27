@@ -152,7 +152,7 @@ A profile is a named set of rule levels, options and custom checks. It can exten
 | `default` | everything | none |
 | `draft` | writing in progress | every quality rule is `info`, so only fixed rules fail |
 | `exam` | mock exams | quality warnings become errors; `explanation.short` needs 8 words; `answers.position-skew` max share 0.4; `explanation.missing`, `question.untagged` and `question.no-id` are errors; `brief.count` tolerance 0.1; inline ignores are not allowed |
-| `survey` | questionnaires | rules about answer keys and explanations are off. Picked automatically for `mode: survey` |
+| `survey` | questionnaires | rules about answer keys and explanations are off. Picked automatically for `kind: survey` |
 
 `brief` maps its purpose to a profile and writes it into `brief.yaml`: `self-study` and `classmates` give `default`, `exam-prep` gives `exam`, `survey` gives `survey`.
 

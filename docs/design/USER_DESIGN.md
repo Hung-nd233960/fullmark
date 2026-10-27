@@ -109,7 +109,7 @@ The owner has lecture slides and wants a practice quiz.
 
 An agent needs a dozen answers from the owner: preferences for a project, or an intake form for a study plan.
 
-1. The agent writes a quiz with `mode: survey` (start from `quiz new survey`), so every question is ungraded and the page shows no score. The `survey` profile switches off the rules about answer keys and explanations.
+1. The agent writes a quiz with `kind: survey` (start from `quiz new survey`), so every question is ungraded and the page shows no score. The `survey` profile switches off the rules about answer keys and explanations.
 2. It runs `quiz serve survey.md --open --json` in the background. The page opens on the owner's machine; the owner answers and presses **Finish**.
 3. The server writes the results file, prints the final JSON line (`submitted` and the results path) and exits `0`. After `--timeout`, it exits `2`.
 4. The agent runs `quiz grade results.json --quiz survey.md --json` and reads the readable answer of each question. The report is titled "Answers" and has no score.
