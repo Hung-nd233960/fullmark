@@ -34,7 +34,7 @@ Marked **easy** where the current design already implies an answer, so the paper
 ### Shelves ×
 
 - **Printing:** does `publish` also put printable papers on the shelf? Answer keys on a public shelf would give the answers away, so per shelf, opt-in?
-- **Languages:** a shelf's index page has a `lang`. Does it list only quizzes in that language, or all of them?
+- **Languages:** decided (fits): the index lists every quiz, each marked with its `lang`; `publish --lang` sets only the index page's chrome (COMMANDS.md, `library publish`).
 - **Look and fonts:** `--fonts` is per shelf (proposed). Can a shelf force a look on its quizzes, or only the fonts?
 - **Pinned versions:** if a class shelf pins a version, does `library take` still use the latest? (easy: yes, the shelf is a copy)
 - **Import:** importing from someone's shelf that holds a bundle: import the bundle, its quizzes, or both?

@@ -558,7 +558,7 @@ Everything about one quiz in one place, so you need not run `inspect`, `list` an
 | Option | Meaning |
 |---|---|
 | `--version HASH` | Show the content of this version. Default: the current one |
-| `--json` | `{"name", "id", "title", "kind", "lang", "profile", "generated_by", "source": {"path", "exists", "changed"}, "content": {"sections", "types", "tags", "banks"}, "versions": [{"hash", "added", "added_questions", "removed_questions", "changed_questions"}], "shelves", "attempts": {"count", "first", "last", "last_score", "best_score", "weakest_tags", "ungraded"}, "path"}` |
+| `--json` | The quiz's `library list` row, with the same field names and meanings, plus `{"generated_by", "source": {"path", "exists"}, "sections": [{"slug", "title", "questions", "points"}], "banks", "history": [{"hash", "added", "added_questions", "removed_questions", "changed_questions"}], "first_taken", "path"}`. With `--version HASH`, the fields that describe content (`kind`, `lang`, `profile`, `tags`, `types`, `questions`, `points`, `sections`, `banks`) are that version's |
 
 Exit: `0`, `2` unknown quiz or version, `3` no library.
 
@@ -690,19 +690,21 @@ Prints the library folder, or a quiz's folder.
 
 ```text
 quiz library publish NAME --on | --off [--json]
-quiz library publish [DIR] [--with-brief | --no-brief] [--dry-run] [--json]
+quiz library publish [DIR] [--with-brief | --no-brief] [--lang en|vi] [--dry-run] [--json]
 ```
 
 Keeps a separate folder (a public repository, GitHub Pages) holding the current Markdown, assets and built page of every quiz on the `public` shelf, plus an index page, a `fullmark-shelf.json` manifest and a `fullmark.toml` with the custom profiles those quizzes use (written only when there are any). Results, reports, progress and older versions are never copied. Briefs are copied only with `--with-brief`.
 
 - **`NAME --on | --off`** adds or removes the quiz's entry on the shelf named `public` and commits in the library. It writes nothing to any shelf.
 - **Shelf entries.** A quiz's record in `library.toml` holds `shelves = [{ shelf = "public", kind = "quiz" }]`; `version` is reserved (optional, unused in v1). The folder to publish into is kept per machine in `config.toml`, keyed by shelf name. v1 commands touch only the shelf named `public` and only `kind = "quiz"` entries. Entries they do not know (another shelf name, `kind = "bundle"`) are kept as they are, never rejected, and never published. The `shelf ...` commands and several shelves are a proposal ([proposals/shelves.md](proposals/shelves.md)).
+- **The index page** lists every quiz on the shelf, whatever its language, each marked with its `lang` (`EN`, `VI`): one learner's courses can be taught in several languages, such as an English-taught programme at a Vietnamese university. Each quiz's page keeps its own `lang`; `--lang` sets only the index page's own chrome.
 - **The sync** builds every quiz on the `public` shelf into memory first, with `built_at` pinned to the version's `added` time, so the same library state always gives the same bytes. If any build fails, nothing is written. It then writes only the files that changed, removes only paths listed in the old manifest, and leaves everything else (README, LICENSE, `.github/`) alone. If `DIR` is its own git repository, it commits only the paths it wrote or removed. It never pushes.
 
 | Argument or option | Meaning |
 |---|---|
 | `DIR` | The shelf folder. Remembered in the config after the first successful sync |
 | `--with-brief`, `--no-brief` | Copy briefs or not. Default: not. Remembered in the manifest |
+| `--lang en\|vi` | The index page's language. Default: `en`. Remembered in the manifest |
 | `--dry-run` | Print what would be added, updated and removed, and write nothing |
 | `--json` | `{"status": "published" \| "unchanged", "dir", "added", "updated", "removed", "committed", "warnings"}` |
 
