@@ -66,8 +66,6 @@ A `#` heading starts a section. A quiz with no `#` heading is one section withou
 
 Nothing but blank lines may come between the front matter and the first heading (`syntax.preamble`). A text for the whole quiz goes in `description`, which the start screen shows; a text for a section goes in its intro. One place each. In a quiz that has sections, a question before the first `#` is `syntax.preamble` too: every question belongs to a titled section, or none does.
 
-A quiz without `#` headings has one untitled section whose `id` is empty. A title whose slug is empty (`# 日本語`) needs an explicit `id=` (`syntax.value`). In a quiz that has sections, a question before the first `#` is `syntax.preamble` too: every question belongs to a titled section, or none does.
-
 A quiz without `#` headings has one untitled section whose `id` is empty. A title whose slug is empty (`# 日本語`) needs an explicit `id=` (`syntax.value`).
 
 ```markdown
@@ -83,7 +81,7 @@ A quiz without `#` headings has one untitled section whose `id` is empty. A titl
 
 **The intro** is the Markdown between the `#` heading and the first `##`. Instructions ("Answer every question in this part") are structure.
 
-**A passage** is the text several questions share: a reading text, a case, a data table. It goes in a `::: passage` container in the intro and is content. A section has at most one; two short texts go in one passage. A section has at most one; two short texts go in one passage.
+**A passage** is the text several questions share: a reading text, a case, a data table. It goes in a `::: passage` container in the intro and is content. A section has at most one; two short texts go in one passage.
 
 ```markdown
 # Part 2: Reading {id=reading}
@@ -162,8 +160,6 @@ Shown after Check (instant feedback) or after Submit. Say why the answer is righ
 ```
 
 Both are content. A question has at most one of each.
-
-**Order in a question:** the prompt, then the answer (the choices, list or `answer` block; for blanks the prompt holds the answer), then the hint and the explanation in either order. Nothing else may follow the answer (`question.trailing-text`). The choices are the last list before the hint or explanation; a list inside the prompt that comes right before them uses a different bullet (`*`), or Markdown joins the two into one list.
 
 **Order in a question:** the prompt, then the answer (the choices, list or `answer` block; for blanks the prompt holds the answer), then the hint and the explanation in either order. Nothing else may follow the answer (`question.trailing-text`). The choices are the last list before the hint or explanation; a list inside the prompt that comes right before them uses a different bullet (`*`), or Markdown joins the two into one list.
 
@@ -394,12 +390,6 @@ Video and remote URLs are not supported. An image without alt text is `asset.alt
 
 - Only ATX headings (`#`, `##`) count. An underlined (setext) heading is text.
 - A heading inside a `:::` container is the container's content, not a question.
-- Containers do not nest. A stray closing `:::` or an unclosed container is `syntax.container`; an unclosed one ends at the next heading, so the questions after it still parse. An image without alt text is `asset.alt`.
-
-**Markdown edge cases**, decided so that every parser agrees:
-
-- Only ATX headings (`#`, `##`) count. An underlined (setext) heading is text.
-- A heading inside a `:::` container is the container's content, not a question.
 - Containers do not nest. A stray closing `:::` or an unclosed container is `syntax.container`; an unclosed one ends at the next heading, so the questions after it still parse.
 
 ## 8a. Errors
@@ -435,7 +425,6 @@ Every rule below is a **fixed rule**: an error that no profile can change or ign
 | `question.prompt-empty` | a heading with no prompt text |
 | `question.container-twice` | two hints or two explanations on one question |
 | `question.answer-block` | an `answer` block missing where the type needs one, or present where it takes none |
-| `question.trailing-text` | anything after the answer other than a hint or an explanation |
 | `question.trailing-text` | anything after the answer other than a hint or an explanation |
 | `question.ungraded` | a type that cannot be ungraded, made ungraded by `graded=false` or by `kind: survey` ([section 7](#7-ungraded-questions-and-surveys)); or `graded=` on a `scale` |
 | `question.ungraded-key` | an answer key or rubric on an ungraded question: `[x]`, `value`, `values`, `accept`, `patterns`, `rubric` |
