@@ -1,0 +1,443 @@
+{
+  "answer-missing": {
+    "rule": "question.answer-block",
+    "line": 5
+  },
+  "answer-on-choice": {
+    "rule": "question.answer-block",
+    "line": 5
+  },
+  "answer-unknown-key": {
+    "rule": "syntax.unknown-key",
+    "line": 9
+  },
+  "answer-yaml-error": {
+    "rule": null,
+    "line": 9,
+    "note": "0.x: not valid YAML in an answer block. syntax.front-matter is about the front matter only; 8a has no rule for a broken answer block"
+  },
+  "asset-outside": {
+    "rule": "asset.outside",
+    "line": 7,
+    "note": "the file exists, so asset.missing does not also fire"
+  },
+  "attributes-duplicate": {
+    "rule": "syntax.attributes",
+    "line": 5
+  },
+  "blanks-in-math": {
+    "rule": "blanks.in-math",
+    "line": 7
+  },
+  "blanks-in-wrong-type": {
+    "rule": "blanks.outside",
+    "line": 7
+  },
+  "blanks-none": {
+    "rule": "blanks.none",
+    "line": 5
+  },
+  "blanks-syntax": {
+    "rule": "blanks.syntax",
+    "line": 7
+  },
+  "blanks-with-answer-block": {
+    "rule": "question.answer-block",
+    "line": 5
+  },
+  "choice-marker": {
+    "rule": "choice.marker",
+    "line": 8
+  },
+  "code-no-language": {
+    "rule": null,
+    "line": 8,
+    "note": "0.x: missing language. 8a has no rule for a code answer block without language"
+  },
+  "container-passage-in-question": {
+    "rule": "syntax.container",
+    "line": 12
+  },
+  "container-unclosed": {
+    "rule": "syntax.container",
+    "line": 10
+  },
+  "container-unknown": {
+    "rule": "syntax.container",
+    "line": 10
+  },
+  "duplicate-id": {
+    "rule": "question.id-duplicate",
+    "line": 10
+  },
+  "essay-words": {
+    "rule": "essay.words",
+    "line": 8
+  },
+  "fields-bad-regex": {
+    "rule": "short.regex",
+    "line": 10,
+    "note": "interpretation: short.regex says 'a pattern', so it is taken to cover a fields pattern"
+  },
+  "fields-empty": {
+    "rule": "fields.empty",
+    "line": 5
+  },
+  "fields-key": {
+    "rule": "fields.key",
+    "line": 10
+  },
+  "fields-points-mixed": {
+    "rule": "fields.points",
+    "line": 5
+  },
+  "fields-points-sum": {
+    "rule": "fields.points",
+    "line": 5
+  },
+  "fm-bad-enum": {
+    "rule": "syntax.value",
+    "line": 3
+  },
+  "fm-bad-mode": {
+    "rule": "syntax.value",
+    "line": 3,
+    "note": "0.x fixture used mode:, renamed kind: in 1.0"
+  },
+  "fm-bad-time-limit": {
+    "rule": "syntax.value",
+    "line": 3
+  },
+  "fm-missing-title": {
+    "rule": "syntax.front-matter",
+    "line": 1
+  },
+  "fm-no-front-matter": {
+    "rule": "syntax.front-matter",
+    "line": 1
+  },
+  "fm-unknown-key": {
+    "rule": "syntax.unknown-key",
+    "line": 3
+  },
+  "fm-yaml-error": {
+    "rule": "syntax.front-matter",
+    "line": 2,
+    "note": "line of the YAML error is assumed to be the line of the broken value"
+  },
+  "generated-by-empty": {
+    "rule": "syntax.value",
+    "line": 3,
+    "note": "interpretation: an empty generated_by is a value outside its allowed set; section 2 only says 'one line'"
+  },
+  "graded-not-bool": {
+    "rule": "syntax.value",
+    "line": 5
+  },
+  "heading-h3": {
+    "rule": "syntax.heading-level",
+    "line": 5
+  },
+  "ignore-fixed-rule": {
+    "rule": "ignore.invalid",
+    "line": 5
+  },
+  "ignore-no-because": {
+    "rule": "ignore.invalid",
+    "line": 5
+  },
+  "input-empty-prompt": {
+    "rule": "choice.input",
+    "line": 8
+  },
+  "input-on-heading": {
+    "rule": "choice.input",
+    "line": 5,
+    "note": "interpretation: the bare name 'input' on a heading is read as choice.input, not syntax.unknown-key"
+  },
+  "input-on-ordering": {
+    "rule": "choice.input",
+    "line": 8,
+    "note": "interpretation: choice.input says {input} 'anywhere but the end of a choice'"
+  },
+  "input-on-truefalse-choice-list": {
+    "rule": "choice.input",
+    "line": 7,
+    "note": "interpretation: as input-on-ordering"
+  },
+  "input-unclosed-quote": {
+    "rule": "syntax.attributes",
+    "line": 8,
+    "note": "interpretation: a block that does not parse is syntax.attributes, not choice.input"
+  },
+  "input-unquoted-prompt": {
+    "rule": "choice.input",
+    "line": 8,
+    "note": "overlap: an unquoted value with spaces also 'does not parse' (syntax.attributes); 8a names this case under choice.input"
+  },
+  "matching-duplicate-right": {
+    "rule": "matching.pairs",
+    "line": 8
+  },
+  "matching-empty-right": {
+    "rule": null,
+    "line": 7,
+    "note": "0.x: nothing after '::'. 8a covers a missing '::', too few pairs and a repeated right-hand item, not an empty right-hand item"
+  },
+  "matching-missing-separator": {
+    "rule": "matching.pairs",
+    "line": 8
+  },
+  "matching-one-pair": {
+    "rule": "matching.pairs",
+    "line": 5
+  },
+  "media-bad-ext": {
+    "rule": "asset.type",
+    "line": 7,
+    "note": "assets/file.xyz exists, so asset.missing does not also fire"
+  },
+  "media-missing": {
+    "rule": "asset.missing",
+    "line": 7
+  },
+  "media-remote": {
+    "rule": "asset.remote",
+    "line": 7
+  },
+  "media-video": {
+    "rule": "asset.type",
+    "line": 7,
+    "note": "assets/clip.mp4 exists, so asset.missing does not also fire"
+  },
+  "multi-none-checked": {
+    "rule": "choice.correct-count",
+    "line": 5
+  },
+  "multi-one-item": {
+    "rule": "choice.count",
+    "line": 5
+  },
+  "no-questions": {
+    "rule": null,
+    "line": 1,
+    "note": "0.x: 'no questions'. QUIZ_SYNTAX.md 8a has no rule for a quiz with no question (gap, or allowed in 1.0)"
+  },
+  "no-type-no-choices": {
+    "rule": "question.type-missing",
+    "line": 5
+  },
+  "numeric-both-tolerances": {
+    "rule": "numeric.value",
+    "line": 9
+  },
+  "numeric-negative-tolerance": {
+    "rule": "numeric.value",
+    "line": 9
+  },
+  "numeric-not-number": {
+    "rule": "numeric.value",
+    "line": 8
+  },
+  "ordering-answer-block": {
+    "rule": "question.answer-block",
+    "line": 5
+  },
+  "ordering-duplicate-item": {
+    "rule": "ordering.items",
+    "line": 5
+  },
+  "ordering-no-list": {
+    "rule": "ordering.items",
+    "line": 5
+  },
+  "ordering-one-item": {
+    "rule": "ordering.items",
+    "line": 5
+  },
+  "question-container-twice": {
+    "rule": "question.container-twice",
+    "line": 14
+  },
+  "question-id-format": {
+    "rule": "question.id-format",
+    "line": 5
+  },
+  "question-id-missing": {
+    "rule": "question.id-missing",
+    "line": 5
+  },
+  "question-prompt-empty": {
+    "rule": "question.prompt-empty",
+    "line": 5
+  },
+  "raw-html-comment": {
+    "rule": "markdown.raw-html",
+    "line": 7
+  },
+  "raw-html-tag": {
+    "rule": "markdown.raw-html",
+    "line": 7
+  },
+  "reserved-reference": {
+    "rule": "syntax.reserved",
+    "line": 3
+  },
+  "rubric-duplicate-id": {
+    "rule": "rubric.duplicate-id",
+    "line": 14,
+    "note": "line of the second use"
+  },
+  "rubric-mode-missing": {
+    "rule": "rubric.mode-missing",
+    "line": 8,
+    "note": "the map form with points but no mode"
+  },
+  "rubric-scale": {
+    "rule": "rubric.scale",
+    "line": 10,
+    "note": "the shape of a banded rubric's scale and criteria is assumed from TECHNICAL_DESIGN.md sections 6 and grades-v2"
+  },
+  "rubric-step": {
+    "rule": "rubric.step",
+    "line": 8
+  },
+  "rubric-sum": {
+    "rule": "rubric.sum",
+    "line": 8
+  },
+  "rubric-weights": {
+    "rule": "rubric.weights",
+    "line": 11,
+    "note": "the shape of weights (a list in criteria order) is not specified; assumed"
+  },
+  "scale-graded-true": {
+    "rule": null,
+    "line": 5,
+    "note": "0.x: scale questions are always ungraded. 8a has no rule for graded=true on a scale (question.ungraded is the reverse case)"
+  },
+  "scale-label-outside": {
+    "rule": "scale.range",
+    "line": 9
+  },
+  "scale-range-too-wide": {
+    "rule": "scale.range",
+    "line": 9
+  },
+  "section-id-duplicate": {
+    "rule": "section.id-duplicate",
+    "line": 12
+  },
+  "section-pick-too-many": {
+    "rule": "section.pick",
+    "line": 5
+  },
+  "section-pick-zero": {
+    "rule": "section.pick",
+    "line": 5
+  },
+  "short-bad-regex": {
+    "rule": "short.regex",
+    "line": 8
+  },
+  "short-empty-accept": {
+    "rule": "short.key",
+    "line": 5
+  },
+  "short-lookbehind": {
+    "rule": "short.regex",
+    "line": 8
+  },
+  "short-named-group": {
+    "rule": "short.regex",
+    "line": 8,
+    "note": "Python-style named group: invalid in JavaScript"
+  },
+  "single-none-checked": {
+    "rule": "choice.correct-count",
+    "line": 5
+  },
+  "single-one-item": {
+    "rule": "choice.count",
+    "line": 5
+  },
+  "single-two-checked-explicit": {
+    "rule": "choice.correct-count",
+    "line": 5
+  },
+  "survey-correct-choice": {
+    "rule": "survey.forbidden",
+    "line": 8,
+    "note": "overlap: choice.correct-count also covers any [x] in an ungraded question"
+  },
+  "survey-graded-attr": {
+    "rule": "survey.forbidden",
+    "line": 6
+  },
+  "survey-instant-feedback": {
+    "rule": "survey.forbidden",
+    "line": 4
+  },
+  "survey-partial": {
+    "rule": "survey.forbidden",
+    "line": 4,
+    "note": "0.x fixture survey-multi-scoring, with partial: in place of multi_scoring:"
+  },
+  "survey-pass-mark": {
+    "rule": "survey.forbidden",
+    "line": 4
+  },
+  "survey-section-pick": {
+    "rule": "survey.forbidden",
+    "line": 6
+  },
+  "survey-truefalse": {
+    "rule": "question.ungraded",
+    "line": 6,
+    "note": "interpretation: a survey makes every question ungraded; QUIZ_SYNTAX.md section 7 says 'error' without naming the rule (question.ungraded or survey.forbidden)"
+  },
+  "theme-unknown": {
+    "rule": "theme.unknown",
+    "line": 3
+  },
+  "theme-unknown-font": {
+    "rule": "theme.unknown-font",
+    "line": 3
+  },
+  "truefalse-not-bool": {
+    "rule": "syntax.value",
+    "line": 8,
+    "note": "interpretation: 8a has no truefalse rule; a non-boolean value is 'a value outside its allowed set'"
+  },
+  "ungraded-correct-choice": {
+    "rule": "choice.correct-count",
+    "line": 7
+  },
+  "ungraded-essay-rubric": {
+    "rule": null,
+    "line": 8,
+    "note": "0.x: an ungraded essay takes no rubric. 8a has no rule (section 7 says 'no rubric')"
+  },
+  "ungraded-fields-with-value": {
+    "rule": null,
+    "line": 10,
+    "note": "0.x: an ungraded fields question takes no value/accept/patterns. 8a has no rule (section 7 says 'fields with only a label')"
+  },
+  "ungraded-numeric": {
+    "rule": "question.ungraded",
+    "line": 5
+  },
+  "ungraded-short-answer-block": {
+    "rule": "question.answer-block",
+    "line": 5
+  },
+  "unknown-attribute": {
+    "rule": "syntax.unknown-key",
+    "line": 5
+  },
+  "unknown-type": {
+    "rule": "syntax.value",
+    "line": 5,
+    "note": "interpretation: the type is an attribute with a closed set"
+  }
+}

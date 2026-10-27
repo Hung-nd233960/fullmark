@@ -1,6 +1,8 @@
 // Same rules as the user's default config, except two that the fullmark format needs:
 // one H1 per section (MD025) and adjacent hint/explanation blockquotes (MD028).
 {
+  // Invalid fixtures break rules on purpose.
+  "ignores": ["test/fixtures/invalid/**", "node_modules/**"],
   "config": {
     "default": true,
     "MD003": { "style": "atx" },
