@@ -1,4 +1,4 @@
-import type { AssetRef, Question, Quiz, Section } from "../ir";
+import type { AssetRef, FrontMatter, Question, Quiz, Section } from "../ir";
 import type { Issue } from "../issue";
 import { parseFrontMatter } from "./front-matter";
 import { outline, type Unit } from "./outline";
@@ -10,6 +10,8 @@ export type ParseResult = {
   /** null when there is any error: the IR is only ever built from a quiz without syntax errors */
   quiz: Quiz | null;
   issues: Issue[];
+  /** the front matter, with defaults, also when the quiz has errors (the profile is chosen from it) */
+  frontMatter: FrontMatter;
   /** every file the quiz refers to, with the line of the reference; the CLI resolves them */
   assets: AssetRef[];
 };
@@ -140,5 +142,5 @@ export function parse(text: string, file: string): ParseResult {
 
   r.issues.sort((a, b) => a.line - b.line);
   const quiz: Quiz | null = r.hasErrors ? null : { file, frontMatter: fm, sections };
-  return { quiz, issues: r.issues, assets };
+  return { quiz, issues: r.issues, frontMatter: fm, assets };
 }

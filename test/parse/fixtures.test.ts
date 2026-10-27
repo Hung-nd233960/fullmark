@@ -1,18 +1,25 @@
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { describe, expect, it } from "vitest";
+import { runCheck } from "../../src/cli/check";
 import { loadQuiz } from "../../src/cli/load";
 import { QuizSchema } from "../../src/core/ir";
+import { capture } from "../helpers/cli";
 
 const root = resolve(import.meta.dirname, "..", "..");
 const invalidDir = join(root, "test", "fixtures", "invalid");
 const validDir = join(root, "test", "fixtures", "valid");
 
+const opts = { profile: null, config: null, strict: false, review: null, json: true, plain: true };
+
 type Expected = Record<string, { rule: string; line: number }>;
 const expected: Expected = JSON.parse(readFileSync(join(invalidDir, "expected.json"), "utf8"));
 
-/** The rules judged by later slices: the grading slice for `rubric.*`, the rule registry for `ignore.invalid`. */
-const pending = (rule: string) => rule.startsWith("rubric.") || rule === "ignore.invalid";
+/** The rules judged by a later slice: the grading slice for `rubric.*`. */
+const pending = (rule: string) => rule.startsWith("rubric.");
+
+/** The rules `check` raises over a parsed quiz, not the parser: they are judged through `quiz check`. */
+const byCheck = (rule: string) => rule === "ignore.invalid";
 
 function validFiles(): string[] {
   const out: string[] = [];
@@ -46,6 +53,18 @@ describe("invalid fixtures give exactly their rule and line", () => {
       it.todo(`${name}: ${want.rule} at line ${want.line} (judged in a later slice)`);
       it(`${name}: no other issue is raised meanwhile`, () => {
         expect(loadQuiz(file).issues).toEqual([]);
+      });
+      continue;
+    }
+    if (byCheck(want.rule)) {
+      it(`${name}: ${want.rule} at line ${want.line}, through check`, () => {
+        const c = capture(invalidDir);
+        expect(runCheck([`${name}.md`], opts, c.io)).toBe(1);
+        const issues = (JSON.parse(c.out[0] ?? "{}") as { issues: { rule: string; line: number; level: string }[] })
+          .issues;
+        expect(issues.map((i) => ({ rule: i.rule, line: i.line, level: i.level }))).toEqual([
+          { rule: want.rule, line: want.line, level: "error" },
+        ]);
       });
       continue;
     }

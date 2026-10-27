@@ -1,4 +1,5 @@
 import { Command } from "commander";
+import { type CheckOptions, runCheck } from "./check";
 import { EXIT, type ExitCode } from "./exit-codes";
 import { type IdsOptions, type Io, runIds } from "./ids";
 
@@ -25,6 +26,45 @@ export function buildProgram(outcome: Outcome = { exit: EXIT.done }, io: Io = te
     .version(`fullmark ${VERSION}`, "--version", "print the version")
     .helpOption("-h, --help", "help for the command")
     .exitOverride();
+
+  const noColor = () => "NO_COLOR" in process.env;
+
+  program
+    .command("check")
+    .description("check quizzes under a profile: syntax errors, quality warnings, the brief beside the quiz")
+    .argument("<files...>", "quiz .md files (globs are expanded)")
+    .option("--profile <name>", "the check profile; overrides the quiz's profile:")
+    .option("--config <toml>", "use this config file instead of the nearest fullmark.toml")
+    .option("--strict", "warnings count as errors")
+    .option(
+      "--review <review.json>",
+      "also fail until every flagged question changed (not available yet: it arrives with quiz review)",
+    )
+    .option("--json", "print one JSON object per file on stdout")
+    .option("--plain", "no colours and no progress line, even in a terminal")
+    .action(
+      (
+        files: string[],
+        options: {
+          profile?: string;
+          config?: string;
+          strict?: boolean;
+          review?: string;
+          json?: boolean;
+          plain?: boolean;
+        },
+      ) => {
+        const opts: CheckOptions = {
+          profile: options.profile ?? null,
+          config: options.config ?? null,
+          strict: Boolean(options.strict),
+          review: options.review ?? null,
+          json: Boolean(options.json),
+          plain: Boolean(options.plain) || noColor(),
+        };
+        outcome.exit = runCheck(files, opts, io);
+      },
+    );
 
   program
     .command("ids")

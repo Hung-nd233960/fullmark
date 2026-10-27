@@ -1,7 +1,7 @@
 import { readFileSync, realpathSync, statSync } from "node:fs";
 import { dirname, extname, isAbsolute, relative, resolve, sep } from "node:path";
 import { type AssetBytes, quizHash } from "../core/hash";
-import type { Quiz } from "../core/ir";
+import type { FrontMatter, Quiz } from "../core/ir";
 import type { Issue } from "../core/issue";
 import { parse } from "../core/parse";
 
@@ -13,6 +13,8 @@ export type LoadedQuiz = {
   file: string;
   /** the file's text as read: a BOM and CRLF are still there */
   text: string;
+  /** the front matter as far as it could be read, also when the quiz has errors */
+  frontMatter: FrontMatter;
   /** null when there is any error, in the syntax or in the assets */
   quiz: Quiz | null;
   issues: Issue[];
@@ -101,6 +103,7 @@ export function loadQuiz(file: string): LoadedQuiz {
   return {
     file,
     text,
+    frontMatter: parsed.frontMatter,
     quiz: failed ? null : parsed.quiz,
     issues,
     assets,

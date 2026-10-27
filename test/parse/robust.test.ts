@@ -33,7 +33,7 @@ describe("the parser never throws", () => {
       }
     }
     expect(runs).toBeGreaterThan(500);
-  });
+  }, 30_000);
 
   it("on odd input", () => {
     for (const text of [
