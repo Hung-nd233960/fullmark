@@ -89,7 +89,7 @@ The source is `D:\coding-projects\fullmark-py` (0.10.3, read only). Every quiz i
 
 ### `quiz ids`
 
-As specified in COMMANDS.md (`quiz ids`). It edits the raw text and never re-serialises: the output equals the input byte for byte except the inserted ` id=q-xxxxxx` (or ` {id=q-xxxxxx}` where a heading has no block), and a CRLF file stays CRLF. Random ids come from `node:crypto` in `src/cli`, checked against every id already in the file. It follows the "Several files" conventions and `--json` of COMMANDS.md.
+As specified in COMMANDS.md (`quiz ids`). It edits the raw text and never re-serialises: the output equals the input byte for byte except the inserted `id=q-xxxxxx` and the space before it (or a new `{id=q-xxxxxx}` block where a heading has none), and a CRLF file stays CRLF. Random ids come from `node:crypto` in `src/cli`, checked against every id already in the file. It follows the "Several files" conventions and `--json` of COMMANDS.md.
 
 ### Dependencies for 1b
 
@@ -100,7 +100,7 @@ As specified in COMMANDS.md (`quiz ids`). It edits the raw text and never re-ser
 - Every example, the template and every valid fixture parse with no issue.
 - Every invalid fixture gives exactly its expected rule and line, and no other issue (`rubric.*` and `ignore.invalid` fixtures are marked pending until 1d and 1c).
 - Hash tests: the same quiz with CRLF, a BOM, NFD text or trailing spaces has the same quiz hash; adding an `id` or moving a question keeps its question hash; changing an asset's bytes changes the quiz hash.
-- `quiz ids` tests: ids added only where missing; a second run is `unchanged`; output is byte-identical apart from the insertions, CRLF included; duplicate ids and an unparseable block leave the file untouched with exit 1; several files and `--json` lines.
+- `quiz ids` tests: ids added only where missing; a second run is `unchanged`; output is byte-identical apart from the insertions, CRLF included; duplicate ids and a block that does not parse leave the file untouched with exit 1; several files and `--json` lines.
 - A parse benchmark: the largest example parses in well under 50 ms (a test with a generous limit, to catch accidents).
 
 ## Slices 1c to 1e
