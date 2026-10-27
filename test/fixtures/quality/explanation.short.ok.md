@@ -8,5 +8,5 @@ title: T
 - [ ] b
 
 ::: explanation
-Because a is the first letter.
+Because a is the first letter of the alphabet, so it comes first.
 :::
