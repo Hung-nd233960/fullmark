@@ -22,7 +22,7 @@ time_limit: 45m
 
 Answer every question in this part.
 
-## Which region of convergence makes $\frac{1}{s+2}$ causal? {points=2 tags=roc id=roc-causal}
+## Which region of convergence makes $\frac{1}{s+2}$ causal? {type=single points=2 tags=roc id=roc-causal}
 
 - [ ] $\operatorname{Re}(s) < -2$
 - [x] $\operatorname{Re}(s) > -2$
@@ -43,7 +43,8 @@ Unknown keys are errors.
 | `description` | Markdown, shown on the start screen | none | C |
 | `id` | slug used in results and page storage | the file name, slugged | C |
 | `kind` | `quiz` \| `survey` (every question ungraded, no score; [section 7](#7-ungraded-questions-and-surveys)) | `quiz` | S |
-| `lang` | `en` \| `vi`: the page chrome, reports and printed labels, never the question text | `en` | S |
+| `lang` | `en` \| `vi`: the language the quiz is **written in**. It decides how numbers in answers are read (a decimal comma in `vi`), `lang` on the question text, and the language a grader writes feedback in. One quiz has one language | `en` | S |
+| `ui_lang` | `en` \| `vi`: the language of the **interface**: page chrome, report headings, printed labels, the `review` and `grade --web` forms. Never affects grading | `lang` | S |
 | `profile` | a built-in or custom check profile | `default` (`survey` for a survey) | S |
 | `time_limit` | `90s`, `45m`, `1h30m` | untimed | S |
 | `on_timeout` | `submit` \| `warn` | `submit` | S |
@@ -71,7 +72,7 @@ A `#` heading starts a section. A quiz with no `#` heading is one section withou
 |---|---|---|
 | title | the heading text | S |
 | `id` | the section's slug, used by `--section`, links (`#reading/q12`) and results. Default: the title, slugged (`đ` maps to `d`) | S |
-| `time` | the section's time ([section 12](#12-open-questions)) | S |
+| `time` | a suggested time. The page shows it next to the section with the time spent there; nothing locks when it passes. The quiz's `time_limit` is the only hard limit (and, later, each paper of a bundle: [proposals/multi-quiz-bundle.md](proposals/multi-quiz-bundle.md)) | S |
 | `pick` | a bank: each attempt draws this many of the section's questions | S |
 
 **The intro** is the Markdown between the `#` heading and the first `##`. Instructions ("Answer every question in this part") are structure.
@@ -102,7 +103,7 @@ A `##` heading starts a question. The heading text is the question's prompt; Mar
 
 | Attribute | Meaning | Default | S/C |
 |---|---|---|---|
-| `type` | one of the types in [section 6](#6-question-types) | `single` | S |
+| `type` | one of the types in [section 6](#6-question-types). Required | | S |
 | `points` | a number greater than 0 | `1` | S |
 | `tags` | comma-separated, no spaces | none | S |
 | `id` | a stable id; results, reviews, `--missed` and `stats` follow it across versions | a hash of the question's content, which changes on every edit (`question.no-id` warns in stricter profiles) | C |
@@ -113,7 +114,7 @@ A `##` heading starts a question. The heading text is the question's prompt; Mar
 | `case` | `sensitive` \| `insensitive`, for `short`, `blanks` and `fields` | `insensitive` | S |
 | `check-ignore`, `because` | `check-ignore="choice.correct-longest" because="the long answer is the point"`. The reason is required; several rules are comma-separated and share it | | S |
 
-**The type is never guessed from the answer.** A question without `type` is `single`. A `single` has exactly one `[x]` (none when ungraded). Checkboxes need `type=multi`, even when only one choice is right, so the number of right answers never changes how a question is read.
+**Every question states its `type`.** Nothing is guessed or defaulted, so a forgotten type is reported as a missing `type`, not as a question that does not fit the type it was assumed to be, and the type can be read off the heading. A `single` has exactly one `[x]` (none when ungraded). Checkboxes need `type=multi`, even when only one choice is right.
 
 ## 5. Hints, explanations and answers
 
@@ -138,7 +139,7 @@ Both are content. A question has at most one of each.
 ### single and multi
 
 ```markdown
-## Which ion drives phase 3 repolarization?
+## Which ion drives phase 3 repolarization? {type=single}
 
 - [ ] Na⁺
 - [x] K⁺
@@ -180,7 +181,8 @@ unit: ""           # shown after the box
 ````
 
 - In the source, numbers use a decimal point, whatever the quiz's `lang`.
-- The learner may type an integer, a decimal, `1e-3` or a fraction `1/3`. With `lang: vi`, a decimal comma (`2,5`) is accepted too, and `1,000` is never read as a thousands separator.
+- The learner may type an integer, a decimal, `1e-3` or a fraction `1/3`. With `lang: vi`, a decimal comma (`2,5`) is accepted too, and `1,000` is never read as a thousands separator. With `lang: en`, the box says at once that a comma is not a decimal point, so `2,5` is never silently marked wrong.
+- This follows `lang`, never `ui_lang`: the score depends only on the quiz source and the answers, never on how the page was built.
 - `value`, `values` and the tolerances are content; `unit` is structure.
 
 ### short
@@ -204,7 +206,7 @@ Matching trims, collapses spaces, applies NFC and ignores case unless `case=sens
 The derivative of $\sin x$ is [[cos x|cos(x)]] and half of one is [[=0.5±0.01]].
 ```
 
-- `[[answer|variant]]` is a text blank; `[[=0.5±0.01]]` a numeric one.
+- `[[answer|variant]]` is a text blank; `[[=0.5±0.01]]` a numeric one. `+-` is the same as `±` (`[[=0.5+-0.01]]`), for keyboards without it.
 - Blanks also work inside fenced code; never inside maths.
 - Points are split equally among blanks. No `answer` block.
 - The answers are content; the number of blanks is structure.
@@ -378,12 +380,13 @@ The quiz hash will cover the files `reference` names, as it covers assets.
 |---|---|---|
 | `mode: quiz \| survey` | `kind: quiz \| survey` | the name the library and its JSON use |
 | `> [!hint]`, `> [!explanation]` | `::: hint`, `::: explanation` | one container syntax for hint, explanation and passage; no blockquote rules for markdownlint to trip (MD028) |
-| One `[x]` gives `single`, several give `multi` | No `type` means `single`, which needs exactly one `[x]`; checkboxes need `type=multi` | the type no longer depends on the answer |
+| One `[x]` gives `single`, several give `multi` | `type` is required on every question | the type never depends on the answer, and a forgotten type is reported as such |
 | `multi_scoring: partial \| all_or_nothing` | `partial: true \| false`, also per question | it applied to `ordering` and `matching` too |
 | `pick` in the front matter or on a section, not both | on a section only | one place, one rule |
-| `{time=10m}` on a section was a suggestion | see [section 12](#12-open-questions) | per-section timing is a v1 page feature |
+| `{time=10m}` on a section was a suggestion | still a guide, now shown with the time spent | one hard limit (`time_limit`); hard limits on parts of an exam come from bundles |
 | `theme: auto \| light \| dark` | six themes, `font`, `look` | TECHNICAL_DESIGN.md, section 8 |
-| — | `lang`, `profile` | languages and check profiles |
+| — | `lang` (written in), `ui_lang` (interface), `profile` | grading follows the quiz's language, the chrome can differ; check profiles |
+| `[[=0.5±0.01]]` | also `[[=0.5+-0.01]]` | `±` is not on most keyboards |
 | default question id `q1`, `q2`... | a content hash; `id=` keeps history | ids by position broke on every insertion |
 | — | section `id`, slugged from the title | `--section` and links |
 | `Source:` as a note in the explanation | `source="..."` on the heading | custom checks can `require` it |
@@ -396,8 +399,6 @@ The quiz hash will cover the files `reference` names, as it covers assets.
 
 ## 12. Open questions
 
-- **Section time: a limit or a guide?** v1 promises per-section timing. Leaning: `time` on a section is a limit. Its clock runs while the learner is in that section; when it ends, the section's answers are locked and the page moves to the next section. The quiz's `time_limit` still ends everything. Without any section `time`, nothing changes.
-- **Should `type` be required on every question?** This draft keeps `single` as the default, since most questions are single choice and the default no longer depends on the answer. Requiring it everywhere is stricter and noisier.
-- **`±` in numeric blanks.** Accept `+-` as an ASCII spelling as well, for keyboards without `±`?
-- **Guide examples and templates in Vietnamese** ([proposals/interactions.md](proposals/interactions.md)): their own fragments, or the English ones translated?
+Decided on 2026-10-27: a section's `time` is a guide; `type` is required; `+-` is accepted for `±`; `lang` and `ui_lang` are separate, one language per quiz and per template.
+
 - **Japanese** (furigana, `lang="ja"` spans): left to [proposals/japanese-support.md](proposals/japanese-support.md); nothing here blocks it.

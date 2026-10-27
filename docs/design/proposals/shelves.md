@@ -23,7 +23,7 @@ quiz library shelf new NAME DIR [--title TEXT]
 quiz library shelf list
 quiz library shelf info NAME
 quiz library shelf rename OLD NEW
-quiz library shelf set NAME [--title TEXT] [--fonts F] [--with-brief | --no-brief] [--lang L]
+quiz library shelf set NAME [--title TEXT] [--fonts F] [--with-brief | --no-brief] [--ui-lang L]
 quiz library shelf delete NAME
 
 quiz library shelf add NAME QUIZ...

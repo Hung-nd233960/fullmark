@@ -9,7 +9,7 @@
 | Quiz, sections, banks, Plan and Attempt | TECHNICAL_DESIGN.md 4 | yes |
 | Theme, font, `look`, `--fonts` | TECHNICAL_DESIGN.md 8 | yes |
 | Printable paper (`build --print`) | TECHNICAL_DESIGN.md 8 | yes |
-| Languages (quiz `lang`; `guide --lang`) | TECHNICAL_DESIGN.md 9 | yes |
+| Languages (quiz `lang` and `ui_lang`; `guide --lang`) | TECHNICAL_DESIGN.md 9 | yes |
 | Library, `take`, `--section`, `--missed`, `replay` | COMMANDS.md | yes |
 | Shelf, `publish`, `import` | COMMANDS.md | yes, one shelf |
 | Several shelves | [shelves.md](shelves.md) | no |
@@ -25,8 +25,8 @@ Marked **easy** where the current design already implies an answer, so the paper
 
 - **Printing:** one paper per quiz, or one paper for the bundle? In `exam` mode, one booklet with a cover page and per-paper sections? Where do `--seed` versions go: per quiz, or one seed for the bundle?
 - **Shelves:** can a bundle sit on a shelf when some of its quizzes are not on it? Does a shelf's index list the bundle, its quizzes, or both? (A bundle snapshots its papers, so it is never stale.)
-- **Look:** decided: a bundle's quizzes must share kind, `look`, theme, font and `lang` (`bundle.mixed-*` rules). Does `--fonts quiz` then mean the quizzes' shared font? (easy: yes)
-- **Languages:** decided: `lang` must match (the chrome is one catalog); question text may differ.
+- **Look:** decided: a bundle's quizzes must share kind, `look`, theme, font and `ui_lang` (`bundle.mixed-*` rules). Does `--fonts quiz` then mean the quizzes' shared font? (easy: yes)
+- **Languages:** decided: `ui_lang` must match (the chrome is one catalog); `lang` may differ.
 - **`--missed` and replay:** replay is decided: `bundle replay` opens the whole bundle with one sitting's attempts (multi-quiz-bundle.md). `--missed` is decided: a session uses each quiz's history, a bundle uses its own sittings across all its papers. Open: `--missed` on an `exam` bundle.
 - **Results:** `exam` mode gives one overall result, computed by `bundle grade` and returned in its `overall` JSON. Open: does it also get a file next to the per-quiz results, and does plain `stats` count it? (`bundle stats` does.)
 - **Library:** decided (multi-quiz-bundle.md): a bundle is a registered library object that snapshots its papers, with its own results and `stats`; a session (`library take A B C`) is not an object and files results to each quiz.
@@ -34,7 +34,7 @@ Marked **easy** where the current design already implies an answer, so the paper
 ### Shelves ×
 
 - **Printing:** does `publish` also put printable papers on the shelf? Answer keys on a public shelf would give the answers away, so per shelf, opt-in?
-- **Languages:** decided (fits): the index lists every quiz, each marked with its `lang`; `publish --lang` sets only the index page's chrome (COMMANDS.md, `library publish`).
+- **Languages:** decided (fits): the index lists every quiz, each marked with its `lang`; `publish --ui-lang` sets only the index page's chrome (COMMANDS.md, `library publish`).
 - **Look and fonts:** `--fonts` is per shelf (proposed). Can a shelf force a look on its quizzes, or only the fonts?
 - **Pinned versions:** if a class shelf pins a version, does `library take` still use the latest? (easy: yes, the shelf is a copy)
 - **Import:** importing from someone's shelf that holds a bundle: import the bundle, its quizzes, or both?
@@ -51,8 +51,8 @@ Marked **easy** where the current design already implies an answer, so the paper
 
 There is no tool language (decided 2026-10-27): terminal output is English, `quiz guide` takes `--lang`, and only the quiz's `lang` affects what a learner sees.
 
-- **Guide examples:** `guide --lang vi` is its own document, so does it have its own examples, or the English fragments with translated text? Settle with the quiz syntax.
-- **Templates:** a `vi` version of each template, or `quiz new --from T --lang vi` choosing the sample text? Settle with the quiz syntax.
+- **Guide examples:** decided: `guide --lang vi` has its own examples, quizzes written in Vietnamese (`lang: vi`), which also show the decimal comma.
+- **Templates:** decided: a template is written in one language and declares its `lang`, so a Vietnamese template is its own template. `quiz new --from T` copies its `lang`; the interface is set with `ui_lang`.
 
 ## When this is done
 

@@ -601,7 +601,7 @@ How many fonts to embed is a delivery choice, not part of the quiz, so it is an 
 - **Header:** title, time limit and total points, plus Name, Class and Date fields.
 - **Versions:** `--seed` shuffles questions and options reproducibly, so `--seed A` and `--seed B` give two versions of the same exam, each with its own key.
 - **Page breaks** never split a question from its options; sections can start on a new page.
-- **Language** follows the quiz's `lang` (labels such as "Answer key", "Name").
+- **Language** of the labels ("Answer key", "Name") follows the quiz's `ui_lang`.
 
 A plain Markdown export for pandoc (and so Word and Typst, maths included) is in [proposals/markdown-export.md](proposals/markdown-export.md).
 
@@ -611,18 +611,24 @@ A plain Markdown export for pandoc (and so Word and Typst, maths included) is in
 
 English and Vietnamese from v1, for what a learner sees. Every string a page, report or form shows goes through a message catalog from the first commit, because adding a catalog to finished code means finding every hard-coded string again.
 
-### One setting: the quiz's language
+### Two keys in the quiz: what it is written in, and its interface
 
-| What | Language |
+| Key | Means | Decides | Default |
+|---|---|---|---|
+| `lang: en \| vi` | the language the quiz is written in. One quiz, one language; a template too | `lang` on the question text, how numbers in answers are read (decimal comma in `vi`), the language a grader writes feedback in, the shelf's EN/VI badge, `lang` in `library list` | `en`. Set by the author, or by `brief --language` through `brief.yaml` |
+| `ui_lang: en \| vi` | the interface around the questions | the page chrome (Start, Submit, timer, Export, banners, feedback), `<html lang>`, the report's headings, the printed paper's labels, the `review` and `grade --web` forms | `lang` |
+
+**Grading follows `lang`, never `ui_lang`**, so a score depends only on the quiz source and the answers, never on how the page was built. Most quizzes write only `lang`; an English-taught course for Vietnamese students writes `lang: en` and `ui_lang: vi`.
+
+| Elsewhere | Language |
 |---|---|
-| The page chrome (Start, Submit, timer, Export, banners, feedback), `<html lang>`, the report's headings, the printed paper's labels, the `review` and `grade --web` forms | the quiz's `lang: en \| vi` in front matter, default `en`. Set by the author, or by `brief --language`, which writes it into `brief.yaml` and the agent copies it into the quiz |
 | The `brief` forms (`--web`, `--tui`) | `brief --language`, default `en`: the quiz does not exist yet |
 | `quiz guide` | `--lang en \| vi`, default `en`. It is a document, like the README |
 | `check` messages, errors, `--help`, every other terminal output | English only, like most CLIs. Agents and scripts read them, and translating every command's help costs much for little |
 
-There is no tool language: no `lang` in `config.toml` and no environment variable, and the OS locale is never read, so a command's output doesn't change from one machine to the next. The question text is whatever the author writes; `lang` decides only the chrome around it.
+There is no tool language: no `lang` in `config.toml` and no environment variable, and the OS locale is never read, so a command's output doesn't change from one machine to the next.
 
-**The page language is locked at build.** A quiz's content is written in one language, so a toggle would switch the buttons and leave every question as it was. Only the chosen catalog is bundled. `build --lang` overrides front matter for a one-off build. A runtime toggle stays possible later, since both catalogs together are a few KB, but there is no need for it now.
+**The interface language is locked at build.** A quiz's content is written in one language, so a toggle would switch the buttons and leave every question as it was. Only the chosen catalog is bundled. `build --ui-lang` overrides `ui_lang` for a one-off build, such as sharing an English quiz with a Vietnamese interface. A runtime toggle stays possible later, since both catalogs together are a few KB, but there is no need for it now.
 
 ### How
 
@@ -653,12 +659,12 @@ English is the source. Each Vietnamese document starts with the commit of the En
 | Area | v1 scope |
 |---|---|
 | Question types | single, multi, true/false, numeric (tolerance, fractions), short answer (strings and regexes), fill-in-the-blank (also in code), labeled fields, matching, ordering, essay, code; survey types `scale` and ungraded questions; choice follow-up inputs |
-| Page | timer and per-section timing, instant or end-of-quiz feedback, banks, Focus mode, resume, font-size control, theme lock, review wrong only, Retry missed, **section picker on the start screen**, **start in the submitted state from an embedded attempt** |
+| Page | timer and suggested time per section, instant or end-of-quiz feedback, banks, Focus mode, resume, font-size control, theme lock, review wrong only, Retry missed, **section picker on the start screen**, **start in the submitted state from an embedded attempt** |
 | Print | `build --print`: a printable paper with answers `none`, `key` or `inline`, answer space per question type, a header with name fields, seeded versions |
 | Brief | `brief` through flags, `--web` and `--tui`, all driven by one question file; detail rules (`min-words` with an example) enforced by both forms and warned about through flags; a summary screen before writing |
 | Authoring | `brief`, `check` with `--review`, `--strict` and `--profile`, `review`, `inspect`, `new`, `build --watch` |
 | Themes | `theme`, `font` and `look` (`free` with an Appearance menu, or `locked`) keys; `--fonts quiz\|all\|none` when writing a page; themes `auto`, `light`, `dark`, `oled`, `white`, `paper`; fonts `system`, `sans` (Be Vietnam Pro), `serif` (Source Serif 4), `readable` (Lexend), all covering Vietnamese; high contrast through `white` and `oled`; Shiki colours from the tokens; print style sheet |
-| Languages | English and Vietnamese for the page, reports, forms, README and `quiz guide --lang`; quiz `lang` locked at build; terminal output in English only; decimal comma in `vi` numeric answers |
+| Languages | English and Vietnamese for the page, reports, forms, README and `quiz guide --lang`; quiz `lang` (written in, drives grading) and `ui_lang` (interface, locked at build); terminal output in English only; decimal comma in `vi` numeric answers |
 | Check config | rule ids on every finding, `fullmark.toml`, built-in and custom profiles, declarative custom checks, inline ignores with a reason, `quiz rules` |
 | Grading | `grade` with reports and `grades-v2`; rubric modes `holistic`, `additive`, `banded` and the IELTS presets; a required grader identity; `grade --web` for human grading; `stats` with per-question, per-tag and per-criterion history |
 | Library | init, status, register, list, **info**, take (**`--section`, `--missed`**), share, grade, stats, rename, rm, path, **replay**, **publish**, **import** |

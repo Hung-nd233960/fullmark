@@ -131,12 +131,12 @@ Exit: `0`, `2` unknown rule or profile, or malformed config.
 
 ### quiz build
 
-**changed**: absorbs `watch`, adds several files, `--build-file`, `--built-at`, `--lang` and `--print`.
+**changed**: absorbs `watch`, adds several files, `--build-file`, `--built-at`, `--ui-lang` and `--print`.
 
 ```text
 quiz build FILE... [-o OUT] [--profile P] [--config TOML] [--strict] [--open]
                 [--print [--answers none|key|inline] [--seed S]]
-                [--built-at ISO] [--lang en|vi]
+                [--built-at ISO] [--ui-lang en|vi]
                 [--watch [--serve] [--port N]]
                 [--json]
 quiz build --build-file BUILD [FILE...] [-o DIR] [--json]
@@ -155,7 +155,7 @@ Checks the quiz (under the profile, as `check` does), then writes one self-conta
 | `--answers` | With `--print`: `none` (default, an exam paper), `key` (an answer key on a new page after the paper) or `inline` (answers and explanations under each question) |
 | `--seed S` | With `--print`: shuffle questions and options reproducibly, so different seeds give different versions of the same exam, each with a matching key |
 | `--built-at ISO` | Pin the build time, so a build is byte-identical across runs. Default: now |
-| `--lang en\|vi` | Language of the page chrome for this build, overriding the quiz's `lang:`. The questions themselves are not translated |
+| `--ui-lang en\|vi` | Language of the interface for this build, overriding the quiz's `ui_lang`. The questions are not translated, and grading still follows the quiz's `lang` |
 | `--watch` | Rebuild whenever `FILE` or its `assets/` change. Keeps the last good page when a save has errors. Runs until Ctrl+C |
 | `--serve` | With `--watch`: serve on 127.0.0.1 and reload the browser after each rebuild. Only the served copy gets the reload code |
 | `--json` | `{"status", "output", "bytes", "warnings"}`. With `--watch`, one JSON line per rebuild. With several files, one such line per file (with `"file"`), then `{"status": "done", "ok", "failed"}` |
@@ -186,7 +186,7 @@ seed = 7
 lang = "en"                           # overrides the top level
 ```
 
-- **Keys are `build` flag names**, top level as defaults, each `[[build]]` entry overriding them: `out`, `profile`, `config`, `strict`, `fonts`, `lang`, `built-at`, `print`, `answers`, `seed`. `files` is required in each entry. A flag on the command line beats both.
+- **Keys are `build` flag names**, top level as defaults, each `[[build]]` entry overriding them: `out`, `profile`, `config`, `strict`, `fonts`, `ui-lang`, `built-at`, `print`, `answers`, `seed`. `files` is required in each entry. A flag on the command line beats both.
 - **Not allowed:** `attempt`, `grades`, `watch`, `serve`, `open`, `port`: they are about one run, not about what to build. These and unknown keys exit 2 with `file:line`, as a malformed config does.
 - **`library register --build-file`** reads the same file and registers its `files`.
 - `--watch` with a build file also watches the build file.
@@ -315,7 +315,7 @@ Exit:
 
 ```text
 quiz replay RESULTS... --quiz FILE [--grades GRADES] [-o OUT] [--open | --no-open]
-                    [--fonts quiz|all|none] [--built-at ISO] [--lang en|vi] [--json]
+                    [--fonts quiz|all|none] [--built-at ISO] [--ui-lang en|vi] [--json]
 ```
 
 Writes the quiz page **already submitted** with the learner's attempt: their answers, right and wrong, the explanations, the agent or human grades for essays and code, and **Retry missed** working. It is the same page the learner saw after pressing Submit, as the Attempt reducer rebuilds it ([TECHNICAL_DESIGN.md](TECHNICAL_DESIGN.md), section 4).
@@ -327,7 +327,7 @@ Writes the quiz page **already submitted** with the learner's attempt: their ans
 | `--grades GRADES` | Show these grades for essays and code. Default: `<RESULTS without .json>-grades.json` beside the results file, if it exists (the name `grade --json` writes); otherwise they show as pending. A grades file is checked against the quiz as `quiz grade` does, so one for another version of the rubric exits 1. One results file only |
 | `-o`, `--output OUT` | Output path. Default: `RESULTS` with `-replay.html`, so a replay never overwrites a page built from the source. With several files, a folder |
 | `--open` / `--no-open` | Open the page after writing it. Default: open for one file; with several, nothing is opened |
-| `--built-at`, `--lang`, `--fonts` | As for `build` |
+| `--built-at`, `--ui-lang`, `--fonts` | As for `build` |
 | `--json` | `{"status", "output", "bytes", "attempt", "graded"}` |
 
 Exit: `0` written, `1` the attempt's `quizHash` does not match `FILE` (the output names the version it was taken on), `FILE` does not parse, or `GRADES` is invalid; `2` I/O or usage error.
@@ -690,21 +690,21 @@ Prints the library folder, or a quiz's folder.
 
 ```text
 quiz library publish NAME --on | --off [--json]
-quiz library publish [DIR] [--with-brief | --no-brief] [--lang en|vi] [--dry-run] [--json]
+quiz library publish [DIR] [--with-brief | --no-brief] [--ui-lang en|vi] [--dry-run] [--json]
 ```
 
 Keeps a separate folder (a public repository, GitHub Pages) holding the current Markdown, assets and built page of every quiz on the `public` shelf, plus an index page, a `fullmark-shelf.json` manifest and a `fullmark.toml` with the custom profiles those quizzes use (written only when there are any). Results, reports, progress and older versions are never copied. Briefs are copied only with `--with-brief`.
 
 - **`NAME --on | --off`** adds or removes the quiz's entry on the shelf named `public` and commits in the library. It writes nothing to any shelf.
 - **Shelf entries.** A quiz's record in `library.toml` holds `shelves = [{ shelf = "public", kind = "quiz" }]`; `version` is reserved (optional, unused in v1). The folder to publish into is kept per machine in `config.toml`, keyed by shelf name. v1 commands touch only the shelf named `public` and only `kind = "quiz"` entries. Entries they do not know (another shelf name, `kind = "bundle"`) are kept as they are, never rejected, and never published. The `shelf ...` commands and several shelves are a proposal ([proposals/shelves.md](proposals/shelves.md)).
-- **The index page** lists every quiz on the shelf, whatever its language, each marked with its `lang` (`EN`, `VI`): one learner's courses can be taught in several languages, such as an English-taught programme at a Vietnamese university. Each quiz's page keeps its own `lang`; `--lang` sets only the index page's own chrome.
+- **The index page** lists every quiz on the shelf, whatever its language, each marked with its `lang` (`EN`, `VI`): one learner's courses can be taught in several languages, such as an English-taught programme at a Vietnamese university. Each quiz's page keeps its own `ui_lang`; `--ui-lang` sets only the index page's own chrome.
 - **The sync** builds every quiz on the `public` shelf into memory first, with `built_at` pinned to the version's `added` time, so the same library state always gives the same bytes. If any build fails, nothing is written. It then writes only the files that changed, removes only paths listed in the old manifest, and leaves everything else (README, LICENSE, `.github/`) alone. If `DIR` is its own git repository, it commits only the paths it wrote or removed. It never pushes.
 
 | Argument or option | Meaning |
 |---|---|
 | `DIR` | The shelf folder. Remembered in the config after the first successful sync |
 | `--with-brief`, `--no-brief` | Copy briefs or not. Default: not. Remembered in the manifest |
-| `--lang en\|vi` | The index page's language. Default: `en`. Remembered in the manifest |
+| `--ui-lang en\|vi` | The index page's interface language. Default: `en`. Remembered in the manifest |
 | `--dry-run` | Print what would be added, updated and removed, and write nothing |
 | `--json` | `{"status": "published" \| "unchanged", "dir", "added", "updated", "removed", "committed", "warnings"}` |
 

@@ -47,7 +47,7 @@ A bundle is one page with one look and one flow, so its quizzes must agree. `bun
 | `bundle.mixed-kind` | their **kind**: the built-in profile their own profile comes from (`default`, `exam` or `survey`, following `extends`) | a test and a quiz differ in feedback, timing and rules; one flow cannot serve both. A survey has no score to show in a left bar of scores |
 | `bundle.mixed-look` | `look` (`free` or `locked`) | a locked paper inside a free bundle would still show the Appearance menu |
 | `bundle.mixed-theme` | the effective `theme` and `font` | the page has one set of tokens ([TECHNICAL_DESIGN.md](../TECHNICAL_DESIGN.md), section 8); the effective values are compared, so a quiz that sets nothing counts as the default |
-| `bundle.mixed-lang` | `lang` | the page chrome is one catalog, locked at build (section 9). Question text may differ in language, as in a Japanese bundle ([japanese-support.md](japanese-support.md)); only `lang` must match |
+| `bundle.mixed-lang` | `ui_lang` | the page chrome is one catalog, locked at build (section 9). The quizzes' `lang` may differ, as in a Japanese bundle ([japanese-support.md](japanese-support.md)); only `ui_lang` must match |
 
 `mode: exam` also requires kind `exam` for every paper. Further rules (a duplicate quiz id, a size over the limit) are listed under "Open questions". Whether a per-quiz override is ever allowed is not decided; the default is no.
 
@@ -166,7 +166,7 @@ quiz library take NAME... [--mode quiz|level] [--title TEXT] [--missed] [--focus
 - Results go to each quiz exactly as a single `take` files them.
 - `--missed` is each quiz's own missed set, from that quiz's history. Quizzes with nothing missed are skipped and named; with nothing missed anywhere it says so and exits 0.
 - `--section` is ambiguous across quizzes and exits 2.
-- The quizzes must be of the same kind (`bundle.mixed-kind`) and `lang`. The look (theme, font, `look`) is not required to match: the page takes the first quiz's, since the quizzes are an arbitrary pick.
+- The quizzes must be of the same kind (`bundle.mixed-kind`) and `ui_lang`. The look (theme, font, `look`) is not required to match: the page takes the first quiz's, since the quizzes are an arbitrary pick.
 
 ### Bundle
 
