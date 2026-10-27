@@ -39,7 +39,7 @@ How the profile and the config are chosen is in [TECHNICAL_DESIGN.md](TECHNICAL_
 
 ### Several files
 
-Commands that handle each input on its own take `FILE...`: `check`, `build`, `grade`, `replay` and `library register`. The rules are the same for all of them:
+Commands that handle each input on its own take `FILE...`: `check`, `build`, `ids`, `grade`, `replay` and `library register`. The rules are the same for all of them:
 
 - **Inputs.** Globs (`signals/*.md`) are expanded by fullmark, since PowerShell does not expand them. They are sorted and repeated names are dropped. A folder is refused, so a `README.md` is never processed by accident.
 - **Order and exit.** One after another, in the order given. Every input is attempted, and the exit code is the worst one (`2` over `1` over `0`). `library register` is the exception: it is all or nothing, because it changes the library.
@@ -379,17 +379,31 @@ Copies a template and its assets to `PATH` (default: the current folder). Never 
 | `--from FILE` | Start from an existing quiz `.md` and its assets, in place of a named template |
 | `--skeleton` | With `--from`: keep the structure and drop the content (below) |
 
-**`--from` and `--skeleton`.** Without `--skeleton`, `--from` is a copy of the quiz and its assets. With it, the copy keeps:
-
-- the front matter (profile, look, time limit, language and so on);
-- each section's title, intro and suggested time;
-- for each question: its type, points and tags.
-
-It drops each question's text, choices, answer key and explanation, and the question ids, so the new quiz gets fresh ones and no review or attempt history is carried over. A skeleton fails `check` until it is filled in; that is intended.
+**`--from` and `--skeleton`.** Without `--skeleton`, `--from` is a copy of the quiz and its assets. With it, the copy keeps every field [QUIZ_SYNTAX.md](QUIZ_SYNTAX.md) marks as structure and empties every field it marks as content (its section 9): front matter, section titles, instructions, times and picks, each question's type, points and tags, the shape of each answer, and rubrics are kept; prompts, choices' text, keys, hints, explanations, passages, sample answers and question ids are emptied. A skeleton fails `check` until it is filled in; that is intended. `quiz ids` then gives the new questions fresh ids, so no review or attempt history is carried over.
 
 `--from` takes a file, since `new` is a core command and never touches a library. To start from a library quiz, run `quiz library share NAME --source` first and pass its folder's `.md` here, or store it as a template with `quiz library template add`.
 
 Exit: `0` copied, `1` the `--from` file does not parse, `2` unknown template or target exists.
+
+### quiz ids
+
+**new**.
+
+```text
+quiz ids FILE... [--dry-run] [--json]
+```
+
+Gives every question without an `id` a random one and writes it into the file ([QUIZ_SYNTAX.md](QUIZ_SYNTAX.md), ids). An id is `q-` and six characters from `a-z0-9`, unique within the file. It is added at the end of the heading's `{…}` block, or as a new block when there is none. Nothing else in the file changes, byte for byte, and an existing id is never changed, so running it again is safe. It does not run `check`.
+
+- **Duplicates are reported, not fixed:** which copy keeps the id is the author's choice. Delete the id from the copy and run it again.
+- A file with a duplicate id or a heading whose `{…}` block does not parse is left untouched, and the problems are listed.
+
+| Option | Meaning |
+|---|---|
+| `--dry-run` | List the ids it would add, and write nothing |
+| `--json` | `{"status": "written" \| "unchanged" \| "problems", "file", "added": [{"line", "id"}], "problems": [{"rule", "line", "message"}]}` |
+
+Exit: `0` written or nothing to add, `1` a duplicate id or a heading that does not parse (that file untouched), `2` I/O error.
 
 ### quiz template
 

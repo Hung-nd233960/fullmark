@@ -113,7 +113,7 @@ type Issue = { rule: string; level: Level; file: string; line: number; message: 
 
 ### Two kinds of rule
 
-- **Fixed rules** say whether a quiz can work at all: syntax, answer keys, matching pairs, banks, missing media, review flags. They are always errors and no config can change them. A profile that tries to change one is a config error.
+- **Fixed rules** say whether a quiz can work at all: syntax, answer keys, matching pairs, banks, missing media, review flags. The syntax rules and their ids are listed in [QUIZ_SYNTAX.md](QUIZ_SYNTAX.md), section 8a. They are always errors and no config can change them. A profile that tries to change one is a config error.
 - **Quality rules** say whether a question is good: a correct choice that gives itself away, a short explanation, skewed answer positions, a quiz that does not match its brief, a large page. Their level and thresholds are configurable.
 
 ### Rule catalogue (v1)
@@ -140,7 +140,6 @@ New quality rules, off in `default` so behaviour does not change, and used by th
 |---|---|---|
 | `explanation.missing` | off | |
 | `question.untagged` | off | (tags drive `stats` and `--missed`) |
-| `question.no-id` | off | (a content-hash id changes on every edit; an explicit `{id}` keeps history) |
 | `quiz.no-time-limit` | off | |
 
 ### Profiles
@@ -151,7 +150,7 @@ A profile is a named set of rule levels, options and custom checks. It can exten
 |---|---|---|
 | `default` | everything | none |
 | `draft` | writing in progress | every quality rule is `info`, so only fixed rules fail |
-| `exam` | mock exams | quality warnings become errors; `explanation.short` needs 8 words; `answers.position-skew` max share 0.4; `explanation.missing`, `question.untagged` and `question.no-id` are errors; `brief.count` tolerance 0.1; inline ignores are not allowed |
+| `exam` | mock exams | quality warnings become errors; `explanation.short` needs 8 words; `answers.position-skew` max share 0.4; `explanation.missing` and `question.untagged` are errors; `brief.count` tolerance 0.1; inline ignores are not allowed |
 | `survey` | questionnaires | rules about answer keys and explanations are off. Picked automatically for `kind: survey` |
 
 `brief` maps its purpose to a profile and writes it into `brief.yaml`: `self-study` and `classmates` give `default`, `exam-prep` gives `exam`, `survey` gives `survey`.

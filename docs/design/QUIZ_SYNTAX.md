@@ -1,6 +1,6 @@
 # Quiz syntax
 
-**Status: draft (2026-10-27).** How a quiz is written in Markdown for fullmark 1.0. It starts from 0.10.2's authoring guide and changes what the 1.0 design needs; the changes are listed in [section 11](#11-changes-from-0102). 1.0 reads no 0.x quiz, so nothing here has to stay compatible. `quiz guide` is written from this document, and every example in the guide is a `quiz-example` block that passes `check` ([TECHNICAL_DESIGN.md](TECHNICAL_DESIGN.md), seams).
+**Status: settled (2026-10-27).** It will be proven by the parser and by every guide example passing `check`; a change found then is made here first. How a quiz is written in Markdown for fullmark 1.0. It starts from 0.10.2's authoring guide and changes what the 1.0 design needs; the changes are listed in [section 11](#11-changes-from-0102). 1.0 reads no 0.x quiz, so nothing here has to stay compatible. `quiz guide` is written from this document, and every example in the guide is a `quiz-example` block that passes `check` ([TECHNICAL_DESIGN.md](TECHNICAL_DESIGN.md), seams).
 
 Each field is marked **S** (structure) or **C** (content). `quiz new --skeleton` keeps every structure field and empties every content field ([section 9](#9-structure-and-content)), so the skeleton rules follow from these marks and need no list of their own.
 
@@ -101,18 +101,43 @@ A `##` heading starts a question. The heading text is the question's prompt; Mar
 ## Evaluate $\int_0^1 x^2\,dx$. {type=numeric points=2 tags=integrals id=int-x2 source="Lecture 4, slide 12"}
 ```
 
+### Where attributes start and end
+
+The same rule holds for a section heading, a question heading and `{input}` on a choice. (An image's `{width=…}` is different: it follows the image's `)` directly.)
+
+1. **The block is the last `{` on the line that is outside maths and code and not escaped, up to the `}` that ends the line** (trailing spaces ignored). Braces in `$\frac{1}{s+2}$` or in `` `f{x}` `` are never a block.
+2. **Every question heading has one,** since `type` is required, so a heading is never read as a prompt that happens to end in braces.
+3. **A literal `{` at the end of a prompt is escaped** as `\{`, or written inside maths (`$\{1, 2\}$`).
+4. **Inside the block:** pairs `name=value` separated by spaces. A value with a space, `=`, `{`, `}` or `"` is double-quoted, and inside quotes `\"` and `\\` are the only escapes. `input` alone, without a value, is the one bare name.
+5. **No guessing:** a trailing block that does not parse, an unknown name or a name given twice is an error (`syntax.attributes`, `syntax.unknown-key`), never read as text.
+
 | Attribute | Meaning | Default | S/C |
 |---|---|---|---|
 | `type` | one of the types in [section 6](#6-question-types). Required | | S |
 | `points` | a number greater than 0 | `1` | S |
 | `tags` | comma-separated, no spaces | none | S |
-| `id` | a stable id; results, reviews, `--missed` and `stats` follow it across versions | a hash of the question's content, which changes on every edit (`question.no-id` warns in stricter profiles) | C |
+| `id` | the question's identity across versions. Required; `quiz ids` writes it ([below](#ids)) | | C |
 | `source` | where in the material the question comes from, quoted | none | C |
 | `graded` | `false` makes this question ungraded ([section 7](#7-ungraded-questions-and-surveys)) | `true` | S |
 | `shuffle` | overrides `shuffle_choices` | | S |
 | `partial` | overrides `partial` | | S |
 | `case` | `sensitive` \| `insensitive`, for `short`, `blanks` and `fields` | `insensitive` | S |
 | `check-ignore`, `because` | `check-ignore="choice.correct-longest" because="the long answer is the point"`. The reason is required; several rules are comma-separated and share it | | S |
+
+### Ids
+
+An id is how fullmark knows that a question in a new version is the same question as before. Results, `--missed`, `stats`, reviews, grades, replay, autosave and survey answers all follow it; if an id changes, that question's history starts over.
+
+- **Required on every question.** Nothing is derived from position (which shifts on every insertion) or from content (which changes on every typo fix).
+- **Nobody has to invent one.** Leave `id` out while writing, then run `quiz ids FILE` ([COMMANDS.md](COMMANDS.md)): it gives every question without an id a random one such as `id=q-k7m2qx` and changes nothing else. It never changes an id that exists, so it is safe to run at any time. The randomness happens once, in that command; builds and grading stay deterministic.
+- **Hand-written ids are welcome** (`id=roc-causal`). Format: lowercase letters, digits and `-`, starting with a letter, at most 64 characters.
+- **Unique within the quiz** (`question.id-duplicate`). A copied question keeps its id: delete it from the copy and run `quiz ids` again.
+- **The id lives in the file you edit.** `library register` reads it and never stamps one, or the next `register --update` would see new ids and break every history.
+- **Changes stay visible.** Each question also has a content hash, so a question edited since it was missed is marked as changed; the id keeps its identity.
+
+**Section ids** are slugged from the title unless `id=` is given. Two sections with the same id are an error (`section.id-duplicate`), never given a suffix, since a suffix would depend on order.
+
+### Type
 
 **Every question states its `type`.** Nothing is guessed or defaulted, so a forgotten type is reported as a missing `type`, not as a question that does not fit the type it was assumed to be, and the type can be read off the heading. A `single` has exactly one `[x]` (none when ungraded). Checkboxes need `type=multi`, even when only one choice is right.
 
@@ -180,7 +205,7 @@ unit: ""           # shown after the box
 ```
 ````
 
-- In the source, numbers use a decimal point, whatever the quiz's `lang`.
+- In the source, numbers use a decimal point, whatever the quiz's `lang`. `value`, `values` and the tolerances take the same forms as a learner's answer, read by the same function: an integer, a decimal, `1e-3` or a fraction (`value: 1/3`). With a fraction and no tolerance, `1/3` and `0.333333333333` match and `0.33` does not.
 - The learner may type an integer, a decimal, `1e-3` or a fraction `1/3`. With `lang: vi`, a decimal comma (`2,5`) is accepted too, and `1,000` is never read as a thousands separator. With `lang: en`, the box says at once that a comma is not a decimal point, so `2,5` is never silently marked wrong.
 - This follows `lang`, never `ui_lang`: the score depends only on the quiz source and the answers, never on how the page was built.
 - `value`, `values` and the tolerances are content; `unit` is structure.
@@ -220,6 +245,7 @@ The derivative of $\sin x$ is [[cos x|cos(x)]] and half of one is [[=0.5±0.01]]
 fields:
   - label: "$f'(x)$ ="
     accept: ["3x^2-3", "3x^2 - 3"]
+    points: 2
   - label: "Number of critical points"
     value: 2
     points: 2
@@ -227,7 +253,9 @@ fields:
 ```
 ````
 
-A field takes the keys of `numeric` or of `short`, and an optional `points` weight. A field with neither is ungraded. Labels and weights are structure; keys are content.
+A field takes the keys of `numeric` or of `short`, not both. A field with neither is ungraded and carries no points.
+
+**Points are absolute.** Either every graded field has `points` and they add up to the question's `points`, or no field has them and the question's points are split equally among the graded fields. Anything else is an error (`fields.points`), as an additive rubric that does not add up is (`rubric.sum`). Labels and points are structure; keys are content.
 
 ### ordering
 
@@ -352,6 +380,50 @@ In a survey, `[x]`, `pass_mark`, `pick`, `feedback: instant` and `partial` are e
 
 Video and remote URLs are not supported.
 
+## 8a. Errors
+
+Every rule below is a **fixed rule**: an error that no profile can change or ignore ([TECHNICAL_DESIGN.md](TECHNICAL_DESIGN.md), section 5). The ids are a contract that agents and scripts match on, so a rule is never renamed. Quality rules (`choice.correct-longest`, `explanation.short`...) are in TECHNICAL_DESIGN.md.
+
+| Rule | When |
+|---|---|
+| `syntax.front-matter` | no front matter, YAML that does not parse, or no `title` |
+| `syntax.unknown-key` | an unknown front-matter key, attribute or `answer` key |
+| `syntax.value` | a value outside its allowed set or range (`feedback: sometimes`, `points=0`, `time_limit: soon`) |
+| `syntax.attributes` | a `{…}` block that does not parse, or a name given twice |
+| `syntax.heading-level` | a `###` or deeper heading |
+| `syntax.container` | an unknown or unclosed `:::` container, or one in the wrong place (`passage` outside a section intro) |
+| `syntax.reserved` | a reserved name ([section 10](#10-reserved)) |
+| `markdown.raw-html` | any HTML tag or comment |
+| `asset.missing`, `asset.outside`, `asset.type`, `asset.remote` | a missing file, a path outside the quiz folder, an unsupported format, a URL |
+| `theme.unknown`, `theme.unknown-font` | a theme or font fullmark does not have |
+| `section.id-duplicate` | two sections with the same id |
+| `section.pick` | `pick` below 1 or above the section's question count |
+| `question.type-missing` | a question without `type` |
+| `question.id-missing` | a question without `id`. The fix names the command: `quiz ids FILE` |
+| `question.id-duplicate`, `question.id-format` | two questions with one id; an id that is not a valid slug |
+| `question.prompt-empty` | a heading with no prompt text |
+| `question.container-twice` | two hints or two explanations on one question |
+| `question.answer-block` | an `answer` block missing where the type needs one, or present where it takes none |
+| `question.ungraded` | `graded=false` on a type that cannot be ungraded ([section 7](#7-ungraded-questions-and-surveys)) |
+| `choice.marker` | a choice without `[ ]` or `[x]` |
+| `choice.count` | fewer than two choices |
+| `choice.correct-count` | a graded `single` without exactly one `[x]`, a graded `multi` with none, or any `[x]` in an ungraded question |
+| `choice.input` | `{input}` anywhere but the end of a choice, an unquoted or empty prompt |
+| `numeric.value` | no `value` or `values`, both, a number that does not parse, both tolerances, a negative tolerance |
+| `short.key` | a graded `short` with neither `accept` nor `patterns` |
+| `short.regex` | a pattern that is not valid in JavaScript's `u` mode |
+| `blanks.none`, `blanks.outside`, `blanks.in-math`, `blanks.syntax` | a `blanks` question without blanks, `[[…]]` in another type, inside maths, or malformed |
+| `fields.empty`, `fields.key`, `fields.points` | no fields; a field with both numeric and text keys; points that are mixed or do not add up |
+| `ordering.items` | fewer than two items, or duplicates |
+| `matching.pairs` | fewer than two pairs, a bullet without `::`, or a right-hand item used twice |
+| `essay.words` | `min_words` above a non-zero `max_words` |
+| `scale.range` | `max - min` outside 1 to 10, or a label outside the range |
+| `rubric.*` | the rubric rules of TECHNICAL_DESIGN.md, section 6 |
+| `survey.forbidden` | in a survey: `[x]`, `pass_mark`, `pick`, `feedback: instant`, `partial` or `graded=` |
+| `ignore.invalid` | `check-ignore` without `because`, or naming a fixed rule |
+
+One quality rule belongs here because the syntax raises it: `question.points-ignored` (warning) for `points=` on an ungraded question.
+
 ## 9. Structure and content
 
 `quiz new --skeleton` keeps every **S** field above and empties every **C** field:
@@ -363,7 +435,7 @@ Video and remote URLs are not supported.
 - Rubrics: kept whole.
 - Banks: the `pick` count kept, every question in the bank blanked.
 
-A skeleton fails `check` by design, with one error per empty field, which is the author's to-do list.
+A skeleton fails `check` by design, with one error per empty field, which is the author's to-do list. Once the questions are written, `quiz ids` gives them new ids, so no history from the source quiz is carried over.
 
 ## 10. Reserved
 
@@ -387,7 +459,9 @@ The quiz hash will cover the files `reference` names, as it covers assets.
 | `theme: auto \| light \| dark` | six themes, `font`, `look` | TECHNICAL_DESIGN.md, section 8 |
 | — | `lang` (written in), `ui_lang` (interface), `profile` | grading follows the quiz's language, the chrome can differ; check profiles |
 | `[[=0.5±0.01]]` | also `[[=0.5+-0.01]]` | `±` is not on most keyboards |
-| default question id `q1`, `q2`... | a content hash; `id=` keeps history | ids by position broke on every insertion |
+| default question id `q1`, `q2`... | `id` required; `quiz ids` writes random ones (`q-k7m2qx`) where missing | ids by position broke on every insertion, and ids from content would break on every typo fix |
+| a numeric `value` was a decimal | also a fraction (`1/3`), read by the same function as the learner's answer | exact answers without a tolerance; one number reader |
+| a field's `points` was a weight | absolute points that add up to the question's, or none and an equal split | no hidden scaling, the same rule as an additive rubric |
 | — | section `id`, slugged from the title | `--section` and links |
 | `Source:` as a note in the explanation | `source="..."` on the heading | custom checks can `require` it |
 | `sample_answer`, `show_sample` (essay); `reference`, `show_reference` (code) | `sample_answer` for both, always shown after Submit | one name for the model answer, and no switch: present means shown, like an explanation; `reference` is kept for reference sheets |
@@ -397,8 +471,6 @@ The quiz hash will cover the files `reference` names, as it covers assets.
 | — | `check-ignore`, `because` | inline ignores with a reason |
 | — | `::: passage` | shared texts, and the seam for a reading layout |
 
-## 12. Open questions
-
-Decided on 2026-10-27: a section's `time` is a guide; `type` is required; `+-` is accepted for `±`; `lang` and `ui_lang` are separate, one language per quiz and per template.
+## 12. Left to proposals
 
 - **Japanese** (furigana, `lang="ja"` spans): left to [proposals/japanese-support.md](proposals/japanese-support.md); nothing here blocks it.
