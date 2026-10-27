@@ -42,7 +42,7 @@ The loop is: **brief, write, check, review, build, take, grade, study again.** S
 - **No telemetry.** Nothing is sent anywhere, ever.
 - **One grader.** The same code scores in the page and in `quiz grade`, so the number the learner saw is the number in the report ([TECHNICAL_DESIGN.md](TECHNICAL_DESIGN.md), section 2).
 - **The tool does the arithmetic.** A grader (AI or human) gives components (a score per criterion, a band per criterion); fullmark adds, weights and rounds ([TECHNICAL_DESIGN.md](TECHNICAL_DESIGN.md), section 6). *Why:* models add and round wrongly.
-- **Two languages, kept apart.** The quiz language (`lang:` in the quiz, locked at build) is what the learner sees. The tool language (`lang` in `config.toml`, or `FULLMARK_LANG`) is what the person at the terminal reads ([TECHNICAL_DESIGN.md](TECHNICAL_DESIGN.md), section 9).
+- **One language setting.** The quiz language (`lang:` in the quiz, locked at build) is what the learner sees: the page, reports, printed papers and forms. Terminal output is English; `quiz guide --lang vi` gives the Vietnamese guide ([TECHNICAL_DESIGN.md](TECHNICAL_DESIGN.md), section 9).
 
 ## 3. Roles
 
@@ -176,7 +176,7 @@ The full table, with formats, is [COMMANDS.md](COMMANDS.md#files). By who writes
 | Who | Files |
 |---|---|
 | **The author or an agent** | `quiz.md` and `assets/`; filled-in `*-grades.json` (the grader) |
-| **The user** | `fullmark.toml` (check rules; agents never edit it to pass `check`); `config.toml` (library path, shelf folders, personal profiles, tool language, default fonts); `build.toml` |
+| **The user** | `fullmark.toml` (check rules; agents never edit it to pass `check`); `config.toml` (library path, shelf folders, personal profiles, default fonts); `build.toml` |
 | **The learner, through the page or a form** | `*-results-*.json` (**Export**, `serve`, `library take`); `review.json` (`review`) |
 | **`brief`** | `brief.yaml` and `content/` |
 | **fullmark, from a command** | `quiz.html`; `*-report.md` and `*-report.json`; a grades template; `check.json`, `library.toml`, `fullmark-shelf.json` |

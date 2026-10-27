@@ -11,7 +11,7 @@ quiz guide --web [--no-open] [-o FILE]
 ```
 
 - Opens a temporary file, or writes to `FILE`. No server: the page is static.
-- Follows the tool language, like `quiz guide`.
+- Takes `--lang en|vi`, like `quiz guide`.
 - Uses the default look; the Appearance menu shows the themes and fonts on real questions, which doubles as a preview of `theme` and `font`.
 - A **Copy** button on each source block.
 

@@ -596,6 +596,7 @@ How many fonts to embed is a delivery choice, not part of the quiz, so it is an 
 `quiz build --print` writes a static page made for paper: no runtime, no panel, nothing interactive. The same components render it, in a print layout. PDF comes from the browser's **Print → Save as PDF**; fullmark does not ship a browser to make PDFs itself.
 
 - **Answers:** `none` (an exam paper), `key` (the paper, then an answer key on a new page), or `inline` (each answer and explanation under its question, a study sheet).
+- **What an answer is, for every type:** `key` and `inline` print everything the quiz holds about a question's answer, and differ only in where it goes. For an essay or code that is the rubric, the sample answer if the quiz has one, and the explanation: whoever marks a paper needs the rubric, and a learner studying needs to know what is assessed. `none` prints neither, as on an exam paper. One exception: a preset rubric (IELTS) prints its name and criteria, not its descriptors, which are public and run to pages; a custom rubric prints in full.
 - **Layout of answers on paper:** choices lettered A, B, C…; short answers and blanks get a line; numeric answers a box; matching two lettered columns; ordering numbered boxes. Essays and code get ruled space sized from the question's word limit or points.
 - **Header:** title, time limit and total points, plus Name, Class and Date fields.
 - **Versions:** `--seed` shuffles questions and options reproducibly, so `--seed A` and `--seed B` give two versions of the same exam, each with its own key.
@@ -608,28 +609,32 @@ A plain Markdown export for pandoc (and so Word and Typst, maths included) is in
 
 ## 9. Languages
 
-English and Vietnamese from v1. Every user-facing string goes through a message catalog from the first commit, because adding a catalog to finished code means finding every hard-coded string again.
+English and Vietnamese from v1, for what a learner sees. Every string a page, report or form shows goes through a message catalog from the first commit, because adding a catalog to finished code means finding every hard-coded string again.
 
-### Two settings, never mixed
+### One setting: the quiz's language
 
-| Setting | Decides | Set by | Default |
-|---|---|---|---|
-| **Quiz language**: `lang: en \| vi` in front matter | Everything a learner sees: the page chrome (Start, Submit, timer, Export, banners, feedback), `<html lang>`, the report's headings, the grading form | the author, or `brief --language`, which writes it into `brief.yaml` and the agent copies it into the quiz | `en` |
-| **Tool language**: `lang` in `config.toml`, or `FULLMARK_LANG` | What the person at the terminal reads: `check` messages, help, errors, the `brief` and `review` forms, `quiz guide` | the user, once | `en`. The OS locale is never read, so an agent's output doesn't change from one machine to the next |
+| What | Language |
+|---|---|
+| The page chrome (Start, Submit, timer, Export, banners, feedback), `<html lang>`, the report's headings, the printed paper's labels, the `review` and `grade --web` forms | the quiz's `lang: en \| vi` in front matter, default `en`. Set by the author, or by `brief --language`, which writes it into `brief.yaml` and the agent copies it into the quiz |
+| The `brief` forms (`--web`, `--tui`) | `brief --language`, default `en`: the quiz does not exist yet |
+| `quiz guide` | `--lang en \| vi`, default `en`. It is a document, like the README |
+| `check` messages, errors, `--help`, every other terminal output | English only, like most CLIs. Agents and scripts read them, and translating every command's help costs much for little |
+
+There is no tool language: no `lang` in `config.toml` and no environment variable, and the OS locale is never read, so a command's output doesn't change from one machine to the next. The question text is whatever the author writes; `lang` decides only the chrome around it.
 
 **The page language is locked at build.** A quiz's content is written in one language, so a toggle would switch the buttons and leave every question as it was. Only the chosen catalog is bundled. `build --lang` overrides front matter for a one-off build. A runtime toggle stays possible later, since both catalogs together are a few KB, but there is no need for it now.
 
 ### How
 
 - **A typed catalog, no i18n library.** `en.ts` is the source; `vi.ts` is typed `satisfies Messages`, so a missing or extra key is a compile error. Messages with values are functions (`(n) => \`${n} câu sai\``). Vietnamese has no plural forms and English needs two, so ICU MessageFormat and i18next would add page weight for nothing.
-- **Rule ids, JSON keys, exit codes, slugs and file formats never change with the language.** Only `message` and `fix` in an `Issue` are translated. Agents and scripts match on `rule`, and `AGENTS.md` says so.
+- **Rule ids, JSON keys, exit codes, slugs and file formats never change with the language.** An `Issue`'s `message` and `fix` are English. Agents and scripts match on `rule`, and `AGENTS.md` says so.
 - **Dates and numbers** are formatted by our own small functions, not `Intl`, because `Intl` output varies with Node's ICU version and would break byte-identical builds. JSON always uses ISO dates and a decimal point.
 
 ### Documents
 
 | Document | Languages |
 |---|---|
-| README, `quiz guide` (authoring reference), templates' sample text, form help in the brief question file | English and Vietnamese (`README.vi.md`; `guide` follows the tool language) |
+| README, `quiz guide` (authoring reference), templates' sample text, form help in the brief question file | English and Vietnamese (`README.vi.md`; `guide --lang vi`) |
 | `TECHNICAL_DESIGN.md`, `COMMANDS.md`, `AGENTS.md` (`quiz agent-guide`), JSON Schemas, code comments | English only |
 
 English is the source. Each Vietnamese document starts with the commit of the English text it translates, and a test fails when the English file has changed since, so drift is visible instead of silent.
@@ -653,7 +658,7 @@ English is the source. Each Vietnamese document starts with the commit of the En
 | Brief | `brief` through flags, `--web` and `--tui`, all driven by one question file; detail rules (`min-words` with an example) enforced by both forms and warned about through flags; a summary screen before writing |
 | Authoring | `brief`, `check` with `--review`, `--strict` and `--profile`, `review`, `inspect`, `new`, `build --watch` |
 | Themes | `theme`, `font` and `look` (`free` with an Appearance menu, or `locked`) keys; `--fonts quiz\|all\|none` when writing a page; themes `auto`, `light`, `dark`, `oled`, `white`, `paper`; fonts `system`, `sans` (Be Vietnam Pro), `serif` (Source Serif 4), `readable` (Lexend), all covering Vietnamese; high contrast through `white` and `oled`; Shiki colours from the tokens; print style sheet |
-| Languages | English and Vietnamese for the page, reports, forms, `check` messages, README and `quiz guide`; quiz `lang` locked at build; tool `lang` in config; decimal comma in `vi` numeric answers |
+| Languages | English and Vietnamese for the page, reports, forms, README and `quiz guide --lang`; quiz `lang` locked at build; terminal output in English only; decimal comma in `vi` numeric answers |
 | Check config | rule ids on every finding, `fullmark.toml`, built-in and custom profiles, declarative custom checks, inline ignores with a reason, `quiz rules` |
 | Grading | `grade` with reports and `grades-v2`; rubric modes `holistic`, `additive`, `banded` and the IELTS presets; a required grader identity; `grade --web` for human grading; `stats` with per-question, per-tag and per-criterion history |
 | Library | init, status, register, list, **info**, take (**`--section`, `--missed`**), share, grade, stats, rename, rm, path, **replay**, **publish**, **import** |

@@ -62,7 +62,6 @@ Commands that handle each input on its own take `FILE...`: `check`, `build`, `gr
 | `FULLMARK_CONFIG` | Path of `config.toml`, in place of `%APPDATA%\fullmark\config.toml` on Windows or `~/.config/fullmark/config.toml` on Linux |
 | `FULLMARK_LIBRARY` | Library folder for this shell, overriding the config. `library status` warns when it is set |
 | `NO_COLOR` | Same as `--plain` |
-| `FULLMARK_LANG` | Tool language, `en` or `vi`, overriding `lang` in `config.toml`. Changes messages only, never rule ids, JSON keys or exit codes. The quiz page's language comes from the quiz's `lang:` instead ([TECHNICAL_DESIGN.md](TECHNICAL_DESIGN.md), section 9) |
 
 ### Files
 
@@ -77,7 +76,7 @@ Commands that handle each input on its own take `FILE...`: `check`, `build`, `gr
 | `brief.yaml` plus `content/` | brief | `brief` |
 | build file (`build.toml`) | what `build --build-file` builds: files, and per entry the `build` options | the user |
 | `fullmark.toml` | check config: default profile, custom profiles, rule levels and options, custom checks | the user (agents never edit it to make `check` pass) |
-| `config.toml` | machine config: library path, shelf folders (by shelf name; `public` in v1), personal profiles, tool language (`lang`), default `fonts` | `library init`, `library publish`, the user |
+| `config.toml` | machine config: library path, shelf folders (by shelf name; `public` in v1), personal profiles, default `fonts` | `library init`, `library publish`, the user |
 | `check.json` | the resolved rules a library version was registered with | `library register` |
 | `library.toml` | the library's index of quizzes | `library` commands |
 | `fullmark-shelf.json` | shelf manifest | `library publish` |
@@ -426,16 +425,17 @@ Exit: `0` listed, added, unchanged or removed, `1` check errors, name taken or a
 **changed**: styled output in a terminal.
 
 ```text
-quiz guide [--plain] [--no-pager]
+quiz guide [--lang en|vi] [--plain] [--no-pager]
 quiz agent-guide [--plain] [--no-pager]
 ```
 
-`guide` prints the authoring reference (the Markdown format) in the tool language. `agent-guide` prints the instructions for AI agents (`AGENTS.md`), in English only.
+`guide` prints the authoring reference (the Markdown format), in English or, with `--lang vi`, Vietnamese. `agent-guide` prints the instructions for AI agents (`AGENTS.md`), in English only.
 
 In a terminal, the Markdown is rendered: headings, lists, tables, wrapping to the terminal width, and code blocks highlighted with the same highlighter the pages use. Output taller than the screen goes through `$PAGER`, or `less` if found. When stdout is not a terminal (piped, redirected, or run by an agent), or with `--plain` or `NO_COLOR`, the output is the Markdown source byte for byte, so `quiz agent-guide > AGENTS.md` writes the real file.
 
 | Option | Meaning |
 |---|---|
+| `--lang en\|vi` | `guide` only. Default: `en` |
 | `--plain` | The Markdown source, even in a terminal |
 | `--no-pager` | Styled, but printed straight to the terminal |
 

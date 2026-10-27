@@ -9,7 +9,7 @@
 | Quiz, sections, banks, Plan and Attempt | TECHNICAL_DESIGN.md 4 | yes |
 | Theme, font, `look`, `--fonts` | TECHNICAL_DESIGN.md 8 | yes |
 | Printable paper (`build --print`) | TECHNICAL_DESIGN.md 8 | yes |
-| Languages (quiz `lang`, tool `lang`) | TECHNICAL_DESIGN.md 9 | yes |
+| Languages (quiz `lang`; `guide --lang`) | TECHNICAL_DESIGN.md 9 | yes |
 | Library, `take`, `--section`, `--missed`, `replay` | COMMANDS.md | yes |
 | Shelf, `publish`, `import` | COMMANDS.md | yes, one shelf |
 | Several shelves | [shelves.md](shelves.md) | no |
@@ -44,13 +44,15 @@ Marked **easy** where the current design already implies an answer, so the paper
 - **Sections:** `--section` for a printed paper of one part only? (easy: same Plan)
 - **Banks:** a printed paper draws from banks with `--seed`, so the key must match the draw. (easy: the key comes from the same Plan)
 - **Attempts:** print a filled-in attempt with its marks, as a graded script? Useful for a teacher; needs the attempt and grades like `replay`.
-- **Essays with rubrics:** does `--answers key` print the rubric, the sample answer, or both?
+- **Essays with rubrics:** decided (fits): `key` and `inline` print the rubric, the sample answer if any, and the explanation; a preset rubric prints its name and criteria only (TECHNICAL_DESIGN.md, section 8, printable paper). Whether an essay's key *is* its sample answer is for the quiz syntax.
 - **Look:** prints on white always (decided). Does the chosen font carry over? (easy: yes, decided)
 
 ### Languages ×
 
-- **Guide examples:** one set of examples per language, or the same quiz fragments with translated text?
-- **Templates:** a `vi` version of each template, or one template whose sample text follows the tool language?
+There is no tool language (decided 2026-10-27): terminal output is English, `quiz guide` takes `--lang`, and only the quiz's `lang` affects what a learner sees.
+
+- **Guide examples:** `guide --lang vi` is its own document, so does it have its own examples, or the English fragments with translated text? Settle with the quiz syntax.
+- **Templates:** a `vi` version of each template, or `quiz new --from T --lang vi` choosing the sample text? Settle with the quiz syntax.
 
 ## When this is done
 

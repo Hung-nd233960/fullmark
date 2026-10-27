@@ -29,7 +29,7 @@ Agents are unaffected: everything here is opt-in per shell, and nothing changes 
 | Rule ids | `quiz rules ...` | the rule registry |
 | Files | `quiz check` and `quiz new --from` → `*.md`; `quiz grade` → `*-results-*.json` | a file filter, left to the shell |
 
-Values are completed as written in [COMMANDS.md](../COMMANDS.md), never translated. A description shown next to a value follows the tool language.
+Values are completed as written in [COMMANDS.md](../COMMANDS.md), never translated. A description shown next to a value is in English, like all terminal output.
 
 ### How: ask the program (the cobra pattern)
 
