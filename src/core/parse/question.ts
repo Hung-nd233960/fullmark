@@ -165,8 +165,42 @@ export function parseQuestion(region: Region, ctx: QuestionCtx): Question {
   const answerList = listFor ? lists.filter((l) => !claimed(l.start)).at(-1) : undefined;
   const inList = (i: number) => answerList !== undefined && i >= answerList.start && i < answerList.end;
 
+  // -- where the answer is, if the type writes one in the body: the prompt is what comes before it, and nothing
+  // but a hint or an explanation may come after it (`question.trailing-text`)
+  const policy = type ? blockPolicy(type, graded) : "optional";
+  const firstBlock = answers[0];
+  const answerAt: { start: number; end: number } | null = answerList
+    ? { start: answerList.start, end: answerList.end }
+    : firstBlock && policy !== "forbidden"
+      ? { start: firstBlock.start, end: firstBlock.end }
+      : null;
+  if (answerAt) {
+    const stray = region.units.find(
+      (u) =>
+        u.start >= answerAt.end &&
+        u.start < swallowed &&
+        u.kind !== "container" &&
+        u.kind !== "stray-closer" &&
+        !(u.kind === "fence" && u.info === "answer") &&
+        !o.rawHtml.some((h) => h.line >= u.start && h.line < u.end),
+    );
+    if (stray) {
+      r.error(
+        "question.trailing-text",
+        stray.start + 1,
+        "there is text after the answer; only a hint or an explanation may follow it",
+        "move it above the answer, into the prompt, or into the explanation",
+      );
+    }
+  }
+
   // -- the prompt
-  const body = unclaimedLines(lines, region.start + 1, region.end, (i) => claimed(i) || inList(i));
+  const body = unclaimedLines(
+    lines,
+    region.start + 1,
+    answerAt ? answerAt.start : region.end,
+    (i) => claimed(i) || inList(i),
+  );
   const promptBody = trimBlankLines(body).join("\n");
   const prompt =
     parts.text.trim() === ""
@@ -228,7 +262,6 @@ export function parseQuestion(region: Region, ctx: QuestionCtx): Question {
 
   // -- the answer block
   const env: AnswerEnv = { r, headingLine: line, graded, points: attrs.points };
-  const policy = type ? blockPolicy(type, graded) : "optional";
   const first = answers[0];
   if (type && first && policy === "forbidden") {
     r.error(

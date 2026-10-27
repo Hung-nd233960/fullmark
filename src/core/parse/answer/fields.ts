@@ -18,6 +18,7 @@ export function parseFields(src: MapSource, env: AnswerEnv): Field[] {
     return [];
   }
   const fields: Field[] = [];
+  let withKey = 0;
   for (const item of seq.items) {
     const line = src.root.lineOf(item as never);
     const fs = mapSource(src.root, item as never);
@@ -60,11 +61,20 @@ export function parseFields(src: MapSource, env: AnswerEnv): Field[] {
         r.error("fields.points", p.line, "a field with no answer key is ungraded and carries no points");
       } else points = n;
     }
+    if (numeric || text) withKey++;
     fields.push({ line, label: label ?? "", key, points });
   }
 
   if (env.graded) {
     const graded = fields.filter((f) => f.key !== null);
+    if (withKey === 0 && fields.length > 0) {
+      r.error(
+        "fields.empty",
+        env.headingLine,
+        "a graded fields question needs at least one graded field",
+        "give a field a `value` or `accept`, or make the question ungraded with graded=false",
+      );
+    }
     const withPoints = graded.filter((f) => f.points !== null);
     if (withPoints.length > 0 && withPoints.length < graded.length) {
       r.error("fields.points", env.headingLine, "either every graded field has `points` or none does");

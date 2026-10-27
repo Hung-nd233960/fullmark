@@ -15,6 +15,10 @@
     "rule": "syntax.yaml",
     "line": 9
   },
+  "asset-alt-missing": {
+    "rule": "asset.alt",
+    "line": 7
+  },
   "asset-outside": {
     "rule": "asset.outside",
     "line": 7,
@@ -56,6 +60,10 @@
     "rule": "syntax.container",
     "line": 12
   },
+  "container-passage-twice": {
+    "rule": "syntax.container",
+    "line": 11
+  },
   "container-unclosed": {
     "rule": "syntax.container",
     "line": 10
@@ -84,6 +92,10 @@
   "fields-key": {
     "rule": "fields.key",
     "line": 10
+  },
+  "fields-no-graded-field": {
+    "rule": "fields.empty",
+    "line": 5
   },
   "fields-points-mixed": {
     "rule": "fields.points",
@@ -255,6 +267,10 @@
     "rule": "syntax.preamble",
     "line": 5
   },
+  "preamble-question-before-section": {
+    "rule": "syntax.preamble",
+    "line": 5
+  },
   "question-container-twice": {
     "rule": "question.container-twice",
     "line": 14
@@ -400,6 +416,14 @@
   "theme-unknown-font": {
     "rule": "theme.unknown-font",
     "line": 3
+  },
+  "trailing-text-after-answer-block": {
+    "rule": "question.trailing-text",
+    "line": 11
+  },
+  "trailing-text-after-choices": {
+    "rule": "question.trailing-text",
+    "line": 10
   },
   "truefalse-not-bool": {
     "rule": "syntax.value",

@@ -56,7 +56,15 @@ export function parseSectionHead(
         r.error("syntax.container", u.start + 1, "containers do not nest");
       } else if (u.name === "passage") {
         const inner = lines.slice(u.start + 1, u.closed ? u.end : region.end);
-        passages.push({ line: u.start + 2, text: trimBlankLines(inner).join("\n") });
+        const first = passages[0];
+        if (first) {
+          r.error(
+            "syntax.container",
+            u.start + 1,
+            `a section has one passage, and this is a second (the first starts on line ${first.line - 1})`,
+            "put both texts in one ::: passage",
+          );
+        } else passages.push({ line: u.start + 2, text: trimBlankLines(inner).join("\n") });
       } else if (u.name === "hint" || u.name === "explanation") {
         r.error(
           "syntax.container",

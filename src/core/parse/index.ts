@@ -35,6 +35,16 @@ export function parse(text: string, file: string): ParseResult {
     );
   }
   const assets: AssetRef[] = o.images.map((i) => ({ path: i.src, line: i.line + 1 }));
+  for (const i of o.images) {
+    if (i.alt.trim() === "") {
+      r.error(
+        "asset.alt",
+        i.line + 1,
+        `the image "${i.src}" has no alt text`,
+        "write a short description between the brackets: ![chart of the pole](assets/pole.png)",
+      );
+    }
+  }
 
   // -- cut the body into sections and questions at the `#` and `##` headings
   const drafts: SectionDraft[] = [];
@@ -106,6 +116,14 @@ export function parse(text: string, file: string): ParseResult {
       } else sectionIds.set(head.id, head.line);
     }
     const questions: Question[] = d.questions.map((region) => parseQuestion(region, { o, fm, r, ids }));
+    if (d.heading === null && d.questions[0] && drafts.some((other) => other.heading !== null)) {
+      r.error(
+        "syntax.preamble",
+        d.questions[0].start + 1,
+        "a question before the first # heading, in a quiz that has sections",
+        "put the question under a # section, or remove the sections so that none has a title",
+      );
+    }
     if (head.pick !== null && fm.kind !== "survey" && (head.pick < 1 || head.pick > questions.length)) {
       r.error(
         "section.pick",

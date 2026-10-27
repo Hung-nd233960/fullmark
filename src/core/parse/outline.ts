@@ -27,7 +27,7 @@ export type Outline = {
   frontMatter: { close: number } | "none" | "unclosed";
   units: Unit[];
   rawHtml: { line: number; tag: string }[];
-  images: { src: string; line: number }[];
+  images: { src: string; line: number; alt: string }[];
   chunks: Chunk[];
 };
 
@@ -94,7 +94,8 @@ function collect(t: Token, out: Outline): void {
     for (const child of t.children ?? []) {
       if (child.type === "softbreak" || child.type === "hardbreak") line++;
       else if (child.type === "html_inline") out.rawHtml.push({ line, tag: tagName(child.content) });
-      else if (child.type === "image") out.images.push({ src: decodeSrc(String(child.attrGet("src") ?? "")), line });
+      else if (child.type === "image")
+        out.images.push({ src: decodeSrc(String(child.attrGet("src") ?? "")), line, alt: child.content });
     }
   } else if (t.type === "fence" || t.type === "code_block") {
     out.chunks.push({ text: t.content, line: start + (t.type === "fence" ? 1 : 0), mode: "code" });
