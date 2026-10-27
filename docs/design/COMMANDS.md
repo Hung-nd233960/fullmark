@@ -400,7 +400,7 @@ Gives every question without an `id` a random one and writes it into the file ([
 
 | Option | Meaning |
 |---|---|
-| `--dry-run` | List the ids it would add, and write nothing |
+| `--dry-run` | List the ids it would add, and write nothing. The status is `unchanged`, with `added` listing what a real run would add |
 | `--json` | `{"status": "written" \| "unchanged" \| "problems", "file", "added": [{"line", "id"}], "problems": [{"rule", "line", "message"}]}` |
 
 Exit: `0` written or nothing to add, `1` a duplicate id or a heading that does not parse (that file untouched), `2` I/O error.

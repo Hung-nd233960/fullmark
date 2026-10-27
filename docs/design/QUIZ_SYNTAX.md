@@ -64,7 +64,11 @@ Unknown keys are errors.
 
 A `#` heading starts a section. A quiz with no `#` heading is one section without a title, and the page shows no section list.
 
-Nothing but blank lines may come between the front matter and the first heading (`syntax.preamble`). A text for the whole quiz goes in `description`, which the start screen shows; a text for a section goes in its intro. One place each.
+Nothing but blank lines may come between the front matter and the first heading (`syntax.preamble`). A text for the whole quiz goes in `description`, which the start screen shows; a text for a section goes in its intro. One place each. In a quiz that has sections, a question before the first `#` is `syntax.preamble` too: every question belongs to a titled section, or none does.
+
+A quiz without `#` headings has one untitled section whose `id` is empty. A title whose slug is empty (`# 日本語`) needs an explicit `id=` (`syntax.value`). In a quiz that has sections, a question before the first `#` is `syntax.preamble` too: every question belongs to a titled section, or none does.
+
+A quiz without `#` headings has one untitled section whose `id` is empty. A title whose slug is empty (`# 日本語`) needs an explicit `id=` (`syntax.value`).
 
 ```markdown
 # Part 2: Reading {id=reading time=20m pick=5}
@@ -79,7 +83,7 @@ Nothing but blank lines may come between the front matter and the first heading 
 
 **The intro** is the Markdown between the `#` heading and the first `##`. Instructions ("Answer every question in this part") are structure.
 
-**A passage** is the text several questions share: a reading text, a case, a data table. It goes in a `::: passage` container in the intro and is content.
+**A passage** is the text several questions share: a reading text, a case, a data table. It goes in a `::: passage` container in the intro and is content. A section has at most one; two short texts go in one passage. A section has at most one; two short texts go in one passage.
 
 ```markdown
 # Part 2: Reading {id=reading}
@@ -159,6 +163,10 @@ Shown after Check (instant feedback) or after Submit. Say why the answer is righ
 
 Both are content. A question has at most one of each.
 
+**Order in a question:** the prompt, then the answer (the choices, list or `answer` block; for blanks the prompt holds the answer), then the hint and the explanation in either order. Nothing else may follow the answer (`question.trailing-text`). The choices are the last list before the hint or explanation; a list inside the prompt that comes right before them uses a different bullet (`*`), or Markdown joins the two into one list.
+
+**Order in a question:** the prompt, then the answer (the choices, list or `answer` block; for blanks the prompt holds the answer), then the hint and the explanation in either order. Nothing else may follow the answer (`question.trailing-text`). The choices are the last list before the hint or explanation; a list inside the prompt that comes right before them uses a different bullet (`*`), or Markdown joins the two into one list.
+
 **Answers** are written in the question's body for choices, blanks, ordering and matching, and in a fenced `answer` YAML block for every other type. Inside an `answer` block, keys that give the key (`value`, `accept`, `sample_answer`...) are content; keys that shape the question (`unit`, `min_words`, `language`, `rubric`...) are structure. Each type below says which.
 
 ## 6. Question types
@@ -181,7 +189,7 @@ Both are content. A question has at most one of each.
 - [x] Differentiation
 ```
 
-Every item needs `[ ]` or `[x]`. A choice may hold a fenced code block indented two spaces under it, with or without text before it. Choice text and `[x]` are content; the number of choices is structure.
+Every item needs `[ ]` or `[x]` (`[X]` is the same). A choice may hold a fenced code block indented two spaces under it, with or without text before it. On a choice, a trailing `{…}` is an input block only when it starts with `input`; any other ending in braces, such as `{1, 2}`, is the choice's text. Choice text and `[x]` are content; the number of choices is structure.
 
 **Follow-up text on a choice:** end a choice with `{input}` or `{input="What is it?"}` to ask for a few words when it is picked. It never changes the score. It works on `single` and `multi`, graded or not.
 
@@ -255,7 +263,7 @@ fields:
 ```
 ````
 
-A field takes the keys of `numeric` or of `short`, not both. A field with neither is ungraded and carries no points.
+A field takes the keys of `numeric` or of `short`, not both, and needs a `label`. A field with neither is ungraded and carries no points. A graded `fields` question needs at least one graded field.
 
 **Points are absolute.** Either every graded field has `points` and they add up to the question's `points`, or no field has them and the question's points are split equally among the graded fields. Anything else is an error (`fields.points`), as an additive rubric that does not add up is (`rubric.sum`). Labels and points are structure; keys are content.
 
@@ -347,7 +355,7 @@ Always ungraded. All its keys are structure.
 
 ### Rubrics
 
-The rubric syntax is defined with the grading model in [TECHNICAL_DESIGN.md](TECHNICAL_DESIGN.md), section 6: a list of bullets (`holistic`, the default), or `mode: additive | banded` with `criteria`, the `(0.5 pts)` shorthand, explicit `id`s, `scale`, `weights`, `round`, or `preset: ielts-writing-task1 | ielts-writing-task2`. `show_rubric` (default `true`) shows the criteria on the page before submit. A rubric is structure and is kept whole by `--skeleton`.
+The rubric syntax is defined with the grading model in [TECHNICAL_DESIGN.md](TECHNICAL_DESIGN.md), section 6: a list of bullets (`holistic`, the default), or `mode: additive | banded` with `criteria`, the `(0.5 pts)` shorthand, explicit `id`s, `scale`, `weights`, `round`, or `preset: ielts-writing-task1 | ielts-writing-task2`. `show_rubric` (default `true`, a key of the `answer` block beside `rubric`) shows the criteria on the page before submit. A rubric of the wrong shape is `syntax.value`, and an unknown key in it `syntax.unknown-key`; the `rubric.*` rules check that a well-formed rubric is consistent. A rubric is structure and is kept whole by `--skeleton`.
 
 ## 7. Ungraded questions and surveys
 
@@ -380,14 +388,26 @@ In a survey, `[x]`, `pass_mark`, `pick`, `feedback: instant` and `partial` are e
 | line break in a table cell | a trailing `\` |
 | hint, explanation, passage | `::: hint`, `::: explanation`, `::: passage` |
 
-Video and remote URLs are not supported.
+Video and remote URLs are not supported. An image without alt text is `asset.alt`.
+
+**Markdown edge cases**, decided so that every parser agrees:
+
+- Only ATX headings (`#`, `##`) count. An underlined (setext) heading is text.
+- A heading inside a `:::` container is the container's content, not a question.
+- Containers do not nest. A stray closing `:::` or an unclosed container is `syntax.container`; an unclosed one ends at the next heading, so the questions after it still parse. An image without alt text is `asset.alt`.
+
+**Markdown edge cases**, decided so that every parser agrees:
+
+- Only ATX headings (`#`, `##`) count. An underlined (setext) heading is text.
+- A heading inside a `:::` container is the container's content, not a question.
+- Containers do not nest. A stray closing `:::` or an unclosed container is `syntax.container`; an unclosed one ends at the next heading, so the questions after it still parse.
 
 ## 8a. Errors
 
 Every rule below is a **fixed rule**: an error that no profile can change or ignore ([TECHNICAL_DESIGN.md](TECHNICAL_DESIGN.md), section 5). The ids are a contract that agents and scripts match on, so a rule is never renamed.
 
 - **One mistake, one rule.** When a specific rule and a general one both match the same mistake, only the specific one is reported: an unquoted `{input=…}` prompt is `choice.input`, not `syntax.attributes`; a missing file is `asset.missing`, not `asset.type`.
-- **Lines.** An issue reports the line of the offending key, attribute, item or blank. A problem with a whole question or section (a missing `type`, too few choices) reports its heading line. A YAML error reports the line the YAML parser gives. A problem with the whole quiz (`quiz.empty`) reports line 1.
+- **Lines.** An issue reports the line of the offending key, attribute, item or blank. A problem with a whole question or section (a missing `type`, too few choices, an `answer` block that is missing or not allowed) reports its heading line; a conflict between two keys reports the first of them. A YAML error reports the line the YAML parser gives. A problem with the whole quiz (`quiz.empty`) reports line 1.
 
  Quality rules (`choice.correct-longest`, `explanation.short`...) are in TECHNICAL_DESIGN.md.
 
@@ -395,16 +415,17 @@ Every rule below is a **fixed rule**: an error that no profile can change or ign
 |---|---|
 | `syntax.front-matter` | no front matter, front matter whose YAML does not parse, or no `title` |
 | `syntax.yaml` | an `answer` block whose YAML does not parse |
-| `syntax.preamble` | text between the front matter and the first heading |
+| `syntax.preamble` | text between the front matter and the first heading, or a question before the first `#` in a quiz that has sections |
 | `quiz.empty` | a quiz with no questions |
 | `syntax.unknown-key` | an unknown front-matter key, attribute or `answer` key |
 | `syntax.value` | a value outside its allowed set or range (`feedback: sometimes`, `points=0`, `time_limit: soon`) |
 | `syntax.attributes` | a `{…}` block that does not parse, or a name given twice |
 | `syntax.heading-level` | a `###` or deeper heading |
-| `syntax.container` | an unknown or unclosed `:::` container, or one in the wrong place (`passage` outside a section intro) |
+| `syntax.container` | an unknown, unclosed, nested or stray `:::` container, one in the wrong place (`passage` outside a section intro), or a second passage in a section |
 | `syntax.reserved` | a reserved name ([section 10](#10-reserved)) |
 | `markdown.raw-html` | any HTML tag or comment |
-| `asset.missing`, `asset.outside`, `asset.type`, `asset.remote` | a missing file, a path outside the quiz folder, an unsupported format, a URL |
+| `asset.missing`, `asset.outside`, `asset.type`, `asset.remote` | a missing file, a path outside the quiz folder, an unsupported format, a URL. Checked in that order of precedence: remote, outside, missing, type |
+| `asset.alt` | an image without alt text |
 | `theme.unknown`, `theme.unknown-font` | a theme or font fullmark does not have |
 | `section.id-duplicate` | two sections with the same id |
 | `section.pick` | `pick` below 1 or above the section's question count |
@@ -414,6 +435,8 @@ Every rule below is a **fixed rule**: an error that no profile can change or ign
 | `question.prompt-empty` | a heading with no prompt text |
 | `question.container-twice` | two hints or two explanations on one question |
 | `question.answer-block` | an `answer` block missing where the type needs one, or present where it takes none |
+| `question.trailing-text` | anything after the answer other than a hint or an explanation |
+| `question.trailing-text` | anything after the answer other than a hint or an explanation |
 | `question.ungraded` | a type that cannot be ungraded, made ungraded by `graded=false` or by `kind: survey` ([section 7](#7-ungraded-questions-and-surveys)); or `graded=` on a `scale` |
 | `question.ungraded-key` | an answer key or rubric on an ungraded question: `[x]`, `value`, `values`, `accept`, `patterns`, `rubric` |
 | `choice.marker` | a choice without `[ ]` or `[x]` |
@@ -424,7 +447,7 @@ Every rule below is a **fixed rule**: an error that no profile can change or ign
 | `short.key` | a graded `short` with neither `accept` nor `patterns` |
 | `short.regex` | a pattern that is not valid in JavaScript's `u` mode, in `short` or in a field |
 | `blanks.none`, `blanks.outside`, `blanks.in-math`, `blanks.syntax` | a `blanks` question without blanks, `[[…]]` in another type, inside maths, or malformed |
-| `fields.empty`, `fields.key`, `fields.points` | no fields; a field with both numeric and text keys; points that are mixed or do not add up |
+| `fields.empty`, `fields.key`, `fields.points` | no fields, or a graded question with no graded field; a field with both numeric and text keys; points that are mixed or do not add up |
 | `ordering.items` | fewer than two items, or duplicates |
 | `matching.pairs` | fewer than two pairs, a bullet without `::`, an empty right-hand side (`a ::`), or a right-hand item used twice |
 | `essay.words` | `min_words` above a non-zero `max_words` |

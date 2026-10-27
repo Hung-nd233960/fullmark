@@ -103,6 +103,41 @@ As specified in COMMANDS.md (`quiz ids`). It edits the raw text and never re-ser
 - `quiz ids` tests: ids added only where missing; a second run is `unchanged`; output is byte-identical apart from the insertions, CRLF included; duplicate ids and a block that does not parse leave the file untouched with exit 1; several files and `--json` lines.
 - A parse benchmark: the largest example parses in well under 50 ms (a test with a generous limit, to catch accidents).
 
-## Slices 1c to 1e
+## Slice 1c: rules, config, `check` and `rules`
+
+1b is reviewed (commits `0789b52` to `b49918f`). Its gaps are settled in the design docs (2026-10-27): QUIZ_SYNTAX.md now has `question.trailing-text` and `asset.alt`, a question before the first `#` is `syntax.preamble`, one passage per section, `fields.empty` covers a graded question with no graded field, the asset precedence, the line rule for answer blocks and key conflicts, and the Markdown edge cases (section 8). TECHNICAL_DESIGN.md foundation 1 has the exact hash layout 1b built. COMMANDS.md says what `quiz ids --dry-run` returns.
+
+### First: the parser catches up
+
+Add to the parser the rules above that 1b did not report (`question.trailing-text`, `asset.alt`, `syntax.preamble` for a question before the first `#`, the second passage as `syntax.container`, `fields.empty` for no graded field), each with fixtures. Text after the answer must no longer be folded into `prompt`.
+
+### The registry and the rules
+
+- **Registry** in `src/core/rules/`, with the `Rule` and `Issue` types of TECHNICAL_DESIGN.md section 4. Every fixed rule of QUIZ_SYNTAX.md section 8a is registered (the parser and the loader still raise them; the registry is the catalogue, with a description, an example and a fix for each, for `quiz rules RULE`). Rule ids are a contract: a test fails if an id is removed or renamed.
+- **Quality rules:** the catalogue of TECHNICAL_DESIGN.md section 5 (the 0.x rules with ids and options, and the new ones off in `default`), except `build.size` (step 2). Thresholds from 0.x's `src/fullmark/lint.py` in `D:\coding-projects\fullmark-py` (read only) where the design gives none. `question.points-ignored` moves into the registry as a quality warning.
+- **Brief rules** (`brief.count`, `brief.mix`, `brief.content-kinds`, `brief.past-exams`, `brief.generated-by`): `check` reads a `brief.yaml` beside the quiz. Its format is not written down yet: define a zod schema in `src/core/ir.ts` from the `quiz brief` options of COMMANDS.md (snake-case keys, `decided_by` per value, `focus_tags`), base it on 0.x's `brief.py` where the docs are silent, and report the schema as a proposal for the design docs. `brief.past-exams` now looks for `source=` on questions.
+- **Not in 1c:** `--review` and the `review.*` rules (they need `review.json`, which `quiz review` defines in step 3). `check --review` exits 2 with "not available yet" until then; say so in `--help`.
+
+### Config and profiles
+
+TECHNICAL_DESIGN.md section 5, all of it: built-in profiles (`default`, `draft`, `exam`, `survey`, with `survey` picked for `kind: survey`), `extends` chains, `[check] profile` and `fail-on`, the user config's personal profiles, the nearest `fullmark.toml` (looking up from the quiz, stopping at a git root), the profile choice order, custom checks (`count`, `require`, `forbid`, ids starting `custom.`), inline ignores (`config.ignored` as info, `allow-ignore = false` turning them into errors, `ignore.invalid` for a missing `because` or a fixed rule). Config is parsed with `smol-toml`; `core/config` receives text and the CLI reads files. **Every config error names `file:line`.** If `smol-toml` cannot give a line for a semantic error, find the key's line in the text, test it, and say how in the report. The user config's location is in COMMANDS.md (Environment, `FULLMARK_CONFIG`).
+
+### Commands
+
+`quiz check` and `quiz rules` exactly as in COMMANDS.md: options, human output (first line names the profile and the config files used), `--json` shapes, exit codes, `--strict`, and the "Several files" conventions for `check`. Human output goes to stderr only where COMMANDS.md says so; follow the Conventions.
+
+### Dependencies for 1c
+
+`smol-toml`, `picocolors`. Pinned exactly.
+
+### Done when
+
+- Every rule (fixed, quality, brief) has a fixture that triggers it and one that does not, under each built-in profile where the level differs.
+- The six pending `rubric.*` fixtures stay pending (1d); the two `ignore.invalid` fixtures pass.
+- Config: every config error points to `file:line`; the profile choice order, `extends`, user and project layers and `fail-on` each have tests; `quiz rules --for FILE` shows where each value came from.
+- `quiz check` on every example exits 0 under its profile; `check` on three quizzes with one broken exits 1 with three JSON lines and a summary line.
+- `npm run check` passes.
+
+## Slices 1d and 1e
 
 Outlined above; each gets its full brief here after the previous slice is reviewed.
