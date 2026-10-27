@@ -78,7 +78,7 @@ No command takes a query in place of names. `rm` and `rename` stay one quiz per 
 
 ## Seam in v1
 
-Fix the row shape of `library list --json` now, with the field names of the table above, so filters are later a function over those rows and scripts written against v1 keep working. Fields v1 does not compute yet are left out of the row, not renamed.
+Adopted (2026-10-27): the row shape of `library list --json` is fixed in [COMMANDS.md](../COMMANDS.md) with these fields, so filters are later a function over those rows and scripts written against v1 keep working. A term names a field in the singular where the row holds a list: `tag:` matches `tags`, `type:` matches `types`, `shelf:` matches `shelves`. `score:` and `best:` never match a quiz whose value is `null`; `taken:never` matches it.
 
 ## Left out
 

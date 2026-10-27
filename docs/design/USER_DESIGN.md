@@ -215,7 +215,7 @@ These are written up in `proposals/`. They are ideas, not promises, and nothing 
 | [japanese-support.md](proposals/japanese-support.md) | JLPT N5 to N3 practice: shared reading passages, furigana, `lang="ja"` text, `jlpt-*` templates | the `single` type and embedded audio, which already suffice for vocabulary, grammar and listening |
 | [self-host.md](proposals/self-host.md) | Quizzes reachable from other devices: static hosting (a how-to), then a library server with an admin account and remotes, then more accounts | a shelf is static files; the one-shot server's checks; `results-v2` carries the quiz hash |
 | [reference-sheet.md](proposals/reference-sheet.md) | Reference sheets (formulas, constants, unit conversion tables) the learner opens during a quiz, appended to printed papers | none yet: the quiz syntax should reserve the `reference` key, and the quiz hash cover the files it names |
-| [library-query.md](proposals/library-query.md) | Filter terms on `library list` (`tag:fourier score:<70 -taken:never`), with `--names` for batch use | the field names of `library list --json` |
+| [library-query.md](proposals/library-query.md) | Filter terms on `library list` (`tag:fourier score:<70 -taken:never`), with `--names` for batch use | adopted in v1: the field names of `library list --json` |
 | [vi-typo-check.md](proposals/vi-typo-check.md) | Rules that catch impossible Vietnamese syllables | the rule registry |
 | [cli_integration.md](proposals/cli_integration.md) | Shell completion, prediction, a tldr page, a prompt segment | none needed |
 | [interactions.md](proposals/interactions.md) | Open questions about how the features combine | |

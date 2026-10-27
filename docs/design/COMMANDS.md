@@ -516,6 +516,23 @@ quiz library list [--plain] [--json]
 
 Every quiz with its versions, attempts, last score, whether it is public, and a note when its original source still exists and has changed.
 
+With `--json`: `{"quizzes": [ROW, ...]}`, sorted by name with the fixed comparison (TECHNICAL_DESIGN.md, section 7, foundation 6). The row has every field below, always present, so a script or `jq` can filter on any of them. These names are fixed: filters on `list` may come later ([proposals/library-query.md](proposals/library-query.md)) and will be a function over these rows, so a field is never renamed and new ones are only added.
+
+| Field | Type | Value |
+|---|---|---|
+| `name`, `id`, `title` | string | |
+| `kind`, `lang`, `profile` | string | of the current version |
+| `tags`, `types` | string[] | every question tag and question type in the current version, sorted |
+| `shelves` | string[] | the names of the shelves the quiz has an entry on |
+| `questions`, `points` | number | in the current version |
+| `versions`, `attempts` | number | attempts across all versions |
+| `score`, `best` | number \| null | percent of the last and best attempt; `null` if never taken |
+| `weak` | string[] | the three weakest tags over all attempts, weakest first; empty if never taken |
+| `added`, `updated` | string | ISO date of the first and current version |
+| `taken` | string \| null | ISO date of the last attempt; `null` if never taken |
+| `changed` | boolean | the original source still exists and differs from the current version |
+| `ungraded` | boolean | an attempt has essays or code not yet graded |
+
 Exit: `0`, `2` no library.
 
 ### quiz library info
