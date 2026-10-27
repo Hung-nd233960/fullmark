@@ -12,9 +12,8 @@
     "line": 9
   },
   "answer-yaml-error": {
-    "rule": null,
-    "line": 9,
-    "note": "0.x: not valid YAML in an answer block. syntax.front-matter is about the front matter only; 8a has no rule for a broken answer block"
+    "rule": "syntax.yaml",
+    "line": 9
   },
   "asset-outside": {
     "rule": "asset.outside",
@@ -50,9 +49,8 @@
     "line": 8
   },
   "code-no-language": {
-    "rule": null,
-    "line": 8,
-    "note": "0.x: missing language. 8a has no rule for a code answer block without language"
+    "rule": "code.language",
+    "line": 5
   },
   "container-passage-in-question": {
     "rule": "syntax.container",
@@ -180,9 +178,8 @@
     "line": 8
   },
   "matching-empty-right": {
-    "rule": null,
-    "line": 7,
-    "note": "0.x: nothing after '::'. 8a covers a missing '::', too few pairs and a repeated right-hand item, not an empty right-hand item"
+    "rule": "matching.pairs",
+    "line": 7
   },
   "matching-missing-separator": {
     "rule": "matching.pairs",
@@ -219,9 +216,8 @@
     "line": 5
   },
   "no-questions": {
-    "rule": null,
-    "line": 1,
-    "note": "0.x: 'no questions'. QUIZ_SYNTAX.md 8a has no rule for a quiz with no question (gap, or allowed in 1.0)"
+    "rule": "quiz.empty",
+    "line": 1
   },
   "no-type-no-choices": {
     "rule": "question.type-missing",
@@ -245,7 +241,7 @@
   },
   "ordering-duplicate-item": {
     "rule": "ordering.items",
-    "line": 5
+    "line": 9
   },
   "ordering-no-list": {
     "rule": "ordering.items",
@@ -253,6 +249,10 @@
   },
   "ordering-one-item": {
     "rule": "ordering.items",
+    "line": 5
+  },
+  "preamble": {
+    "rule": "syntax.preamble",
     "line": 5
   },
   "question-container-twice": {
@@ -309,12 +309,11 @@
   "rubric-weights": {
     "rule": "rubric.weights",
     "line": 11,
-    "note": "the shape of weights (a list in criteria order) is not specified; assumed"
+    "note": "the criterion with the bad weight"
   },
   "scale-graded-true": {
-    "rule": null,
-    "line": 5,
-    "note": "0.x: scale questions are always ungraded. 8a has no rule for graded=true on a scale (question.ungraded is the reverse case)"
+    "rule": "question.ungraded",
+    "line": 5
   },
   "scale-label-outside": {
     "rule": "scale.range",
@@ -366,9 +365,8 @@
     "line": 5
   },
   "survey-correct-choice": {
-    "rule": "survey.forbidden",
-    "line": 8,
-    "note": "overlap: choice.correct-count also covers any [x] in an ungraded question"
+    "rule": "question.ungraded-key",
+    "line": 8
   },
   "survey-graded-attr": {
     "rule": "survey.forbidden",
@@ -393,8 +391,7 @@
   },
   "survey-truefalse": {
     "rule": "question.ungraded",
-    "line": 6,
-    "note": "interpretation: a survey makes every question ungraded; QUIZ_SYNTAX.md section 7 says 'error' without naming the rule (question.ungraded or survey.forbidden)"
+    "line": 6
   },
   "theme-unknown": {
     "rule": "theme.unknown",
@@ -410,18 +407,16 @@
     "note": "interpretation: 8a has no truefalse rule; a non-boolean value is 'a value outside its allowed set'"
   },
   "ungraded-correct-choice": {
-    "rule": "choice.correct-count",
+    "rule": "question.ungraded-key",
     "line": 7
   },
   "ungraded-essay-rubric": {
-    "rule": null,
-    "line": 8,
-    "note": "0.x: an ungraded essay takes no rubric. 8a has no rule (section 7 says 'no rubric')"
+    "rule": "question.ungraded-key",
+    "line": 8
   },
   "ungraded-fields-with-value": {
-    "rule": null,
-    "line": 10,
-    "note": "0.x: an ungraded fields question takes no value/accept/patterns. 8a has no rule (section 7 says 'fields with only a label')"
+    "rule": "question.ungraded-key",
+    "line": 10
   },
   "ungraded-numeric": {
     "rule": "question.ungraded",

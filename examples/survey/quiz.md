@@ -1,13 +1,11 @@
 ---
 title: Study habits check-in
-description: A two-minute check-in about how you study. There are no right answers and nothing is scored.
+description: A two-minute check-in about how you study. There are no right answers and nothing is scored. Answer what is true for you, not what sounds best. Skip any question you prefer not to answer.
 kind: survey
 id: study-habits
 ---
 
 # How you study {id=how-you-study}
-
-Answer what is true for you, not what sounds best. Skip any question you prefer not to answer.
 
 ## Where do you usually study? {type=single id=where}
 

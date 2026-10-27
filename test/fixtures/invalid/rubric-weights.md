@@ -8,10 +8,7 @@ title: T
 rubric:
   mode: banded
   scale: { min: 0, max: 9, step: 0.5 }
-  weights: [1, -1]
   criteria:
-    - id: a
-      text: Clarity
-    - id: b
-      text: Order
+    - { id: a, text: Clarity, weight: -1 }
+    - { id: b, text: Order }
 ```
