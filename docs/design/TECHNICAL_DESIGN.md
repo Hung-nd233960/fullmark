@@ -30,7 +30,7 @@ These ideas are the product, and the rewrite keeps them unchanged.
 | `check` thresholds are hard-coded in `brief.py`, `lint.py` and `build.py`, and most findings have no rule id (only `brief.*` and `review.*` do) | **Every finding has a rule id.** A **rule registry**, `fullmark.toml` and **profiles** (named rule sets, such as `exam` or `draft`) exist from v1. A quiz picks its profile, and custom declarative checks can be added per profile (section 5) |
 | JSON Schemas are written by hand | zod schemas are the source. The TS types and the JSON Schemas (`results`, `report`, `grades`, `review`, `fullmark-shelf`) are generated from them |
 | Essay and code rubrics are plain strings; grades have an untyped `criteria` map and no grader identity | **Declared rubric modes** (`holistic`, `additive`, `banded`) with criterion ids, `grades-v2` with a required grader, and totals computed by the tool, not the grader (section 6) |
-| Questions match across versions only through an explicit `{id}` | **Every question has a stable id** (explicit, or derived from a content hash) plus a per-question content hash, so stats, `--missed` and replay work across versions |
+| Questions match across versions only through an explicit `{id}` | **Every question has a stable id** (required; `quiz ids` writes one where missing) plus a per-question content hash, so stats, `--missed` and replay work across versions |
 
 ## 3. Tech stack
 
@@ -259,7 +259,19 @@ rubric:
 ```
 
 - **Criterion ids** are explicit or slugged from the text. Grades refer to ids, so rewording a criterion keeps its history.
-- **Built-in presets:** `ielts-writing-task1` (TA, CC, LR, GRA) and `ielts-writing-task2` (TR, CC, LR, GRA) only. Any other banded rubric declares `scale`, `weights` (equal by default) and `round` (`nearest-step`, `down`, or `ielts`, which rounds .25 up to the half band and .75 up to the next whole band).
+- **Built-in presets:** `ielts-writing-task1` (TA, CC, LR, GRA) and `ielts-writing-task2` (TR, CC, LR, GRA) only. A preset takes no criteria or text of its own; the IELTS descriptors are public. Any other banded rubric declares its scale, its rounding and its criteria, each with an optional `weight` (default 1), so reordering criteria never moves a weight:
+
+  ```yaml
+  rubric:
+    mode: banded
+    scale: {min: 0, max: 9, step: 0.5}
+    round: nearest-step        # nearest-step | down | ielts
+    criteria:
+      - {id: tr, text: Task response, weight: 2}
+      - {id: cc, text: Coherence and cohesion}
+  ```
+
+  `ielts` rounds .25 up to the half band and .75 up to the next whole band. `rubric.scale` catches a scale whose `step` does not divide `max - min`, and `rubric.weights` a weight that is not a positive number.
 - **`show_rubric`** (default `true`) shows the criteria and their points on the page before submit. Practice benefits from it, and a mock exam can set `false`.
 
 Fixed-rule errors in `check`:
@@ -418,7 +430,7 @@ Markdown is the content itself (quizzes, reports, guides), not a data format.
 
 Decisions that change file formats, stored data or security, and so are settled before code.
 
-**1. Hashes survive machines.** `quizHash` and the per-question hashes are taken over a normalised text: LF line endings, NFC, no BOM, trailing whitespace trimmed. Git's line-ending conversion, an editor's BOM or a decomposed file name on macOS must not split a quiz's history. Changing this later would orphan every attempt.
+**1. Hashes survive machines.** `quizHash` and the per-question hashes are taken over a normalised text: LF line endings, NFC, no BOM, trailing whitespace trimmed. Git's line-ending conversion, an editor's BOM or a decomposed file name on macOS must not split a quiz's history. Changing this later would orphan every attempt. What is hashed: a **question hash** is SHA-256 over the normalised text of the question's block, from its `##` line to the line before the next heading, with the `id=…` pair removed, so adding an id or moving a question never changes it. The **quiz hash** is SHA-256 over the normalised file text, then, for each referenced asset sorted by path, its relative path and the SHA-256 of its bytes (assets are hashed as bytes, never normalised). Hashes are lowercase hex; commands accept a prefix of 4 or more.
 
 **2. Page storage is namespaced.** Chrome gives every local `file://` page one shared `localStorage`, so all keys start with `fullmark:v1:<quiz id>:<version>:` (autosave, look, collapsed panel). Old versions' entries are removed when a newer version of the same quiz opens. Every read and write is wrapped, because Firefox isolates `file://` storage and Safari may refuse it; when storage fails, the page works without resume and says so once, so an essay is never lost silently.
 

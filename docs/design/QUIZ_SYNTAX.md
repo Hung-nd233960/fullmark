@@ -64,6 +64,8 @@ Unknown keys are errors.
 
 A `#` heading starts a section. A quiz with no `#` heading is one section without a title, and the page shows no section list.
 
+Nothing but blank lines may come between the front matter and the first heading (`syntax.preamble`). A text for the whole quiz goes in `description`, which the start screen shows; a text for a section goes in its intro. One place each.
+
 ```markdown
 # Part 2: Reading {id=reading time=20m pick=5}
 ```
@@ -179,7 +181,7 @@ Both are content. A question has at most one of each.
 - [x] Differentiation
 ```
 
-Every item needs `[ ]` or `[x]`. A choice may hold a fenced code block indented two spaces under it. Choice text and `[x]` are content; the number of choices is structure.
+Every item needs `[ ]` or `[x]`. A choice may hold a fenced code block indented two spaces under it, with or without text before it. Choice text and `[x]` are content; the number of choices is structure.
 
 **Follow-up text on a choice:** end a choice with `{input}` or `{input="What is it?"}` to ask for a few words when it is picked. It never changes the score. It works on `single` and `multi`, graded or not.
 
@@ -232,7 +234,7 @@ The derivative of $\sin x$ is [[cos x|cos(x)]] and half of one is [[=0.5±0.01]]
 ```
 
 - `[[answer|variant]]` is a text blank; `[[=0.5±0.01]]` a numeric one. `+-` is the same as `±` (`[[=0.5+-0.01]]`), for keyboards without it.
-- Blanks also work inside fenced code; never inside maths.
+- Blanks may be in the heading or the body, and inside fenced code; never inside maths.
 - Points are split equally among blanks. No `answer` block.
 - The answers are content; the number of blanks is structure.
 
@@ -382,11 +384,19 @@ Video and remote URLs are not supported.
 
 ## 8a. Errors
 
-Every rule below is a **fixed rule**: an error that no profile can change or ignore ([TECHNICAL_DESIGN.md](TECHNICAL_DESIGN.md), section 5). The ids are a contract that agents and scripts match on, so a rule is never renamed. Quality rules (`choice.correct-longest`, `explanation.short`...) are in TECHNICAL_DESIGN.md.
+Every rule below is a **fixed rule**: an error that no profile can change or ignore ([TECHNICAL_DESIGN.md](TECHNICAL_DESIGN.md), section 5). The ids are a contract that agents and scripts match on, so a rule is never renamed.
+
+- **One mistake, one rule.** When a specific rule and a general one both match the same mistake, only the specific one is reported: an unquoted `{input=…}` prompt is `choice.input`, not `syntax.attributes`; a missing file is `asset.missing`, not `asset.type`.
+- **Lines.** An issue reports the line of the offending key, attribute, item or blank. A problem with a whole question or section (a missing `type`, too few choices) reports its heading line. A YAML error reports the line the YAML parser gives. A problem with the whole quiz (`quiz.empty`) reports line 1.
+
+ Quality rules (`choice.correct-longest`, `explanation.short`...) are in TECHNICAL_DESIGN.md.
 
 | Rule | When |
 |---|---|
-| `syntax.front-matter` | no front matter, YAML that does not parse, or no `title` |
+| `syntax.front-matter` | no front matter, front matter whose YAML does not parse, or no `title` |
+| `syntax.yaml` | an `answer` block whose YAML does not parse |
+| `syntax.preamble` | text between the front matter and the first heading |
+| `quiz.empty` | a quiz with no questions |
 | `syntax.unknown-key` | an unknown front-matter key, attribute or `answer` key |
 | `syntax.value` | a value outside its allowed set or range (`feedback: sometimes`, `points=0`, `time_limit: soon`) |
 | `syntax.attributes` | a `{…}` block that does not parse, or a name given twice |
@@ -404,22 +414,24 @@ Every rule below is a **fixed rule**: an error that no profile can change or ign
 | `question.prompt-empty` | a heading with no prompt text |
 | `question.container-twice` | two hints or two explanations on one question |
 | `question.answer-block` | an `answer` block missing where the type needs one, or present where it takes none |
-| `question.ungraded` | `graded=false` on a type that cannot be ungraded ([section 7](#7-ungraded-questions-and-surveys)) |
+| `question.ungraded` | a type that cannot be ungraded, made ungraded by `graded=false` or by `kind: survey` ([section 7](#7-ungraded-questions-and-surveys)); or `graded=` on a `scale` |
+| `question.ungraded-key` | an answer key or rubric on an ungraded question: `[x]`, `value`, `values`, `accept`, `patterns`, `rubric` |
 | `choice.marker` | a choice without `[ ]` or `[x]` |
 | `choice.count` | fewer than two choices |
-| `choice.correct-count` | a graded `single` without exactly one `[x]`, a graded `multi` with none, or any `[x]` in an ungraded question |
+| `choice.correct-count` | a graded `single` without exactly one `[x]`, or a graded `multi` with none |
 | `choice.input` | `{input}` anywhere but the end of a choice, an unquoted or empty prompt |
 | `numeric.value` | no `value` or `values`, both, a number that does not parse, both tolerances, a negative tolerance |
 | `short.key` | a graded `short` with neither `accept` nor `patterns` |
-| `short.regex` | a pattern that is not valid in JavaScript's `u` mode |
+| `short.regex` | a pattern that is not valid in JavaScript's `u` mode, in `short` or in a field |
 | `blanks.none`, `blanks.outside`, `blanks.in-math`, `blanks.syntax` | a `blanks` question without blanks, `[[…]]` in another type, inside maths, or malformed |
 | `fields.empty`, `fields.key`, `fields.points` | no fields; a field with both numeric and text keys; points that are mixed or do not add up |
 | `ordering.items` | fewer than two items, or duplicates |
-| `matching.pairs` | fewer than two pairs, a bullet without `::`, or a right-hand item used twice |
+| `matching.pairs` | fewer than two pairs, a bullet without `::`, an empty right-hand side (`a ::`), or a right-hand item used twice |
 | `essay.words` | `min_words` above a non-zero `max_words` |
 | `scale.range` | `max - min` outside 1 to 10, or a label outside the range |
+| `code.language` | a `code` question without `language` |
 | `rubric.*` | the rubric rules of TECHNICAL_DESIGN.md, section 6 |
-| `survey.forbidden` | in a survey: `[x]`, `pass_mark`, `pick`, `feedback: instant`, `partial` or `graded=` |
+| `survey.forbidden` | in a survey: `pass_mark`, `pick`, `feedback: instant`, `partial` or `graded=` (an `[x]` is `question.ungraded-key`) |
 | `ignore.invalid` | `check-ignore` without `because`, or naming a fixed rule |
 
 One quality rule belongs here because the syntax raises it: `question.points-ignored` (warning) for `points=` on an ungraded question.
