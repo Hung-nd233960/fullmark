@@ -1,0 +1,34 @@
+{
+  "name": "fullmark",
+  "version": "1.0.0-alpha.0",
+  "description": "Markdown in, one offline HTML quiz out.",
+  "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "bin": {
+    "quiz": "dist/cli.js",
+    "fullmark": "dist/cli.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "lint": "biome check",
+    "check": "npm run typecheck && npm run lint && npm run test"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.6.3",
+    "@types/node": "24.19.2",
+    "tsup": "9.0.0",
+    "typescript": "7.0.2",
+    "vitest": "5.0.5"
+  },
+  "dependencies": {
+    "commander": "15.0.0"
+  }
+}

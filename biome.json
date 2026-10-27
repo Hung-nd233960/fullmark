@@ -1,7 +1,10 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.5.15/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.6.3/schema.json",
   "root": true,
-  "files": { "ignoreUnknown": true, "includes": ["src/fullmark/static/**", "biome.json"] },
+  "files": {
+    "ignoreUnknown": true,
+    "includes": ["src/**", "test/**", "*.json", "*.ts", "!test/fixtures", "!test/data", "!package-lock.json"]
+  },
   "formatter": {
     "enabled": true,
     "indentStyle": "space",
@@ -12,7 +15,7 @@
   "linter": {
     "enabled": true,
     "rules": {
-      "recommended": true,
+      "preset": "recommended",
       "style": { "useTemplate": "off", "noNonNullAssertion": "off", "useConst": "warn" },
       "complexity": { "noForEach": "off", "useOptionalChain": "off" },
       "suspicious": { "useIterableCallbackReturn": "off" }

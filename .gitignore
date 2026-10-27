@@ -8,3 +8,4 @@ dist/
 
 # feedback screenshots for the agent, never committed
 docs/qc/
+node_modules/
