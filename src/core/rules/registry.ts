@@ -1,9 +1,10 @@
+import { BRIEF_RULES } from "./brief";
 import { FIXED_RULES } from "./fixed";
 import { QUALITY_RULES } from "./quality";
 import type { FixedRule, QualityRule, Rule } from "./types";
 
 /** Every rule fullmark has: fixed rules first, then quality rules, each group in a stable order. */
-export const RULES: readonly Rule[] = [...FIXED_RULES, ...QUALITY_RULES];
+export const RULES: readonly Rule[] = [...FIXED_RULES, ...QUALITY_RULES, ...BRIEF_RULES];
 
 const byId = new Map<string, Rule>(RULES.map((r) => [r.id, r]));
 
