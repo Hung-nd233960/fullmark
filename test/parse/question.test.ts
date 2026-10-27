@@ -245,3 +245,19 @@ describe("ungraded questions and surveys", () => {
     expect(found("# P {pick=1}\n\n## Q {type=single id=q}\n\n- [ ] a\n- [ ] b", front)).toEqual(["survey.forbidden@6"]);
   });
 });
+
+describe("prompts", () => {
+  it("leave out containers and the answer, without a gap where they were", () => {
+    const q = oneQuestion(
+      "## Evaluate {type=numeric id=q}\n\nFirst paragraph.\n\n::: hint\nTry it.\n:::\n\nSecond paragraph.\n\n```answer\nvalue: 1\n```",
+    );
+    expect(q.prompt).toBe("Evaluate\n\nFirst paragraph.\n\nSecond paragraph.");
+    expect(q.hint?.text).toBe("Try it.");
+  });
+
+  it("keep fenced code, tables and images of the prompt as written", () => {
+    const body = "```python\nprint('{x}')\n```\n\n| a | b |\n|---|---|\n| 1 | 2 |";
+    const q = oneQuestion(`## Read this {type=short id=q}\n\n${body}\n\n\`\`\`answer\naccept: [x]\n\`\`\``);
+    expect(q.prompt).toBe(`Read this\n\n${body}`);
+  });
+});
