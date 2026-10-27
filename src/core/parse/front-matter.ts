@@ -39,6 +39,7 @@ export function defaultFrontMatter(file: string): FrontMatter {
     uiLang: "en",
     profile: "default",
     profileGiven: false,
+    profileLine: null,
     timeLimit: null,
     onTimeout: "submit",
     feedback: "end",
@@ -141,6 +142,7 @@ export function parseFrontMatter(o: Outline, file: string, r: Reporter): FrontMa
           if (t !== undefined) {
             fm.profile = t;
             fm.profileGiven = true;
+            fm.profileLine = e.line;
           }
         }
         break;

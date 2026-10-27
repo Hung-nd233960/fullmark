@@ -16,6 +16,7 @@ describe("front matter", () => {
       uiLang: "en",
       profile: "default",
       profileGiven: false,
+      profileLine: null,
       timeLimit: null,
       onTimeout: "submit",
       feedback: "end",

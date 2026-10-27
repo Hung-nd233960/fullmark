@@ -27,6 +27,8 @@ export const FrontMatterSchema = z.object({
   profile: z.string(),
   /** whether the file names a profile itself (`profile:`); false when `profile` is the default for its kind */
   profileGiven: z.boolean(),
+  /** the line of `profile:` in the file, for the check that the profile exists */
+  profileLine: z.number().int().positive().nullable(),
   /** seconds; null when untimed */
   timeLimit: z.number().positive().nullable(),
   onTimeout: z.enum(["submit", "warn"]),
