@@ -36,7 +36,7 @@ These ideas are the product, and the rewrite keeps them unchanged.
 
 | Concern | Choice | Reason |
 |---|---|---|
-| Language and runtime | TypeScript, Node 22 LTS, pnpm | One language for CLI and page. Node is already installed. Starts in about 0.1 s against 0.5 s today |
+| Language and runtime | TypeScript, Node 22 or later, npm | One language for CLI and page. Node is already installed. Starts in about 0.1 s against 0.5 s today |
 | CLI framework | `commander` (or `citty`) | Subcommand groups and generated help, with little magic |
 | Markdown | `markdown-it` with attrs, task-list and container plugins | The original of markdown-it-py, so plugin behaviour carries over. `token.map` gives line numbers |
 | YAML | `yaml` (eemeli) with `LineCounter` | Front matter and briefs with exact positions |
@@ -700,8 +700,8 @@ Not in v1: terminal forms other than `brief --tui` (`review` needs rendered ques
 | Step | Content | Done when |
 |---|---|---|
 | 0 | Design the quiz syntax in `QUIZ_SYNTAX.md` ([TODO.md](TODO.md)), with each field marked as structure or content. Then bring over 0.x's test data: `grading_cases.json`, examples and fixtures, rewritten in that syntax | `QUIZ_SYNTAX.md` is settled; the grading cases load as vitest cases; every example is valid 1.0 Markdown |
-| 1 | Core: the message catalogs (every string through them from here on), IR with ids and slugs, Plan, Attempt, rule registry with ids, config and profiles, custom checks, grade, rubric modes and `grades-v2`; `check`, `rules`, `build` (with several files and `--build-file`), `grade` | All examples check and build; golden files reviewed and committed; three quizzes, one broken, give two pages, exit 1 and the right JSON lines, through files and through a build file |
-| 2 | Page runtime: Preact components on the Attempt reducer, the theme and font registries with the five token sets and four fonts, the contrast and glyph tests, plus `replay` and `build --print`; Vietnamese page chrome | Playwright and axe pass; screenshot baselines reviewed and committed; a replayed page matches the original submitted page; a `vi` example passes the same tests |
+| 1 | Core: the message catalogs (every string through them from here on), IR with ids and slugs, Plan, Attempt, rule registry with ids, config and profiles, custom checks, grade, rubric modes and `grades-v2`; `check`, `rules`, `grade`, `ids`. Planned in slices in [docs/plans/STEP1.md](../plans/STEP1.md) | All examples check; the 0.x grading cases pass; golden files reviewed and committed; three quizzes, one broken, give exit 1 and the right JSON lines |
+| 2 | `build` (with several files and `--build-file`), moved here from step 1 because a page needs the runtime. Page runtime: Preact components on the Attempt reducer, the theme and font registries with the five token sets and four fonts, the contrast and glyph tests, plus `replay` and `build --print`; Vietnamese page chrome | All examples build; three quizzes, one broken, give two pages and exit 1, through files and through a build file; Playwright and axe pass; screenshot baselines reviewed and committed; a replayed page matches the original submitted page; a `vi` example passes the same tests |
 | 3 | `serve` (with `--section`), `review`, `grade --web`, `brief` (flags, `--web`, `--tui`), `stats`, `inspect`, `new`, `build --watch` | Contract tests pass for each; the same answers through flags, `--web` and `--tui` write byte-identical `brief.yaml` files |
 | 4 | Library: init, register, take (with `--section` and `--missed`), replay and the rest | History-based tests pass |
 | 5 | `publish` and `import` | The round-trip and privacy tests pass |
