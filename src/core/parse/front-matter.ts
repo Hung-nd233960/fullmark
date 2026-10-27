@@ -38,6 +38,7 @@ export function defaultFrontMatter(file: string): FrontMatter {
     lang: "en",
     uiLang: "en",
     profile: "default",
+    profileGiven: false,
     timeLimit: null,
     onTimeout: "submit",
     feedback: "end",
@@ -135,7 +136,13 @@ export function parseFrontMatter(o: Outline, file: string, r: Reporter): FrontMa
       case "ui_lang":
         break; // after lang is known
       case "profile":
-        fm.profile = text(e) ?? fm.profile;
+        {
+          const t = text(e);
+          if (t !== undefined) {
+            fm.profile = t;
+            fm.profileGiven = true;
+          }
+        }
         break;
       case "time_limit": {
         const s = readDuration(scalarText(e.value) ?? "");
@@ -198,7 +205,7 @@ export function parseFrontMatter(o: Outline, file: string, r: Reporter): FrontMa
   }
   const ui = seen.get("ui_lang");
   fm.uiLang = (ui ? oneOf(ui, ["en", "vi"] as const) : undefined) ?? fm.lang;
-  if (!seen.has("profile")) fm.profile = fm.kind === "survey" ? "survey" : "default";
+  if (!fm.profileGiven) fm.profile = fm.kind === "survey" ? "survey" : "default";
 
   if (fm.kind === "survey") {
     const forbid = (key: string, why: string) => {

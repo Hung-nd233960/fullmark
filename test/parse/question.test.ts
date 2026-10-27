@@ -230,10 +230,10 @@ describe("ungraded questions and surveys", () => {
     expect(found("## Q {type=scale id=q graded=true}")).toEqual(["question.ungraded@5"]);
   });
 
-  it("warns about points on an ungraded question", () => {
+  it("keeps points= on an ungraded question as pointsGiven, for the rule question.points-ignored", () => {
     const result = parseBody("## Q {type=single id=q graded=false points=3}\n\n- [ ] a\n- [ ] b");
-    expect(result.issues.map((i) => [i.rule, i.level])).toEqual([["question.points-ignored", "warning"]]);
-    expect(result.quiz).not.toBeNull();
+    expect(result.issues).toEqual([]);
+    expect(result.quiz?.sections[0]?.questions[0]).toMatchObject({ graded: false, pointsGiven: true });
   });
 
   it("makes every question of a survey ungraded", () => {

@@ -156,9 +156,6 @@ export function parseQuestion(region: Region, ctx: QuestionCtx): Question {
     );
     graded = true;
   }
-  if (!graded && attrs.pointsGiven) {
-    r.warning("question.points-ignored", line, "`points` on an ungraded question is ignored", "remove points");
-  }
 
   // -- the answer list, for the types that write their answer as one
   const listFor = type === "single" || type === "multi" || type === "ordering" || type === "matching";
@@ -298,6 +295,7 @@ export function parseQuestion(region: Region, ctx: QuestionCtx): Question {
     tags: attrs.tags,
     source: attrs.source,
     graded,
+    pointsGiven: attrs.pointsGiven,
     shuffle: attrs.shuffle,
     partial: attrs.partial,
     case: attrs.case,
