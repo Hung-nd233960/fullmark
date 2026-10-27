@@ -656,7 +656,7 @@ English is the source. Each Vietnamese document starts with the commit of the En
 | Languages | English and Vietnamese for the page, reports, forms, `check` messages, README and `quiz guide`; quiz `lang` locked at build; tool `lang` in config; decimal comma in `vi` numeric answers |
 | Check config | rule ids on every finding, `fullmark.toml`, built-in and custom profiles, declarative custom checks, inline ignores with a reason, `quiz rules` |
 | Grading | `grade` with reports and `grades-v2`; rubric modes `holistic`, `additive`, `banded` and the IELTS presets; a required grader identity; `grade --web` for human grading; `stats` with per-question, per-tag and per-criterion history |
-| Library | init, status, register, list, take (**`--section`, `--missed`**), share, grade, stats, rename, rm, path, **replay**, **publish**, **import** |
+| Library | init, status, register, list, **info**, take (**`--section`, `--missed`**), share, grade, stats, rename, rm, path, **replay**, **publish**, **import** |
 
 Not in v1: terminal forms other than `brief --tui` (`review` needs rendered questions; survey quizzes use `serve`), `library sync`, `library --web`, `source=` coverage, includes, hotspot questions, Anki, CSV or QTI import and export, spaced repetition beyond `--missed`.
 

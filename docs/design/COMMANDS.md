@@ -518,6 +518,33 @@ Every quiz with its versions, attempts, last score, whether it is public, and a 
 
 Exit: `0`, `2` no library.
 
+### quiz library info
+
+**new**.
+
+```text
+quiz library info NAME [--version HASH] [--plain] [--json]
+```
+
+Everything about one quiz in one place, so you need not run `inspect`, `list` and `stats` and read the library folder. It reads only what those commands already compute, and writes nothing. `inspect` stays the command for a quiz file outside the library.
+
+| Block | What it shows |
+|---|---|
+| Identity | name, id, title, kind, language, profile, `generated_by` |
+| Source | the original file, and whether it still exists and has changed |
+| Content | sections with question counts and points, question types, tags, banks |
+| Versions | hash, date added, and questions added, removed or changed against the one before |
+| Shelves | the quiz's shelf entries |
+| Attempts | count, first and last date, last and best score, the three weakest tags, attempts with essays or code still ungraded |
+| Path | the quiz's folder in the library |
+
+| Option | Meaning |
+|---|---|
+| `--version HASH` | Show the content of this version. Default: the current one |
+| `--json` | `{"name", "id", "title", "kind", "lang", "profile", "generated_by", "source": {"path", "exists", "changed"}, "content": {"sections", "types", "tags", "banks"}, "versions": [{"hash", "added", "added_questions", "removed_questions", "changed_questions"}], "shelves", "attempts": {"count", "first", "last", "last_score", "best_score", "weakest_tags", "ungraded"}, "path"}` |
+
+Exit: `0`, `2` unknown quiz or version, `3` no library.
+
 ### quiz library take
 
 **changed**: adds `--section` and `--missed`.

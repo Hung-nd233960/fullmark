@@ -21,7 +21,7 @@ library (originals + history)
 ```text
 quiz library shelf new NAME DIR [--title TEXT]
 quiz library shelf list
-quiz library shelf show NAME
+quiz library shelf info NAME
 quiz library shelf rename OLD NEW
 quiz library shelf set NAME [--title TEXT] [--fonts F] [--with-brief | --no-brief] [--lang L]
 quiz library shelf delete NAME
@@ -36,7 +36,7 @@ quiz library publish [NAME...] [--dry-run] [--json]
 |---|---|
 | `shelf new` | Creates a shelf: a name, a folder and a title for its index page |
 | `shelf list` | Every shelf with its folder, quiz count, how many copies are older than the library (stale), and the last publish |
-| `shelf show` | A shelf's quizzes, the version on the shelf against the library's, and its settings |
+| `shelf info` | A shelf's quizzes, the version on the shelf against the library's, and its settings |
 | `shelf rename` | Changes the name only. The folder, its contents and the index title stay, so no published URL breaks |
 | `shelf set` | Per-shelf settings: index title, `--fonts`, briefs, index page language |
 | `shelf delete` | Forgets the shelf. Never deletes its folder; that is the user's to do with git |
