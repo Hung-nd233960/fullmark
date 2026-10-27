@@ -1,5 +1,55 @@
 # Step 1: the core
 
+## Handoff (2026-10-27): start here
+
+A new session picks up from this section alone; it needs no earlier chat.
+
+### How the work runs
+
+1. Opus writes a slice's full brief in this file (below), commits it, and hands the slice to **one Sonnet subagent** with a short prompt that points here.
+2. Sonnet implements, commits on branch `1.0` (never pushes), and reports: commits, test counts, and every gap it found in the design docs.
+3. Opus reviews: reads the commits, runs `npm run check`, tries the CLI by hand, then brings the gaps to the owner with a recommendation for each. **The owner decides**; nothing goes into the design docs without that yes.
+4. Opus writes the decisions into `docs/design/`, writes the next slice's brief here with those decisions as its first tasks, and delegates again.
+
+The owner's working rules: state what, why and what done means before a big job and wait for a yes; keep the core minimal and deterministic (remove the mode that causes a gap rather than specify it); commit only when asked, and the owner has asked for a commit after every round so far.
+
+### Where it stands
+
+| Slice | State | Commits |
+|---|---|---|
+| 1a scaffold and test data | done, reviewed | `764bd07`..`4e1b0cf` |
+| 1b parser and `quiz ids` | done, reviewed | `0789b52`..`b49918f` |
+| 1c rules, config, `check`, `rules` | done, reviewed; its gaps await the owner (below) | `8a632b5`..`201d9fb` |
+| 1d grader and `grade` | next: brief not written yet | |
+| 1e contract tests | after 1d | |
+
+`npm run check` after 1c: 30 test files, 603 passed, 166 todo (the 160 0.x grading cases and the 6 `rubric.*` fixtures, both for 1d). Branch `1.0` is not on GitHub; nothing has been pushed.
+
+### Waiting for the owner: slice 1c's gaps
+
+Proposed on 2026-10-27, **not yet approved**. Ask the owner first; write in only what they accept.
+
+1. **`brief.yaml` format:** adopt the strict `BriefSchema` in `src/core/ir.ts` into COMMANDS.md under `quiz brief` (keys: `purpose`, `scope`, `content {kinds, kinds_other, elsewhere}`, `count`, `minutes`, `mix`, `difficulty`, `mode`, `weak_topics`, `focus_tags`, `language`, `request`, `profile`, `decided_by`).
+2. **`brief.mode`:** a new quality warning, since COMMANDS.md says `check` compares the brief's mode: `each-question` expects `feedback: instant`; `timed-exam` expects a `time_limit` and `look: locked`.
+3. **`profile.unknown`:** a fixed rule for an unknown profile named in the quiz's front matter (now reported as `syntax.value`). Also reword COMMANDS.md: an unknown `--profile` exits 2 with a plain message (there is no `file:line`).
+4. **`because` without `check-ignore`:** `ignore.invalid` instead of being ignored silently.
+5. **`build.size`:** register it now (no check until step 2), so a profile that sets it is not an unknown-rule error.
+6. **Write into TECHNICAL_DESIGN.md section 5** what 1c chose: a `fullmark.toml` profile named like a built-in overlays it, and a project profile replaces a personal one of the same name; `[check]` is read from `fullmark.toml` only; the survey auto-profile counts at the front-matter step; the exact rule lists of `draft`, `exam` and `survey` (from `src/core/config/`); an ignore naming an unknown rule is `ignore.invalid`; `rules --json` lists custom checks as `kind: "custom"`.
+
+Also raised and answered: rules get **no numeric codes** (like `E501`); the dotted ids are the codes, a test pins them, and codes could be added later as aliases. Opus recommended this; the owner did not object before the session ended.
+
+### Next steps, in order
+
+1. Get the owner's yes or changes on the six items above; write them into the design docs; commit.
+2. Write the **slice 1d brief** below the 1c brief. First tasks: items 2 to 5 above. Then: Plan and Attempt (TECHNICAL_DESIGN.md section 4); the `results-v2` format, including each type's answer shape (start from the `response` shapes in `test/data/grading_cases.json`); the one grader (reuse `src/core/number.ts` for numeric answers, `lang` decides the decimal comma); rubric modes, presets and the `rubric.*` rules plus `rubric.missing`, `rubric.thin` and `rubric.points-in-text` (TECHNICAL_DESIGN.md section 6); `grades-v2`; Markdown and JSON reports, whose headings follow `ui_lang` through the message catalogs in `src/core/i18n/`; `quiz grade` as in COMMANDS.md. Done when the 160 grading cases pass (rewritten to 1.0 shapes), the 6 `rubric.*` fixtures pass, and the rubric golden cases cover the IELTS rounding edges.
+3. Delegate 1d to Sonnet; review; then 1e (contract tests, golden files, the startup budget), which closes step 1.
+
+### Loose ends outside this plan
+
+- **document-kit and presentation-kit** have one local commit each switching them to `fullmark-py` (`1d34d42`, `a148385`), not pushed; the owner still has to reinstall `doc` and `deck` (`uv tool install --reinstall <path>`, plus `--editable` if that is how they were installed).
+- **`D:\coding-projects\fullmark`** (the old checkout, branch `main`) holds someone's uncommitted edits to five docs files; leave them alone.
+- **Config path shared with 0.x:** see [TODO.md](../design/TODO.md).
+
 The plan for step 1 of the order of work ([TECHNICAL_DESIGN.md](../design/TECHNICAL_DESIGN.md), section 12). It is cut into slices so that each one can be handed to an agent, reviewed, and committed before the next starts. A slice's brief is written in full here before it is delegated; later slices stay outlines until then, so they can absorb what the earlier ones teach.
 
 ## Goal
