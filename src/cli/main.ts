@@ -2,6 +2,7 @@ import { Command } from "commander";
 import { type CheckOptions, runCheck } from "./check";
 import { EXIT, type ExitCode } from "./exit-codes";
 import { type IdsOptions, type Io, runIds } from "./ids";
+import { type RulesOptions, runRules } from "./rules";
 
 export const VERSION = "1.0.0-alpha.0";
 
@@ -63,6 +64,34 @@ export function buildProgram(outcome: Outcome = { exit: EXIT.done }, io: Io = te
           plain: Boolean(options.plain) || noColor(),
         };
         outcome.exit = runCheck(files, opts, io);
+      },
+    );
+
+  program
+    .command("rules")
+    .description("the rule catalogue: what a profile checks and why a quiz was held to a rule")
+    .argument("[rule]", "a rule id, such as choice.correct-longest or custom.two-essays")
+    .option("--profile <name>", "show the rules under this profile (default: default, or the quiz's with --for)")
+    .option(
+      "--for <file>",
+      "resolve the config and the profile as check FILE would, and show where each value came from",
+    )
+    .option("--config <toml>", "use this config file instead of the nearest fullmark.toml")
+    .option("--json", "print the rules as one JSON object on stdout")
+    .option("--plain", "no colours, even in a terminal")
+    .action(
+      (
+        rule: string | undefined,
+        options: { profile?: string; for?: string; config?: string; json?: boolean; plain?: boolean },
+      ) => {
+        const opts: RulesOptions = {
+          profile: options.profile ?? null,
+          for: options.for ?? null,
+          config: options.config ?? null,
+          json: Boolean(options.json),
+          plain: Boolean(options.plain) || noColor(),
+        };
+        outcome.exit = runRules(rule ?? null, opts, io);
       },
     );
 
