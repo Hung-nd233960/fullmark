@@ -1,0 +1,141 @@
+---
+title: My quiz
+# description: Shown on the start screen. Markdown is allowed.
+# id: my-quiz                  # default: the file name
+# lang: en                     # en | vi: the language the quiz is written in
+# time_limit: 30m              # 90s, 45m, 1h, 1h30m; leave out for untimed
+# on_timeout: submit           # submit | warn
+# feedback: end                # end | instant
+# shuffle_questions: false
+# shuffle_choices: false
+# partial: true                # partial credit in multi, ordering and matching
+# pass_mark: 70                # percent of auto-graded points
+# tags: [topic]
+---
+
+# Section one {id=section-one}
+
+Text under a `#` heading is the section introduction.
+
+## Single choice: one item is checked. {type=single id=single-choice tags=topic}
+
+- [ ] Wrong
+- [x] Right
+- [ ] Also wrong
+
+::: hint
+Hints stay hidden behind a button.
+:::
+
+::: explanation
+Shown after the question is checked or after submit.
+:::
+
+## Multiple answer: two or more items are checked. {type=multi id=multiple-answer points=2}
+
+- [x] Right
+- [ ] Wrong
+- [x] Also right
+
+::: explanation
+Partial credit by default.
+:::
+
+## True or false: the statement is a claim. {type=truefalse id=true-or-false}
+
+```answer
+value: true
+```
+
+::: explanation
+Say why the statement is true or false.
+:::
+
+## Numeric: what is $1 / 4$? {type=numeric id=numeric}
+
+```answer
+value: 0.25
+tolerance: 0.001
+unit: ""
+```
+
+::: explanation
+Fractions such as `1/4` are accepted as input.
+:::
+
+## Short answer: name the capital of France. {type=short id=short-answer}
+
+```answer
+accept: ["Paris"]
+```
+
+::: explanation
+Matching ignores case and extra spaces.
+:::
+
+## Fill in the blanks. {type=blanks id=blanks points=2}
+
+Water boils at [[100]] degrees Celsius and freezes at [[=0±0.1]] degrees.
+
+::: explanation
+Variants are separated by `|`; numbers use `=value±tolerance`.
+:::
+
+## Labeled fields. {type=fields id=labeled-fields points=2}
+
+```answer
+fields:
+  - label: "Square root of 9"
+    value: 3
+  - label: "Chemical symbol for sodium"
+    accept: ["Na"]
+```
+
+::: explanation
+A field with neither `value` nor `accept` is not graded; it is exported for a grader.
+:::
+
+# Written work {id=written-work}
+
+## Ordering: put the steps in order. {type=ordering id=ordering}
+
+1. Wake up
+2. Get dressed
+3. Eat breakfast
+
+::: explanation
+List the items in the correct order; the page shuffles them.
+:::
+
+## Matching: pair each country with its capital. {type=matching id=matching points=2}
+
+- France :: Paris
+- Italy :: Rome
+- :: Madrid (a distractor: no country on the left)
+
+::: explanation
+A bullet that starts with `::` adds a wrong option.
+:::
+
+## Essay: discuss one idea in your own words. {type=essay id=essay points=5}
+
+```answer
+min_words: 50
+rubric:
+  - "Content: answers the question"
+  - "Clarity: organised and easy to follow"
+```
+
+## Code: write a function that adds two numbers. {type=code id=code points=3}
+
+```answer
+language: python
+starter: |
+  def add(a, b):
+      pass
+rubric:
+  - Returns the sum for integers and floats
+sample_answer: |
+  def add(a, b):
+      return a + b
+```
