@@ -1,5 +1,11 @@
 import { z } from "zod";
-import { AnswerSchema } from "./answers";
+import { emptyState } from "./state";
+
+export { emptyState };
+
+/** An answer as the file holds it: any object. Which keys it needs depends on the question, so it is checked there. */
+export const AnswerSchema = z.looseObject({});
+export type Answer = z.infer<typeof AnswerSchema>;
 
 /** Where a plan's questions came from (TECHNICAL_DESIGN.md, section 4). `missed` and `retry` are made elsewhere. */
 export const PLAN_SOURCES = ["full", "bank", "section", "missed", "retry"] as const;
@@ -53,16 +59,3 @@ export const AttemptSchema = z.object({
   phase: z.enum(PHASES),
 });
 export type Attempt = z.infer<typeof AttemptSchema>;
-
-/** The state of an attempt that has not started: no answers, no time. */
-export function emptyState(): AttemptState {
-  return {
-    answers: {},
-    startedAt: null,
-    submittedAt: null,
-    timeUsed: 0,
-    sectionTime: {},
-    flagged: [],
-    timedOut: false,
-  };
-}

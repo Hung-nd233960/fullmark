@@ -79,6 +79,29 @@ export const en = {
     },
     mode: { holistic: "holistic", additive: "additive", banded: "banded" },
   },
+  page: {
+    start: "Start",
+    hint: "Hint",
+    questionsCount: (n: number) => (n === 1 ? "1 question" : `${n} questions`),
+    submit: "Submit",
+    export: "Export results",
+    exportHint: "Save the results file; `quiz grade` reads it.",
+    questionLabel: (n: number) => `Question ${n}`,
+    pointsLabel: (points: string) => `${points} pt`,
+    inputPlaceholder: "Type here",
+    yourScore: "Your score",
+    scoreLine: (earned: string, points: string) => `${earned} of ${points} points`,
+    correctAnswer: "Correct answer",
+    explanation: "Explanation",
+    status: {
+      correct: "Correct",
+      partial: "Partly right",
+      incorrect: "Wrong",
+      unanswered: "Not answered",
+      pending: "Waiting for a grader",
+      ungraded: "Not scored",
+    },
+  },
 };
 
 export type Messages = typeof en;

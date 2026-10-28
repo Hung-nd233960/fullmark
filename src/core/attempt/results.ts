@@ -1,8 +1,9 @@
 import { z } from "zod";
 import { type Attempt, AttemptSchema } from "./schema";
 
-export const RESULTS_FORMAT = "fullmark-results";
-export const RESULTS_VERSION = 2;
+import { RESULTS_FORMAT, RESULTS_VERSION } from "./serialise";
+
+export { RESULTS_FORMAT, RESULTS_VERSION, resultsOf } from "./serialise";
 
 /**
  * `results-v2`: the serialised `Attempt` (TECHNICAL_DESIGN.md, section 4) under `format` and `version`. Every known
@@ -62,17 +63,4 @@ export function parseResults(text: string): ReadResults {
 /** The `Attempt` a results file holds. */
 export function attemptOf(results: Results): Attempt {
   return { quizHash: results.quizHash, plan: results.plan, state: results.state, phase: results.phase };
-}
-
-/** The file for an attempt: format and version first, then the attempt. */
-export function resultsOf(attempt: Attempt, bundle?: Results["bundle"]): Results {
-  return {
-    format: RESULTS_FORMAT,
-    version: RESULTS_VERSION,
-    quizHash: attempt.quizHash,
-    plan: attempt.plan,
-    state: attempt.state,
-    phase: attempt.phase,
-    ...(bundle ? { bundle } : {}),
-  };
 }
