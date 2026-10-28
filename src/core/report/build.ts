@@ -107,7 +107,7 @@ export type ReportInput = {
 };
 
 /**
- * The report (`report-v1`): what `grade` writes as JSON and renders as Markdown. Pure: the same inputs give the same
+ * The report (`fullmark-report` version 2, TECHNICAL_DESIGN.md section 6): what `grade` writes as JSON and renders as Markdown. Pure: the same inputs give the same
  * object, and it holds no timestamp of its own, only those the attempt carries.
  */
 export function buildReport(input: ReportInput, m: Messages["report"]): Report {
