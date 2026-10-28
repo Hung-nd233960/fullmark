@@ -31,3 +31,18 @@ describe("src/core boundary", () => {
     });
   }
 });
+
+// Determinism (STEP1.md, rules for every slice): no clock, no randomness, no OS locale, no `Intl`.
+const nondeterministic =
+  /\bDate\.now\s*\(|\bnew Date\b|\bMath\.random\s*\(|\bIntl\.|\.toLocale\w*\s*\(|\bperformance\.now\b|\bprocess\.(env|platform)\b/;
+
+describe("src/core is deterministic", () => {
+  for (const file of sources(core)) {
+    it(`uses no clock, randomness, Intl or locale: ${file.slice(core.length + 1).replaceAll("\\", "/")}`, () => {
+      const code = readFileSync(file, "utf8")
+        .replace(/\/\*[\s\S]*?\*\//g, "")
+        .replace(/(^|[^:])\/\/.*$/gm, "$1");
+      expect(code.match(nondeterministic)?.[0] ?? null).toBeNull();
+    });
+  }
+});
