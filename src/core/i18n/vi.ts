@@ -100,7 +100,6 @@ export const vi = {
     or: "hoặc",
     blankLabel: (n: number) => `Chỗ trống ${n}`,
     commaWarning: "Dùng dấu chấm cho số thập phân: 2.5, không phải 2,5",
-    answerLabel: "Câu trả lời",
     explanation: "Giải thích",
     status: {
       correct: "Đúng",

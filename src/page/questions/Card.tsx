@@ -3,7 +3,7 @@ import type { Answer } from "../../core/attempt";
 import type { PageQuestion } from "../data";
 import type { Action } from "../reducer";
 import type { QuizState } from "../store";
-import { Blanks } from "./Blanks";
+import { Blanks, BlanksPrompt } from "./Blanks";
 import { ChoiceList } from "./ChoiceList";
 import { Fields } from "./Fields";
 import { Numeric } from "./Numeric";
@@ -64,8 +64,12 @@ export function QuestionCard({
         <span class="fm-question-number">{t.questionLabel(number)}</span>
         {question.graded ? <span class="fm-question-points">{t.pointsLabel(String(question.points))}</span> : null}
       </header>
-      {/* a blanks prompt holds the boxes, so its own body shows it */}
-      {question.type === "blanks" ? null : <Html html={question.promptHtml} class="fm-prompt" id={`${name}/prompt`} />}
+      {/* a blanks prompt holds the boxes, so it has its own component, in the same slot */}
+      {question.type === "blanks" ? (
+        <BlanksPrompt q={question} c={c} />
+      ) : (
+        <Html html={question.promptHtml} class="fm-prompt" id={`${name}/prompt`} />
+      )}
       {question.hintHtml !== null ? (
         <details class="fm-hint">
           <summary>{t.hint}</summary>

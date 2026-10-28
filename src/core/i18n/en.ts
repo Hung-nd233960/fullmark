@@ -99,7 +99,6 @@ export const en = {
     or: "or",
     blankLabel: (n: number) => `Blank ${n}`,
     commaWarning: "Use a point for decimals: 2.5, not 2,5",
-    answerLabel: "Answer",
     explanation: "Explanation",
     status: {
       correct: "Correct",

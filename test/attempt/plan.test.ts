@@ -2,7 +2,13 @@ import { describe, expect, it } from "vitest";
 import { PlanSchema } from "../../src/core/attempt/schema";
 import type { Quiz } from "../../src/core/ir";
 import { parse } from "../../src/core/parse";
-import { PlanError, planFor, random, sectionIds, shuffled } from "../../src/core/plan";
+import { PlanError, type PlanRequest, planFor as planWith, random, sectionIds, shuffled } from "../../src/core/plan";
+
+const HASH = "abcd".padEnd(64, "0");
+/** `planFor` with the quiz hash every request needs */
+type WithoutHash<T> = T extends unknown ? Omit<T, "quizHash"> & { quizHash?: string } : never;
+const planFor = (quiz: Quiz, request: WithoutHash<PlanRequest>) =>
+  planWith(quiz, { quizHash: HASH, ...request } as PlanRequest);
 
 const q = (n: number) => `## Question ${n}? {type=single id=q${n}}\n\n- [x] a\n- [ ] b\n- [ ] c\n`;
 const many = (from: number, to: number) => Array.from({ length: to - from + 1 }, (_, i) => q(from + i)).join("\n");
@@ -72,10 +78,17 @@ describe("planFor seeds", () => {
 });
 
 describe("planFor", () => {
-  it("full: every question in order, banks whole, no seed", () => {
+  it("full: every question in order, banks whole, the short version as the seed", () => {
     const plan = planFor(BANKS, { source: "full" });
-    expect(plan).toEqual({ source: "full", questions: ["q1", "q2", "q3", "q4", "q5", "q6", "q7"] });
+    expect(plan).toEqual({ source: "full", questions: ["q1", "q2", "q3", "q4", "q5", "q6", "q7"], seed: "abcd" });
     expect(PlanSchema.safeParse(plan).success).toBe(true);
+  });
+
+  it("bank: without a seed draws from the short version", () => {
+    const plan = planFor(BANKS, { source: "bank" });
+    expect(plan.seed).toBe("abcd");
+    expect(plan.questions).toHaveLength(4);
+    expect(planFor(BANKS, { source: "bank", seed: "abcd" })).toEqual(plan);
   });
 
   it("bank: draws `pick` questions from a bank, in source order, from the seed", () => {
@@ -99,6 +112,7 @@ describe("planFor", () => {
       source: "section",
       section: "b",
       questions: ["q6", "q7"],
+      seed: "abcd",
     });
     expect(planFor(BANKS, { source: "section", section: "a" }).questions).toHaveLength(5);
     expect(planFor(BANKS, { source: "section", section: "a", seed: "x" }).questions).toHaveLength(2);
@@ -112,14 +126,13 @@ describe("planFor", () => {
     expect(() => planFor(untitled, { source: "section", section: "" })).toThrow("no titled section");
   });
 
-  it("shuffles questions inside their section, and choices, only with a seed", () => {
+  it("shuffles questions inside their section, and choices, from the seed (the short version by default)", () => {
     const shuffling = quiz(
       `# A {id=a}\n\n${many(1, 6)}\n# B {id=b}\n\n${many(7, 9)}`,
       "title: T\nshuffle_questions: true\nshuffle_choices: true",
     );
-    const plain = planFor(shuffling, { source: "full" });
-    expect(plain.questions).toEqual(["q1", "q2", "q3", "q4", "q5", "q6", "q7", "q8", "q9"]);
-    expect(plain.optionOrder).toBeUndefined();
+    const plain = { questions: ["q1", "q2", "q3", "q4", "q5", "q6", "q7", "q8", "q9"] };
+    expect(planFor(shuffling, { source: "full" })).toEqual(planFor(shuffling, { source: "full", seed: "abcd" }));
     const plan = planFor(shuffling, { source: "full", seed: "k" });
     expect(plan.questions.slice(0, 6).sort()).toEqual(["q1", "q2", "q3", "q4", "q5", "q6"]);
     expect(plan.questions.slice(6).sort()).toEqual(["q7", "q8", "q9"]);
@@ -151,7 +164,7 @@ describe("planFor", () => {
         q(1),
       ].join("\n"),
     );
-    expect(planFor(mixed, { source: "full" }).optionOrder).toBeUndefined();
+    expect(planFor(mixed, { source: "full" })).toEqual(planFor(mixed, { source: "full", seed: "abcd" }));
     const plan = planFor(mixed, { source: "full", seed: "k" });
     const order = plan.optionOrder ?? {};
     expect(Object.keys(order).sort()).toEqual(["m", "o"]);

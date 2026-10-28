@@ -56,7 +56,7 @@ describe("build page: the answer key", () => {
     const key = decodeKey(page?.key ?? "", singles.hash) as KeyBlob;
     const attempt = {
       quizHash: singles.hash,
-      plan: planFor(singles.quiz, { source: "full" }),
+      plan: planFor(singles.quiz, { source: "full", quizHash: singles.hash }),
       state: {
         answers: { prime: { choice: 1 }, capital: { choice: 0 }, gas: { choice: 1, inputs: { "1": "air" } } },
         startedAt: "2026-10-28T10:00:00",

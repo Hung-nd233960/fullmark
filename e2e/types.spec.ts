@@ -60,6 +60,10 @@ test("every simple type: status and points on the page equal quiz grade", async 
   await expect(card(page, "b1").locator("input.fm-blank").nth(0)).toHaveAttribute("data-result", "correct");
   await expect(card(page, "b1").locator(".fm-blank-results")).toContainText("0.0481 ± 0.001");
   await expect(card(page, "b1").locator(".fm-blank-results")).toContainText("wibble");
+  // an empty blank says so, and is not called incorrect; the hint follows the prompt
+  await expect(card(page, "b1").locator(".fm-blank-results li").nth(3)).toContainText("No answer");
+  await expect(card(page, "b1").locator(".fm-blank-results li").nth(3)).not.toContainText("Incorrect");
+  await expect(card(page, "b1").locator(":scope > div:has(.fm-prompt) + details.fm-hint")).toHaveCount(1);
   await expect(card(page, "f1").locator(".fm-field-mark")).toHaveCount(2);
   await expect(card(page, "f1")).toContainText("zq-field-name");
   await expect(card(page, "n2")).toContainText("3.14 ± 1%");

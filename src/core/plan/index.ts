@@ -7,11 +7,11 @@ export { random, shuffled } from "./random";
 /** What to build a plan from. `missed` and `retry` plans come from the library and the page, not from here. */
 export type PlanRequest = (
   | { source: "full"; seed?: string }
-  | { source: "bank"; seed: string }
+  | { source: "bank"; seed?: string }
   | { source: "section"; section: string; seed?: string }
 ) & {
   /** the quiz hash: without a `seed`, its first 4 characters (the short version) are the seed (section 4, Seeds) */
-  quizHash?: string;
+  quizHash: string;
 };
 
 const SEED = /^[A-Za-z0-9]{1,8}$/;
@@ -50,13 +50,13 @@ function shuffledNotSource(count: number, next: () => number): number[] {
  * on a question) records the order of a question's choices in `optionOrder`, and the display order of every
  * `ordering` item and every `matching` right-hand item (distractors included) goes there too, whatever those two
  * settings say. Answers keep source indices, so grading never reads `optionOrder`. Without a seed, the seed is the quiz's short
- * version (`quizHash`), so a build is still deterministic; without a hash either, nothing is shuffled. Every random choice comes from the seed, so a plan is reproducible.
+ * version (`quizHash`), so a build is still deterministic. Every random choice comes from the seed, so a plan is reproducible.
  */
 export function planFor(quiz: Quiz, request: PlanRequest): Plan {
   if (request.seed !== undefined && !SEED.test(request.seed)) {
     throw new PlanError(`seed "${request.seed}" must be 1 to 8 letters or digits`);
   }
-  const seed = request.seed ?? request.quizHash?.slice(0, 4);
+  const seed = request.seed ?? request.quizHash.slice(0, 4);
   let sections = quiz.sections;
   if (request.source === "section") {
     const found = sections.find((s) => s.id === request.section && s.title !== null);

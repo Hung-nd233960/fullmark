@@ -65,6 +65,10 @@ Also [[quuxle]] here, and `a[[0]]` is code, not a blank.
 let [[wibble]] = 1;
 ```
 
+::: hint
+Read the sentence aloud.
+:::
+
 ## Calculations {type=fields id=f1 points=4}
 
 ```answer

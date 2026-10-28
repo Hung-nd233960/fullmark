@@ -12,7 +12,6 @@ export function Numeric({ q, c }: { q: Extract<PageQuestion, { type: "numeric" }
         <input
           type="text"
           class="fm-text"
-          inputMode="decimal"
           autocomplete="off"
           spellcheck={false}
           aria-labelledby={`${c.name}/prompt`}
