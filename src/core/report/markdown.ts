@@ -120,12 +120,20 @@ function openBlock(o: ReportOpen, m: Messages["report"]): string[] {
   ];
 }
 
+/** "Your answer:" and the answer; an empty answer leaves no trailing space. */
+function yourAnswer(answer: string | null, m: Messages["report"]): string {
+  const head = `**${m.yourAnswer}:**`;
+  if (answer === null) return `${head} ${m.noAnswer}`;
+  if (answer.includes("\n")) return `${head}\n\n${fenced(answer)}`;
+  return answer === "" ? head : `${head} ${answer}`;
+}
+
 function questionBlock(q: ReportQuestion, m: Messages["report"], showKey: boolean): string[] {
   const pts = q.earned === null ? "" : `${q.earned} / ${q.points}`;
   const out = [
     `### ${q.id} - ${m.status[q.status]}${pts === "" ? "" : ` (${pts})`}`,
     quote(q.prompt),
-    `**${m.yourAnswer}:** ${q.answer === null ? m.noAnswer : q.answer.includes("\n") ? `\n\n${fenced(q.answer)}` : q.answer}`,
+    yourAnswer(q.answer, m),
   ];
   if (showKey && q.key !== null) out.push(`**${m.correctAnswer}:** ${q.key}`);
   if (showKey && q.explanation) out.push(`**${m.explanation}:**\n\n${q.explanation.trim()}`);
@@ -133,14 +141,14 @@ function questionBlock(q: ReportQuestion, m: Messages["report"], showKey: boolea
 }
 
 /** The report as Markdown, in the quiz's interface language (the caller picks the catalog). */
-export function renderMarkdown(report: Report, m: Messages["report"]): string {
+export function renderMarkdown(report: Report, m: Messages["report"], quizLabel: string = report.quiz.id): string {
   const survey = report.quiz.kind === "survey";
   const out: string[] = [`# ${survey ? m.surveyTitle(report.quiz.title) : m.title(report.quiz.title)}`];
 
   const facts: [string, string][] = [
-    [m.quiz, `${report.quiz.id}`],
+    [m.quiz, quizLabel],
     [m.version, `\`${report.quiz.hash.slice(0, 12)}\``],
-    [m.plan, m.planOf(report.attempt.questions, report.attempt.source)],
+    [m.plan, m.planOf(report.attempt.questions, m.source[report.attempt.source as keyof Messages["report"]["source"]])],
     [m.started, report.attempt.started ?? m.notSubmitted],
     [m.submitted, report.attempt.submitted ?? m.notSubmitted],
     [m.timeUsed, `${formatDuration(report.attempt.time_used, m)}${report.attempt.timed_out ? ` (${m.timedOut})` : ""}`],
@@ -152,7 +160,7 @@ export function renderMarkdown(report: Report, m: Messages["report"]): string {
     out.push(`## ${m.score}`);
     out.push(`**${m.scoreLine(String(s.earned), String(s.points), String(s.percent ?? 0))}**`);
     if (s.pending > 0) out.push(m.pendingLine(String(s.pending)));
-    if (s.pass.mark !== null && s.pass.passed !== null) out.push(m.passMark(s.pass.mark, s.pass.passed));
+    if (s.pass.mark !== null && s.pass.passed !== null) out.push(m.goalLine(s.pass.mark, s.pass.passed, s.pending > 0));
   }
   if (report.unknown.length > 0) out.push(m.unknownQuestions(report.unknown.join(", ")));
   if (report.grades && report.grades.warnings.length > 0) {

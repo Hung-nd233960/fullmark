@@ -9,6 +9,13 @@ export const vi = {
     version: "Phiên bản",
     plan: "Câu hỏi",
     planOf: (count: number, source: string) => `${count} (${source})`,
+    source: {
+      full: "đầy đủ",
+      bank: "rút từ ngân hàng câu hỏi",
+      section: "một phần",
+      missed: "các câu đã sai",
+      retry: "làm lại",
+    },
     started: "Bắt đầu",
     submitted: "Nộp bài",
     notSubmitted: "chưa nộp",
@@ -20,7 +27,8 @@ export const vi = {
     score: "Điểm",
     scoreLine: (earned: string, points: string, percent: string) => `${earned} trên ${points} điểm (${percent}%)`,
     pendingLine: (points: string) => `${points} điểm đang chờ chấm và chưa nằm trong điểm số`,
-    passMark: (mark: number, passed: boolean) => `Điểm đạt ${mark}%: ${passed ? "đạt" : "chưa đạt"}`,
+    goalLine: (mark: number, reached: boolean, pending: boolean) =>
+      `Mục tiêu ${mark}%${pending ? "*" : ""}: ${reached ? "đã đạt" : "chưa đạt"}`,
     sections: "Theo phần",
     tags: "Theo chủ đề",
     name: "Tên",

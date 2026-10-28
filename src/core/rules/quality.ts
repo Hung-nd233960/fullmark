@@ -391,7 +391,7 @@ export const QUALITY_RULES: QualityRule[] = [
         if (q.rubric.criteria.length < min) {
           out.push({
             line: q.rubric.line,
-            message: `the rubric has ${q.rubric.criteria.length} criteria; at least ${min} are expected`,
+            message: `the rubric has ${q.rubric.criteria.length} ${q.rubric.criteria.length === 1 ? "criterion" : "criteria"}; at least ${min} are expected`,
             fix: "split the rubric into more things a grader can check",
           });
         }

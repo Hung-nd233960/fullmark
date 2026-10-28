@@ -8,6 +8,13 @@ export const en = {
     version: "Version",
     plan: "Questions",
     planOf: (count: number, source: string) => `${count} (${source})`,
+    source: {
+      full: "full",
+      bank: "drawn from a bank",
+      section: "a part",
+      missed: "missed questions",
+      retry: "a retry",
+    },
     started: "Started",
     submitted: "Submitted",
     notSubmitted: "not submitted",
@@ -19,7 +26,8 @@ export const en = {
     score: "Score",
     scoreLine: (earned: string, points: string, percent: string) => `${earned} of ${points} points (${percent}%)`,
     pendingLine: (points: string) => `${points} points are waiting for a grader and are not in the score`,
-    passMark: (mark: number, passed: boolean) => `Pass mark ${mark}%: ${passed ? "passed" : "not passed"}`,
+    goalLine: (mark: number, reached: boolean, pending: boolean) =>
+      `Goal ${mark}%${pending ? "*" : ""}: ${reached ? "reached" : "not reached yet"}`,
     sections: "By section",
     tags: "By tag",
     name: "Name",
