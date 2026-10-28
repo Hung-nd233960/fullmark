@@ -1,5 +1,6 @@
 import type { Messages } from "../i18n";
 import type { Report, ReportGroup, ReportOpen, ReportQuestion } from "./build";
+import { formatDuration } from "./duration";
 
 const cell = (s: string | number | null): string =>
   s === null
@@ -142,7 +143,7 @@ export function renderMarkdown(report: Report, m: Messages["report"]): string {
     [m.plan, m.planOf(report.attempt.questions, report.attempt.source)],
     [m.started, report.attempt.started ?? m.notSubmitted],
     [m.submitted, report.attempt.submitted ?? m.notSubmitted],
-    [m.timeUsed, `${report.attempt.time_used}s${report.attempt.timed_out ? ` (${m.timedOut})` : ""}`],
+    [m.timeUsed, `${formatDuration(report.attempt.time_used, m)}${report.attempt.timed_out ? ` (${m.timedOut})` : ""}`],
   ];
   out.push(facts.map(([k, v]) => `- **${k}:** ${v}`).join("\n"));
 

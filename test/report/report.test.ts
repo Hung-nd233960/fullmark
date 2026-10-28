@@ -45,7 +45,7 @@ const input = { quiz, quizHash: "ab".repeat(32), attempt };
 describe("the report", () => {
   it("holds the score, the groups, the wrong answers and the essays for a grader", () => {
     const r = buildReport(input, en.report);
-    expect(r).toMatchObject({ format: "fullmark-report", version: 1 });
+    expect(r).toMatchObject({ format: "fullmark-report", version: 2 });
     expect(r.score).toMatchObject({ earned: 2, points: 3, pending: 3 });
     expect(r.score?.percent).toBeCloseTo(66.67, 2);
     expect(r.sections.map((s) => [s.id, s.earned, s.points])).toEqual([["maths", 2, 3]]);
@@ -198,5 +198,35 @@ describe("with real grades", () => {
     expect(md).toContain("## Warnings");
     expect(md).toContain("graded against an older rubric");
     expect(md).toContain("(graded against an older rubric)");
+  });
+});
+
+describe("the time in the Markdown report", () => {
+  const withTime = (seconds: number, timedOut = false) => ({
+    ...input,
+    attempt: { ...attempt, state: { ...attempt.state, timeUsed: seconds, timedOut } },
+  });
+
+  it("is read as minutes, hours and seconds, and the JSON keeps seconds", () => {
+    const cases: [number, string][] = [
+      [0, "0 s"],
+      [45, "45 s"],
+      [59.4, "59 s"],
+      [60, "1 min"],
+      [3000, "50 min"],
+      [3570, "1 h"],
+      [3900, "1 h 5 min"],
+      [7200, "2 h"],
+    ];
+    for (const [seconds, text] of cases) {
+      const r = buildReport(withTime(seconds), en.report);
+      expect(r.attempt.time_used).toBe(seconds);
+      expect(renderMarkdown(r, en.report)).toContain(`- **Time used:** ${text}\n`);
+    }
+  });
+
+  it("uses the unit words of the catalog and keeps the time-out note", () => {
+    const md = renderMarkdown(buildReport(withTime(3900, true), vi.report), vi.report);
+    expect(md).toContain("- **Thời gian làm bài:** 1 giờ 5 phút (đã hết giờ)");
   });
 });
