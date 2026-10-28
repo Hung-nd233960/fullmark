@@ -20,7 +20,7 @@ The owner's working rules: state what, why and what done means before a big job 
 | 1a scaffold and test data | done, reviewed | `764bd07`..`4e1b0cf` |
 | 1b parser and `quiz ids` | done, reviewed | `0789b52`..`b49918f` |
 | 1c rules, config, `check`, `rules` | done, reviewed; its gaps decided (below) | `8a632b5`..`201d9fb` |
-| 1d grader and `grade` | next: brief not written yet | |
+| 1d grader and `grade` | brief written (below), ready to delegate | |
 | 1e contract tests | after 1d | |
 
 `npm run check` after 1c: 30 test files, 603 passed, 166 todo (the 160 0.x grading cases and the 6 `rubric.*` fixtures, both for 1d). Branch `1.0` is not on GitHub; nothing has been pushed.
@@ -29,7 +29,7 @@ The owner's working rules: state what, why and what done means before a big job 
 
 The owner accepted all six, with one change to the first, and confirmed that rules get no numeric codes. What the code still has to catch up on (slice 1d's first tasks):
 
-1. **`brief.yaml` has no defaults when read** (COMMANDS.md, `quiz brief`, "The file"). `quiz brief` writes every key; `readBrief` must require every key, and a missing one is `brief.invalid` like an unknown one. `BriefSchema` in `src/core/ir.ts` loses its `.default(...)`s (keep them where `quiz brief` fills values, in step 2), an empty `brief.yaml` is `brief.invalid`, and `profile` is a string, not nullable.
+1. **`brief.yaml` has no defaults when read** (COMMANDS.md, `quiz brief`, "The file"). `quiz brief` writes every key; `readBrief` must require every key, and a missing one is `brief.invalid` like an unknown one. `BriefSchema` in `src/core/ir.ts` loses its `.default(...)`s (the defaults belong to `quiz brief`, step 3), an empty `brief.yaml` is `brief.invalid`, and `profile` is a string, not nullable.
 2. **`brief.mode`** quality warning (TECHNICAL_DESIGN.md, section 5, the catalogue).
 3. **`profile.unknown`** fixed rule for an unknown front-matter profile, instead of `syntax.value`; an unknown `--profile` exits 2 with a plain message naming the known profiles.
 4. **`because` without `check-ignore`** is `ignore.invalid`.
@@ -39,8 +39,8 @@ Item 6 (what 1c chose for profiles, `[check]`, the survey default, the built-in 
 
 ### Next steps, in order
 
-1. Write the **slice 1d brief** below the 1c brief. First tasks: items 1 to 5 above. Then: Plan and Attempt (TECHNICAL_DESIGN.md section 4); the `results-v2` format, including each type's answer shape (start from the `response` shapes in `test/data/grading_cases.json`); the one grader (reuse `src/core/number.ts` for numeric answers, `lang` decides the decimal comma); rubric modes, presets and the `rubric.*` rules plus `rubric.missing`, `rubric.thin` and `rubric.points-in-text` (TECHNICAL_DESIGN.md section 6); `grades-v2`; Markdown and JSON reports, whose headings follow `ui_lang` through the message catalogs in `src/core/i18n/`; `quiz grade` as in COMMANDS.md. Done when the 160 grading cases pass (rewritten to 1.0 shapes), the 6 `rubric.*` fixtures pass, and the rubric golden cases cover the IELTS rounding edges.
-2. Delegate 1d to Sonnet; review; then 1e (contract tests, golden files, the startup budget), which closes step 1.
+1. Delegate 1d to Sonnet with a short prompt pointing at "Slice 1d" below. Review it; bring its proposals (`AttemptState`, `results-v2` and its answer shapes, `rubric_hash`, `results_hash`) and gaps to the owner.
+2. Write the 1e brief and delegate it: 1e (contract tests, golden files, the startup budget), which closes step 1.
 
 ### Loose ends outside this plan
 
@@ -186,6 +186,77 @@ TECHNICAL_DESIGN.md section 5, all of it: built-in profiles (`default`, `draft`,
 - `quiz check` on every example exits 0 under its profile; `check` on three quizzes with one broken exits 1 with three JSON lines and a summary line.
 - `npm run check` passes.
 
-## Slices 1d and 1e
+## Slice 1d: the grader, rubrics and `grade`
 
-Outlined above; each gets its full brief here after the previous slice is reviewed.
+1c is reviewed (commits `8a632b5` to `201d9fb`). Its gaps are settled in the design docs (2026-10-28, commit `eaa45ad`): COMMANDS.md now defines the `brief.yaml` file (every key always written, none filled in when read), the exit for an unknown `--profile`, and `kind: "custom"` in `rules --json`; TECHNICAL_DESIGN.md section 5 has `brief.mode`, `brief.invalid`, `build.size` registered early, the profile overlay and choice order, the built-in rule lists and "no numeric codes"; QUIZ_SYNTAX.md has `profile.unknown` and the wider `ignore.invalid`.
+
+Read first, beyond the usual: TECHNICAL_DESIGN.md section 4 (Plan and Attempt) and section 6 (all of it), COMMANDS.md `quiz grade`, and QUIZ_SYNTAX.md for every answer type, `lang`, `ui_lang` and section 7 (ungraded questions and surveys).
+
+### First: 1c catches up
+
+1. **`brief.yaml` has no defaults when read.** Remove the `.default(...)`s from `BriefSchema`; every key is required, a missing one is `brief.invalid` like an unknown one (with the line of the mapping, or line 1), an empty file is `brief.invalid`, and `profile` is a string, not nullable. Update the brief fixtures so each holds every key. The defaults move to `quiz brief` (step 3); do not keep a second copy.
+2. **`brief.mode`** (warning): `each-question` expects `feedback: instant`; `timed-exam` expects a `time_limit` and `look: locked`. One finding per mismatch, at the line of the quiz key concerned (or line 1 when it is missing). Fixtures that trigger it and one that does not.
+3. **`profile.unknown`**: a fixed rule for an unknown front-matter profile, at the `profile:` line, replacing today's `syntax.value`. An unknown `--profile` exits 2 with a plain message naming the known profiles. Add the id to `test/data/rule-ids.json`.
+4. **`because` without `check-ignore`** is `ignore.invalid`, with a fixture.
+5. **`build.size`** registered (quality, warning, options `warn-mb` 20 and `max-mb` 100) with no check, so a profile that sets it is accepted and `quiz rules build.size` describes it, saying it is checked by `build` from step 2.
+
+### Plan and Attempt
+
+In `src/core/attempt/`, pure. The `Plan` and `Attempt` types of TECHNICAL_DESIGN.md section 4, as zod schemas. `AttemptState` is not written down yet; define it from what grading, reports and `stats` need, and report it as a proposal: the answers keyed by question id, when the attempt started and was submitted (ISO strings, as written by the page), the time used, and flags. A function `planFor(quiz, source, ...)` for `full`, `section` and `bank` plans (a bank draw takes a seed and uses a seeded generator of our own, never `Math.random()`); `missed` and `retry` plans come from the library and from the page, so 1d only accepts them.
+
+### `results-v2`
+
+The serialised `Attempt`, in `src/core/attempt/results.ts`, with a zod schema. It is a proposal for the design docs; report it in full.
+
+- Top-level `"format": "fullmark-results"` and `"version": 2`, then the `Attempt` fields. Every known key is required; **unknown keys are ignored**, since TECHNICAL_DESIGN.md (seams for later features) reserves an optional `bundle` object that older readers must skip.
+- A file whose `version` is 1, or that looks like a 0.x results file, is refused with a plain message: 1.0 does not read 0.x files; the owner's history is converted once by the move-in script (section 12, step 6).
+- **Answer shapes:** one per question type. Start from the `response` shapes in `test/data/grading_cases.json` (`choice`, `choices`, `inputs`, `value`, `raw`, `text`, `blanks`, `fields`, `code` and `language`, `order`, `pairs`) and keep them unless the 1.0 syntax forces a change; list every change. Choice, item and pair indices refer to the **source order**, never the shuffled order of `optionOrder`, so grading does not depend on the shuffle. A numeric answer is the text as typed. An essay's word count is computed by the grader, not read from the file.
+
+### The grader
+
+`grade(quiz: Quiz, attempt: Attempt): Graded` in `src/core/grade/`, pure, the one function the page will also run (TECHNICAL_DESIGN.md section 7). For each question in the plan: `earned`, `points` and a status (`correct`, `partial`, `incorrect`, `unanswered`, `pending`, `ungraded`); then totals per section and per tag, and the pass mark. Questions outside the plan are not counted. Numeric answers go through `src/core/number.ts`, and the quiz's `lang` (never `ui_lang`) decides whether a decimal comma is read. Essay and code answers are `pending` until grades are folded in. A survey has no score: every question is `ungraded` and the report shows only the answers.
+
+**The 160 grading cases:** rewrite `test/data/grading_cases.json` to 1.0 shapes. Each case's `spec` becomes the question in 1.0 Markdown (a `question` string, one `##` block), and its `response` becomes a `results-v2` answer, so every case runs through `parse` and then `grade`. Write the conversion as a one-off script, commit its output and not the script, and list every case whose expected result had to change, with the reason. `test/grading-cases.test.ts` turns its 160 `it.todo` into real tests.
+
+### Rubrics
+
+- **The `rubric.*` fixed rules** of TECHNICAL_DESIGN.md section 6 (`rubric.mode-missing`, `rubric.sum`, `rubric.step`, `rubric.scale`, `rubric.weights`, `rubric.duplicate-id`), raised where the rubric is parsed. The 6 pending fixtures pass.
+- **Quality rules:** `rubric.missing`, `rubric.thin` (option `min`, 3) and `rubric.points-in-text`, each with fixtures. The built-in profiles pick them up through their existing rules ("every quality rule that is on in `default`"). `rubric.missing` does not fire on an ungraded question, which covers surveys.
+- **Presets:** `ielts-writing-task1` (TA, CC, LR, GRA) and `ielts-writing-task2` (TR, CC, LR, GRA), equal weights, scale 0 to 9 step 0.5, `round: ielts`. Criterion texts in English; they are not in the catalogs, since grades refer to ids.
+- **Arithmetic** in `src/core/rubric/`: the additive sum, the weighted band mean, the three rounding rules and `points × band / scale.max`. Work in integer steps (scale every value by its step) so that no float error can move a band: 6.25 must round to 6.5 under `ielts` on every machine. Golden cases cover each rounding rule at .25 and .75 and at the scale ends, a weighted mean, and the three worked examples of section 6 (2.25 / 3, band 6.5 so 6.5 / 9, 3 / 4).
+
+### `grades-v2`
+
+TECHNICAL_DESIGN.md section 6, "`grades-v2`", in `src/core/rubric/grades.ts`: the template (written with every id, text, maximum or scale in place and `null` cells), validation (every rule in the "Validation" list, exit 1 with every problem listed, nothing written), the two warnings, and the computed result. A `grades-v1` file is refused like a 0.x results file.
+
+Two hashes are not defined yet; implement these and report them as proposals:
+
+- **`rubric_hash`**: SHA-256 over the canonical JSON (sorted keys, no spaces) of the parsed rubric: mode, step, scale, round, and each criterion's id, text, maximum and weight. Rewording YAML formatting does not change it; changing a criterion does.
+- **`results_hash`**: SHA-256 over the results file's bytes as written.
+
+### Reports
+
+From `Graded` (and grades, when given), pure, in `src/core/report/`: Markdown and JSON. Contents as COMMANDS.md `quiz grade` says: the score, per section and per tag, every wrong answer with its explanation, and the essays and code laid out for a grader (prompt, answer, word count, rubric with ids and maximums, sample answer). With grades: per question `earned`, `points`, `status`, `graded_by`, `rubric_current` and the criteria list (section 6, "Computed"). A survey report is titled "Answers" and has no score. Every heading and label comes from the message catalogs in `src/core/i18n/` and follows the quiz's `ui_lang`; add the keys to `en.ts` and `vi.ts`. A report holds no time of its own making: dates come from the files, so the same inputs give byte-identical reports.
+
+### `quiz grade`
+
+As in COMMANDS.md: `RESULTS...`, `--quiz` (required: the results file does not carry the quiz), `-o`, `--grades`, `--json` (the report as JSON plus the `*-grades.json` template beside it, named as `quiz replay` expects), the "Several files" conventions, and the exits. A `quizHash` that does not match `--quiz` exits 1 and names the hash the attempt was taken on. **Not in 1d:** `--web` and `--name` (the one-shot server is step 3); they exit 2 with "not available yet", as `check --review` does, and `--help` says so.
+
+### Dependencies for 1d
+
+None expected. If one seems needed, it must be in TECHNICAL_DESIGN.md section 3; say why in the report.
+
+### Done when
+
+- Items 1 to 5 above, each with fixtures; the `rule-ids.json` contract test lists the new ids.
+- The 160 grading cases pass as real tests in 1.0 shapes, and the report lists every case whose expectation changed.
+- The 6 `rubric.*` fixtures pass; every rubric rule, fixed and quality, has a fixture that triggers it and one that does not.
+- Rubric golden cases pass, the IELTS rounding edges and the three worked examples included.
+- `grades-v2`: for each mode a valid file, and one fixture per validation error and per warning; a `grades-v1` file and a 0.x results file are refused.
+- `quiz grade` tests: one file and several, Markdown and `--json`, `--grades` with a partly graded file (the rest pending), a hash mismatch (exit 1), `--web` (exit 2), a survey (no score), and a `vi` report (headings from the catalog). Running twice gives byte-identical output.
+- `npm run check` passes.
+- The report proposes, for the design docs: `AttemptState`, the `results-v2` schema with every answer shape, `rubric_hash`, `results_hash`, and anything else the docs left open.
+
+## Slice 1e
+
+Outlined above; it gets its full brief here after 1d is reviewed.
