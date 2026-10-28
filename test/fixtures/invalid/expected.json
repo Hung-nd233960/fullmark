@@ -148,6 +148,10 @@
     "rule": "syntax.heading-level",
     "line": 5
   },
+  "ignore-because-only": {
+    "rule": "ignore.invalid",
+    "line": 5
+  },
   "ignore-fixed-rule": {
     "rule": "ignore.invalid",
     "line": 5
@@ -270,6 +274,10 @@
   "preamble-question-before-section": {
     "rule": "syntax.preamble",
     "line": 5
+  },
+  "profile-unknown": {
+    "rule": "profile.unknown",
+    "line": 3
   },
   "question-container-twice": {
     "rule": "question.container-twice",

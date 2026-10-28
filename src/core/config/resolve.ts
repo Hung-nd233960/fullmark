@@ -203,6 +203,12 @@ export function unknownProfileFix(name: string, layers: Layers): string {
   return near ? `did you mean \`${near}\`?` : `the profiles are: ${known(layers).join(", ")}`;
 }
 
+/** The plain message for an unknown `--profile`: it always names the profiles there are. */
+export function unknownProfileMessage(name: string, layers: Layers): string {
+  const near = suggest(name, known(layers));
+  return `unknown profile \`${name}\`${near ? ` (did you mean \`${near}\`?)` : ""}; the profiles are: ${known(layers).join(", ")}`;
+}
+
 /**
  * Resolves every profile the config files define, so that a mistake in a profile nobody has used yet (an unknown
  * `extends`, a cycle, a `custom.` level with no check) is reported now, with its file and line.

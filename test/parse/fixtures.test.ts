@@ -19,7 +19,7 @@ const expected: Expected = JSON.parse(readFileSync(join(invalidDir, "expected.js
 const pending = (rule: string) => rule.startsWith("rubric.");
 
 /** The rules `check` raises over a parsed quiz, not the parser: they are judged through `quiz check`. */
-const byCheck = (rule: string) => rule === "ignore.invalid";
+const byCheck = (rule: string) => rule === "ignore.invalid" || rule === "profile.unknown";
 
 function validFiles(): string[] {
   const out: string[] = [];

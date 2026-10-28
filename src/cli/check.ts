@@ -7,6 +7,7 @@ import {
   type ResolvedProfile,
   resolveProfile,
   unknownProfileFix,
+  unknownProfileMessage,
 } from "../core/config/resolve";
 import type { ConfigError } from "../core/config/types";
 import type { Brief } from "../core/ir";
@@ -126,7 +127,7 @@ export function checkFile(file: string, opts: CheckOptions, io: CheckIo): FileOu
     const fix = unknownProfileFix(choice.name, config.layers);
     if (choice.from === "the quiz") {
       issues.push({
-        rule: "syntax.value",
+        rule: "profile.unknown",
         level: "error",
         file,
         line: choice.line ?? 1,
@@ -144,7 +145,7 @@ export function checkFile(file: string, opts: CheckOptions, io: CheckIo): FileOu
         configErrors: [{ file: shown, line: choice.line ?? 1, message: `unknown profile \`${choice.name}\``, fix }],
       };
     } else {
-      return { status: "error", file, message: `unknown profile \`${choice.name}\`: ${fix}` };
+      return { status: "error", file, message: unknownProfileMessage(choice.name, config.layers) };
     }
   }
   if (!resolved.profile)

@@ -99,6 +99,12 @@ function applyIgnores(
         'add because="why this finding does not apply here"; the reason is required',
       );
     }
+    if (ig.rules.length === 0 && hasReason) {
+      invalid(
+        "because has no check-ignore to explain",
+        'add check-ignore="rule.id" next to because, or remove because: the reason belongs to an ignore',
+      );
+    }
     for (const id of ig.rules) {
       const rule = findRule(id);
       const custom = profile.rules.get(id)?.kind === "custom";

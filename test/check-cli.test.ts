@@ -185,7 +185,7 @@ describe("profiles", () => {
     expect(r?.profile).toBe("default");
     expect(r?.issues).toEqual([
       {
-        rule: "syntax.value",
+        rule: "profile.unknown",
         level: "error",
         file: "q.md",
         line: 3,
@@ -199,7 +199,25 @@ describe("profiles", () => {
     const dir = tree({ "q.md": quiz() });
     const c = capture(dir);
     expect(runCheck(["q.md"], opts({ profile: "nope" }), c.io)).toBe(2);
-    expect(c.err.join("\n")).toContain("unknown profile `nope`");
+    expect(c.err.join("\n")).toBe("q.md: unknown profile `nope`; the profiles are: default, draft, exam, survey");
+  });
+
+  it("an unknown --profile close to a known one says so, and still names them all", () => {
+    const dir = tree({ "q.md": quiz() });
+    const c = capture(dir);
+    expect(runCheck(["q.md"], opts({ profile: "exma" }), c.io)).toBe(2); // spellchecker:disable-line
+    expect(c.err.join("\n")).toContain("(did you mean `exam`?); the profiles are: default, draft, exam, survey");
+  });
+
+  it("a front-matter profile that is only defined in the config is known", () => {
+    const dir = tree({
+      "fullmark.toml": '[profiles.practice]\nextends = "default"\n',
+      ".git/HEAD": "",
+      "q.md": quiz("- [x] a\n- [ ] b", "title: T\nprofile: practice"),
+    });
+    const c = capture(dir);
+    expect(runCheck(["q.md"], opts({ json: true }), c.io)).toBe(0);
+    expect(json(c.out)[0]?.profile).toBe("practice");
   });
 
   it("a survey gets the survey profile", () => {

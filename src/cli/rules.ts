@@ -1,6 +1,6 @@
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
-import { chooseProfile, type ResolvedProfile, resolveProfile, unknownProfileFix } from "../core/config/resolve";
+import { chooseProfile, type ResolvedProfile, resolveProfile, unknownProfileMessage } from "../core/config/resolve";
 import type { Brief } from "../core/ir";
 import { suggest } from "../core/parse/report";
 import { readBrief } from "../core/rules/brief-read";
@@ -97,7 +97,7 @@ export function runRules(rule: string | null, opts: RulesOptions, io: CheckIo): 
         "the config has errors",
         resolved.errors.map((e) => `${e.file}:${e.line}: ${e.message}`),
       );
-    return fail(`unknown profile \`${choice.name}\``, [unknownProfileFix(choice.name, config.layers)]);
+    return fail(unknownProfileMessage(choice.name, config.layers), []);
   }
   const profile = resolved.profile;
   const rows = rowsOf(profile);

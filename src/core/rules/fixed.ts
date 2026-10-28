@@ -73,6 +73,13 @@ export const FIXED_RULES: FixedRule[] = [
     "use a value from the set the message lists",
   ),
   fixed(
+    "profile.unknown",
+    "check",
+    "a `profile:` in the front matter that is neither built in nor in the config",
+    file("## Q {type=single id=q}\n\n- [x] a\n- [ ] b", "title: T\nprofile: exma"),
+    "use a profile `quiz rules` knows (default, draft, exam, survey, or one from fullmark.toml), or define it in fullmark.toml",
+  ),
+  fixed(
     "syntax.attributes",
     "parser",
     "a {...} block that does not parse, or a name given twice",
