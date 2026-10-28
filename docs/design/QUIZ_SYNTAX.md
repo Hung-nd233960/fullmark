@@ -51,7 +51,7 @@ Unknown keys are errors.
 | `feedback` | `end` \| `instant` | `end` | S |
 | `pass_mark` | 0 to 100, percent of auto-graded points | none | S |
 | `shuffle_questions`, `shuffle_choices` | `true` \| `false` | `false` | S |
-| `partial` | `true` \| `false`: partial credit in `multi`, `ordering` and `matching` | `true` | S |
+| `partial` | `true` \| `false`: partial credit in `multi`, `ordering` and `matching`. `blanks` and `fields` always give partial credit (an equal share per blank, or each field's points) and ignore it | `true` | S |
 | `theme` | `auto`, `light`, `dark`, `oled`, `white`, `paper` | `auto` | S |
 | `font` | `system`, `sans`, `serif`, `readable` | `system` | S |
 | `look` | `free` \| `locked` | `free` | S |
@@ -397,7 +397,7 @@ Video and remote URLs are not supported. An image without alt text is `asset.alt
 Every rule below is a **fixed rule**: an error that no profile can change or ignore ([TECHNICAL_DESIGN.md](TECHNICAL_DESIGN.md), section 5). The ids are a contract that agents and scripts match on, so a rule is never renamed.
 
 - **One mistake, one rule.** When a specific rule and a general one both match the same mistake, only the specific one is reported: an unquoted `{input=…}` prompt is `choice.input`, not `syntax.attributes`; a missing file is `asset.missing`, not `asset.type`.
-- **Lines.** An issue reports the line of the offending key, attribute, item or blank. A problem with a whole question or section (a missing `type`, too few choices, an `answer` block that is missing or not allowed) reports its heading line; a conflict between two keys reports the first of them. A YAML error reports the line the YAML parser gives. A problem with the whole quiz (`quiz.empty`) reports line 1.
+- **Lines.** An issue reports the line of the offending key, attribute, item or blank (a rubric problem with one criterion, such as its weight or step, reports that criterion's line). A problem with a whole question or section (a missing `type`, too few choices, an `answer` block that is missing or not allowed) reports its heading line; a conflict between two keys reports the first of them. A YAML error reports the line the YAML parser gives. A problem with the whole quiz (`quiz.empty`) reports line 1.
 
  Quality rules (`choice.correct-longest`, `explanation.short`...) are in TECHNICAL_DESIGN.md.
 

@@ -95,6 +95,40 @@ type Attempt = {
 - **The library** chooses the plan (`--missed` reads the attempt history). The plan reaches core through its TS API, not through a CLI flag, so the layering holds.
 - Scores are kept per question and per tag, never only per attempt, so a section-only attempt is not counted as 20 % of the whole quiz in `stats`.
 
+### `results-v2`
+
+Decided 2026-10-28 from slice 1d's proposal. The file is `{"format": "fullmark-results", "version": 2}` followed by the `Attempt` fields, plus the optional `bundle` of section 7 (seams for later features). Every known key is required except `plan.section`, `plan.optionOrder`, `plan.seed` and `bundle`; unknown keys are ignored. A version 1 or 0.x file is refused with a pointer to the move-in script (section 12, step 6).
+
+```ts
+type AttemptState = {
+  answers: Record<QuestionId, Answer | null>;  // null, or no entry: unanswered
+  startedAt: string | null;                    // ISO, as the page wrote it
+  submittedAt: string | null;
+  timeUsed: number;                            // seconds, from the page's timer
+  sectionTime: Record<SectionId, number>;      // seconds per visited section; "" for an untitled one
+  flagged: QuestionId[];                       // flagged for review by the learner
+  timedOut: boolean;                           // time_limit ran out and the page submitted
+};
+```
+
+**Indices are source order.** Every index in an answer refers to the order in the quiz source, never to the order the page showed, so grading never depends on a shuffle. `plan.optionOrder` records what the page showed, for replay: the choices of `single` and `multi`, the items of `ordering`, and the right-hand items (distractors included) of `matching`, each as source indices in display order.
+
+| Type | Answer |
+|---|---|
+| `single` | `{choice, inputs?}`: a choice index; `inputs` maps a choice index to the text typed in its `{input}` |
+| `multi` | `{choices, inputs?}` |
+| `truefalse` | `{value}`: `true` or `false` |
+| `numeric` | `{raw}`: the text as typed; the grader reads it, with a decimal comma when the quiz's `lang` uses one |
+| `short`, `essay` | `{text}` |
+| `blanks` | `{blanks}`: one text per blank, in order |
+| `fields` | `{fields}`: one text per field, in order, ungraded fields included |
+| `ordering` | `{order}`: `order[i]` is the source index of the item placed at position `i` |
+| `matching` | `{pairs}`: `pairs[i]` is the right-hand item (an index into the pairs' right-hand sides in source order, then the distractors) matched to left item `i`, or `null` |
+| `code` | `{code, language}`: the grader uses the question's `language`, not this one |
+| `scale` | `{value}`: an integer on the scale |
+
+An essay's word count is not stored: the grader counts it.
+
 ### Rules
 
 ```ts
@@ -275,16 +309,20 @@ rubric:
       - {id: cc, text: Coherence and cohesion}
   ```
 
-  `ielts` rounds .25 up to the half band and .75 up to the next whole band. `rubric.scale` catches a scale whose `step` does not divide `max - min`, and `rubric.weights` a weight that is not a positive number.
+  `ielts` rounds .25 up to the half band and .75 up to the next whole band, to the nearest half band from 0 whatever the scale's step. `round` defaults to `nearest-step`: the nearest step counted from `scale.min`, a tie going up. A band's points (`points × band / scale.max`) are rounded half up to 2 decimals. All this arithmetic is exact (integer steps), so no float error can move a band. `rubric.scale` catches a scale whose `step` does not divide `max - min`, and `rubric.weights` a weight that is not a positive number.
+- **`step`** defaults to 0.5 in `additive`. A `holistic` rubric has no step unless it declares one: any score from 0 to the points.
 - **`show_rubric`** (default `true`) shows the criteria and their points on the page before submit. Practice benefits from it, and a mock exam can set `false`.
 
 Fixed-rule errors in `check`:
 
-- `rubric.mode-missing`: points or bands appear without a `mode`.
-- `rubric.sum`: an `additive` rubric whose maximums don't add up to the question's points.
+- `rubric.mode-missing`: points, a scale, `round` or weights appear without a `mode`.
+- `rubric.sum`: an `additive` rubric whose maximums don't add up to the question's points, including one with no criteria or a criterion with no points.
 - `rubric.step`: a maximum that isn't a multiple of `step`.
-- `rubric.scale`, `rubric.weights`: an invalid scale or weights.
-- `rubric.duplicate-id`.
+- `rubric.scale`: an invalid scale, or a `banded` rubric with neither a scale nor a preset (at the `rubric` line).
+- `rubric.weights`: an invalid weight, or a `banded` rubric with no criteria.
+- `rubric.duplicate-id`, in every mode, at the second use.
+
+A preset with any other key, and `scale`, `round` or `weight` outside `banded`, are `syntax.value`.
 
 Quality rules:
 
@@ -307,7 +345,7 @@ In the library, the same steps are `library grade NAME --json`, then filling in,
 
 ### `grades-v2`
 
-The tool writes the template with every criterion's id, text and maximum (or scale) already in place. The grader fills in only the `null` cells and the text fields, and cannot add criteria or change maximums.
+The tool writes the template with every criterion's id, text and maximum (or scale) already in place. The grader fills in only the `null` cells and the text fields, and cannot add criteria or change maximums. The template holds `"grader": null` and one entry per answered essay or code question; each entry's components (`score`, `band`, `verdict`), `note`, `justification` and `improvement` start as `null`. `quiz grade --json` writes it only when no `--grades` is given, so a filled-in file is never overwritten.
 
 ```json
 {
@@ -352,9 +390,10 @@ The tool writes the template with every criterion's id, text and maximum (or sca
 - A score is below 0, above its maximum, or not a multiple of `step`.
 - A band is outside the scale or off its step.
 - A criterion, bullet or question id is not in the template.
-- A `note` is empty on a criterion scored below its maximum: a lost mark must say what was missing.
+- A `note` is empty on a criterion scored below its maximum (in `banded`, a band below `scale.max`): a lost mark must say what was missing.
 - A `holistic` grade has no `justification`.
-- A question is half filled. A question left entirely `null` stays pending, so a partly graded file is allowed.
+- A question is half filled: some components filled and some `null`. A question whose components are all `null` stays pending, whatever its text fields say, so a partly graded file is allowed.
+- A question's `points`, `mode`, a maximum, a weight, the scale or `round` differs from the template, or a hash is missing.
 
 Warnings: `rubric_hash` differs from the current rubric ("graded against an older rubric"); `results_hash` differs from the attempt.
 
@@ -369,7 +408,9 @@ Warnings: `rubric_hash` differs from the current rubric ("graded against an olde
 - `ielts-task2` averages 6, 6.5, 6.5, 6 = 6.25, which IELTS rounding makes **band 6.5**, so **6.5 / 9** points.
 - `explain-aliasing` is **3 / 4** as given.
 
-The final report holds, for each question, `earned`, `points`, `status`, `graded_by`, `rubric_current` and a criteria list with `earned`, `max` and `note`.
+The final report holds, for each question, `earned`, `points`, `status`, `graded_by`, `rubric_current` and a criteria list with `earned`, `max` and `note`. The JSON report is `{"format": "fullmark-report", "version": 2}` (versions start at 2, as for `results-v2`) with `quiz`, `attempt`, `score` (`null` for a survey), `sections`, `tags`, `questions`, `wrong`, `open`, `grades` and `unknown`. A report carries no time of its own making, so the same inputs give the same bytes.
+
+**The score while grades are pending.** The score and the pass mark are judged on the points scored so far: auto-graded questions and graded essays and code. Essays and code still waiting for a grade are left out of both earned and possible points until graded; an unanswered one counts as 0 of its points. So a pass result can change once grades come in.
 
 **Re-grading never overwrites.** Each grades file stays in `reports/`. The newest counts unless another is chosen, which keeps a later comparison between graders possible.
 

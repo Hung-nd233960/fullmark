@@ -298,7 +298,7 @@ Exit: `0` written, `2` usage error, timeout, form cancelled, or `--tui` without 
 **changed**: `grades-v2` with rubric modes and a grader, and `--web`.
 
 ```text
-quiz grade RESULTS... [--quiz FILE] [-o OUT] [--grades GRADES] [--json]
+quiz grade RESULTS... --quiz FILE [-o OUT] [--grades GRADES] [--json]
 quiz grade RESULTS --quiz FILE --web [--grades GRADES] [--name NAME] [--open]
                    [--timeout SECONDS] [--port N] [--json]
 ```
@@ -308,9 +308,9 @@ Re-grades an attempt with the shared grader and writes a report: score, per-sect
 | Argument or option | Meaning |
 |---|---|
 | `RESULTS...` | Results files. Several: see [Several files](#several-files). Each gets a report and, with `--json`, a grades template. `--grades`, `--web` and `--name` take one results file |
-| `--quiz FILE` | The quiz source. Needed for the answer key and rubrics. Must match the results' `quizHash` (exit 1 otherwise) |
+| `--quiz FILE` | Required. The quiz source, for the answer key and rubrics. Must match the results' `quizHash` (exit 1 otherwise) |
 | `-o`, `--output OUT` | Default: `RESULTS` with `-report.md` (or `-report.json`). With several files, a folder |
-| `--grades GRADES` | Validate a filled-in grades file, compute totals and bands from its components, and fold it into the report. Questions left entirely empty stay pending |
+| `--grades GRADES` | Validate a filled-in grades file, compute totals and bands from its components, and fold it into the report. Questions left entirely empty stay pending. Only an explicit `--grades` is read: unlike `replay`, `grade` never picks up `<RESULTS>-grades.json` by itself, since that is also the name of the empty template |
 | `--json` | Write `*-report.json` instead of Markdown, plus a `*-grades.json` template holding each rubric's structure with empty cells |
 | `--web` | Grade by hand in a form: the answer next to the rubric, inputs limited to valid steps or bands, a running total. With `--grades`, that file's grades are pre-filled to accept or adjust. Writes a new grades file with `kind: human` (and `reviewed` naming the earlier grader), then the report. Waits `1800` seconds by default, as for `serve` |
 | `--name NAME` | With `--web`: the human grader's name. Without it, the form asks |
