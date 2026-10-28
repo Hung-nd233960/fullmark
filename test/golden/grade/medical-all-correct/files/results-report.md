@@ -13,7 +13,7 @@
 
 4 points are waiting for a grader and are not in the score
 
-Goal 60%*: reached
+Goal 60%: reached*
 
 ## By section
 
