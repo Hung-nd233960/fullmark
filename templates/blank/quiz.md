@@ -124,6 +124,7 @@ min_words: 50
 rubric:
   - "Content: answers the question"
   - "Clarity: organised and easy to follow"
+  - "Evidence: backs the idea with an example"
 ```
 
 ## Code: write a function that adds two numbers. {type=code id=code points=3}
@@ -135,6 +136,8 @@ starter: |
       pass
 rubric:
   - Returns the sum for integers and floats
+  - Handles negative numbers
+  - Is short and readable
 sample_answer: |
   def add(a, b):
       return a + b

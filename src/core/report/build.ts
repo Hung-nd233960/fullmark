@@ -104,8 +104,6 @@ export type ReportInput = {
   attempt: Attempt;
   /** the grades, already applied and free of problems; null for none */
   applied?: AppliedGrades | null;
-  /** the file-level grader of the grades */
-  grader?: Grader | null;
 };
 
 /**
@@ -197,7 +195,7 @@ export function buildReport(input: ReportInput, m: Messages["report"]): Report {
     questions,
     wrong: questions.filter((q) => q.status === "incorrect" || q.status === "partial").map((q) => q.id),
     open,
-    grades: applied ? { grader: input.grader ?? null, warnings: applied.warnings } : null,
+    grades: applied ? { grader: applied.grader, warnings: applied.warnings } : null,
     unknown: graded.unknown,
   };
 }

@@ -1,6 +1,7 @@
 import { Command } from "commander";
 import { type CheckOptions, runCheck } from "./check";
 import { EXIT, type ExitCode } from "./exit-codes";
+import { type GradeOptions, runGrade } from "./grade";
 import { type IdsOptions, type Io, runIds } from "./ids";
 import { type RulesOptions, runRules } from "./rules";
 
@@ -110,6 +111,33 @@ export function buildProgram(outcome: Outcome = { exit: EXIT.done }, io: Io = te
       };
       outcome.exit = await runIds(files, opts, io);
     });
+
+  program
+    .command("grade")
+    .description("re-grade attempts and write a report: score, wrong answers, and the essays laid out for a grader")
+    .argument("<results...>", "results files (globs are expanded)")
+    .requiredOption("--quiz <file>", "the quiz the attempts were taken on: it holds the answer key and the rubrics")
+    .option("-o, --output <out>", "the report file; with several results files, a folder")
+    .option("--grades <file>", "fold a filled-in grades file into the report (one results file only)")
+    .option("--json", "write *-report.json and a *-grades.json template instead of Markdown, and print JSON")
+    .option("--web", "grade by hand in a form (not available yet)")
+    .option("--name <name>", "with --web: the human grader's name (not available yet)")
+    .action(
+      async (
+        results: string[],
+        options: { quiz: string; output?: string; grades?: string; json?: boolean; web?: boolean; name?: string },
+      ) => {
+        const opts: GradeOptions = {
+          quiz: options.quiz,
+          output: options.output ?? null,
+          grades: options.grades ?? null,
+          json: Boolean(options.json),
+          web: Boolean(options.web),
+          name: options.name ?? null,
+        };
+        outcome.exit = await runGrade(results, opts, io);
+      },
+    );
   return program;
 }
 

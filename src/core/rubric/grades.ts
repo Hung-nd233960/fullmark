@@ -162,6 +162,8 @@ export type AppliedGrades = {
   details: GradeDetail[];
   /** the marks to give `grade()` */
   manual: ManualScores;
+  /** the file-level grader; null when it was missing or invalid (a problem is listed then) */
+  grader: Grader | null;
 };
 
 const isObject = (v: unknown): v is Record<string, unknown> => v !== null && typeof v === "object" && !Array.isArray(v);
@@ -244,7 +246,7 @@ export function applyGrades(quiz: Quiz, attempt: Attempt, resultsJson: unknown, 
       }
     }
   }
-  return { problems, warnings, details, manual };
+  return { problems, warnings, details, manual, grader: fileGrader };
 }
 
 type Computed = Omit<GradeDetail, "graded_by"> & { graded_by?: never };

@@ -180,7 +180,7 @@ describe("with real grades", () => {
   it("moves the score and shows the criteria table and the grader", () => {
     const applied = apply(filled());
     expect(applied.problems).toEqual([]);
-    const r = buildReport({ ...input, applied, grader: { kind: "human", name: "Hung" } }, en.report);
+    const r = buildReport({ ...input, applied }, en.report);
     expect(r.score).toMatchObject({ earned: 4.5, points: 6, pending: 0 });
     expect(r.open[0]).toMatchObject({ pending: false, grade: { earned: 2.5, status: "partial" } });
     const md = renderMarkdown(r, en.report);
@@ -193,7 +193,7 @@ describe("with real grades", () => {
     const t = filled();
     t.grades.essay.rubric_hash = "0".repeat(64);
     const applied = apply(t);
-    const r = buildReport({ ...input, applied, grader: { kind: "human", name: "Hung" } }, en.report);
+    const r = buildReport({ ...input, applied }, en.report);
     const md = renderMarkdown(r, en.report);
     expect(md).toContain("## Warnings");
     expect(md).toContain("graded against an older rubric");
