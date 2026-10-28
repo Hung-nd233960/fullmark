@@ -384,7 +384,7 @@ The tool writes the template with every criterion's id, text and maximum (or sca
 
 **Grader identity.** `grader` is required. `kind` is `ai` or `human`, and `name` is required (for an AI, also `model`). A question can carry its own `grader`, for example when one essay is re-graded by hand. A human grade made over an AI grade records `reviewed` with the AI grader. The identity is a declaration: the tool cannot verify which model wrote a file.
 
-**Validation** (exit 1, nothing written). It runs in two stages, structure (format, grader, ids, the template's fixed values) and then scores, and lists every problem of the first stage that fails:
+**Validation** (exit 1, nothing written). Every problem is listed, except that a question's scores are checked only once its fixed values (mode, points, maximums, weights, scale) match the template:
 
 - `grader` is missing, or its `kind` or `name` is empty.
 - A score is below 0, above its maximum, or not a multiple of `step`.
@@ -410,7 +410,7 @@ Warnings: `rubric_hash` differs from the current rubric ("graded against an olde
 
 The final report holds, for each question, `earned`, `points`, `status`, `graded_by`, `rubric_current` and a criteria list with `earned`, `max` and `note`. The JSON report is `{"format": "fullmark-report", "version": 2}` (versions start at 2, as for `results-v2`) with `quiz`, `attempt`, `score` (`null` for a survey), `sections`, `tags`, `questions`, `wrong`, `open`, `grades` and `unknown`. A report carries no time of its own making, so the same inputs give the same bytes.
 
-**The score while grades are pending.** The score and the pass mark are judged on the points scored so far: auto-graded questions and graded essays and code. Essays and code still waiting for a grade are left out of both earned and possible points until graded; an unanswered one counts as 0 of its points. So whether the goal is reached can change once grades come in. The Markdown report words the goal as the results card does (section 8): "Goal 60%: reached" or "Goal 60%: not reached yet", never "failed", with the asterisk while grades are pending. Every word in it comes from the `ui_lang` catalog, the attempt's source (full, a part, a retry) included.
+**The score while grades are pending.** The score and the pass mark are judged on the points scored so far: auto-graded questions and graded essays and code. Essays and code still waiting for a grade are left out of both earned and possible points until graded; an unanswered one counts as 0 of its points. So whether the goal is reached can change once grades come in. The Markdown report words the goal as the results card does (section 8): "Goal 60%: reached" or "Goal 60%: not reached yet", never "failed", with an asterisk after the verdict while grades are pending ("Goal 60%: reached*"). Every word in it comes from the `ui_lang` catalog, the attempt's source (full, a part, a retry) included.
 
 **Re-grading never overwrites.** Each grades file stays in `reports/`. The newest counts unless another is chosen, which keeps a later comparison between graders possible.
 

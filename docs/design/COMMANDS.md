@@ -25,7 +25,7 @@ The program is `quiz`. `fullmark` runs the same program, for systems where anoth
 
 | Option | Meaning |
 |---|---|
-| `--json` | Print the outcome as one JSON object on stdout. Human text goes to stderr. With `--json`, a command never prompts. Commands that run the one-shot server (`serve`, `review`, `brief --web`, `grade --web`, `library take`) first print a `listening` line, so the outcome is the second line: see `serve`. A failure is `{"status": "error", "message"}`, with `"file"` when it concerns one input and `"errors": [{"file", "line", "message", "fix"}]` for a malformed config; its human text also goes to stderr |
+| `--json` | Print the outcome as one JSON object on stdout. Human text goes to stderr. With `--json`, a command never prompts. Commands that run the one-shot server (`serve`, `review`, `brief --web`, `grade --web`, `library take`) first print a `listening` line, so the outcome is the second line: see `serve`. Content found wrong (check errors, a hash mismatch, invalid grades, a duplicate id) keeps the command's own status, such as `failed` or `problems`. A failure to run is `{"status": "error", "message"}`, with `"file"` when it concerns one input and `"errors": [{"file", "line", "message", "fix"}]` for a malformed config; its human text also goes to stderr |
 | `--plain` | Plain text with no colours, even in a terminal. `NO_COLOR` does the same |
 | `--open` / `--no-open` | Open, or don't open, the page in the default browser |
 | `--port N` | Port on 127.0.0.1 for the one-shot server. Default: a free port |
@@ -327,7 +327,7 @@ Re-grades an attempt with the shared grader and writes a report: score, per-sect
 Exit:
 
 - `0`: written.
-- `1`: hash mismatch, or invalid grades. Nothing is written. The file is checked in two stages: its structure first (format, grader, ids, the template's fixed values), then the scores; every problem of the first stage that fails is listed. Problems include a missing grader, a score off its step or above its maximum, an unknown criterion, a lost mark with no note, or a half-filled question.
+- `1`: hash mismatch, or invalid grades. Nothing is written. Every problem is listed, with one exception: a question whose fixed values (mode, points, maximums, weights, scale) differ from the template has its scores checked only once those match. Problems include a missing grader, a score off its step or above its maximum, an unknown criterion, a lost mark with no note, or a half-filled question.
 - `2`: I/O error, timeout, or the form was cancelled.
 
 ### quiz replay

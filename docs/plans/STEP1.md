@@ -22,7 +22,7 @@ The owner's working rules: state what, why and what done means before a big job 
 | 1c rules, config, `check`, `rules` | done, reviewed, gaps decided | `8a632b5`..`201d9fb` |
 | 1d grader and `grade` | done, reviewed, gaps decided; follow-up fixes done | `402bb97`..`9c350a3`, `869db1d`..`49dba98` |
 | 1e contract tests | done, reviewed, gaps decided | `379039b`..`3a92ec8` (16 commits) |
-| 1f 1e's follow-ups | brief written, delegated to Sonnet | |
+| 1f 1e's follow-ups | done, reviewed, gaps decided | `28e57df`..`c1937e0`, then the closing commit |
 
 `npm run check` after 1d: 37 test files, 1010 passed, 0 todo. Branch `1.0` is not on GitHub; nothing has been pushed.
 
@@ -30,8 +30,10 @@ The owner's working rules: state what, why and what done means before a big job 
 
 ### Next steps, in order
 
-1. Review 1f (brief below). 1e's review on 2026-10-28: `npm run check` passed (39 files, 1287 tests; startup medians 80 ms for `--version`, 127 ms for `check`). Both proposals were accepted (paths relative or absolute with `/`; `FULLMARK_TEST_SEED` test-only), and every gap was decided as recommended; the decisions are in COMMANDS.md and TECHNICAL_DESIGN.md sections 6 and 11, and are 1f's tasks.
-2. With 1f reviewed, step 1 is done. Step 2 (`build`, the page runtime, themes, `replay`, and `--acknowledgements`, which needs the page's third-party list) gets its own plan file, `docs/plans/STEP2.md`, cut into slices the same way.
+**Step 1 is done (2026-10-28).** 1f was reviewed: `npm run check` passes (40 files, 1309 tests; startup medians 80 ms and 130 ms). Its gaps were decided: the goal line's `*` goes after the verdict; the grades check is described as it works (a question's scores after its fixed values); `--json` keeps a command's own status for wrong content and uses `error` for a failure to run; quiz errors under `grade --json` stay on stderr (`check --json` has them).
+
+1. Done: 1f. 1e's review on 2026-10-28: `npm run check` passed (39 files, 1287 tests; startup medians 80 ms for `--version`, 127 ms for `check`). Both proposals were accepted (paths relative or absolute with `/`; `FULLMARK_TEST_SEED` test-only), and every gap was decided as recommended; the decisions are in COMMANDS.md and TECHNICAL_DESIGN.md sections 6 and 11, and are 1f's tasks.
+2. Next: step 2 (`build`, the page runtime, themes, `replay`, and `--acknowledgements`, which needs the page's third-party list) gets its own plan file, `docs/plans/STEP2.md`, cut into slices the same way.
 
 ### Design work in parallel (themes and pages)
 
