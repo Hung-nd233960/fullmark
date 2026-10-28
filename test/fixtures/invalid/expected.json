@@ -217,6 +217,57 @@
     "rule": "matching.pairs",
     "line": 5
   },
+  "materials-case": {
+    "rule": "materials.missing",
+    "line": 3,
+    "note": "the file is materials/case.md; letter case must match"
+  },
+  "materials-heading": {
+    "rule": "materials.heading",
+    "line": 5,
+    "note": "line of the second # heading, in the sheet"
+  },
+  "materials-image-missing": {
+    "rule": "asset.missing",
+    "line": 3,
+    "note": "line in the sheet"
+  },
+  "materials-missing": {
+    "rule": "materials.missing",
+    "line": 3
+  },
+  "materials-not-markdown": {
+    "rule": "asset.type",
+    "line": 3
+  },
+  "materials-outside": {
+    "rule": "asset.outside",
+    "line": 3
+  },
+  "materials-question-answer": {
+    "rule": "materials.question",
+    "line": 5,
+    "note": "line in the sheet"
+  },
+  "materials-question-attr": {
+    "rule": "materials.question",
+    "line": 3,
+    "note": "line in the sheet"
+  },
+  "materials-question-blank": {
+    "rule": "materials.question",
+    "line": 3,
+    "note": "line in the sheet"
+  },
+  "materials-question-choice": {
+    "rule": "materials.question",
+    "line": 5,
+    "note": "line in the sheet; the first choice only is reported once per marked line, so the fixture has two: see test"
+  },
+  "materials-remote": {
+    "rule": "asset.remote",
+    "line": 3
+  },
   "media-bad-ext": {
     "rule": "asset.type",
     "line": 7,

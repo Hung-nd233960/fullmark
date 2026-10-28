@@ -13,7 +13,13 @@ import { createStore } from "../page/store";
 import { type Asset, createRenderer } from "./render";
 
 /** One quiz to put on a page: the IR the check passed, its hash, and the files it refers to. */
-export type BuildQuiz = { quiz: Quiz; hash: string; assets: readonly Asset[] };
+export type BuildQuiz = {
+  quiz: Quiz;
+  hash: string;
+  assets: readonly Asset[];
+  /** the materials sheets in the order listed, for the sidebar (2f) and the paper (2k); the page does not use them yet */
+  sheets?: readonly { path: string; name: string; source: string }[];
+};
 
 export type PageOptions = {
   /** the runtime (`dist/page.js`) and the styles (`dist/page.css`), read by the CLI */

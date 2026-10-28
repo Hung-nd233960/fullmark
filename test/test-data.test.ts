@@ -83,8 +83,8 @@ function quizFiles(): string[] {
 describe("valid quizzes", () => {
   const files = quizFiles();
 
-  it("finds six examples, the blank template and four fixtures", () => {
-    expect(files.length).toBe(11);
+  it("finds six examples, the blank template and five fixtures", () => {
+    expect(files.length).toBe(12);
   });
 
   for (const file of files) {

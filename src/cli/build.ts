@@ -87,12 +87,22 @@ export async function runBuild(patterns: readonly string[], opts: BuildOptions, 
   const builtAt = opts.builtAt ?? (io.now?.() ?? new Date()).toISOString();
   let html: string;
   try {
-    html = buildPage([{ quiz: result.loaded.quiz, hash: result.loaded.hash ?? "", assets: result.loaded.assets }], {
-      runtime,
-      css,
-      builtAt,
-      version: opts.version,
-    });
+    html = buildPage(
+      [
+        {
+          quiz: result.loaded.quiz,
+          hash: result.loaded.hash ?? "",
+          assets: result.loaded.assets,
+          sheets: result.loaded.sheets,
+        },
+      ],
+      {
+        runtime,
+        css,
+        builtAt,
+        version: opts.version,
+      },
+    );
   } catch (error) {
     if (error instanceof NotAvailableError) {
       fail(io, false, error.message, { file });

@@ -28,8 +28,8 @@ describe("every rule has a fixture", () => {
   );
   const fromInvalid = new Set(Object.values(invalid).map((e) => e.rule));
   // judged by test/rules/check.test.ts and test/check-cli.test.ts: check raises it, no parser fixture holds it
-  // build.size is registered but judged by `build` from step 2
-  const byCheckTests = new Set(["config.ignored", "build.size"]);
+  // build.size is registered but judged by `build` from step 2; materials.empty by test/materials.test.ts
+  const byCheckTests = new Set(["config.ignored", "build.size", "materials.empty"]);
   const briefRules = new Set([
     "brief.count",
     "brief.mix",

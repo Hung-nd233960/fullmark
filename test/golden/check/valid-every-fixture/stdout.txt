@@ -16,4 +16,6 @@ valid/mixed.md: profile default (built-in) from the default; config: none
 valid/mixed.md: 0 errors, 0 warnings
 valid/survey.md: profile survey (built-in) from the survey default; config: none
 valid/survey.md: 0 errors, 0 warnings
-4 done, 0 failed
+valid/with-materials.md: profile default (built-in) from the default; config: none
+valid/with-materials.md: 0 errors, 0 warnings
+5 done, 0 failed

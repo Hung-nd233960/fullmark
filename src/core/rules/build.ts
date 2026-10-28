@@ -8,6 +8,17 @@ import type { QualityRule } from "./types";
 export const BUILD_RULES: QualityRule[] = [
   {
     kind: "quality",
+    id: "materials.empty",
+    level: "warning",
+    summary: "a materials sheet with nothing after its heading (raised when `check` loads the sheet)",
+    why: "An empty sheet adds a button to the page and shows the learner nothing.",
+    example: "(a sheet that holds only its # heading)",
+    fix: "write the sheet, or remove it from `materials:`",
+    options: z.object({}).strict(),
+    run: () => [],
+  },
+  {
+    kind: "quality",
     id: "build.size",
     level: "warning",
     summary: "the built page is large (checked by `build`, from step 2 of the order of work)",

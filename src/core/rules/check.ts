@@ -64,7 +64,16 @@ export function runChecks(input: CheckInput): CheckOutput {
 
   const ignored: Ignored[] = [];
   const final = quiz ? applyIgnores(quiz, out, profile, file, ignored) : out;
-  final.sort((a, b) => compare(a.line, b.line) || compare(a.rule, b.rule) || compare(a.message, b.message));
+  // the quiz's own issues first, then each sheet's
+  const own = (i: Issue) => (i.file === file ? 0 : 1);
+  final.sort(
+    (a, b) =>
+      own(a) - own(b) ||
+      compare(a.file, b.file) ||
+      compare(a.line, b.line) ||
+      compare(a.rule, b.rule) ||
+      compare(a.message, b.message),
+  );
   return { issues: final, ignored };
 }
 

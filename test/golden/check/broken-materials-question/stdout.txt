@@ -1,0 +1,4 @@
+profile default (built-in) from the default; config: none
+invalid/materials/question-blank.md:3: error materials.question: a blank [[…]] in a sheet: a sheet holds no questions
+    fix: sample questions in a sheet are not supported yet; write the example as text
+invalid/materials-question-blank.md: 1 error, 0 warnings

@@ -147,6 +147,27 @@ export const FIXED_RULES: FixedRule[] = [
     "Alt text is what a screen reader says, and what shows when the image cannot.",
   ),
   fixed(
+    "materials.missing",
+    "loader",
+    "a `materials` file does not exist",
+    file("## Q {type=single id=q}\n\n- [x] a\n- [ ] b", "title: T\nmaterials:\n  - materials/nope.md"),
+    "check the path in `materials:`, which is relative to the quiz file; paths match letter case exactly",
+  ),
+  fixed(
+    "materials.heading",
+    "loader",
+    "a sheet that does not start with a # heading, or has a second # heading",
+    "# Formulas\n\nText.\n\n# Again\n",
+    "start the sheet with one # heading, its name; use ## and ### for its parts",
+  ),
+  fixed(
+    "materials.question",
+    "loader",
+    "question syntax in a sheet: a {type=…} attribute, a choice list with [x] or [ ], an answer block, or a blank [[…]]",
+    "# Formulas\n\n## Q {type=single id=q}\n",
+    "sample questions in a sheet are not supported yet; write the example as text",
+  ),
+  fixed(
     "theme.unknown",
     "parser",
     "a theme fullmark does not have",

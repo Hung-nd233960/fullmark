@@ -239,3 +239,12 @@ describe("build page: what it refuses", () => {
     expect(() => buildPage([], options)).toThrow();
   });
 });
+
+describe("build page: sheets", () => {
+  it("accepts BuildQuiz.sheets and leaves the page unchanged", () => {
+    const sheets = [{ path: "materials/a.md", name: "A", source: "# A\n\nsecret-sheet-text\n" }];
+    const withSheets = buildPage([{ ...singles, sheets }], options);
+    expect(withSheets).toBe(buildPage([singles], options));
+    expect(withSheets).not.toContain("secret-sheet-text");
+  });
+});

@@ -16,6 +16,9 @@ asset.outside             fixed    error    a referenced file is outside the qui
 asset.type                fixed    error    a referenced file is of a type fullmark does not support
 asset.remote              fixed    error    a referenced file is a URL
 asset.alt                 fixed    error    an image without alt text
+materials.missing         fixed    error    a `materials` file does not exist
+materials.heading         fixed    error    a sheet that does not start with a # heading, or has a second # heading
+materials.question        fixed    error    question syntax in a sheet: a {type=…} attribute, a choice list with [x] or [ ], an answer block, or a blank [[…]]
 theme.unknown             fixed    error    a theme fullmark does not have
 theme.unknown-font        fixed    error    a font fullmark does not have
 section.id-duplicate      fixed    error    two sections with the same id
@@ -85,5 +88,6 @@ brief.past-exams          quality  error    the brief says the quiz mirrors past
 brief.mode                quality  error    the quiz's feedback, time limit or look does not fit the brief's mode
 brief.generated-by        quality  error    a quiz written from a brief does not say which model wrote it
 brief.invalid             quality  error    brief.yaml cannot be read, so the quiz was not held against it
+materials.empty           quality  error    a materials sheet with nothing after its heading (raised when `check` loads the sheet)
 build.size                quality  error    the built page is large (checked by `build`, from step 2 of the order of work)
                           options: warn-mb=20, max-mb=100

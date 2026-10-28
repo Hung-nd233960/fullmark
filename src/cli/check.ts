@@ -1,5 +1,5 @@
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
-import { dirname, join, resolve } from "node:path";
+import { dirname, join, resolve, sep } from "node:path";
 import pc from "picocolors";
 import {
   chooseProfile,
@@ -155,11 +155,20 @@ export function checkFile(file: string, opts: CheckOptions, io: CheckIo): FileOu
   if (!resolved.profile)
     return { status: "error", file, message: "the config has errors", configErrors: resolved.errors };
 
+  // the quiz's issues carry the name the user gave; a sheet's carry its own path, beside the quiz as it was named
+  const folder = dir.split(sep).join("/");
+  const shownFile = (f: string): string => {
+    if (f === loaded.file) return file;
+    if (!f.startsWith(`${folder}/`)) return f;
+    const near = dirname(file).split(sep).join("/");
+    return near === "." ? f.slice(folder.length + 1) : `${near}/${f.slice(folder.length + 1)}`;
+  };
+
   const failOn = opts.strict ? "warning" : config.failOn;
   const contentFiles = brief ? listContent(dir) : null;
   const result = runChecks({
     quiz: loaded.quiz,
-    issues: issues.map((i) => ({ ...i, file })),
+    issues: issues.map((i) => ({ ...i, file: shownFile(i.file) })),
     file,
     profile: resolved.profile,
     brief,
