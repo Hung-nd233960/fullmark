@@ -88,7 +88,7 @@ export function pageQuizOf({ quiz, hash, assets }: BuildQuiz): PageQuiz {
     description: quiz.frontMatter.description,
     uiLang: quiz.frontMatter.uiLang,
     sections,
-    plan: planFor(quiz, { source: "full" }),
+    plan: planFor(quiz, { source: "full", quizHash: hash }),
     key: encodeKey(keyOf(quiz, explanations), hash),
   };
 }
@@ -97,7 +97,7 @@ const sha256Source = (text: string): string => `'sha256-${toBase64(sha256(utf8To
 
 /** JSON that is safe inside a `<script>`: no `<`, and no line separators that old parsers mind. */
 const scriptJson = (value: unknown): string =>
-  canonicalJson(value).replaceAll("<", "\u003c").replaceAll("\u2028", "\u2028").replaceAll("\u2029", "\u2029");
+  canonicalJson(value).replaceAll("<", "\\u003c").replaceAll("\u2028", "\\u2028").replaceAll("\u2029", "\\u2029");
 
 const escapeAttr = (text: string): string =>
   text.replaceAll("&", "&amp;").replaceAll('"', "&quot;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");

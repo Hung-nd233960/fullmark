@@ -45,6 +45,32 @@ describe("the seeded generator", () => {
 
 const GOLDEN = [481073, 601556, 736776];
 
+describe("planFor seeds", () => {
+  const hash = "abcd".padEnd(64, "0");
+  const ORD = quiz(`## Order? {type=ordering id=o1}\n\n1. one\n2. two\n3. three\n4. four\n\n${many(1, 3)}`);
+
+  it("uses the short version as the seed when none is given", () => {
+    const plan = planFor(ORD, { source: "full", quizHash: hash });
+    expect(plan.seed).toBe("abcd");
+    expect(plan.optionOrder?.o1).toHaveLength(4);
+    expect(plan.optionOrder?.o1).not.toEqual([0, 1, 2, 3]);
+    expect(plan.questions).toEqual(["o1", "q1", "q2", "q3"]);
+    expect(Object.keys(plan.optionOrder ?? {})).toEqual(["o1"]);
+    expect(planFor(ORD, { source: "full", quizHash: hash })).toEqual(plan);
+  });
+
+  it("prefers a given seed over the short version", () => {
+    expect(planFor(ORD, { source: "full", seed: "S1", quizHash: hash }).seed).toBe("S1");
+  });
+
+  it("rejects a seed that is not 1 to 8 letters or digits", () => {
+    for (const seed of ["", "123456789", "a b", "é", "a-b"]) {
+      expect(() => planFor(ORD, { source: "full", seed })).toThrow(PlanError);
+    }
+    expect(() => planFor(ORD, { source: "full", seed: "Ab123456" })).not.toThrow();
+  });
+});
+
 describe("planFor", () => {
   it("full: every question in order, banks whole, no seed", () => {
     const plan = planFor(BANKS, { source: "full" });

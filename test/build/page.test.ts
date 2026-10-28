@@ -8,7 +8,9 @@ import { buildPage, NotAvailableError, type PageOptions } from "../../src/build/
 import { loadQuiz } from "../../src/cli/load";
 import { parseResults } from "../../src/core/attempt";
 import { grade } from "../../src/core/grade";
+import { quizHash } from "../../src/core/hash";
 import { decodeKey, toBase64 } from "../../src/core/keyblob";
+import { parse } from "../../src/core/parse";
 import { planFor } from "../../src/core/plan";
 import type { KeyBlob, PageData } from "../../src/page/data";
 import { createStore, exportFor, localStamp } from "../../src/page/store";
@@ -196,6 +198,35 @@ describe("the page store", () => {
 
   it("names the export stamp in local time", () => {
     expect(localStamp(new Date(2026, 0, 2, 3, 4, 5))).toBe("20260102-030405");
+  });
+});
+
+describe("build page: script-safe data", () => {
+  it("a title, a prompt and a choice holding </script> parse back to the same text", () => {
+    const text = [
+      "---",
+      "title: A </script> title",
+      "id: evil",
+      "---",
+      "",
+      "## Prompt `</script>` end {type=single id=q1}",
+      "",
+      "- [x] choice `</script>` one",
+      "- [ ] two",
+      "",
+    ].join("\n");
+    const result = parse(text, "evil.md");
+    expect(result.issues).toEqual([]);
+    const html = buildPage([{ quiz: result.quiz as never, hash: quizHash(text, []), assets: [] }], options);
+    const block = /<script type="application\/json" id="fm-data">([\s\S]*?)<\/script>/.exec(html)?.[1] ?? "";
+    expect(block).not.toContain("<");
+    expect(block).toContain("\\u003c");
+    const data = JSON.parse(block) as PageData;
+    expect(data.quizzes[0]?.title).toBe("A </script> title");
+    expect(data.quizzes[0]?.sections[0]?.questions[0]?.promptHtml).toContain("&lt;/script&gt;");
+    expect(data.quizzes[0]?.sections[0]?.questions[0]).toMatchObject({
+      choices: [{ html: expect.stringContaining("&lt;/script&gt;") }, {}],
+    });
   });
 });
 
