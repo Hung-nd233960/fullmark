@@ -19,6 +19,7 @@ New in step 2: **a slice is sized to fit one Sonnet session** (about the work of
 | 2c2 materials in the core | done, reviewed, gaps decided | `94341aa`..`9797716` |
 | 2c ordering, matching, essay, code | done, reviewed, gaps decided | `06ab9f3`..`92af933` |
 | 2c3 maths and code highlighting | done, reviewed, gaps decided | `12daca7`..`2809ed6` |
+| 2d start screen, plan at Start, timer, autosave | done, reviewed, **gaps waiting for the owner** | `345ed3a`..`ede03f5` |
 
 Step 1 is done (see [STEP1.md](STEP1.md)): `check`, `rules`, `grade` and `ids`, 1309 tests.
 
@@ -96,7 +97,21 @@ Also raised on 2026-10-28 and kept outside v1: [proposals/rapid-response.md](../
    - **One line for an untouched `ordering`.** Drop the extra "No answer" line under the list; the result line's "Not answered" says it.
    - **KaTeX fonts by use** (slice 2i): embed only the font files the page's rendered maths uses.
 7. **Resume, timer and Submit** (owner, 2026-10-29), written into TECHNICAL_DESIGN.md section 8, row "Start screen and part picker": a timed quiz runs on the wall clock (closing the page does not pause it; an untimed one counts visible time only); an autosaved attempt offers Continue (with how far it got) or Start over (confirmed); a submitted attempt stays saved and reopens on the results until New attempt.
-8. **Next: delegate 2d** (brief below) in a fresh session, then review it.
+8. Done: 2d. Reviewed on 2026-10-29. Commits `345ed3a` (2c3's fixes), `d4ec5e3` (plan at Start, start screen, Continue / Start over / New attempt, timer, autosave, storage blocked), `0c78610` (Playwright with Firefox; fixtures `test/fixtures/page/parts.md`, `timed.md`; `e2e/start.spec.ts`; `e2e/screens-2d.spec.ts`, run with `FULLMARK_SCREENS=1`), `8589caa` (`math.syntax` in the front-matter `description`), and `ede03f5` in review (the exam test answered `ci-a`, but the bonus bank draws `ci-a` or `ci-b` with the random seed: it failed half the time). After the fix: 1500 vitest tests, 2 startup tests, 46 Playwright tests (23 per browser, axe clean). The runtime is 33.8 KB gzipped (28.6 before). `quiz check` startup is about 120 ms (about 137 before), through an entry file `src/cli/bin.ts` that enables the compile cache and then imports `dist/main.js` (calling it inside the one bundle gained nothing). Strings checked for `math.syntax` in an `answer` block: field labels, scale labels, rubric criteria (both forms), an essay's `sample_answer`; a `code` question's `sample_answer` is in a fence and not checked. Screenshots: regenerate with `FULLMARK_SCREENS=1 npx playwright test e2e/screens-2d.spec.ts --project=chromium` (they land in `test-results/2d-screens/`, which a Playwright run wipes).
+9. **Waiting for the owner: 2d's gaps** (Opus's recommendation in brackets). Once decided, write them into the design docs; A and B are 2e's first tasks.
+   - **A. Bug (from 2a, `62534a8`):** a picked choice is painted red while answering: `ChoiceList` sets `data-correct="false"` before Submit and the CSS reads picked + not correct as wrong. [Fix: no `data-correct` before Submit; goldens change.]
+   - **B. Determinism flake:** once, two concurrent runs of the `build/maths-and-code` golden differed inside the `fm-data` line, right after a rebuild; not reproduced in about 30 runs. The golden test now prints the offset. [A 2e task: loop that build until it differs, find the cause.]
+   - 1. Compile cache through the entry file rather than inside `main.ts`. [Keep.]
+   - 2. `on_timeout: warn` shows "Time is up" and keeps the attempt running. [Keep.]
+   - 3. With one part chosen, the whole `time_limit` applies. [Keep for v1.]
+   - 4. Time while a timed page was closed counts in `timeUsed` but in no section, so `sectionTime` can sum to less. [Keep.]
+   - 5. The storage-blocked notice after Start stays visible until Submit. [Keep.]
+   - 6. A timed-out attempt's `submittedAt` is the deadline. [Keep.]
+   - 7. A deadline that passes while the start screen is open is caught at Continue. [Keep.]
+   - 8. Storage key `fullmark:v1:<id>:<full hash>:attempt` (the design says `<version>`). [Write into foundation 2.]
+   - 9. The key blob is decoded at Start (the plan needs it); nothing shows before Submit. [Keep.]
+   - 10. Shuffled `single`/`multi` choices now shown in `optionOrder`; `math.syntax` covers `description`; `PageQuiz.descriptionHtml`; the key blob carries `dataOrder`. [Keep.]
+10. **Next:** the owner decides item 9; then write the 2e brief (results card, review filter, Retry missed, `feedback: instant`) with A and B first.
 
 ## Goal
 
