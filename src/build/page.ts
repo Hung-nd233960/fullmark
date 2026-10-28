@@ -98,9 +98,14 @@ function sampleHtml(q: Question, md: Md): string | null {
   return md.block(`${fence}${q.language}\n${q.sampleAnswer.replace(/\n$/, "")}\n${fence}`);
 }
 
-/** The items in the order the page shows them: `optionOrder` names source indices in display order. */
-const inShownOrder = <T>(list: readonly T[], order: readonly number[] | undefined): T[] =>
-  order && order.length === list.length ? order.map((i) => list[i] as T) : [...list];
+/**
+ * The items in the order the page shows them: `optionOrder` names source indices in display order. A plan without
+ * the entry would show the key's order, so it is a bug, not a fallback.
+ */
+const inShownOrder = <T>(list: readonly T[], order: readonly number[] | undefined, id: string): T[] => {
+  if (!order || order.length !== list.length) throw new Error(`question ${id}: the plan has no order for its items`);
+  return order.map((i) => list[i] as T);
+};
 
 /** One question as the page sees it: its prompt and what the learner sees to answer, never its key. */
 function pageQuestion(q: Question, md: Md, t: Messages["page"], order: readonly number[] | undefined): PageQuestion {
@@ -154,14 +159,14 @@ function pageQuestion(q: Question, md: Md, t: Messages["page"], order: readonly 
         labels: q.labels.map((l) => ({ value: l.value, html: unwrap(md.block(l.text)) })),
       };
     case "ordering":
-      return { ...base, type: "ordering", items: inShownOrder(q.items, order).map((i) => item(md, i.text)) };
+      return { ...base, type: "ordering", items: inShownOrder(q.items, order, q.id).map((i) => item(md, i.text)) };
     case "matching": {
       const rights = [...q.pairs.map((p) => p.right), ...q.distractors.map((d) => d.text)];
       return {
         ...base,
         type: "matching",
         lefts: q.pairs.map((p) => unwrap(md.block(p.left))),
-        rights: inShownOrder(rights, order).map((r) => item(md, r)),
+        rights: inShownOrder(rights, order, q.id).map((r) => item(md, r)),
       };
     }
     case "essay":
@@ -171,10 +176,11 @@ function pageQuestion(q: Question, md: Md, t: Messages["page"], order: readonly 
   }
 }
 
-export function pageQuizOf({ quiz, hash, assets }: BuildQuiz): PageQuiz {
+/** `plan` is for tests: it replaces the plan the quiz would be given. */
+export function pageQuizOf({ quiz, hash, assets }: BuildQuiz, plan?: ReturnType<typeof planFor>): PageQuiz {
   const md = createRenderer(assets);
   const t = quiz.frontMatter.uiLang === "vi" ? vi.page : en.page;
-  const plan = planFor(quiz, { source: "full", quizHash: hash });
+  plan ??= planFor(quiz, { source: "full", quizHash: hash });
   const explanations: Record<string, string> = {};
   const samples: Record<string, string> = {};
   const sections: PageSection[] = quiz.sections.map((s) => ({
@@ -218,7 +224,7 @@ const escapeAttr = (text: string): string =>
 export function buildPage(quizzes: readonly BuildQuiz[], options: PageOptions): string {
   if (quizzes.length === 0) throw new Error("a page needs at least one quiz");
   if (options.runtime.toLowerCase().includes("</script")) throw new Error("the runtime holds a closing script tag");
-  const data: PageData = { version: 1, quizzes: quizzes.map(pageQuizOf) };
+  const data: PageData = { version: 1, quizzes: quizzes.map((q) => pageQuizOf(q)) };
   const tree = renderToString(h(App, { store: createStore(data) }));
   const first = data.quizzes[0] as PageQuiz;
   const csp = [

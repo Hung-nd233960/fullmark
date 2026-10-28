@@ -8,7 +8,8 @@ type Dir = "up" | "down";
 /** The order the page first shows: `plan.optionOrder` (source indices in display order). */
 export const shownOrder = (c: Ctx, q: { id: string; items: unknown[] }): number[] => {
   const planned = c.quiz.plan.optionOrder?.[q.id];
-  return planned && planned.length === q.items.length ? planned : q.items.map((_, i) => i);
+  if (!planned || planned.length !== q.items.length) throw new Error(`question ${q.id}: the plan has no order`);
+  return planned;
 };
 
 /**
@@ -19,6 +20,8 @@ export function Ordering({ q, c }: { q: Extract<PageQuestion, { type: "ordering"
   const { t } = c;
   const start = shownOrder(c, q);
   const given = readAnswer("ordering", c.answer)?.order;
+  // never moved: after Submit no item is marked, each shows only where it belongs
+  const untouched = c.submitted && given === undefined;
   const order = given && given.length === q.items.length ? given : start;
   // the item at source index s was sent to the page at the place `start` holds s
   const itemOf = (s: number) => q.items[start.indexOf(s)] ?? { html: "", label: "" };
@@ -51,7 +54,7 @@ export function Ordering({ q, c }: { q: Extract<PageQuestion, { type: "ordering"
       <ol class="fm-order-list" ref={list} aria-labelledby={`${c.name}/prompt`}>
         {order.map((source, position) => {
           const item = itemOf(source);
-          const hit = c.submitted ? (c.result?.results?.[position] ?? null) : null;
+          const hit = c.submitted && !untouched ? (c.result?.results?.[position] ?? null) : null;
           return (
             <li
               key={source}
@@ -85,14 +88,15 @@ export function Ordering({ q, c }: { q: Extract<PageQuestion, { type: "ordering"
                 </span>
               ) : (
                 <span class="fm-order-mark">
-                  <strong>{hit ? t.status.correct : t.status.incorrect}</strong>
-                  {hit ? "" : ` · ${t.belongsAt(source + 1)}`}
+                  {untouched ? null : <strong>{hit ? t.status.correct : t.status.incorrect}</strong>}
+                  {hit ? "" : `${untouched ? "" : " · "}${t.belongsAt(source + 1)}`}
                 </span>
               )}
             </li>
           );
         })}
       </ol>
+      {untouched ? <p class="fm-order-none">{t.noAnswer}</p> : null}
       <p class="fm-sr" role="status" aria-live="polite">
         {said}
       </p>

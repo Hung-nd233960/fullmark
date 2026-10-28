@@ -103,6 +103,7 @@ export const en = {
     moveDown: (item: string) => `Move down: ${item}`,
     movedTo: (n: number, of: number) => `Moved to position ${n} of ${of}`,
     belongsAt: (n: number) => `belongs at ${n}`,
+    resetToStarter: "Reset to starter",
     words: (n: number) => (n === 1 ? "1 word" : `${n} words`),
     wordsMin: (n: number, min: number) => `${n} / ${min} words minimum`,
     wordsMax: (n: number, max: number) => `${n} / ${max} words maximum`,

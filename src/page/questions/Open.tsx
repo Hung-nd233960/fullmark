@@ -1,3 +1,4 @@
+import { useRef, useState } from "preact/hooks";
 import { readAnswer } from "../../core/attempt/answers";
 import { countWords } from "../../core/grade/normalise";
 import type { PageCriterion, PageQuestion } from "../data";
@@ -75,13 +76,20 @@ function Rubric({ rubric, c }: { rubric: PageCriterion[]; c: Ctx }) {
 }
 
 /**
- * `code`: a monospaced box filled with `starter`. Tab is never captured. The box is not controlled (its text is
- * the starter at first), so clearing it does not bring the starter back; the answer is `null` while it is empty or
- * still the starter.
+ * `code`: a monospaced box filled with `starter`. Tab is never captured. Clearing the box leaves it empty; while it
+ * is empty a "Reset to starter" button puts the starter back. The answer is `null` while the box is empty or still
+ * the starter.
  */
 export function Code({ q, c }: { q: Extract<PageQuestion, { type: "code" }>; c: Ctx }) {
   const given = readAnswer("code", c.answer)?.code;
   const starter = q.starter ?? "";
+  const [text, setText] = useState(given ?? starter);
+  const box = useRef<HTMLTextAreaElement>(null);
+  const reset = () => {
+    setText(starter);
+    c.set(null);
+    box.current?.focus();
+  };
   return (
     <div class="fm-open">
       {q.rubric !== null && !c.submitted ? <Rubric rubric={q.rubric} c={c} /> : null}
@@ -94,13 +102,19 @@ export function Code({ q, c }: { q: Extract<PageQuestion, { type: "code" }>; c: 
         aria-labelledby={`${c.name}/prompt`}
         data-language={q.language}
         readOnly={c.submitted}
+        ref={box}
+        value={text}
         onInput={(e) => {
           const v = (e.currentTarget as HTMLTextAreaElement).value;
+          setText(v);
           c.set(v === "" || v === starter ? null : { code: v, language: q.language });
         }}
-      >
-        {given ?? starter}
-      </textarea>
+      />
+      {text === "" && starter !== "" && !c.submitted ? (
+        <button type="button" class="fm-button fm-reset-starter" onClick={reset}>
+          {c.t.resetToStarter}
+        </button>
+      ) : null}
       <Sample c={c} id={c.name} />
     </div>
   );

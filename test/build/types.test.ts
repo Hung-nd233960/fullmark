@@ -250,6 +250,16 @@ describe("ordering and matching in the page data", () => {
   });
 });
 
+describe("a plan without an order for ordering or matching", () => {
+  it("is a build error, never the source order", () => {
+    for (const id of ["o1", "g1"]) {
+      const plan = structuredClone(pageQuizOf(types).plan);
+      delete plan.optionOrder?.[id];
+      expect(() => pageQuizOf(types, plan)).toThrow(`question ${id}: the plan has no order`);
+    }
+  });
+});
+
 describe("what the page stores and shows for the four types", () => {
   function start() {
     const page = pageQuizOf(types);
@@ -281,6 +291,30 @@ describe("what the page stores and shows for the four types", () => {
     const moved = [shown[1], shown[0], shown[2]] as number[];
     r.answer("o1", { order: moved });
     expect(sources(articleOf(r.html(), "o1"))).toEqual(moved);
+  });
+
+  it("marks nothing in an untouched ordering after Submit, and says No answer for a pair left at the dash", () => {
+    const r = start();
+    r.answer("g1", { pairs: [0, null, 2] });
+    r.store.submit("types");
+    const o = articleOf(r.html(), "o1");
+    expect(o).not.toContain("data-result=");
+    expect(o).not.toContain("Wrong");
+    expect(o).toContain("No answer");
+    expect(o.match(/belongs at [0-9]/g)).toHaveLength(3);
+    const g = articleOf(r.html(), "g1");
+    const middle = g.split('class="fm-match"')[2] ?? "";
+    expect(middle).toContain("No answer");
+    expect(middle).not.toContain("Wrong");
+    expect(middle).toContain("runs the checks");
+  });
+
+  it("answers by a dash-only matching say No answer for every pair", () => {
+    const r = start();
+    r.store.submit("types");
+    const g = articleOf(r.html(), "g1");
+    expect(g.match(/No answer/g)).toHaveLength(3);
+    expect(g).not.toContain("Wrong");
   });
 
   it("shows marks, positions and right matches after Submit", () => {

@@ -9,7 +9,8 @@ import { type Ctx, Html } from "./shared";
 export function Matching({ q, c }: { q: Extract<PageQuestion, { type: "matching" }>; c: Ctx }) {
   const { t } = c;
   const planned = c.quiz.plan.optionOrder?.[q.id];
-  const shown = planned && planned.length === q.rights.length ? planned : q.rights.map((_, i) => i);
+  if (!planned || planned.length !== q.rights.length) throw new Error(`question ${q.id}: the plan has no order`);
+  const shown = planned;
   const given = readAnswer("matching", c.answer)?.pairs ?? [];
   const pairAt = (i: number): number | null => given[i] ?? null;
   const change = (i: number, value: string) => {
@@ -44,7 +45,7 @@ export function Matching({ q, c }: { q: Extract<PageQuestion, { type: "matching"
             </select>
             {hit !== null ? (
               <p class="fm-match-mark">
-                <strong>{hit ? t.status.correct : t.status.incorrect}</strong>
+                <strong>{picked === null ? t.noAnswer : hit ? t.status.correct : t.status.incorrect}</strong>
                 {hit ? null : (
                   <>
                     {` · ${t.correctAnswer}: `}

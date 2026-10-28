@@ -168,6 +168,38 @@ test("the word count is live and never blocks Submit; clearing a code box does n
   // an untouched ordering and matching are unanswered
   await expect(card(page, "o1").locator(".fm-result")).toHaveAttribute("data-status", "unanswered");
   await expect(card(page, "g1").locator(".fm-result")).toHaveAttribute("data-status", "unanswered");
+  // and say so: no item is marked, each shows where it belongs; no pair is called wrong
+  await expect(card(page, "o1").locator(".fm-order-item[data-result]")).toHaveCount(0);
+  await expect(card(page, "o1").locator(".fm-order-mark")).toHaveText([
+    /belongs at [0-9]/,
+    /belongs at [0-9]/,
+    /belongs at [0-9]/,
+  ]);
+  await expect(card(page, "o1").locator(".fm-order-none")).toHaveText("No answer");
+  await expect(card(page, "g1").locator(".fm-match-mark strong")).toHaveText(["No answer", "No answer", "No answer"]);
+  await expect(card(page, "g1")).not.toContainText("Wrong");
+});
+
+test("a cleared code box offers Reset to starter, which puts the starter back and leaves the question unanswered", async ({
+  page,
+}) => {
+  await page.goto(types.url);
+  await page.getByRole("button", { name: "Start" }).click();
+  const q = card(page, "k1");
+  const code = q.locator("textarea");
+  const reset = q.getByRole("button", { name: "Reset to starter" });
+  await expect(reset).toHaveCount(0);
+  await code.fill("fn x() {}");
+  await expect(reset).toHaveCount(0);
+  await code.fill("");
+  await expect(reset).toBeVisible();
+  await reset.click();
+  await expect(code).toHaveValue(/todo![(][)]/);
+  await expect(reset).toHaveCount(0);
+  await expect.poll(() => code.evaluate((el) => el === document.activeElement)).toBe(true);
+  await page.getByRole("button", { name: "Submit" }).click();
+  await expect(q.locator(".fm-result")).toHaveAttribute("data-status", "unanswered");
+  await expect(q.getByRole("button", { name: "Reset to starter" })).toHaveCount(0);
 });
 
 test("a vi quiz's export grades the same with quiz grade", async ({ page }) => {

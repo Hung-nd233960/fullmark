@@ -104,6 +104,7 @@ export const vi = {
     moveDown: (item: string) => `Chuyển xuống: ${item}`,
     movedTo: (n: number, of: number) => `Đã chuyển đến vị trí ${n} trên ${of}`,
     belongsAt: (n: number) => `đúng ra ở vị trí ${n}`,
+    resetToStarter: "Khôi phục mã khởi đầu",
     words: (n: number) => `${n} từ`,
     wordsMin: (n: number, min: number) => `${n} / tối thiểu ${min} từ`,
     wordsMax: (n: number, max: number) => `${n} / tối đa ${max} từ`,
