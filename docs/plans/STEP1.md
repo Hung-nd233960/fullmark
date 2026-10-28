@@ -46,18 +46,11 @@ The owner's working rules: state what, why and what done means before a big job 
 
 ### Design work in parallel (themes and pages)
 
-The mockups are a Design canvas: <https://claude.ai/artifact/HPX2k7wM7ENHVQLc3zzjL5> (tokens and fonts, the quiz screen in all five themes, the start screen). The owner reviews by commenting there. The local copy sat in a session scratchpad, so read the artifact back before changing it. Decided so far: OLED uses near-black cards on a pure black page, with softened colours (written into TECHNICAL_DESIGN.md section 8). The rest (darker light-theme status colours, flag colours, the explanation box, the start screen with "the whole quiz" pinned above a 5-row scrolling list of parts, single choice) is agreed on the canvas but not yet written into section 8.
+The mockups are a Design canvas: <https://claude.ai/artifact/HPX2k7wM7ENHVQLc3zzjL5> (tokens and fonts, the quiz screen in all five themes, the start screen). The owner reviews by commenting there. The local copy sat in a session scratchpad, so read the artifact back before changing it. Decided so far: OLED uses near-black cards on a pure black page, with softened colours (written into TECHNICAL_DESIGN.md section 8). Also written into section 8 on 2026-10-28: the start screen and part picker (every page offers one part on its own; "launch page" meant this start screen), tints derived with `color-mix`, explanation text at 600, colour only for status (neutral tiles with muted icons). Still agreed on the canvas only: darker light-theme status colours, flag colours, the explanation box, and the top-bar label **Materials** (full name on hover).
 
-Open questions for the owner:
+**Focus mode** was decided on 2026-10-28 and is written into TECHNICAL_DESIGN.md section 8 (rows "Collapsible panel" and "Focus mode") and the `--focus` rows of COMMANDS.md. The canvas has it: the interactive quiz board has Hide/Show panel and Focus mode, plus the boards "Focus mode" (dark, fullscreen) and "Start screen: Focus mode ticked".
 
-1. Can every page take one part on its own, or only one served with `serve --section`? Recommended: every page.
-2. Did "launch page" mean the quiz start screen (as designed), or something else?
-3. Light tints behind highlights and explanations: derive them from the main colour (`color-mix`), or list them as tokens in each theme? Recommended: derive them.
-4. Explanation text: full bold, or semibold (600) as now?
-
-**Focus mode** was decided on 2026-10-28 and is written into TECHNICAL_DESIGN.md section 8 (rows "Collapsible panel" and "Focus mode") and the `--focus` rows of COMMANDS.md. The canvas has it: the interactive quiz board now has Hide/Show panel and Focus mode, plus two new boards, "Focus mode" (dark, fullscreen) and "Start screen: Focus mode ticked". Also agreed on the canvas, not yet in section 8: the top-bar button is labelled **Materials** (full name on hover); the start screen's fact tiles and part rows stay neutral, told apart by muted icons, since every colour already means a status.
-
-Next design work: the **Review page**.
+Next design work: the **Review page**, meaning the results screen after Submit (score, right and wrong answers, explanations, review wrong only, Retry missed), which is also the page `replay` opens, with its banner. Not `quiz review`.
 
 ### Loose ends outside this plan
 

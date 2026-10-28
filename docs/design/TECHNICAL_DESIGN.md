@@ -562,7 +562,7 @@ Formats need one reserved key: the `results-v2` schema allows an optional `bundl
 
 | Feature | UI |
 |---|---|
-| `--section` | The start screen's section list becomes selectable: the whole quiz or one section |
+| Start screen and part picker | Every page opens on the start screen (also called the launch page). It lists **the whole quiz**, pinned above and marked Recommended, then the parts in a list that shows 5 rows and scrolls. Single choice: the whole quiz or one part, on every page, not only served ones; one part records `plan.source: "section"`. `serve --section S` serves only that part and skips the choice |
 | Replay | A banner: "Attempt of 20 Oct 2026, version `a3f9`", with agent grades shown or marked pending. The page opens in the submitted state |
 | `--missed` | A banner: "12 missed questions, 3 changed since", with the changed questions marked |
 | Collapsible panel | **Hide panel** at the top of the panel, or the `P` key, collapses it. A bar under the top bar then shows a row of labelled cells, each an uppercase label, one value and one line of detail: **Time** (the current section's time left when sections are timed, with the quiz's as the detail; else the quiz's time left, or the time elapsed when untimed), **Progress** (percentage answered with its bar; detail "19 of 32 answered · 2 flagged"), **Now on** (the current question; detail its place in its section), and **Show panel** at the right end. The timer is never hidden, only moved. The choice is kept in the browser's storage like the look, and allowed even under `look: locked`, since it changes layout, not colours. On narrow screens the panel is a drawer and starts collapsed |
@@ -597,6 +597,10 @@ One key, `theme:`, with six values.
 | `paper` | warm off-white background (about `#f6f1e7`), dark warm-grey ink, low-saturation accent | long reading, a printed-paper feel |
 
 Every value other than `auto` is locked, with no toggle. An unknown theme is a fixed-rule error in `check` (`theme.unknown`).
+
+- **Tints are derived, not listed.** The light washes behind a correct or wrong choice, an explanation and the info boxes come from the main colour with `color-mix` against the card colour, so a theme lists only its main colours and contrast is checked on fewer tokens.
+- **Explanation text is semibold (600)**, not bold: bold across a whole paragraph tires the eye.
+- **Colour always means a status.** Neutral things (the start screen's fact tiles, the parts list) stay neutral and are told apart by muted icons, never by hue.
 
 #### Fonts (v1)
 
