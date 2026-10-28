@@ -59,7 +59,7 @@ Unknown keys are errors.
 | `generated_by` | the exact model id that wrote this version, one line | none | C |
 | `materials` | a list of Markdown files, relative paths inside the quiz folder: sheets (formula tables, identities, constants) the learner can open at any time, also printed after the paper | none | C |
 
-**Materials.** A sheet is ordinary Markdown, with maths, tables and images, and holds no questions; its first heading is its name in the page. It is rendered at build, in the order listed, and the quiz hash covers it like an asset, so editing a sheet makes a new version. Sheets follow the asset rules (inside the quiz folder, no URLs) and the Markdown rules of [section 8](#8-markdown-inside-a-quiz). A sheet can give away an answer; the author decides what it holds. How the page and the paper show them: TECHNICAL_DESIGN.md, section 8.
+**Materials.** A sheet is ordinary Markdown, with maths, tables and images, and holds no questions. It starts with one `#` heading, its name in the page (`materials.heading`); `##` and `###` headings may follow, as in any Markdown file. Keep sheets in a subfolder (`materials/formulas.md`), as images sit in `assets/`, so a glob such as `signals/*.md` never takes a sheet for a quiz. The quiz's `materials:` list is the only thing that makes a file a sheet: a sheet has no front matter and no marker, and `check` and `build` reach it only through the quiz that lists it, reporting its problems at the sheet's own path and line. It is rendered at build, in the order listed, and the quiz hash covers it like an asset, so editing a sheet makes a new version. Sheets follow the asset rules (inside the quiz folder, no URLs) and the Markdown rules of [section 8](#8-markdown-inside-a-quiz), except that `##` and `###` headings are allowed. A sheet can give away an answer; the author decides what it holds. How the page and the paper show them: TECHNICAL_DESIGN.md, section 8.
 
 ## 3. Sections
 
@@ -239,7 +239,8 @@ The derivative of $\sin x$ is [[cos x|cos(x)]] and half of one is [[=0.5±0.01]]
 ```
 
 - `[[answer|variant]]` is a text blank; `[[=0.5±0.01]]` a numeric one. `+-` is the same as `±` (`[[=0.5+-0.01]]`), for keyboards without it.
-- Blanks may be in the heading or the body, and inside fenced code; never inside maths.
+- Blanks may be in the heading or the body (paragraphs, lists, quotes, table cells), and inside fenced code; never inside maths, link text or an image's alt text (`blanks.syntax`). In a table cell, the `|` between variants is written `\|` (`[[cos x\|cos(x)]]`), as Markdown asks for any `|` in a cell.
+- `\[[` is a literal `[[`, not a blank.
 - Points are split equally among blanks. No `answer` block.
 - The answers are content; the number of blanks is structure.
 
@@ -404,7 +405,7 @@ Every rule below is a **fixed rule**: an error that no profile can change or ign
 
 | Rule | When |
 |---|---|
-| `syntax.front-matter` | no front matter, front matter whose YAML does not parse, or no `title` |
+| `syntax.front-matter` | no front matter, front matter whose YAML does not parse, or no `title`. With no front matter at all, the message adds that a materials sheet is checked through the quiz that lists it |
 | `syntax.yaml` | an `answer` block whose YAML does not parse |
 | `syntax.preamble` | text between the front matter and the first heading, or a question before the first `#` in a quiz that has sections |
 | `quiz.empty` | a quiz with no questions |
@@ -414,12 +415,12 @@ Every rule below is a **fixed rule**: an error that no profile can change or ign
 | `syntax.attributes` | a `{…}` block that does not parse, or a name given twice |
 | `syntax.heading-level` | a `###` or deeper heading |
 | `syntax.container` | an unknown, unclosed, nested or stray `:::` container, one in the wrong place (`passage` outside a section intro), or a second passage in a section |
-| `syntax.reserved` | a reserved name ([section 10](#10-reserved)) |
 | `markdown.raw-html` | any HTML tag or comment |
 | `asset.missing`, `asset.outside`, `asset.type`, `asset.remote` | a missing file, a path outside the quiz folder, an unsupported format, a URL. Checked in that order of precedence: remote, outside, missing, type |
 | `asset.alt` | an image without alt text |
 | `materials.missing` | a `materials` file that does not exist (a path outside the folder or a URL is `asset.outside` or `asset.remote`) |
-| `materials.question` | question syntax in a sheet: a `##` heading, a `{type=…}` attribute, a choice list with `[x]` or `[ ]`, or an `answer` block (it would never be scored) |
+| `materials.heading` | a sheet that does not start with a `#` heading, or has a second `#` heading |
+| `materials.question` | question syntax in a sheet: a `{type=…}` attribute, a choice list with `[x]` or `[ ]`, an `answer` block, or a blank `[[…]]` (it would never be scored) |
 | `theme.unknown`, `theme.unknown-font` | a theme or font fullmark does not have |
 | `section.id-duplicate` | two sections with the same id |
 | `section.pick` | `pick` below 1 or above the section's question count |
@@ -439,7 +440,7 @@ Every rule below is a **fixed rule**: an error that no profile can change or ign
 | `numeric.value` | no `value` or `values`, both, a number that does not parse, both tolerances, a negative tolerance |
 | `short.key` | a graded `short` with neither `accept` nor `patterns` |
 | `short.regex` | a pattern that is not valid in JavaScript's `u` mode, in `short` or in a field |
-| `blanks.none`, `blanks.outside`, `blanks.in-math`, `blanks.syntax` | a `blanks` question without blanks, `[[…]]` in another type, inside maths, or malformed |
+| `blanks.none`, `blanks.outside`, `blanks.in-math`, `blanks.syntax` | a `blanks` question without blanks, `[[…]]` in another type, inside maths, or malformed or inside link text or an image's alt text |
 | `fields.empty`, `fields.key`, `fields.points` | no fields, or a graded question with no graded field; a field with both numeric and text keys; points that are mixed or do not add up |
 | `ordering.items` | fewer than two items, or duplicates |
 | `matching.pairs` | fewer than two pairs, a bullet without `::`, an empty right-hand side (`a ::`), or a right-hand item used twice |
@@ -466,6 +467,8 @@ One quality rule belongs here because the syntax raises it: `question.points-ign
 A skeleton fails `check` by design, with one error per empty field, which is the author's to-do list. Once the questions are written, `quiz ids` gives them new ids, so no history from the source quiz is carried over.
 
 ## 10. Reserved
+
+No key is reserved: an unknown key is already `syntax.unknown-key`, so a later version can give a name meaning without changing what a v1 quiz says. (`reference`, once reserved, is now an unknown key like any other; `syntax.reserved` is retired.) Planned, with its v1 behaviour:
 
 | Name | For | v1 behaviour |
 |---|---|---|

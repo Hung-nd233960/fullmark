@@ -437,7 +437,7 @@ quiz template add FILE [--as NAME] [--skeleton] [--replace] [--json]
 quiz template rm NAME [--yes] [--json]
 ```
 
-**User templates.** A `templates/` folder next to `config.toml` holds your own. Each is a folder with one quiz `.md` (the only `.md` in it) and its `assets/`, named by the folder, so `templates/signals-week/` is used as `quiz new signals-week`. `quiz template add` writes these folders; you can also make one by hand. No other location is searched, not even a project folder. Built-in templates: `calculus`, `rust`, `ielts`, `medical`, `exam`, `survey`, `blank`. **Built-in names are reserved**: a user template cannot take one, so a name means one template. Core commands need no library, so templates do not either.
+**User templates.** A `templates/` folder next to `config.toml` holds your own. Each is a folder with one quiz `.md` (the only `.md` at its top level) and its `assets/` and `materials/`, named by the folder, so `templates/signals-week/` is used as `quiz new signals-week`. `quiz template add` writes these folders; you can also make one by hand. No other location is searched, not even a project folder. Built-in templates: `calculus`, `rust`, `ielts`, `medical`, `exam`, `survey`, `blank`. **Built-in names are reserved**: a user template cannot take one, so a name means one template. Core commands need no library, so templates do not either.
 
 **`template list`.** Every template with its source: `built-in`, or `user` and its path. A user folder whose name is, or later becomes, a built-in one (a release added that template after you made yours) is listed as `ignored`, with a note to rename the folder; `quiz new` uses the built-in one and says that it ignored a user template. `--json`: `[{"name", "source", "path", "ignored"}]`.
 
@@ -477,7 +477,7 @@ In a terminal, the Markdown is rendered: headings, lists, tables, wrapping to th
 
 ## Library commands
 
-All under `quiz library`. A library is one folder under git that holds each quiz's versions (sources and assets, never HTML), results and reports. fullmark commits after every command that changes it and **never pushes**.
+All under `quiz library`. A library is one folder under git that holds each quiz's versions (sources, `materials` sheets and assets, never HTML), results and reports. fullmark commits after every command that changes it and **never pushes**.
 
 ### quiz library init
 

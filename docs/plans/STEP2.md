@@ -15,7 +15,8 @@ New in step 2: **a slice is sized to fit one Sonnet session** (about the work of
 | Slice | State | Commits |
 |---|---|---|
 | 2a foundation | done, reviewed, gaps decided | `ef9bac7`..`963a180` |
-| 2b the simple types | done by Sonnet, **review not started** | `868cf82`, `97a6f6e`, `47aca74` |
+| 2b the simple types | done, reviewed, gaps decided | `868cf82`, `97a6f6e`, `47aca74` |
+| 2c2 materials in the core | brief written, runs **before 2c** | |
 
 Step 1 is done (see [STEP1.md](STEP1.md)): `check`, `rules`, `grade` and `ids`, 1309 tests.
 
@@ -60,15 +61,28 @@ Step 1 is done (see [STEP1.md](STEP1.md)): `check`, `rules`, `grade` and `ids`, 
 4. **The question map while answering** is a 35/65 master and detail: parts listed with completion rings (a filled disc with a cut-out tick when done) and a flag dot in the corner; the chosen part's counts and grid on the right.
 5. **Focus mode** is fullscreen with the sidebar closed, the clock in the status line. "Hide panel", `P` and the collapsed bar are gone.
 
-Open, to settle in the materials slice's brief: with `reference` no longer reserved, `syntax.reserved` has nothing left to raise (`::: passage` layout renders in place). Recommendation: retire the rule, so `reference:` is `syntax.unknown-key` like any other unknown key.
+**2b's review (2026-10-28).** Playwright passes (5 tests, axe clean). Vitest has 2 failures, both from the design commit `0b527cc`, not from 2b: the doc-against-registry tests find `materials.missing` and `materials.question` in section 8a with no code yet. 2c2 turns them green, so it runs before 2c. Found by hand:
+
+- **A.** A blank in a table cell crashes `build` ("a blanks prompt has 7 blanks in the page but the question has 6", exit 2): the parser does not scan table rows, the page does.
+- **B.** A blank in an image's alt text writes an `<input>` inside `alt="…"`; in link text it puts an input inside `<a>`.
+- **C.** `\[[x]]` is still a blank, and the page shows a stray `\`.
+- **D.** The `numeric` box has `inputmode="decimal"`: the iPhone keypad then has no `−`, `/` or `e`.
+- **E.** On a `blanks` question the hint shows above the prompt.
+- **F.** An empty blank says "Incorrect" in the per-blank list.
+
+**Decided by the owner on 2026-10-28** (QUIZ_SYNTAX.md "blanks", section 2 "Materials", 8a, 10; TECHNICAL_DESIGN.md section 5's rule table; COMMANDS.md user templates and the library):
+
+1. A: blanks are found in table cells too, by parser and page alike; a `|` between variants in a cell is `\|`. B: a blank in link text or alt text is `blanks.syntax`. C: `\[[` is a literal `[[`. D: no `inputmode`. E: the prompt comes before the hint. F: an empty blank says "No answer".
+2. Sonnet's gaps: `quizHash` becomes required in `PlanRequest` (no seedless mode); a bad seed's exit 2 is wired in 2k with `--seed`; a bank draw without a seed uses the short version, as section 4 "Seeds" says; `numeric` on fields, `data-numeric`, `lang` on the page, the token cut, the badges on `single`, `data-earned`/`data-points` and the new strings stay; `answerLabel` is deleted; `tolerance: 1%` stays an error; the `vi` export goes through `quiz grade` in 2c's Playwright; a blank inside Shiki-highlighted code is tested in 2c.
+3. Materials: a sheet starts with one `#` heading, its name (`materials.heading`, error), and may use `##` and `###`; `materials.question` no longer counts `##` and now counts a blank `[[…]]`; maths and images are allowed. The quiz's `materials:` list is the only thing that makes a file a sheet (no marker, no flag): sheets are checked through their quiz, at their own path and line, and kept in a subfolder (`materials/`) by convention; `syntax.front-matter` on a file with no front matter adds that a sheet is checked through its quiz. `syntax.reserved` is retired; `reference:` is `syntax.unknown-key`. The name `materials.empty` stays (as `quiz.empty`).
 
 Also raised on 2026-10-28 and kept outside v1: [proposals/rapid-response.md](../design/proposals/rapid-response.md) (one question at a time, keyboard answering).
 
 ### Next steps, in order
 
-1. **Review 2b** in a fresh session: read the three commits' diffs and the goldens, judge the 12 gaps above, bring each to the owner with a recommendation, and write the decisions into the design docs.
-2. Write 2c's brief from the review's decisions, then delegate it.
-3. Then 2c2 (materials in the parser and `check`), whose brief settles `syntax.reserved`.
+1. Done: 2b reviewed and decided (above).
+2. **Delegate 2c2** (brief below): 2b's fixes, then materials in the core.
+3. Review 2c2, then write 2c's brief (`ordering`, `matching`, `essay`, `code`, KaTeX, Shiki) with 2c2's decisions and the two 2c items from point 2 above.
 
 ## Goal
 
@@ -94,8 +108,8 @@ Step 1's rules hold ([STEP1.md](STEP1.md), "Rules for every slice"): the design 
 |---|---|
 | **2a** | Foundation: the page build, the Attempt reducer, `single` only, Submit and Export, `build FILE`, determinism, the CSP, the runtime budget, the two-quiz seam, Playwright |
 | **2b** | `multi`, `truefalse`, `short`, `numeric`, `blanks`, `fields`, `scale` |
-| **2c** | `ordering`, `matching`, `essay`, `code`; maths (KaTeX) and code highlighting (Shiki) in question text |
-| **2c2** | Materials in the core: the `materials` key, reading and hashing the sheets, `materials.missing`, `materials.question`, `materials.empty`, the IR field the page and print read; `reference` no longer reserved |
+| **2c2** | 2b's fixes; materials in the core: the `materials` key, reading and hashing the sheets, `materials.missing`, `materials.heading`, `materials.question`, `materials.empty`, the field the page and print read; `syntax.reserved` retired. Runs before 2c |
+| **2c** | `ordering`, `matching`, `essay`, `code`; maths (KaTeX) and code highlighting (Shiki) in question text and in sheets |
 | **2d** | Start screen and part picker, sections and `pick`, shuffling with a seed drawn at Start, the timer, autosave and resume, storage blocked; Playwright adds Firefox here, for its isolated `file://` storage (foundation 2) and one full answer-submit-export run |
 | **2e** | Results card (asterisks, goal line), review filter, Retry missed, `feedback: instant` |
 | **2f** | The top bar and its status line, the docked sidebar (one button, `Q`/`M`/`Esc`, stacked while answering, tabs after Submit, full screen on a phone), the question map with rings and flags, the materials in the sidebar, Focus mode |
@@ -180,3 +194,42 @@ One question type from source to graded export, on the architecture every later 
 
 - Every task above has its tests; `npm run check` passes, Playwright and axe included; `examples/exam` builds.
 - Report: the runtime's gzipped size, test counts, every gap, and what the review display looks like for each type (one line each; screenshots are not needed until 2d).
+
+## Slice 2c2: 2b's fixes, then materials in the core
+
+Two parts, in this order. First 2b's review fixes. Then materials in the core: the parser, `check` and the quiz hash know the sheets; the page and the paper only get a field to read (the sidebar is 2f, the paper 2k). No rendering work: KaTeX in sheets comes with 2c. At the end `npm run check` is green again (it is red now: section 8a lists `materials.missing` and `materials.question`, and the registry does not have them).
+
+### Read first
+
+- This brief, and "2b's review" and its decisions in the Handoff above.
+- QUIZ_SYNTAX.md: section 2, the `materials` row and the "Materials" paragraph after the table; section 6 "blanks"; section 8a, the rows `syntax.front-matter`, `materials.*`, `blanks.*`; section 10.
+- TECHNICAL_DESIGN.md: section 5's rule table, the row `materials.empty`; the foundation "1. Hashes survive machines" (the quiz hash), and the bullet "Assets and `materials` sheets stay inside the quiz folder".
+- Code: `src/core/parse/blanks.ts`, `src/core/parse/question.ts` (the blank scan, from "-- blanks"), `src/core/parse/outline.ts` (the chunks it scans), `src/core/parse/front-matter.ts`, `src/core/ir.ts` (`FrontMatterSchema`, `QuizSchema`), `src/core/hash.ts`, `src/cli/load.ts`, `src/core/rules/fixed.ts`, `src/core/plan/index.ts`, `src/build/render.ts`, `src/build/page.ts`, `src/page/questions/` (Card, Blanks, Numeric), `src/core/i18n/en.ts` and `vi.ts`; the tests next to each, `test/fixtures/invalid/` and its `expected.json`, `test/data/rule-ids.json`.
+
+### Decided for this slice
+
+- **Blanks in tables.** The parser scans table rows (every cell) as markdown chunks, with `\|` read as `|` before `parseBlankBody`, so `[[a\|b]]` has the variants `a` and `b`; the page's cut (on markdown-it's inline tokens) must give the same blanks in the same order. A test checks that parser and page agree on a prompt with a blank in each region: heading, paragraph, list, nested list, quote, table cell, fenced code, indented code.
+- **Blanks in link text and alt text** are `blanks.syntax` ("a blank cannot be inside link text or an image's alt text"), at the blank's line. Find them in the parser (the `[` of a link or the `![` of an image around the blank, beside the spans `findSpans` already finds); never a second blanks regex.
+- **`\[[`** is text: `scanBlanks` skips a `[[` whose first `[` is escaped by an odd number of backslashes, and the page shows `[[` (markdown-it drops the backslash once nothing cuts it).
+- **2b's page fixes:** drop `inputMode` from `Numeric`; the card shows the prompt before the hint for every type (render the blanks prompt in the card's prompt slot and keep the event delegation there, rather than moving the hint); an empty blank's line in the results list says `t.noAnswer` in place of the status; delete `answerLabel` from both catalogs.
+- **The plan:** `PlanRequest.quizHash` is required, and the "no hash, no shuffle" branch goes; `source: "bank"` takes an optional `seed`, defaulting to the short version like the others. Update the tests that called `planFor` without a hash.
+- **`materials:`** in `FrontMatterSchema`: a list of strings, default `[]`; a value that is not a list of strings, or a path given twice, is `syntax.value`. `reference` goes from the front-matter parser, and `syntax.reserved` from the registry, `rule-ids.json`, the fixtures (`reserved-reference.md` becomes a `syntax.unknown-key` fixture) and the goldens; report the golden count.
+- **The core never reads files.** Add `parseSheet(text, path)` in `src/core/parse/` (no `node:*`). It returns the sheet's `name` (the text of its one `#` heading, inline Markdown kept as written), its `source` (the text, unchanged), its asset references (as the quiz parser gives them, same rules), and its issues, each with `file` = the sheet's path and the line in the sheet. It raises `materials.heading` (the first non-blank line is not a `#` heading, or a second `#` heading follows), `materials.question` (a `{type=…}` attribute, a `- [x]` or `- [ ]` choice line, an `answer` fence, or a `[[…]]` blank outside code), `materials.empty` (nothing but blank lines after the heading; a warning, through the registry like the other quality rules), and every Markdown rule section 8 applies to a quiz (raw HTML, `asset.alt`, containers) except the heading level: `##` and `###` are allowed in a sheet.
+- **Loading** (`src/cli/load.ts`): for each `materials` path, in order, the same path checks as an asset (`asset.remote`, then `asset.outside`, then `materials.missing` in place of `asset.missing`; a sheet that is not `.md` is `asset.type`), at the quiz's `materials:` line. Then read it, `parseSheet` it, and resolve its assets: a sheet's `![](x.png)` is relative to the sheet's own folder, as Markdown viewers read it, and must still be inside the quiz folder. `LoadedQuiz` gains `sheets: { path: string; name: string; source: string }[]` (empty when there are none, or when any sheet has an error). The quiz hash covers each sheet and each of its assets as foundation 1 says (path and SHA-256 of the bytes, all referenced files sorted by path); the hash is `null` when a sheet could not be read, as for an asset.
+- **The field the page and print read** is `BuildQuiz.sheets`, passed from `LoadedQuiz`; `pageQuizOf` does nothing with it yet. It is not in the key blob.
+- **A file with no front matter** (`syntax.front-matter`) gets the `fix` "a materials sheet has no front matter: check the quiz that lists it".
+
+### Tasks
+
+1. **2b's parser fixes** (one commit): blanks in table cells, `\[[`, the link and alt-text error; the parser-and-page agreement test; fixtures in `test/fixtures/invalid/` for the link and alt cases.
+2. **2b's page fixes and the plan** (one commit): the page items and the plan changes above; update goldens (report the count).
+3. **`materials:` and `syntax.reserved`** (one commit): the front-matter key, the rule's removal everywhere.
+4. **`parseSheet`, loading and hashing** (one or two commits): the rules above in the registry (`materials.heading` and `materials.question` fixed errors, `materials.empty` a quality warning, on in `default`), so the doc-against-registry tests pass; a valid fixture quiz with two sheets in `materials/`, one with an image and `$x^2$`; invalid fixtures for each `materials.*` rule and for a sheet outside the folder, a URL and a `.txt`; a hash test (editing a sheet, or an image a sheet uses, changes the quiz hash).
+5. **`check`** reports a sheet's problems at the sheet's path (a golden with `--json` and one without). `quiz ids` never writes to sheets (a test: `ids` on a quiz with sheets leaves the sheet files unchanged).
+6. **`examples/exam`** gets a `materials/formulas.md` sheet only if it fits the example; say so in the report.
+
+### Done when
+
+- `npm run check` passes, Playwright included.
+- Every rule touched has a fixture; the parser and the page find the same blanks in every region.
+- Report: commits, test counts, golden count with one line each, every gap, and what was decided differently and why.

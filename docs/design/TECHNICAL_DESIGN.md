@@ -172,7 +172,7 @@ Quality rules carried over from 0.x, now with ids and options. Their defaults st
 | `brief.invalid` | warning | (a `brief.yaml` that does not parse, or has an unknown or missing key; the quiz is then not held against it) |
 | `brief.generated-by` | warning | (a quiz written from a brief by an agent must set `generated_by` in its front matter, naming the agent and model; a hand-written quiz leaves it out) |
 | `build.size` | warning | `warn-mb` (20), `max-mb` (100, always an error above it). Registered from step 1 so profiles can set it; checked from step 2 |
-| `materials.empty` | warning | (a `materials` sheet with no content; the fixed rules `materials.missing` and `materials.question` are in QUIZ_SYNTAX.md) |
+| `materials.empty` | warning | (a `materials` sheet with nothing after its heading; the fixed rules `materials.missing`, `materials.heading` and `materials.question` are in QUIZ_SYNTAX.md) |
 
 New quality rules, off in `default` so behaviour does not change, and used by the stricter built-in profiles:
 
