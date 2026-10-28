@@ -10,7 +10,12 @@ export type Blank = BlankBody & { line: number };
 export type BlankProblem = { rule: "blanks.in-math" | "blanks.syntax"; line: number; message: string };
 
 /** The blanks of a piece of text, and what is wrong with the `[[` it holds. */
-export type BlankScan = { blanks: Blank[]; problems: BlankProblem[] };
+export type BlankScan = {
+  blanks: Blank[];
+  /** for each blank, where its `[[` starts and its `]]` ends in the scanned text (end exclusive) */
+  at: { start: number; end: number }[];
+  problems: BlankProblem[];
+};
 
 /** Parses what is between `[[` and `]]`: `a|b` for text, `=0.5±0.01` (or `+-`) for a number. */
 export function parseBlankBody(body: string): BlankBody | string {
@@ -44,7 +49,7 @@ export function scanBlanks(
   mode: "markdown" | "code" | "math" = "markdown",
 ): BlankScan {
   const spans = mode === "markdown" ? findSpans(text) : [];
-  const out: BlankScan = { blanks: [], problems: [] };
+  const out: BlankScan = { blanks: [], at: [], problems: [] };
   let i = 0;
   while (i < text.length) {
     const open = text.indexOf("[[", i);
@@ -67,7 +72,10 @@ export function scanBlanks(
     }
     const parsed = parseBlankBody(text.slice(open + 2, close));
     if (typeof parsed === "string") out.problems.push({ rule: "blanks.syntax", line, message: parsed });
-    else out.blanks.push({ ...parsed, line });
+    else {
+      out.blanks.push({ ...parsed, line });
+      out.at.push({ start: open, end: close + 2 });
+    }
     i = close + 2;
   }
   return out;

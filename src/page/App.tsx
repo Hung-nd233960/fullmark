@@ -1,120 +1,6 @@
-import { readAnswer } from "../core/attempt/answers";
-import type { GradedQuestion } from "../core/grade";
-import { en, type Messages, vi } from "../core/i18n";
-import type { PageQuestion, PageQuiz } from "./data";
-import type { Action } from "./reducer";
+import { type Api, QuestionCard } from "./questions/Card";
+import { Html, messagesFor } from "./questions/shared";
 import { download, exportFor, type QuizState, type Store } from "./store";
-
-type PageMessages = Messages["page"];
-
-/** A quiz's own handle on the store: its components never see another quiz's attempt. */
-type Api = { dispatch(action: Action): void; start(): void; submit(): void };
-
-const messagesFor = (quiz: PageQuiz): PageMessages => (quiz.uiLang === "vi" ? vi.page : en.page);
-
-/** Element ids carry the quiz id (seam 3), so two quizzes in one document never collide: `signals/q12`. */
-const questionId = (quizId: string, id: string): string => `${quizId}/${id}`;
-
-function Html({ html, tag = "div", class: className }: { html: string; tag?: "div" | "span"; class?: string }) {
-  const Tag = tag;
-  return <Tag class={className} dangerouslySetInnerHTML={{ __html: html }} />;
-}
-
-function ResultLine({ t, result, quizId }: { t: PageMessages; result: GradedQuestion; quizId: string }) {
-  const points = result.points > 0 ? ` · ${t.scoreLine(String(result.earned ?? 0), String(result.points))}` : "";
-  return (
-    <p class="fm-result" data-status={result.status} data-qid={result.id} data-quiz={quizId}>
-      <strong>{t.status[result.status]}</strong>
-      {points}
-    </p>
-  );
-}
-
-function SingleQuestion({
-  state,
-  api,
-  question,
-  number,
-}: {
-  state: QuizState;
-  api: Api;
-  question: PageQuestion;
-  number: number;
-}) {
-  const t = messagesFor(state.page);
-  const quizId = state.page.id;
-  const attempt = state.attempt.value;
-  const submitted = attempt.phase === "submitted";
-  const answer = readAnswer("single", attempt.state.answers[question.id]);
-  const picked = answer?.choice ?? null;
-  const key = state.key.value;
-  const keyed = key?.quiz.sections.flatMap((s) => s.questions).find((q) => q.id === question.id);
-  const result = state.graded.value?.questions.find((q) => q.id === question.id);
-  const name = questionId(quizId, question.id);
-
-  const set = (choice: number, text?: string) =>
-    api.dispatch({
-      type: "answer",
-      question: question.id,
-      answer: { choice, ...(text !== undefined ? { inputs: { [String(choice)]: text } } : {}) },
-    });
-
-  return (
-    <article class="fm-question" id={name} data-type="single" data-qid={question.id}>
-      <header class="fm-question-head">
-        <span class="fm-question-number">{t.questionLabel(number)}</span>
-        {question.graded ? <span class="fm-question-points">{t.pointsLabel(String(question.points))}</span> : null}
-      </header>
-      <Html html={question.promptHtml} class="fm-prompt" />
-      {question.hintHtml !== null ? (
-        <details class="fm-hint">
-          <summary>{t.hint}</summary>
-          <Html html={question.hintHtml} />
-        </details>
-      ) : null}
-      <ul class="fm-choices">
-        {question.choices.map((choice, i) => {
-          const isRight = submitted && keyed?.type === "single" && keyed.choices[i]?.correct === true;
-          const isPicked = picked === i;
-          return (
-            <li key={i} class="fm-choice" data-picked={isPicked} data-correct={isRight}>
-              <label for={`${name}/c${i}`}>
-                <input
-                  type="radio"
-                  id={`${name}/c${i}`}
-                  name={name}
-                  value={i}
-                  checked={isPicked}
-                  disabled={submitted}
-                  onChange={() => set(i)}
-                />
-                <Html html={choice.html} tag="span" class="fm-choice-text" />
-              </label>
-              {choice.input !== null && isPicked ? (
-                <input
-                  type="text"
-                  class="fm-choice-input"
-                  aria-label={choice.input.prompt ?? t.inputPlaceholder}
-                  placeholder={choice.input.prompt ?? t.inputPlaceholder}
-                  value={answer?.inputs?.[String(i)] ?? ""}
-                  disabled={submitted}
-                  onInput={(e) => set(i, (e.currentTarget as HTMLInputElement).value)}
-                />
-              ) : null}
-            </li>
-          );
-        })}
-      </ul>
-      {submitted && result ? <ResultLine t={t} result={result} quizId={quizId} /> : null}
-      {submitted && key?.explanations[question.id] ? (
-        <div class="fm-explanation">
-          <strong>{t.explanation}</strong>
-          <Html html={key.explanations[question.id] ?? ""} />
-        </div>
-      ) : null}
-    </article>
-  );
-}
 
 function QuizView({ state, api }: { state: QuizState; api: Api }) {
   const { page } = state;
@@ -150,7 +36,7 @@ function QuizView({ state, api }: { state: QuizState; api: Api }) {
             {section.introHtml !== "" ? <Html html={section.introHtml} class="fm-intro" /> : null}
             {section.questions.map((question) => {
               number += 1;
-              return <SingleQuestion key={question.id} state={state} api={api} question={question} number={number} />;
+              return <QuestionCard key={question.id} state={state} api={api} question={question} number={number} />;
             })}
           </section>
         ))}

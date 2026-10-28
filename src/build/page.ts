@@ -3,7 +3,8 @@ import { utf8ToBytes } from "@noble/hashes/utils.js";
 import { h } from "preact";
 import { renderToString } from "preact-render-to-string";
 import { canonicalJson } from "../core/canonical";
-import type { Quiz, Section } from "../core/ir";
+import { en, type Messages, vi } from "../core/i18n";
+import type { Question, Quiz, Section } from "../core/ir";
 import { encodeKey, toBase64 } from "../core/keyblob";
 import { planFor } from "../core/plan";
 import { App } from "../page/App";
@@ -30,9 +31,20 @@ export class NotAvailableError extends Error {
   }
 }
 
+const SUPPORTED: ReadonlySet<string> = new Set([
+  "single",
+  "multi",
+  "truefalse",
+  "numeric",
+  "short",
+  "blanks",
+  "fields",
+  "scale",
+]);
+
 /** The first question of a type the page does not handle, or null. */
 export function unsupportedType(quiz: Quiz): string | null {
-  for (const s of quiz.sections) for (const q of s.questions) if (q.type !== "single") return q.type;
+  for (const s of quiz.sections) for (const q of s.questions) if (!SUPPORTED.has(q.type)) return q.type;
   return null;
 }
 
@@ -50,35 +62,86 @@ function keyOf(quiz: Quiz, explanations: Record<string, string>): KeyBlob {
     passages: [],
     questions: s.questions.map((q) => {
       const bare = { ...q, prompt: "", hint: null, explanation: null };
-      return "choices" in bare ? { ...bare, choices: bare.choices.map((c) => ({ ...c, text: "" })) } : bare;
+      if ("choices" in bare) return { ...bare, choices: bare.choices.map((c) => ({ ...c, text: "" })) };
+      if (bare.type === "fields") return { ...bare, fields: bare.fields.map((f) => ({ ...f, label: "" })) };
+      if (bare.type === "scale") return { ...bare, labels: bare.labels.map((l) => ({ ...l, text: "" })) };
+      return bare;
     }),
   }));
   return { quiz: { ...quiz, file: "", sections }, explanations };
+}
+
+type Md = ReturnType<typeof createRenderer>;
+
+/** One question as the page sees it: its prompt and what the learner sees to answer, never its key. */
+function pageQuestion(q: Question, md: Md, t: Messages["page"]): PageQuestion {
+  const base = {
+    id: q.id,
+    points: q.points,
+    graded: q.graded,
+    promptHtml: md.block(q.prompt),
+    hintHtml: q.hint ? md.block(q.hint.text) : null,
+  };
+  switch (q.type) {
+    case "single":
+    case "multi":
+      return {
+        ...base,
+        type: q.type,
+        choices: q.choices.map((c) => ({ html: unwrap(md.block(c.text)), input: c.input })),
+      };
+    case "truefalse":
+    case "short":
+      return { ...base, type: q.type };
+    case "numeric":
+      return { ...base, type: "numeric", unit: q.key.unit };
+    case "blanks":
+      return {
+        ...base,
+        type: "blanks",
+        promptHtml: md.blanks(
+          q.prompt,
+          q.blanks.map((b) => b.kind),
+          t.blankLabel,
+        ),
+        blankCount: q.blanks.length,
+      };
+    case "fields":
+      return {
+        ...base,
+        type: "fields",
+        fields: q.fields.map((f) => ({
+          labelHtml: unwrap(md.block(f.label)),
+          graded: f.key !== null,
+          numeric: f.key?.kind === "numeric",
+        })),
+      };
+    case "scale":
+      return {
+        ...base,
+        type: "scale",
+        min: q.min,
+        max: q.max,
+        labels: q.labels.map((l) => ({ value: l.value, html: unwrap(md.block(l.text)) })),
+      };
+    default:
+      throw new NotAvailableError(q.type);
+  }
 }
 
 export function pageQuizOf({ quiz, hash, assets }: BuildQuiz): PageQuiz {
   const bad = unsupportedType(quiz);
   if (bad !== null) throw new NotAvailableError(bad);
   const md = createRenderer(assets);
+  const t = quiz.frontMatter.uiLang === "vi" ? vi.page : en.page;
   const explanations: Record<string, string> = {};
   const sections: PageSection[] = quiz.sections.map((s) => ({
     id: s.id,
     title: s.title,
     introHtml: s.intro.trim() === "" ? "" : md.block(s.intro),
-    questions: s.questions.flatMap((q): PageQuestion[] => {
-      if (q.type !== "single") return [];
+    questions: s.questions.map((q) => {
       if (q.explanation) explanations[q.id] = md.block(q.explanation.text);
-      return [
-        {
-          id: q.id,
-          type: "single",
-          points: q.points,
-          graded: q.graded,
-          promptHtml: md.block(q.prompt),
-          hintHtml: q.hint ? md.block(q.hint.text) : null,
-          choices: q.choices.map((c) => ({ html: unwrap(md.block(c.text)), input: c.input })),
-        },
-      ];
+      return pageQuestion(q, md, t);
     }),
   }));
   return {
@@ -87,6 +150,7 @@ export function pageQuizOf({ quiz, hash, assets }: BuildQuiz): PageQuiz {
     title: quiz.frontMatter.title,
     description: quiz.frontMatter.description,
     uiLang: quiz.frontMatter.uiLang,
+    lang: quiz.frontMatter.lang,
     sections,
     plan: planFor(quiz, { source: "full", quizHash: hash }),
     key: encodeKey(keyOf(quiz, explanations), hash),

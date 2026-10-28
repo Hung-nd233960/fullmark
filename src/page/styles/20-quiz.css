@@ -93,6 +93,141 @@
     border-radius: 4px;
   }
 
+  .fm-badge {
+    margin-left: auto;
+    padding: 0 8px;
+    font-size: 0.8rem;
+    white-space: nowrap;
+    border: 1px solid currentcolor;
+    border-radius: 999px;
+  }
+
+  .fm-badge-picked {
+    color: var(--accent);
+  }
+
+  .fm-badge-right {
+    color: var(--good);
+  }
+
+  .fm-text,
+  .fm-blank {
+    padding: 6px 8px;
+    font: inherit;
+    color: inherit;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+  }
+
+  .fm-text {
+    width: 100%;
+    margin-top: 10px;
+  }
+
+  .fm-blank {
+    width: 9em;
+    max-width: 100%;
+  }
+
+  .fm-blank[data-result="correct"],
+  .fm-field[data-result="correct"] .fm-text {
+    border-color: var(--good);
+    background: var(--good-bg);
+  }
+
+  .fm-blank[data-result="wrong"],
+  .fm-field[data-result="wrong"] .fm-text {
+    border-color: var(--bad);
+    background: var(--bad-bg);
+  }
+
+  .fm-numeric {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .fm-unit {
+    color: var(--muted);
+  }
+
+  .fm-warn {
+    margin: 6px 0 0;
+    color: var(--warn);
+    font-size: 0.9rem;
+  }
+
+  .fm-shown {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: 2px 12px;
+    margin: 10px 0 0;
+  }
+
+  .fm-shown dt {
+    color: var(--muted);
+  }
+
+  .fm-shown dd {
+    margin: 0;
+  }
+
+  .fm-field {
+    margin-top: 12px;
+  }
+
+  .fm-field-label p {
+    margin: 0;
+  }
+
+  .fm-field-mark,
+  .fm-blank-results {
+    margin: 6px 0 0;
+    font-size: 0.95rem;
+  }
+
+  .fm-blank-results {
+    padding-left: 1.2em;
+  }
+
+  .fm-blank-results [data-result="correct"] strong {
+    color: var(--good);
+  }
+
+  .fm-blank-results [data-result="wrong"] strong {
+    color: var(--bad);
+  }
+
+  .fm-scale {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+  }
+
+  .fm-scale-step {
+    display: flex;
+    flex: 1 1 4.5rem;
+    flex-direction: column;
+    gap: 4px;
+    align-items: center;
+    padding: 8px 6px;
+    text-align: center;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    cursor: pointer;
+  }
+
+  .fm-scale-step[data-picked="true"] {
+    border-color: var(--accent);
+  }
+
+  .fm-scale-label {
+    color: var(--muted);
+    font-size: 0.85rem;
+  }
+
   .fm-hint {
     margin: 8px 0;
     color: var(--muted);
