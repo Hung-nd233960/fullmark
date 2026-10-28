@@ -88,7 +88,8 @@ Also raised on 2026-10-28 and kept outside v1: [proposals/rapid-response.md](../
    - **G.** Unanswered after Submit: an untouched `ordering` marks no item right or wrong, only "belongs at N"; a `matching` pair left at "—" says "No answer" with the right match (as an empty blank). Today both say "Incorrect" on every item.
    - **H.** `pageQuestion` falls back to source order when the plan has no `optionOrder` for an `ordering` or `matching` question, which would show the answer: make it a build error instead (it cannot happen today).
    - **Code reset.** Clearing a `code` box leaves it empty; while it is empty and the question has a `starter`, a "Reset to starter" button under the box puts the starter back (a new string in `en` and `vi`; a Playwright test: clear, reset, the answer is `null` again).
-5. **Next: write the 2c3 brief** (KaTeX and Shiki, with G, H and the code reset first), commit it, and delegate it.
+5. **Bad TeX** (owner, 2026-10-28): a maths span KaTeX cannot parse is a new fixed `check` error, `math.syntax`, so `build` never meets it. Written into QUIZ_SYNTAX.md section 8a by 2c3.
+6. **Next: delegate 2c3** (brief below) in a fresh session, then review it.
 
 ## Goal
 
@@ -278,3 +279,43 @@ The last four question types on 2b's architecture, each answered in the page, gr
 
 - `npm run check` passes, Playwright and axe included; every example in `examples/` builds.
 - Report: the runtime's gzipped size (budget 60 KB), test counts, golden count with one line each, every gap, what was decided differently and why, and one line per type on what the page shows before and after Submit.
+
+## Slice 2c3: 2c's fixes, then maths and code highlighting
+
+Two parts, in this order. First 2c's review fixes (G, H and the code reset, in the Handoff's "Next steps" item 4). Then maths with KaTeX and code highlighting with Shiki, both at build time, wherever Markdown is rendered: prompts, choices, labels, items, explanations, rubric criteria, sample answers and materials sheets. The page's runtime does not grow: maths and colours are HTML and CSS made at build. The test that matters: **a quiz with no maths and no code pays nothing** (the same page bytes as before this slice, the same startup time), and a quiz with them builds byte-identically twice.
+
+### Read first
+
+- This brief, and the Handoff's "Next steps" items 4 and 5 (2c's review, the owner's decisions G, H, the code reset and `math.syntax`).
+- TECHNICAL_DESIGN.md: section 3, the rows "Code highlighting" and "Math" and the paragraph "Licences" (the page comment only); section 7 "Budgets"; section 8, the row "Answering ordering, matching, essay, code", the font bullet "KaTeX fonts are embedded only when the quiz has math", and "How it is built" item 3; foundations "3. Content from others is untrusted" and "7. Output-shaping dependencies are pinned".
+- QUIZ_SYNTAX.md: section 8 (the table and the edge cases); section 8a, the `blanks.*` row (to place the new row beside it); section 6 "code" (`language`).
+- Code: `src/build/render.ts`, `src/build/page.ts`, `src/core/parse/markdown.ts` (the maths tokens), `src/core/rules/quality.ts` (`KNOWN_LANGUAGES`, `code.unknown-language`), `src/core/rules/fixed.ts`, `src/cli/load.ts`, `src/cli/check.ts`, `tsup.config.ts`, `scripts/build-page.mjs`, `src/page/questions/` (Ordering, Matching, Open), `src/page/styles/20-quiz.css`, `src/core/i18n/en.ts` and `vi.ts`; `test/startup.test.ts`, `test/build/types.test.ts`, `e2e/types.spec.ts`; `test/data/rule-ids.json`, `test/fixtures/invalid/` and its `expected.json`.
+
+### Decided for this slice
+
+- **G (owner, 2026-10-28).** After Submit, an `ordering` the learner never moved marks no item right or wrong: each item shows only "belongs at N", and the result line says "No answer". A `matching` pair left at "—" says `t.noAnswer` in place of "Incorrect", then the right match. Items and pairs the learner did answer are marked as now.
+- **H.** `pageQuestion` throws (a bug, so exit 2) when the plan has no `optionOrder` entry of the right length for an `ordering` or `matching` question, instead of falling back to source order. `shownOrder` in `Ordering.tsx` and its twin in `Matching.tsx` do the same. A test calls `pageQuizOf` with the entry removed from the plan and expects the throw.
+- **Code reset (owner, 2026-10-28).** While a `code` box is empty and the question has a `starter`, a "Reset to starter" button (`t.resetToStarter`, en and vi) sits under the box; pressing it puts the starter back, stores `null` (the starter is unanswered) and moves the focus into the box. It is not shown before the box is emptied, nor after Submit.
+- **`math.syntax` (owner, 2026-10-28), a fixed error.** Every maths span, in the quiz and in its sheets, is parsed by KaTeX (`throwOnError: true`); a span KaTeX rejects is `math.syntax` at the span's line, with KaTeX's message (without its "KaTeX parse error:" prefix) and the fix "check the TeX between the `$` signs". So `build` never meets bad TeX. Add the row to QUIZ_SYNTAX.md section 8a next to the `blanks.*` row, to the registry and `rule-ids.json`, with invalid fixtures (one in a question, one in a sheet).
+- **KaTeX loads only for maths.** `src/core` does not import KaTeX: the check receives a `parseTex(tex, display) => string | null` (null when it parses, else the message) from the CLI, which does `await import("katex")` only when the parsed quiz or a sheet has a maths token. A test: `check` on a quiz without maths does not load the module.
+- **Rendering maths.** `renderToString` at build, `displayMode` for `$$…$$`, output `htmlAndMathml` (screen readers read the MathML), `throwOnError: true` (check has passed). The page gets KaTeX's CSS with its fonts as WOFF2 `data:` URIs (drop the `woff` and `ttf` sources from the `@font-face` rules), once per page and only when the page has maths; check that the CSP's `font-src data:` and `style-src` allow it. The page records whether it has maths, for 2i's licence comment.
+- **Labels with maths.** An item's `label` (ordering's `aria-label`; matching's `<option>`, which cannot hold HTML) keeps a maths span as its TeX source between `$` signs, not KaTeX's text: build `label` from the source, not from the rendered HTML. A test on a matching item `$x^2$`.
+- **Highlighting.** Shiki's fine-grained core (`shiki/core`) with the JavaScript regex engine (no WASM), loading only the grammars a quiz uses, each from `KNOWN_LANGUAGES` (the list `code.unknown-language` checks; every name there must have a grammar: report any that don't). Highlighted: every fenced block whose language is in the list, wherever it is (prompts, explanations, choices, sheets), and a `code` question's `sample_answer`. A fence with no language or an unknown one stays plain `<pre><code>`. The `code` answer box is a textarea and stays plain.
+- **Colours from CSS variables.** Shiki's CSS-variables theme (`createCssVariablesTheme`, prefix `--fm-code-`), so the HTML holds `var(--fm-code-…)` and no colour literal. Give the variables provisional light and dark values in the page CSS, beside the existing light and dark rules; 2g generates them from the theme tokens. Report the variable names.
+- **Blanks in highlighted code** (2b's gap): a `blanks` prompt with a blank inside a fence of a known language still gets its input at the right place, and parser and page agree on the count. The cut markers must survive highlighting. A test with a blank in a `python` fence; the parser-and-page agreement test gains that region.
+- **Bundling.** `katex`, `shiki` and the `@shikijs/*` packages it needs are `dependencies`, pinned exactly, and **external** to the CLI bundle (tsup `external`), so the one file stays small and they load from `node_modules` only when used (bundled, they would make the CLI several MB, parsed at every start; the single binary is not v1). Pin the versions `npm view` gives as current and report them. Licences: both MIT.
+- **Sheets.** `pageQuizOf` renders each sheet to HTML (maths and code included) into a new `PageQuiz.materials: { name: string; html: string }[]`, in `materials:` order. The page does not show it yet (2f).
+- **Budgets.** `test/startup.test.ts` keeps `check` on a small quiz without maths or code under 150 ms. A build test: a quiz without maths or code gives the same page bytes as at the start of the slice (no KaTeX CSS, no font, no Shiki markup; the provisional `--fm-code-` values are the one allowed addition, so compare with them excluded, or say how you compared). Report the page size of the `all-types` golden before and after, and of a quiz with maths.
+
+### Tasks
+
+1. **G, H and the code reset** (one commit): the page changes and their vitest tests; Playwright for each (an untouched `ordering` and an all-"—" `matching` after Submit; clear a code box, Reset, the starter is back and the question is unanswered).
+2. **`math.syntax`** (one commit): the rule, the doc row, the injected `parseTex`, the fixtures, the lazy-load test.
+3. **Maths in the page** (one commit): the renderer, the CSS and fonts once per page, the labels, the sheets in `PageQuiz.materials`.
+4. **Highlighting** (one commit): Shiki, the CSS variables, the sample answer, blanks in highlighted code.
+5. **Goldens and examples:** a build golden `maths-and-code` (a prompt with inline and display maths, a choice with maths, a `python` and a `rust` fence, a blank in code, a sheet with maths); update other goldens only where bytes really changed, and say why. Every example in `examples/` builds; Playwright opens `examples/calculus` and `examples/rust` and finds a `.katex` element and a highlighted span, with axe clean.
+
+### Done when
+
+- `npm run check` passes, Playwright and axe included; every example builds; the startup test passes three runs in a row.
+- Report: commits, test counts, the runtime's gzipped size (expected unchanged), the pinned versions, page sizes before and after, the golden count with one line each, every gap, what was decided differently and why, and files read beyond the list.
