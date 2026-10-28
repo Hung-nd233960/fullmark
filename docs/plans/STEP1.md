@@ -55,7 +55,9 @@ Open questions for the owner:
 3. Light tints behind highlights and explanations: derive them from the main colour (`color-mix`), or list them as tokens in each theme? Recommended: derive them.
 4. Explanation text: full bold, or semibold (600) as now?
 
-Next design work: **Focus Mode** and the **Review page**.
+**Focus mode** was decided on 2026-10-28 and is written into TECHNICAL_DESIGN.md section 8 (rows "Collapsible panel" and "Focus mode") and the `--focus` rows of COMMANDS.md. The canvas has it: the interactive quiz board now has Hide/Show panel and Focus mode, plus two new boards, "Focus mode" (dark, fullscreen) and "Start screen: Focus mode ticked". Also agreed on the canvas, not yet in section 8: the top-bar button is labelled **Materials** (full name on hover); the start screen's fact tiles and part rows stay neutral, told apart by muted icons, since every colour already means a status.
+
+Next design work: the **Review page**.
 
 ### Loose ends outside this plan
 

@@ -208,7 +208,7 @@ Serves the page on 127.0.0.1. When the learner presses **Submit** (or **Finish**
 | `--out RESULTS` | Results file. Default: `<quiz-id>-results-<time>.json` next to the source |
 | `--timeout SECONDS` | Default `1800`. `0` waits forever. Exits 2 on timeout |
 | `--open` | Open the page in the browser |
-| `--focus` | Start with Focus mode on (fullscreen with a clock) |
+| `--focus` | Tick **Focus mode** on the start screen, so pressing Start enters fullscreen with the panel collapsed (TECHNICAL_DESIGN.md, section 8). A page cannot go fullscreen without a click |
 | `--section S` | Serve only this section. Results record `plan.source: "section"` |
 | `--autosave PROGRESS` | Keep the attempt in progress in this file, so it resumes after the server or the browser closes. Deleted on submit |
 | `--json` | Two JSON lines. As soon as the server is up: `{"status": "listening", "url", "port", "pid"}`. At the end: `{"status": "submitted" \| "timeout", "results", "score"}`. A caller running `serve` in the background reads the URL from the first line |
@@ -603,7 +603,7 @@ Builds the current version with the installed fullmark, serves it, files the res
 |---|---|
 | `--section S` | Only this section |
 | `--missed` | Only questions that are wrong or partly right in an earlier attempt and not answered fully right since, across all attempts and versions. Questions changed since they were missed are included and marked. Ungraded essays and code are skipped. With `--section`, the missed questions in that section |
-| `--focus` | Start with Focus mode on |
+| `--focus` | Tick **Focus mode** on the start screen, as for `serve` |
 | `--timeout SECONDS` | Default `0` (no limit) |
 | `--json` | `{"status", "results", "score", "plan": {"source", "questions"}}`, or `{"status": "nothing_missed"}` |
 
