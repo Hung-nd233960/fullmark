@@ -6,6 +6,12 @@ import { decodeKey } from "../core/keyblob";
  * What the page needs of a quiz (TECHNICAL_DESIGN.md, section 7, "Seams for later features": a page holds a list of
  * quizzes). Text is HTML, rendered at build. Every answer key and explanation is in `key`, obfuscated.
  */
+/** An item the learner moves or picks: its HTML, and its text for a label or an option */
+export type PageItem = { html: string; label: string };
+
+/** A criterion of a rubric the page shows before Submit */
+export type PageCriterion = { html: string; points: number | null };
+
 export type PageChoice = { html: string; input: { prompt: string | null } | null };
 
 /** What every question carries to the page. The key (accepted values, tolerances, `[x]`) is never in here. */
@@ -30,6 +36,13 @@ export type PageQuestion = PageBase &
     /** `graded`: the field is scored; `numeric`: the box warns about a decimal comma (the answer stays in the key) */
     | { type: "fields"; fields: { labelHtml: string; graded: boolean; numeric: boolean }[] }
     | { type: "scale"; min: number; max: number; labels: { value: number; html: string }[] }
+    /** `items` in the order the page shows them (`plan.optionOrder`), never in source order */
+    | { type: "ordering"; items: PageItem[] }
+    /** `lefts` in source order; `rights` in the shown order, distractors included */
+    | { type: "matching"; lefts: string[]; rights: PageItem[] }
+    /** `rubric`: its criteria when `show_rubric` is true, else null */
+    | { type: "essay"; minWords: number | null; maxWords: number | null; rubric: PageCriterion[] | null }
+    | { type: "code"; language: string; starter: string | null; rubric: PageCriterion[] | null }
   );
 
 export type PageSection = { id: string; title: string | null; introHtml: string; questions: PageQuestion[] };
@@ -53,7 +66,8 @@ export type PageQuiz = {
 export type PageData = { version: 1; quizzes: PageQuiz[] };
 
 /** What the blob holds: the quiz IR without its presentation text, and each explanation as HTML. */
-export type KeyBlob = { quiz: Quiz; explanations: Record<string, string> };
+/** `samples`: each essay's and code question's `sample_answer`, as HTML. */
+export type KeyBlob = { quiz: Quiz; explanations: Record<string, string>; samples: Record<string, string> };
 
 /** The quiz the grader runs on: the blob, decoded. Same IR the CLI grades, so the same score. */
 export function openKey(page: PageQuiz): KeyBlob {

@@ -1,7 +1,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { basename, dirname, extname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { buildPage, NotAvailableError } from "../build/page";
+import { buildPage } from "../build/page";
 import { type WriteError, writeFileAtomic } from "./atomic";
 import { type CheckIo, checkFile, describeOutcome, humanIssue } from "./check";
 import { EXIT, type ExitCode } from "./exit-codes";
@@ -85,31 +85,22 @@ export async function runBuild(patterns: readonly string[], opts: BuildOptions, 
   }
 
   const builtAt = opts.builtAt ?? (io.now?.() ?? new Date()).toISOString();
-  let html: string;
-  try {
-    html = buildPage(
-      [
-        {
-          quiz: result.loaded.quiz,
-          hash: result.loaded.hash ?? "",
-          assets: result.loaded.assets,
-          sheets: result.loaded.sheets,
-        },
-      ],
+  const html = buildPage(
+    [
       {
-        runtime,
-        css,
-        builtAt,
-        version: opts.version,
+        quiz: result.loaded.quiz,
+        hash: result.loaded.hash ?? "",
+        assets: result.loaded.assets,
+        sheets: result.loaded.sheets,
       },
-    );
-  } catch (error) {
-    if (error instanceof NotAvailableError) {
-      fail(io, false, error.message, { file });
-      return EXIT.usage;
-    }
-    throw error;
-  }
+    ],
+    {
+      runtime,
+      css,
+      builtAt,
+      version: opts.version,
+    },
+  );
 
   const source = resolve(io.cwd, file);
   const target =

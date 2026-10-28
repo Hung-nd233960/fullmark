@@ -6,7 +6,10 @@ import type { QuizState } from "../store";
 import { Blanks, BlanksPrompt } from "./Blanks";
 import { ChoiceList } from "./ChoiceList";
 import { Fields } from "./Fields";
+import { Matching } from "./Matching";
 import { Numeric } from "./Numeric";
+import { Code, Essay } from "./Open";
+import { Ordering } from "./Ordering";
 import { Scale } from "./Scale";
 import { Short } from "./Short";
 import { type Ctx, Html, messagesFor, ResultLine } from "./shared";
@@ -24,6 +27,10 @@ const BODIES: { [T in PageQuestion["type"]]: Body<T> } = {
   blanks: Blanks,
   fields: Fields,
   scale: Scale,
+  ordering: Ordering,
+  matching: Matching,
+  essay: Essay,
+  code: Code,
 };
 
 export type Api = { dispatch(action: Action): void; start(): void; submit(): void };
@@ -55,6 +62,7 @@ export function QuestionCard({
     submitted,
     result,
     keyed: key?.quiz.sections.flatMap((s) => s.questions).find((q) => q.id === question.id),
+    sample: key?.samples[question.id],
     set: (answer: Answer | null) => api.dispatch({ type: "answer", question: question.id, answer }),
   };
   const Content = BODIES[question.type] as Body<PageQuestion["type"]>;

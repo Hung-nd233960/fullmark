@@ -4,11 +4,11 @@ import { h } from "preact";
 import { renderToString } from "preact-render-to-string";
 import { canonicalJson } from "../core/canonical";
 import { en, type Messages, vi } from "../core/i18n";
-import type { Question, Quiz, Section } from "../core/ir";
+import type { Question, Quiz, Rubric, Section } from "../core/ir";
 import { encodeKey, toBase64 } from "../core/keyblob";
 import { planFor } from "../core/plan";
 import { App } from "../page/App";
-import type { KeyBlob, PageData, PageQuestion, PageQuiz, PageSection } from "../page/data";
+import type { KeyBlob, PageCriterion, PageData, PageItem, PageQuestion, PageQuiz, PageSection } from "../page/data";
 import { createStore } from "../page/store";
 import { type Asset, createRenderer } from "./render";
 
@@ -30,30 +30,6 @@ export type PageOptions = {
   version: string;
 };
 
-/** A question type the page cannot show yet: the CLI turns it into exit 2. */
-export class NotAvailableError extends Error {
-  constructor(readonly type: string) {
-    super(`not available yet: ${type} questions arrive in a later slice`);
-  }
-}
-
-const SUPPORTED: ReadonlySet<string> = new Set([
-  "single",
-  "multi",
-  "truefalse",
-  "numeric",
-  "short",
-  "blanks",
-  "fields",
-  "scale",
-]);
-
-/** The first question of a type the page does not handle, or null. */
-export function unsupportedType(quiz: Quiz): string | null {
-  for (const s of quiz.sections) for (const q of s.questions) if (!SUPPORTED.has(q.type)) return q.type;
-  return null;
-}
-
 /** A lone `<p>…</p>` loses its paragraph, so a choice is not set apart from its marker. */
 const unwrap = (html: string): string => {
   const m = /^<p>([\s\S]*)<\/p>\n?$/.exec(html);
@@ -61,7 +37,7 @@ const unwrap = (html: string): string => {
 };
 
 /** The quiz IR with everything a page shows removed: the key, as the grader needs it (foundation 5). */
-function keyOf(quiz: Quiz, explanations: Record<string, string>): KeyBlob {
+function keyOf(quiz: Quiz, explanations: Record<string, string>, samples: Record<string, string>): KeyBlob {
   const sections: Section[] = quiz.sections.map((s) => ({
     ...s,
     intro: "",
@@ -71,16 +47,63 @@ function keyOf(quiz: Quiz, explanations: Record<string, string>): KeyBlob {
       if ("choices" in bare) return { ...bare, choices: bare.choices.map((c) => ({ ...c, text: "" })) };
       if (bare.type === "fields") return { ...bare, fields: bare.fields.map((f) => ({ ...f, label: "" })) };
       if (bare.type === "scale") return { ...bare, labels: bare.labels.map((l) => ({ ...l, text: "" })) };
+      if (bare.type === "ordering") return { ...bare, items: bare.items.map((i) => ({ ...i, text: "" })) };
+      if (bare.type === "matching") {
+        return {
+          ...bare,
+          pairs: bare.pairs.map((p) => ({ ...p, left: "", right: "" })),
+          distractors: bare.distractors.map((d) => ({ ...d, text: "" })),
+        };
+      }
+      // the model answer is shown after Submit, from `samples`; the grader needs only that there is one
+      if (bare.type === "essay") return { ...bare, sampleAnswer: bare.sampleAnswer === null ? null : "" };
+      if (bare.type === "code") return { ...bare, starter: null, sampleAnswer: bare.sampleAnswer === null ? null : "" };
       return bare;
     }),
   }));
-  return { quiz: { ...quiz, file: "", sections }, explanations };
+  return { quiz: { ...quiz, file: "", sections }, explanations, samples };
 }
 
 type Md = ReturnType<typeof createRenderer>;
 
+const ENTITIES: [string, string][] = [
+  ["&lt;", "<"],
+  ["&gt;", ">"],
+  ["&quot;", '"'],
+  ["&#39;", "'"],
+  ["&amp;", "&"],
+];
+
+/** The text of rendered HTML, for an `aria-label` or an `<option>`: tags go, the entities the renderer writes are decoded. */
+const plain = (html: string): string =>
+  ENTITIES.reduce((text, [entity, char]) => text.replaceAll(entity, char), html.replace(/<[^>]*>/g, "")).trim();
+
+const item = (md: Md, source: string): PageItem => {
+  const html = unwrap(md.block(source));
+  return { html, label: plain(html) };
+};
+
+/** A rubric's criteria as the page lists them before Submit; null when `show_rubric` is false or there are none. */
+function criteriaOf(q: { rubric: Rubric | null; showRubric: boolean }, md: Md): PageCriterion[] | null {
+  if (!q.showRubric || q.rubric === null || q.rubric.criteria.length === 0) return null;
+  return q.rubric.criteria.map((c) => ({ html: unwrap(md.block(c.text)), points: c.points }));
+}
+
+/** A model answer as HTML. Code is shown as code, in a fence longer than any run of backticks inside it. */
+function sampleHtml(q: Question, md: Md): string | null {
+  if ((q.type !== "essay" && q.type !== "code") || q.sampleAnswer === null) return null;
+  if (q.type === "essay") return md.block(q.sampleAnswer);
+  const longest = Math.max(2, ...[...q.sampleAnswer.matchAll(/`+/g)].map((m) => m[0].length));
+  const fence = "`".repeat(longest + 1);
+  return md.block(`${fence}${q.language}\n${q.sampleAnswer.replace(/\n$/, "")}\n${fence}`);
+}
+
+/** The items in the order the page shows them: `optionOrder` names source indices in display order. */
+const inShownOrder = <T>(list: readonly T[], order: readonly number[] | undefined): T[] =>
+  order && order.length === list.length ? order.map((i) => list[i] as T) : [...list];
+
 /** One question as the page sees it: its prompt and what the learner sees to answer, never its key. */
-function pageQuestion(q: Question, md: Md, t: Messages["page"]): PageQuestion {
+function pageQuestion(q: Question, md: Md, t: Messages["page"], order: readonly number[] | undefined): PageQuestion {
   const base = {
     id: q.id,
     points: q.points,
@@ -130,24 +153,39 @@ function pageQuestion(q: Question, md: Md, t: Messages["page"]): PageQuestion {
         max: q.max,
         labels: q.labels.map((l) => ({ value: l.value, html: unwrap(md.block(l.text)) })),
       };
-    default:
-      throw new NotAvailableError(q.type);
+    case "ordering":
+      return { ...base, type: "ordering", items: inShownOrder(q.items, order).map((i) => item(md, i.text)) };
+    case "matching": {
+      const rights = [...q.pairs.map((p) => p.right), ...q.distractors.map((d) => d.text)];
+      return {
+        ...base,
+        type: "matching",
+        lefts: q.pairs.map((p) => unwrap(md.block(p.left))),
+        rights: inShownOrder(rights, order).map((r) => item(md, r)),
+      };
+    }
+    case "essay":
+      return { ...base, type: "essay", minWords: q.minWords, maxWords: q.maxWords, rubric: criteriaOf(q, md) };
+    case "code":
+      return { ...base, type: "code", language: q.language, starter: q.starter, rubric: criteriaOf(q, md) };
   }
 }
 
 export function pageQuizOf({ quiz, hash, assets }: BuildQuiz): PageQuiz {
-  const bad = unsupportedType(quiz);
-  if (bad !== null) throw new NotAvailableError(bad);
   const md = createRenderer(assets);
   const t = quiz.frontMatter.uiLang === "vi" ? vi.page : en.page;
+  const plan = planFor(quiz, { source: "full", quizHash: hash });
   const explanations: Record<string, string> = {};
+  const samples: Record<string, string> = {};
   const sections: PageSection[] = quiz.sections.map((s) => ({
     id: s.id,
     title: s.title,
     introHtml: s.intro.trim() === "" ? "" : md.block(s.intro),
     questions: s.questions.map((q) => {
       if (q.explanation) explanations[q.id] = md.block(q.explanation.text);
-      return pageQuestion(q, md, t);
+      const sample = sampleHtml(q, md);
+      if (sample !== null) samples[q.id] = sample;
+      return pageQuestion(q, md, t, plan.optionOrder?.[q.id]);
     }),
   }));
   return {
@@ -158,8 +196,8 @@ export function pageQuizOf({ quiz, hash, assets }: BuildQuiz): PageQuiz {
     uiLang: quiz.frontMatter.uiLang,
     lang: quiz.frontMatter.lang,
     sections,
-    plan: planFor(quiz, { source: "full", quizHash: hash }),
-    key: encodeKey(keyOf(quiz, explanations), hash),
+    plan,
+    key: encodeKey(keyOf(quiz, explanations, samples), hash),
   };
 }
 

@@ -5,11 +5,14 @@ import { renderToString } from "preact-render-to-string";
 import { describe, expect, it } from "vitest";
 import { buildPage, type PageOptions, pageQuizOf } from "../../src/build/page";
 import { loadQuiz } from "../../src/cli/load";
+import { countWords } from "../../src/core/grade/normalise";
 import { quizHash } from "../../src/core/hash";
+import { en } from "../../src/core/i18n";
 import type { Quiz } from "../../src/core/ir";
 import { parse } from "../../src/core/parse";
 import { App } from "../../src/page/App";
 import type { PageData, PageQuestion } from "../../src/page/data";
+import { openKey } from "../../src/page/data";
 import { wantsPoint } from "../../src/page/questions/shared";
 import { createStore } from "../../src/page/store";
 
@@ -50,6 +53,10 @@ describe("page data: each type holds only what the learner may see", () => {
     expect(keysOf("b1")).toEqual([...base, "blankCount"].sort());
     expect(keysOf("f1")).toEqual([...base, "fields"].sort());
     expect(keysOf("c1")).toEqual([...base, "labels", "max", "min"].sort());
+    expect(keysOf("o1")).toEqual([...base, "items"].sort());
+    expect(keysOf("g1")).toEqual([...base, "lefts", "rights"].sort());
+    expect(keysOf("e1")).toEqual([...base, "maxWords", "minWords", "rubric"].sort());
+    expect(keysOf("k1")).toEqual([...base, "language", "rubric", "starter"].sort());
     expect(Object.keys((questions.get("m1") as { choices: object[] }).choices[0] as object).sort()).toEqual([
       "html",
       "input",
@@ -77,9 +84,22 @@ describe("page data: each type holds only what the learner may see", () => {
       "4242.5",
       "3.14",
       "zq-field-name",
+      "zq-sample-essay",
     ]) {
       expect(visible, secret).not.toContain(secret);
     }
+  });
+
+  it("holds the model answers and the item text only in the key blob, shape without text", () => {
+    const blob = openKey(pageQuizOf(types));
+    expect(blob.samples.e1).toContain("zq-sample-essay");
+    expect(blob.samples.k1).toContain("<pre>");
+    expect(blob.samples.k1).toContain("zqlargest");
+    const keyed = blob.quiz.sections.flatMap((x) => x.questions);
+    const o1 = keyed.find((q) => q.id === "o1");
+    expect(o1?.type === "ordering" && o1.items.map((i) => i.text)).toEqual(["", "", ""]);
+    expect(JSON.stringify(blob.quiz)).not.toContain("zq-lint");
+    expect(JSON.stringify(blob.quiz)).not.toContain("zq-sample-essay");
   });
 
   it("marks `[x]` nowhere in the data", () => {
@@ -183,5 +203,147 @@ describe("a vi quiz's 2,5 through the page's grader", () => {
   it("is right in a vi quiz and wrong in an en one", () => {
     expect(scoreOf(typesVi)?.status).toBe("correct");
     expect(scoreOf(types)?.status).toBe("incorrect");
+  });
+});
+describe("ordering and matching in the page data", () => {
+  const page = pageQuizOf(types);
+  const get = <T extends PageQuestion["type"]>(id: string, _type: T) =>
+    page.sections.flatMap((x) => x.questions).find((q) => q.id === id) as Extract<PageQuestion, { type: T }>;
+  const labels = (items: { label: string }[]) => items.map((i) => i.label);
+
+  it("lists the ordering items in the shown order, which is not the source order", () => {
+    const order = page.plan.optionOrder?.o1 as number[];
+    expect(order).toHaveLength(3);
+    expect(order).not.toEqual([0, 1, 2]);
+    const source = ["zq-parse", "zq-check", "zq-render"];
+    expect(labels(get("o1", "ordering").items)).toEqual(order.map((i) => source[i]));
+    expect(labels(get("o1", "ordering").items)).not.toEqual(source);
+  });
+
+  it("lists the left items in source order and the right-hand items, distractors included, in the shown order", () => {
+    const g1 = get("g1", "matching");
+    expect(g1.lefts.join(" ")).toMatch(/zq-lint.*zq-test.*zq-bundle/s);
+    const order = page.plan.optionOrder?.g1 as number[];
+    expect(order).toHaveLength(4);
+    expect(order).not.toEqual([0, 1, 2, 3]);
+    const source = ["finds style problems", "runs the checks", "packs the files", "zq-unused distractor"];
+    expect(labels(g1.rights)).toEqual(order.map((i) => source[i]));
+  });
+
+  it("carries the essay's targets and, with show_rubric, its criteria; the code's language and starter", () => {
+    const e1 = get("e1", "essay");
+    expect([e1.minWords, e1.maxWords]).toEqual([3, 6]);
+    expect(e1.rubric?.map((c) => c.points)).toEqual([1, 1, 2]);
+    const k1 = get("k1", "code");
+    expect(k1.language).toBe("rust");
+    expect(k1.starter).toContain("todo!()");
+  });
+
+  it("leaves the rubric out when show_rubric is false", () => {
+    const broken = structuredClone(types.quiz) as Quiz;
+    const e = broken.sections.flatMap((x) => x.questions).find((q) => q.id === "e1");
+    if (e?.type !== "essay") throw new Error("fixture");
+    e.showRubric = false;
+    const data = pageQuizOf({ ...types, quiz: broken });
+    const q = data.sections.flatMap((x) => x.questions).find((x) => x.id === "e1");
+    expect(q?.type === "essay" && q.rubric).toBeNull();
+  });
+});
+
+describe("what the page stores and shows for the four types", () => {
+  function start() {
+    const page = pageQuizOf(types);
+    const store = createStore({ version: 1, quizzes: [page] });
+    store.start(page.id);
+    const answer = (question: string, value: Record<string, unknown> | null) =>
+      store.dispatch("types", { type: "answer", question, answer: value });
+    return {
+      store,
+      page,
+      answer,
+      html: () => renderToString(h(App, { store })),
+      stored: () => store.quizzes.get("types")?.attempt.value.state.answers ?? {},
+    };
+  }
+  const articleOf = (html: string, id: string) =>
+    new RegExp(`<article[^>]*data-qid="${id}"[\\s\\S]*?</article>`).exec(html)?.[0] ?? "";
+  const sources = (html: string) => [...html.matchAll(/data-source="(\d)"/g)].map((m) => Number(m[1]));
+
+  it("stores nothing for an ordering that was not moved, and a full order after a move", () => {
+    const r = start();
+    expect(r.stored().o1 ?? null).toBeNull();
+    const shown = r.page.plan.optionOrder?.o1 as number[];
+    const html = articleOf(r.html(), "o1");
+    expect(sources(html)).toEqual(shown);
+    // the first item's up button and the last item's down button are disabled
+    expect(html.match(/<button[^>]*disabled/g)).toHaveLength(2);
+    expect(html).toContain('aria-label="Move up: zq-');
+    const moved = [shown[1], shown[0], shown[2]] as number[];
+    r.answer("o1", { order: moved });
+    expect(sources(articleOf(r.html(), "o1"))).toEqual(moved);
+  });
+
+  it("shows marks, positions and right matches after Submit", () => {
+    const r = start();
+    r.answer("o1", { order: [0, 2, 1] });
+    r.answer("g1", { pairs: [0, 2, null] });
+    r.store.submit("types");
+    const o = articleOf(r.html(), "o1");
+    expect(o.match(/data-result="correct"/g)).toHaveLength(1);
+    expect(o).toContain("belongs at 3");
+    expect(o).toContain("belongs at 2");
+    const g = articleOf(r.html(), "g1");
+    expect(g.match(/data-result="correct"/g)).toHaveLength(1);
+    expect(g.match(/data-result="wrong"/g)).toHaveLength(2);
+    expect(g).toContain("Correct answer: ");
+    expect(g).toContain("runs the checks");
+  });
+
+  it("grades essay and code as pending once answered, and shows the sample only after Submit", () => {
+    const r = start();
+    r.answer("e1", { text: "a cache saves work" });
+    r.answer("k1", { code: "fn x() {}", language: "rust" });
+    expect(articleOf(r.html(), "e1")).not.toContain("zq-sample-essay");
+    expect(articleOf(r.html(), "e1")).toContain("4 words, 3 to 6");
+    r.store.submit("types");
+    const e = articleOf(r.html(), "e1");
+    expect(e).toContain('data-status="pending"');
+    expect(e).toContain("Sample answer");
+    expect(e).toContain("zq-sample-essay");
+    expect(articleOf(r.html(), "k1")).toContain('data-status="pending"');
+  });
+
+  it("an unanswered essay and code are unanswered, not pending", () => {
+    const r = start();
+    r.store.submit("types");
+    expect(articleOf(r.html(), "e1")).toContain('data-status="unanswered"');
+    expect(articleOf(r.html(), "k1")).toContain('data-status="unanswered"');
+    expect(articleOf(r.html(), "o1")).toContain('data-status="unanswered"');
+    expect(articleOf(r.html(), "g1")).toContain('data-status="unanswered"');
+  });
+
+  it("counts words as the grader does", () => {
+    for (const [text, n] of [
+      ["well-known state-of-the-art", 2],
+      ["3.14 and 42", 3],
+      ["Hôm nay trời đẹp quá", 5],
+      ["  spaced   out\n\nlines ", 3],
+    ] as const) {
+      expect(countWords(text)).toBe(n);
+      const r = start();
+      r.answer("e1", { text });
+      const line = /fm-count"[^>]*>([^<]*)</.exec(articleOf(r.html(), "e1"))?.[1] ?? "";
+      expect(line).toContain(`${n} words`);
+    }
+  });
+
+  it("writes the count line for each combination of targets", () => {
+    const t = en.page;
+    expect([t.wordsMin(87, 120), t.wordsMax(87, 300), t.wordsRange(87, 120, 300), t.words(87)]).toEqual([
+      "87 / 120 words minimum",
+      "87 / 300 words maximum",
+      "87 words, 120 to 300",
+      "87 words",
+    ]);
   });
 });

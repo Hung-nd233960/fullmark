@@ -20,6 +20,8 @@ export type Ctx = {
   result: GradedQuestion | undefined;
   /** the question as the grader has it (with its key), after Submit */
   keyed: Question | undefined;
+  /** the `sample_answer` of an essay or code question, as HTML, after Submit */
+  sample: string | undefined;
   set(answer: Answer | null): void;
 };
 

@@ -87,3 +87,47 @@ labels:
   1: Not at all
   5: Very sure
 ```
+
+## Put the zqsteps of a build in order. {type=ordering id=o1 points=3}
+
+1. zq-parse
+2. zq-check
+3. zq-render
+
+## Match each zqtool to its job. {type=matching id=g1 points=3}
+
+- zq-lint :: finds style problems
+- zq-test :: runs the checks
+- zq-bundle :: packs the files
+- :: zq-unused distractor
+
+## Explain the zqeffect of caching, in your own words. {type=essay id=e1 points=4}
+
+```answer
+min_words: 3
+max_words: 6
+rubric:
+  mode: additive
+  criteria:
+    - Names the cost saved (1 pts)
+    - Names the risk of stale data (1 pts)
+    - Gives an example (2 pts)
+sample_answer: |
+  zq-sample-essay: a cache saves repeated work but can go stale.
+```
+
+## Write `zqlargest`. {type=code id=k1 points=3}
+
+```answer
+language: rust
+starter: |
+  fn zqlargest(v: &[i32]) -> i32 {
+      todo!()
+  }
+rubric:
+  - Correct for every non-empty slice
+  - Does not panic on one element
+  - Idiomatic iterator use
+sample_answer: |
+  fn zqlargest(v: &[i32]) -> i32 { *v.iter().max().unwrap() }
+```

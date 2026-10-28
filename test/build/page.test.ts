@@ -4,7 +4,7 @@ import { gzipSync } from "node:zlib";
 import { sha256 } from "@noble/hashes/sha2.js";
 import { utf8ToBytes } from "@noble/hashes/utils.js";
 import { describe, expect, it } from "vitest";
-import { buildPage, NotAvailableError, type PageOptions } from "../../src/build/page";
+import { buildPage, type PageOptions } from "../../src/build/page";
 import { loadQuiz } from "../../src/cli/load";
 import { parseResults } from "../../src/core/attempt";
 import { grade } from "../../src/core/grade";
@@ -231,10 +231,6 @@ describe("build page: script-safe data", () => {
 });
 
 describe("build page: what it refuses", () => {
-  it("a question type other than single", () => {
-    expect(() => buildPage([load("examples/calculus/quiz.md")], options)).toThrow(NotAvailableError);
-  });
-
   it("an empty list", () => {
     expect(() => buildPage([], options)).toThrow();
   });
