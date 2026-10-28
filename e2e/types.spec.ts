@@ -175,7 +175,8 @@ test("the word count is live and never blocks Submit; clearing a code box does n
     /belongs at [0-9]/,
     /belongs at [0-9]/,
   ]);
-  await expect(card(page, "o1").locator(".fm-order-none")).toHaveText("No answer");
+  await expect(card(page, "o1").locator(".fm-order-none")).toHaveCount(0);
+  await expect(card(page, "o1")).toContainText("Not answered");
   await expect(card(page, "g1").locator(".fm-match-mark strong")).toHaveText(["No answer", "No answer", "No answer"]);
   await expect(card(page, "g1")).not.toContainText("Wrong");
 });

@@ -24,6 +24,8 @@ export function parseEssay(src: MapSource, env: AnswerEnv): EssayAnswer {
   if (min.value !== null && max.value !== null && max.value !== 0 && min.value > max.value) {
     r.error("essay.words", min.line, `min_words (${min.value}) is above max_words (${max.value})`);
   }
+  const sample = src.get("sample_answer");
+  if (sample) env.math?.(scalarText(sample.value) ?? "", sample.line);
   return {
     minWords: min.value,
     maxWords: max.value === 0 ? null : max.value,

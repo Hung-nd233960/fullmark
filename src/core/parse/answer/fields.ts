@@ -61,6 +61,7 @@ export function parseFields(src: MapSource, env: AnswerEnv): Field[] {
         r.error("fields.points", p.line, "a field with no answer key is ungraded and carries no points");
       } else points = n;
     }
+    if (label !== null) env.math?.(label, fs.get("label")?.line ?? line);
     if (numeric || text) withKey++;
     fields.push({ line, label: label ?? "", key, points });
   }

@@ -123,7 +123,9 @@ export function parse(text: string, file: string, options: ParseOptions = {}): P
         );
       } else sectionIds.set(head.id, head.line);
     }
-    const questions: Question[] = d.questions.map((region) => parseQuestion(region, { o, fm, r, ids }));
+    const questions: Question[] = d.questions.map((region) =>
+      parseQuestion(region, { o, fm, r, ids, ...(options.parseTex ? { parseTex: options.parseTex } : {}) }),
+    );
     if (d.heading === null && d.questions[0] && drafts.some((other) => other.heading !== null)) {
       r.error(
         "syntax.preamble",

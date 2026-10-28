@@ -8,4 +8,6 @@ export type AnswerEnv = {
   /** false for an ungraded question (`graded=false`, a survey, `scale`) */
   graded: boolean;
   points: number;
+  /** checks the maths in a string of the answer block, at the line of its key (`math.syntax`); absent without KaTeX */
+  math?: (text: string, line: number) => void;
 };

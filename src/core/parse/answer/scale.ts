@@ -46,6 +46,7 @@ export function parseScale(src: MapSource, env: AnswerEnv): ScaleAnswer {
         if (value < min.value || value > max.value) {
           r.error("scale.range", e.line, `the label ${value} is outside the scale (${min.value} to ${max.value})`);
         }
+        env.math?.(text, e.line);
         labels.push({ line: e.line, value, text });
       }
     }

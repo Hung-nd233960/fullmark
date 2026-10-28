@@ -530,6 +530,16 @@
     "rule": "math.syntax",
     "line": 7
   },
+  "math-syntax-field-label": {
+    "rule": "math.syntax",
+    "line": 9,
+    "note": "line of the field's label"
+  },
+  "math-syntax-rubric": {
+    "rule": "math.syntax",
+    "line": 9,
+    "note": "line of the criterion"
+  },
   "math-syntax-sheet": {
     "rule": "math.syntax",
     "line": 5,

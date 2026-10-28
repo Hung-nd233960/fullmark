@@ -96,7 +96,6 @@ export function Ordering({ q, c }: { q: Extract<PageQuestion, { type: "ordering"
           );
         })}
       </ol>
-      {untouched ? <p class="fm-order-none">{t.noAnswer}</p> : null}
       <p class="fm-sr" role="status" aria-live="polite">
         {said}
       </p>

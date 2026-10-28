@@ -415,11 +415,6 @@
     margin-top: 8px;
   }
 
-  .fm-order-none {
-    margin: 6px 0 0;
-    color: var(--muted);
-  }
-
   .fm-count {
     margin: 6px 0 0;
     color: var(--muted);

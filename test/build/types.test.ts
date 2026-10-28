@@ -300,7 +300,8 @@ describe("what the page stores and shows for the four types", () => {
     const o = articleOf(r.html(), "o1");
     expect(o).not.toContain("data-result=");
     expect(o).not.toContain("Wrong");
-    expect(o).toContain("No answer");
+    expect(o).not.toContain("No answer");
+    expect(o).toContain("Not answered");
     expect(o.match(/belongs at [0-9]/g)).toHaveLength(3);
     const g = articleOf(r.html(), "g1");
     const middle = g.split('class="fm-match"')[2] ?? "";

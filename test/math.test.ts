@@ -90,3 +90,32 @@ describe("KaTeX loads only for maths", () => {
     expect(r.issues.map((i) => `${i.rule}@${i.file}:${i.line}`)).toEqual(["math.syntax@materials/s.md:3"]);
   });
 });
+
+describe("math.syntax in the strings of an answer block", () => {
+  const parseTex = lazyParseTex();
+  const lines = (text: string) =>
+    parse(text, "q.md", { parseTex })
+      .issues.filter((i) => i.rule === "math.syntax")
+      .map((i) => i.line);
+  const head = (type: string, points = "") => `---\ntitle: T\n---\n\n## Q {type=${type} id=q${points}}\n\n`;
+  const BAD = "$\badmacro$";
+
+  it("checks a field label, a scale label, a rubric criterion and an essay's sample answer, at the key's line", () => {
+    expect(lines(`${head("fields")}\`\`\`answer\nfields:\n  - label: A ${BAD}\n    value: 1\n\`\`\`\n`)).toEqual([9]);
+    expect(lines(`${head("scale")}\`\`\`answer\nlabels:\n  1: Low ${BAD}\n\`\`\`\n`)).toEqual([9]);
+    expect(lines(`${head("essay", " points=2")}\`\`\`answer\nrubric:\n  - Names ${BAD} (2)\n\`\`\`\n`)).toEqual([9]);
+    expect(lines(`${head("essay")}\`\`\`answer\nsample_answer: See ${BAD}\n\`\`\`\n`)).toEqual([8]);
+  });
+
+  it("accepts valid maths there and does not load KaTeX for a string without a dollar sign", () => {
+    const text = `${head("scale")}\`\`\`answer\nlabels:\n  1: Low $x^2$\n  5: High\n\`\`\`\n`;
+    expect(lines(text)).toEqual([]);
+    let loaded = 0;
+    const spy = lazyParseTex(() => {
+      loaded++;
+      throw new Error("loaded");
+    });
+    parse(`${head("scale")}\`\`\`answer\nlabels:\n  1: Low\n\`\`\`\n`, "q.md", { parseTex: spy });
+    expect(loaded).toBe(0);
+  });
+});

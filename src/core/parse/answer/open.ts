@@ -15,7 +15,10 @@ export function parseOpenParts(src: MapSource, env: AnswerEnv): OpenParts {
   if (rubric) {
     if (env.graded) {
       out.rubric = parseRubric(src.root, rubric, r);
-      if (out.rubric) checkRubric(out.rubric, env.points, r);
+      if (out.rubric) {
+        checkRubric(out.rubric, env.points, r);
+        for (const c of out.rubric.criteria) env.math?.(c.text, c.line);
+      }
     } else {
       r.error(
         "question.ungraded-key",

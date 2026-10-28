@@ -1,7 +1,8 @@
 import { defineConfig } from "tsup";
 
 export default defineConfig({
-  entry: { cli: "src/cli/main.ts" },
+  // `cli` turns on the compile cache and loads `main`, the CLI itself
+  entry: { cli: "src/cli/bin.ts", main: "src/cli/main.ts" },
   format: ["esm"],
   target: "node22",
   platform: "node",

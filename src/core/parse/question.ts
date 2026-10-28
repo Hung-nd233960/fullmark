@@ -15,15 +15,17 @@ import { QUESTION_ATTRS, readPairs, readQuestionAttrs } from "./heading-attrs";
 import { trimBlankLines, unclaimedLines } from "./lines";
 import { parseChoices } from "./lists";
 import { parseMatching } from "./matching";
+import { stringMathIssues } from "./math";
 import { parseOrdering } from "./ordering";
 import type { Chunk, Outline, Unit } from "./outline";
 import type { Reporter } from "./report";
 import { findSpans, spanAt } from "./spans";
+import type { ParseTex } from "./tex";
 
 /** A question's lines: its heading, and everything up to the next `#` or `##` heading. 0-based, `end` exclusive. */
 export type Region = { start: number; end: number; units: Unit[] };
 
-export type QuestionCtx = { o: Outline; fm: FrontMatter; r: Reporter; ids: Map<string, number> };
+export type QuestionCtx = { o: Outline; fm: FrontMatter; r: Reporter; ids: Map<string, number>; parseTex?: ParseTex };
 
 /** Whether a question of this type takes an answer block, and when. */
 type BlockPolicy = "required" | "optional" | "forbidden";
@@ -267,7 +269,14 @@ export function parseQuestion(region: Region, ctx: QuestionCtx): Question {
   }
 
   // -- the answer block
-  const env: AnswerEnv = { r, headingLine: line, graded, points: attrs.points };
+  const { parseTex } = ctx;
+  const env: AnswerEnv = {
+    r,
+    headingLine: line,
+    graded,
+    points: attrs.points,
+    ...(parseTex ? { math: (text: string, at: number) => stringMathIssues(text, at, parseTex, r) } : {}),
+  };
   const first = answers[0];
   if (type && first && policy === "forbidden") {
     r.error(
