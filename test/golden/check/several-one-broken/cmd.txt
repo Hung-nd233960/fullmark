@@ -1,0 +1,4 @@
+check
+quizzes/a.md
+quizzes/b.md
+quizzes/c.md

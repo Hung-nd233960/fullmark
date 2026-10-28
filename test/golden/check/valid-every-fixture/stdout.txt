@@ -1,0 +1,19 @@
+valid/all-types.md: profile default (built-in) from the default; config: none
+valid/all-types.md:45: warning explanation.short: the explanation has fewer than 4 words
+    fix: say why the answer is right and what the wrong ones get wrong
+valid/all-types.md:74: warning explanation.short: the explanation has fewer than 4 words
+    fix: say why the answer is right and what the wrong ones get wrong
+valid/all-types.md:82: warning explanation.short: the explanation has fewer than 4 words
+    fix: say why the answer is right and what the wrong ones get wrong
+valid/all-types.md:128: warning rubric.thin: the rubric has 2 criteria; at least 3 are expected
+    fix: split the rubric into more things a grader can check
+valid/all-types.md:143: warning rubric.thin: the rubric has 1 criteria; at least 3 are expected
+    fix: split the rubric into more things a grader can check
+valid/all-types.md: 0 errors, 5 warnings
+valid/followup.md: profile default (built-in) from the default; config: none
+valid/followup.md: 0 errors, 0 warnings
+valid/mixed.md: profile default (built-in) from the default; config: none
+valid/mixed.md: 0 errors, 0 warnings
+valid/survey.md: profile survey (built-in) from the survey default; config: none
+valid/survey.md: 0 errors, 0 warnings
+4 done, 0 failed

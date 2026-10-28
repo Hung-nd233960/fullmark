@@ -1,0 +1,1 @@
+{"status":"ok","file":"quiz.md","profile":"default","config":[],"errors":0,"warnings":0,"issues":[{"rule":"config.ignored","level":"info","file":"quiz.md","line":5,"message":"`choice.correct-longest` is ignored here: the long answer is the point","fix":null}],"ignored":[{"rule":"choice.correct-longest","line":5,"because":"the long answer is the point"}]}

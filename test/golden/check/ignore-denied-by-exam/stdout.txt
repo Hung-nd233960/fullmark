@@ -1,0 +1,6 @@
+profile exam (built-in) from --profile; config: none
+quiz.md:5: error config.ignored: `choice.correct-longest` is ignored here, but profile exam does not allow ignores
+    fix: remove check-ignore and fix the quiz (allow-ignore = false: profile exam)
+quiz.md:8: error choice.correct-longest: the right choice is much longer than every wrong one, which gives it away
+    fix: shorten the right choice, or lengthen the wrong ones to match
+quiz.md: 2 errors, 0 warnings, 1 ignored

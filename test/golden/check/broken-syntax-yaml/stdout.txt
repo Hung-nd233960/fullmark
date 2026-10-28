@@ -1,0 +1,3 @@
+profile default (built-in) from the default; config: none
+invalid/answer-yaml-error.md:9: error syntax.yaml: the answer block is not valid YAML: Flow sequence in block collection must be sufficiently indented and end with a ]
+invalid/answer-yaml-error.md: 1 error, 0 warnings

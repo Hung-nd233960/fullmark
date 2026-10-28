@@ -1,0 +1,4 @@
+profile default (built-in) from the default; config: none
+invalid/brief.yaml:7: warning brief.invalid: `count` in brief.yaml: Invalid input: expected number, received string, so the quiz was not held against it
+    fix: fix brief.yaml: `quiz brief` writes it, and can write it again
+invalid/quiz.md: 0 errors, 1 warning

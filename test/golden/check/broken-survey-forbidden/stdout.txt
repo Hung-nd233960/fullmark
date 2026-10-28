@@ -1,0 +1,4 @@
+profile survey (built-in) from the survey default; config: none
+invalid/survey-partial.md:4: error survey.forbidden: `partial` is not allowed in a survey
+    fix: remove partial
+invalid/survey-partial.md: 1 error, 0 warnings

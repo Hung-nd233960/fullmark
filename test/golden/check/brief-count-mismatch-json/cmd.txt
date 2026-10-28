@@ -1,0 +1,3 @@
+check
+count/quiz.md
+--json

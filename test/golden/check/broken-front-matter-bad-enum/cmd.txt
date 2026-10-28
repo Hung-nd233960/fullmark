@@ -1,0 +1,2 @@
+check
+invalid/fm-bad-enum.md

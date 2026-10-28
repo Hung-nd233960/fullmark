@@ -1,0 +1,3 @@
+quiz.md: the config has errors
+missing.toml:1: the config file does not exist
+    fix: check the path

@@ -1,0 +1,4 @@
+profile default (built-in) from the default; config: none
+invalid/no-questions.md:1: error quiz.empty: the quiz has no questions
+    fix: add a question: ## text {type=... id=...}
+invalid/no-questions.md: 1 error, 0 warnings

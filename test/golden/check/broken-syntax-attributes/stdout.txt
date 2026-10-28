@@ -1,0 +1,4 @@
+profile default (built-in) from the default; config: none
+invalid/attributes-duplicate.md:5: error syntax.attributes: `type` is given twice in the {…} block
+    fix: keep one `type`
+invalid/attributes-duplicate.md: 1 error, 0 warnings

@@ -1,0 +1,2 @@
+[profiles.mine]
+rules."question.untagged" = "warning"

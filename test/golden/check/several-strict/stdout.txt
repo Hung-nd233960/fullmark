@@ -1,0 +1,87 @@
+quality/answers.position-skew.md: profile default (built-in) from the default; config: none
+quality/answers.position-skew.md:1: warning answers.position-skew: 6 of 8 single-choice answers are option A
+    fix: vary the position of the right answer, or set shuffle_choices: true in the front matter
+quality/answers.position-skew.md: 0 errors, 1 warning
+quality/answers.position-skew.ok.md: profile default (built-in) from the default; config: none
+quality/answers.position-skew.ok.md: 0 errors, 0 warnings
+quality/choice.all-none-above.md: profile default (built-in) from the default; config: none
+quality/choice.all-none-above.md:9: warning choice.all-none-above: an 'all/none of the above' choice breaks when choices are shuffled and lets learners guess
+    fix: rewrite the options so that each one stands alone
+quality/choice.all-none-above.md: 0 errors, 1 warning
+quality/choice.all-none-above.ok.md: profile default (built-in) from the default; config: none
+quality/choice.all-none-above.ok.md: 0 errors, 0 warnings
+quality/choice.correct-longest.md: profile default (built-in) from the default; config: none
+quality/choice.correct-longest.md:7: warning choice.correct-longest: the right choice is much longer than every wrong one, which gives it away
+    fix: shorten the right choice, or lengthen the wrong ones to match
+quality/choice.correct-longest.md: 0 errors, 1 warning
+quality/choice.correct-longest.ok.md: profile default (built-in) from the default; config: none
+quality/choice.correct-longest.ok.md: 0 errors, 0 warnings
+quality/choice.duplicate.md: profile default (built-in) from the default; config: none
+quality/choice.duplicate.md:8: warning choice.duplicate: this choice repeats the one on line 7
+    fix: rewrite or remove the repeated choice
+quality/choice.duplicate.md: 0 errors, 1 warning
+quality/choice.duplicate.ok.md: profile default (built-in) from the default; config: none
+quality/choice.duplicate.ok.md: 0 errors, 0 warnings
+quality/choice.in-stem.md: profile default (built-in) from the default; config: none
+quality/choice.in-stem.md:7: warning choice.in-stem: the question text already contains the right choice
+    fix: reword the question so that it does not contain the answer
+quality/choice.in-stem.md: 0 errors, 1 warning
+quality/choice.in-stem.ok.md: profile default (built-in) from the default; config: none
+quality/choice.in-stem.ok.md: 0 errors, 0 warnings
+quality/code.unknown-language.md: profile default (built-in) from the default; config: none
+quality/code.unknown-language.md:5: warning code.unknown-language: unknown language `pythn`
+    fix: use one of: bash, c, cpp, csharp, css, go, haskell, html, java, javascript, json, julia, kotlin, latex, lua, matlab, ocaml, perl, php, powershell, python, r, ruby, rust, scala, sql, swift, toml, typescript, typst, verilog, vhdl, xml, yaml, zig
+quality/code.unknown-language.md:5: warning rubric.missing: the question has no rubric
+    fix: add a `rubric:` to the answer block
+quality/code.unknown-language.md: 0 errors, 2 warnings
+quality/code.unknown-language.ok.md: profile default (built-in) from the default; config: none
+quality/code.unknown-language.ok.md:5: warning rubric.missing: the question has no rubric
+    fix: add a `rubric:` to the answer block
+quality/code.unknown-language.ok.md: 0 errors, 1 warning
+quality/explanation.missing.md: profile default (built-in) from the default; config: none
+quality/explanation.missing.md: 0 errors, 0 warnings
+quality/explanation.missing.ok.md: profile default (built-in) from the default; config: none
+quality/explanation.missing.ok.md: 0 errors, 0 warnings
+quality/explanation.short.md: profile default (built-in) from the default; config: none
+quality/explanation.short.md:10: warning explanation.short: the explanation has fewer than 4 words
+    fix: say why the answer is right and what the wrong ones get wrong
+quality/explanation.short.md: 0 errors, 1 warning
+quality/explanation.short.ok.md: profile default (built-in) from the default; config: none
+quality/explanation.short.ok.md: 0 errors, 0 warnings
+quality/question.points-ignored.md: profile default (built-in) from the default; config: none
+quality/question.points-ignored.md:5: warning question.points-ignored: `points` on an ungraded question is ignored
+    fix: remove points
+quality/question.points-ignored.md: 0 errors, 1 warning
+quality/question.points-ignored.ok.md: profile default (built-in) from the default; config: none
+quality/question.points-ignored.ok.md: 0 errors, 0 warnings
+quality/question.untagged.md: profile default (built-in) from the default; config: none
+quality/question.untagged.md: 0 errors, 0 warnings
+quality/question.untagged.ok.md: profile default (built-in) from the default; config: none
+quality/question.untagged.ok.md: 0 errors, 0 warnings
+quality/quiz.no-time-limit.md: profile default (built-in) from the default; config: none
+quality/quiz.no-time-limit.md: 0 errors, 0 warnings
+quality/quiz.no-time-limit.ok.md: profile default (built-in) from the default; config: none
+quality/quiz.no-time-limit.ok.md: 0 errors, 0 warnings
+quality/rubric.missing.md: profile default (built-in) from the default; config: none
+quality/rubric.missing.md:5: warning rubric.missing: the question has no rubric
+    fix: add a `rubric:` to the answer block
+quality/rubric.missing.md: 0 errors, 1 warning
+quality/rubric.missing.ok.md: profile default (built-in) from the default; config: none
+quality/rubric.missing.ok.md: 0 errors, 0 warnings
+quality/rubric.points-in-text.md: profile default (built-in) from the default; config: none
+quality/rubric.points-in-text.md:9: warning rubric.points-in-text: `defines-it` names 1 pts, but a holistic rubric does not add points up
+    fix: add `mode: additive` so the points count, or remove them from the text
+quality/rubric.points-in-text.md:10: warning rubric.points-in-text: `uses-it` names 1 pts, but a holistic rubric does not add points up
+    fix: add `mode: additive` so the points count, or remove them from the text
+quality/rubric.points-in-text.md: 0 errors, 2 warnings
+quality/rubric.points-in-text.ok.md: profile default (built-in) from the default; config: none
+quality/rubric.points-in-text.ok.md:8: warning rubric.thin: the rubric has 2 criteria; at least 3 are expected
+    fix: split the rubric into more things a grader can check
+quality/rubric.points-in-text.ok.md: 0 errors, 1 warning
+quality/rubric.thin.md: profile default (built-in) from the default; config: none
+quality/rubric.thin.md:8: warning rubric.thin: the rubric has 1 criteria; at least 3 are expected
+    fix: split the rubric into more things a grader can check
+quality/rubric.thin.md: 0 errors, 1 warning
+quality/rubric.thin.ok.md: profile default (built-in) from the default; config: none
+quality/rubric.thin.ok.md: 0 errors, 0 warnings
+15 done, 13 failed

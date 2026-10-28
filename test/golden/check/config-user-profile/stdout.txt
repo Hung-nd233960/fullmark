@@ -1,0 +1,1 @@
+{"status":"ok","file":"quiz.md","profile":"mine","config":["user-config.toml"],"errors":0,"warnings":0,"issues":[],"ignored":[]}

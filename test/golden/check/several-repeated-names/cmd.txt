@@ -1,0 +1,6 @@
+check
+quizzes/c.md
+quizzes/a.md
+quizzes/c.md
+quizzes/*.md
+--json

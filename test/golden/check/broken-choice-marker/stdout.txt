@@ -1,0 +1,4 @@
+profile default (built-in) from the default; config: none
+invalid/choice-marker.md:8: error choice.marker: a choice needs [ ] or [x] before its text
+    fix: write - [ ] text or - [x] text
+invalid/choice-marker.md: 1 error, 0 warnings

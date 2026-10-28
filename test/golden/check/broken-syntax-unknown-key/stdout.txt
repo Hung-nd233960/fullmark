@@ -1,0 +1,4 @@
+profile default (built-in) from the default; config: none
+invalid/answer-unknown-key.md:9: error syntax.unknown-key: unknown answer key `precision`
+    fix: the answer keys are: value, values, tolerance, rel_tolerance, unit
+invalid/answer-unknown-key.md: 1 error, 0 warnings

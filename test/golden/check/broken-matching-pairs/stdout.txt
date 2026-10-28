@@ -1,0 +1,4 @@
+profile default (built-in) from the default; config: none
+invalid/matching-one-pair.md:5: error matching.pairs: a matching question needs at least two pairs
+    fix: write - left :: right for each pair
+invalid/matching-one-pair.md: 1 error, 0 warnings

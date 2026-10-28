@@ -1,0 +1,4 @@
+check
+quiz.md
+--config
+missing.toml

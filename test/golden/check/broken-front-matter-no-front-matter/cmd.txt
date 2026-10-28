@@ -1,0 +1,2 @@
+check
+invalid/fm-no-front-matter.md

@@ -1,0 +1,4 @@
+profile default (built-in) from the default; config: none
+invalid/media-bad-ext.md:7: error asset.type: "assets/file.xyz" is not a supported file type
+    fix: images: .png .jpg .jpeg .gif .webp .svg; audio: .mp3 .ogg .wav .m4a. Video is not supported
+invalid/media-bad-ext.md: 1 error, 0 warnings

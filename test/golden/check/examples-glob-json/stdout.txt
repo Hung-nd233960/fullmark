@@ -1,0 +1,7 @@
+{"status":"ok","file":"calculus/quiz.md","profile":"default","config":[],"errors":0,"warnings":0,"issues":[],"ignored":[]}
+{"status":"ok","file":"exam/quiz.md","profile":"default","config":[],"errors":0,"warnings":0,"issues":[],"ignored":[]}
+{"status":"ok","file":"ielts/quiz.md","profile":"default","config":[],"errors":0,"warnings":0,"issues":[],"ignored":[]}
+{"status":"ok","file":"medical/quiz.md","profile":"default","config":[],"errors":0,"warnings":0,"issues":[],"ignored":[]}
+{"status":"ok","file":"rust/quiz.md","profile":"default","config":[],"errors":0,"warnings":0,"issues":[],"ignored":[]}
+{"status":"ok","file":"survey/quiz.md","profile":"survey","config":[],"errors":0,"warnings":0,"issues":[],"ignored":[]}
+{"status":"done","ok":6,"failed":0}

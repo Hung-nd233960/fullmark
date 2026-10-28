@@ -1,0 +1,6 @@
+profile exam (built-in) from --profile; config: none
+quality/explanation.missing.md:5: error explanation.missing: the question has no explanation
+    fix: add a ::: explanation container below the answer
+quality/explanation.missing.md:5: error question.untagged: the question has no tags
+    fix: add tags=topic to the heading
+quality/explanation.missing.md: 2 errors, 0 warnings

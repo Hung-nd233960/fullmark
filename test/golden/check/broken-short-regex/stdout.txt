@@ -1,0 +1,4 @@
+profile default (built-in) from the default; config: none
+invalid/short-bad-regex.md:8: error short.regex: the pattern /(abc/ is not valid: /(abc/u: Unterminated group
+    fix: patterns use JavaScript's u mode: no lookbehind, no inline flags
+invalid/short-bad-regex.md: 1 error, 0 warnings

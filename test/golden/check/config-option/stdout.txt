@@ -1,0 +1,2 @@
+profile exam (built-in) from [check] profile; config: other.toml
+quiz.md: 0 errors, 0 warnings

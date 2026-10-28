@@ -1,0 +1,3 @@
+quiz.md: the config has errors
+fullmark.toml:3: unknown profile `nope`
+    fix: the profiles are: default, draft, exam, survey

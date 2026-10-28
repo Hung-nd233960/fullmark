@@ -1,0 +1,4 @@
+profile default (built-in) from brief.yaml; config: none
+count/quiz.md:1: warning brief.count: the brief asks for 10 questions (within 20%: 8 to 12), but the quiz has 3
+    fix: add or remove questions, or change count in brief.yaml if the user agreed
+count/quiz.md: 0 errors, 1 warning

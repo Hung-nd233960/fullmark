@@ -1,0 +1,6 @@
+profile default (built-in) from brief.yaml; config: none
+mode/quiz.md:1: warning brief.mode: the brief's mode is timed-exam, which expects `look: locked`
+    fix: set look: locked, or change mode in brief.yaml if the user agreed
+mode/quiz.md:1: warning brief.mode: the brief's mode is timed-exam, which expects a `time_limit`
+    fix: set time_limit (for example 45m), or change mode in brief.yaml if the user agreed
+mode/quiz.md: 0 errors, 2 warnings

@@ -1,0 +1,2 @@
+profile draft (built-in) from [check] profile; config: fullmark.toml
+sub/deeper/quiz.md: 0 errors, 0 warnings

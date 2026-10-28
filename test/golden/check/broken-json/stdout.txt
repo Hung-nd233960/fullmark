@@ -1,0 +1,1 @@
+{"status":"failed","file":"invalid/rubric-sum.md","profile":"default","config":[],"errors":1,"warnings":0,"issues":[{"rule":"rubric.sum","level":"error","file":"invalid/rubric-sum.md","line":8,"message":"the criteria add up to 2, but the question is worth 3","fix":"make the criteria's points add up to the question's points"}],"ignored":[]}

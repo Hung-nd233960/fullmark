@@ -1,0 +1,4 @@
+profile default (built-in) from the default; config: none
+invalid/input-on-heading.md:5: error choice.input: `{input}` goes at the end of a choice, not on a heading
+    fix: move it to the end of the choice it belongs to
+invalid/input-on-heading.md: 1 error, 0 warnings

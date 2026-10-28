@@ -1,0 +1,4 @@
+check
+quizzes/a.md
+quizzes/nope.md
+--json

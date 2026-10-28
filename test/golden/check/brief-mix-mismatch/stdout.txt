@@ -1,0 +1,4 @@
+profile default (built-in) from brief.yaml; config: none
+mix/quiz.md:1: warning brief.mix: the brief asks for calculation questions, but the quiz has none (numeric, fields)
+    fix: add questions of that kind, or change mix in brief.yaml if the user agreed
+mix/quiz.md: 0 errors, 1 warning

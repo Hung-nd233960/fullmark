@@ -1,0 +1,4 @@
+profile default (built-in) from the default; config: none
+invalid/rubric-sum.md:8: error rubric.sum: the criteria add up to 2, but the question is worth 3
+    fix: make the criteria's points add up to the question's points
+invalid/rubric-sum.md: 1 error, 0 warnings

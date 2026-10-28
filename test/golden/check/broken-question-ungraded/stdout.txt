@@ -1,0 +1,4 @@
+profile default (built-in) from the default; config: none
+invalid/scale-graded-true.md:5: error question.ungraded: a `scale` is always ungraded: `graded=` is not allowed
+    fix: remove graded
+invalid/scale-graded-true.md: 1 error, 0 warnings

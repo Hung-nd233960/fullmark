@@ -1,0 +1,3 @@
+check
+quizzes/*.md
+--json

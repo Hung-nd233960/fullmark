@@ -1,0 +1,6 @@
+examples/calculus => calculus
+examples/exam => exam
+examples/ielts => ielts
+examples/medical => medical
+examples/rust => rust
+examples/survey => survey

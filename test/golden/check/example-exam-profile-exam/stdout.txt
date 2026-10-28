@@ -1,0 +1,2 @@
+profile exam (built-in) from --profile; config: none
+exam/quiz.md: 0 errors, 0 warnings

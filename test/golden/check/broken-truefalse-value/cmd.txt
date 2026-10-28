@@ -1,0 +1,2 @@
+check
+invalid/truefalse-not-bool.md

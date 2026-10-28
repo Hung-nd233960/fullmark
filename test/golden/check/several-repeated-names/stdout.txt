@@ -1,0 +1,4 @@
+{"status":"ok","file":"quizzes/c.md","profile":"default","config":[],"errors":0,"warnings":0,"issues":[],"ignored":[]}
+{"status":"ok","file":"quizzes/a.md","profile":"default","config":[],"errors":0,"warnings":0,"issues":[],"ignored":[]}
+{"status":"failed","file":"quizzes/b.md","profile":"default","config":[],"errors":1,"warnings":0,"issues":[{"rule":"choice.correct-count","level":"error","file":"quizzes/b.md","line":5,"message":"a single-answer question needs exactly one [x], not 0","fix":"mark one choice, or use type=multi"}],"ignored":[]}
+{"status":"done","ok":2,"failed":1}

@@ -1,0 +1,4 @@
+profile default (built-in) from the default; config: none
+invalid/ignore-no-because.md:5: error ignore.invalid: check-ignore needs a reason
+    fix: add because="why this finding does not apply here"; the reason is required
+invalid/ignore-no-because.md: 1 error, 0 warnings

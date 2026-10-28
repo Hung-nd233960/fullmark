@@ -1,0 +1,2 @@
+profile survey (built-in) from the survey default; config: none
+survey/quiz.md: 0 errors, 0 warnings

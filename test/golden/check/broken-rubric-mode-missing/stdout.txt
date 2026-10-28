@@ -1,0 +1,4 @@
+profile default (built-in) from the default; config: none
+invalid/rubric-mode-missing.md:8: error rubric.mode-missing: this rubric has points, weights or a scale but no `mode`
+    fix: declare `mode: additive` (points that add up) or `mode: banded` (bands with a scale)
+invalid/rubric-mode-missing.md: 1 error, 0 warnings

@@ -1,0 +1,2 @@
+check
+invalid/ignore-no-because.md

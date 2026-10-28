@@ -1,0 +1,4 @@
+profile default (built-in) from the default; config: none
+invalid/fields-empty.md:5: error fields.empty: a fields question needs at least one field
+    fix: add fields: - label: ...
+invalid/fields-empty.md: 1 error, 0 warnings

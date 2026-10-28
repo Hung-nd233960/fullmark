@@ -1,0 +1,3 @@
+profile default (built-in) from the default; config: none
+quiz.md:5: info config.ignored: `choice.correct-longest` is ignored here: the long answer is the point
+quiz.md: 0 errors, 0 warnings, 1 ignored

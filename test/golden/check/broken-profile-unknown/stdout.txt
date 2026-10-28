@@ -1,0 +1,4 @@
+profile default (built-in) from the default; config: none
+invalid/profile-unknown.md:3: error profile.unknown: unknown profile `exma`
+    fix: did you mean `exam`?
+invalid/profile-unknown.md: 1 error, 0 warnings

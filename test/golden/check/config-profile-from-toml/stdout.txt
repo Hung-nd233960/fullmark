@@ -1,0 +1,2 @@
+profile practice (fullmark.toml:4, built-in) from [check] profile; config: fullmark.toml
+quiz.md: 0 errors, 0 warnings

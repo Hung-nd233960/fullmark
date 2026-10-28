@@ -1,0 +1,4 @@
+profile paper (fullmark.toml:1, built-in) from --profile; config: fullmark.toml
+quiz.md:1: error custom.two-essays: The paper needs two essays. (found 0 questions, wanted at least 2)
+    fix: add questions that match, or change the check
+quiz.md: 1 error, 0 warnings

@@ -1,0 +1,10 @@
+[profiles.paper]
+extends = "default"
+
+[[profiles.paper.checks]]
+id = "custom.two-essays"
+kind = "count"
+where = { type = "essay" }
+min = 2
+level = "error"
+message = "The paper needs two essays."

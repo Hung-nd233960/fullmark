@@ -1,0 +1,4 @@
+profile default (built-in) from the default; config: none
+invalid/single-none-checked.md:5: error choice.correct-count: a single-answer question needs exactly one [x], not 0
+    fix: mark one choice, or use type=multi
+invalid/single-none-checked.md: 1 error, 0 warnings

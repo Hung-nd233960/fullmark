@@ -1,0 +1,4 @@
+profile default (built-in) from the default; config: none
+invalid/duplicate-id.md:10: error question.id-duplicate: the id "x" is already used on line 5
+    fix: delete the id from the copy and run: quiz ids FILE
+invalid/duplicate-id.md: 1 error, 0 warnings

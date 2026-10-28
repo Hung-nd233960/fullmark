@@ -1,0 +1,4 @@
+profile default (built-in) from the default; config: none
+invalid/fm-no-front-matter.md:1: error syntax.front-matter: the file has no front matter
+    fix: start the file with --- , a title: line and --- 
+invalid/fm-no-front-matter.md: 1 error, 0 warnings

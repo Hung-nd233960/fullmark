@@ -1,0 +1,3 @@
+{"status":"ok","file":"quizzes/a.md","profile":"default","config":[],"errors":0,"warnings":0,"issues":[],"ignored":[]}
+{"status":"error","file":"quizzes/nope.md","message":"no such file"}
+{"status":"done","ok":1,"failed":1}

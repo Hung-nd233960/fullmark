@@ -1,0 +1,4 @@
+profile default (built-in) from the default; config: none
+invalid/ordering-one-item.md:5: error ordering.items: an ordering question needs a list of at least two items
+    fix: write the steps as 1. 2. 3. in the correct order
+invalid/ordering-one-item.md: 1 error, 0 warnings

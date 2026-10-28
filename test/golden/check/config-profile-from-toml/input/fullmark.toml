@@ -1,0 +1,5 @@
+[check]
+profile = "practice"
+
+[profiles.practice]
+extends = "draft"

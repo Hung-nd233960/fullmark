@@ -1,0 +1,3 @@
+quizzes/a.md: profile default (built-in) from the default; config: none
+quizzes/a.md: 0 errors, 0 warnings
+1 done, 1 failed

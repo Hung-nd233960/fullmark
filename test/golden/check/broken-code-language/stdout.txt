@@ -1,0 +1,4 @@
+profile default (built-in) from the default; config: none
+invalid/code-no-language.md:5: error code.language: a code question needs a `language`
+    fix: add language: python
+invalid/code-no-language.md: 1 error, 0 warnings

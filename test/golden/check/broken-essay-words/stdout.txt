@@ -1,0 +1,3 @@
+profile default (built-in) from the default; config: none
+invalid/essay-words.md:8: error essay.words: min_words (100) is above max_words (50)
+invalid/essay-words.md: 1 error, 0 warnings

@@ -1,0 +1,2 @@
+check
+invalid/scale-graded-true.md

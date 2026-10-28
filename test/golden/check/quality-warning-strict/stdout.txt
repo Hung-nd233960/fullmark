@@ -1,0 +1,4 @@
+profile default (built-in) from the default; config: none
+quality/choice.correct-longest.md:7: warning choice.correct-longest: the right choice is much longer than every wrong one, which gives it away
+    fix: shorten the right choice, or lengthen the wrong ones to match
+quality/choice.correct-longest.md: 0 errors, 1 warning

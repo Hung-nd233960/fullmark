@@ -1,0 +1,2 @@
+check
+invalid/section-pick-zero.md

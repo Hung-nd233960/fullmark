@@ -1,0 +1,3 @@
+check
+invalid/rubric-sum.md
+--json

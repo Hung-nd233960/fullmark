@@ -1,0 +1,4 @@
+profile default (built-in) from the default; config: none
+invalid/asset-outside.md:7: error asset.outside: "../valid/assets/gradient.png" is outside the quiz folder
+    fix: move the file into the quiz folder or below it
+invalid/asset-outside.md: 1 error, 0 warnings

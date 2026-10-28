@@ -1,0 +1,4 @@
+profile default (built-in) from the default; config: none
+invalid/section-pick-zero.md:5: error section.pick: pick=0, but the section has 2 questions
+    fix: pick from 1 up to the number of questions
+invalid/section-pick-zero.md: 1 error, 0 warnings

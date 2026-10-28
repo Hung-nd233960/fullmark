@@ -1,0 +1,4 @@
+profile default (built-in) from the default; config: none
+invalid/preamble.md:5: error syntax.preamble: text between the front matter and the first heading
+    fix: put it in `description`, or in the intro of a section
+invalid/preamble.md: 1 error, 0 warnings

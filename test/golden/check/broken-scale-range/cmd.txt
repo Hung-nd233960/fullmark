@@ -1,0 +1,2 @@
+check
+invalid/scale-range-too-wide.md

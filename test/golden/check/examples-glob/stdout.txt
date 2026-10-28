@@ -1,0 +1,13 @@
+calculus/quiz.md: profile default (built-in) from the default; config: none
+calculus/quiz.md: 0 errors, 0 warnings
+exam/quiz.md: profile default (built-in) from the default; config: none
+exam/quiz.md: 0 errors, 0 warnings
+ielts/quiz.md: profile default (built-in) from the default; config: none
+ielts/quiz.md: 0 errors, 0 warnings
+medical/quiz.md: profile default (built-in) from the default; config: none
+medical/quiz.md: 0 errors, 0 warnings
+rust/quiz.md: profile default (built-in) from the default; config: none
+rust/quiz.md: 0 errors, 0 warnings
+survey/quiz.md: profile survey (built-in) from the survey default; config: none
+survey/quiz.md: 0 errors, 0 warnings
+6 done, 0 failed

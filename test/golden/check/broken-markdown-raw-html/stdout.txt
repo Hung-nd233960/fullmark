@@ -1,0 +1,4 @@
+profile default (built-in) from the default; config: none
+invalid/raw-html-tag.md:7: error markdown.raw-html: raw HTML <div> is not allowed in a quiz
+    fix: use the Markdown extensions of QUIZ_SYNTAX.md, section 8
+invalid/raw-html-tag.md: 1 error, 0 warnings

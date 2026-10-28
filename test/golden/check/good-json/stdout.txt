@@ -1,0 +1,1 @@
+{"status":"ok","file":"quiz.md","profile":"default","config":[],"errors":0,"warnings":0,"issues":[],"ignored":[]}

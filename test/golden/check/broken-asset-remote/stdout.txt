@@ -1,0 +1,4 @@
+profile default (built-in) from the default; config: none
+invalid/media-remote.md:7: error asset.remote: "https://example.com/a.png" is a URL: remote files are not supported
+    fix: put the file in the quiz folder and refer to it by relative path
+invalid/media-remote.md: 1 error, 0 warnings

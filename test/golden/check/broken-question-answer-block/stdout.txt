@@ -1,0 +1,4 @@
+profile default (built-in) from the default; config: none
+invalid/answer-missing.md:5: error question.answer-block: a `numeric` question needs an answer block
+    fix: add a ```answer block
+invalid/answer-missing.md: 1 error, 0 warnings

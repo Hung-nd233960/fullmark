@@ -1,0 +1,3 @@
+quiz.md: the config has errors
+fullmark.toml:3: `choice.count` is a fixed rule: no profile can change it
+    fix: fixed rules say whether a quiz can work at all; fix the quiz instead
