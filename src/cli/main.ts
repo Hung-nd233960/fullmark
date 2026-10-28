@@ -1,9 +1,10 @@
 import { Command } from "commander";
-import { type CheckOptions, runCheck } from "./check";
+import type { CheckOptions } from "./check";
 import { EXIT, type ExitCode } from "./exit-codes";
-import { type GradeOptions, runGrade } from "./grade";
-import { type IdsOptions, type Io, runIds, seededIds } from "./ids";
-import { type RulesOptions, runRules } from "./rules";
+import type { GradeOptions } from "./grade";
+import type { IdsOptions, Io } from "./ids";
+import type { RulesOptions } from "./rules";
+import { seededIds } from "./seed";
 
 export const VERSION = "1.0.0-alpha.0";
 
@@ -47,7 +48,7 @@ export function buildProgram(outcome: Outcome = { exit: EXIT.done }, io: Io = te
     .option("--json", "print one JSON object per file on stdout")
     .option("--plain", "no colours and no progress line, even in a terminal")
     .action(
-      (
+      async (
         files: string[],
         options: {
           profile?: string;
@@ -66,7 +67,7 @@ export function buildProgram(outcome: Outcome = { exit: EXIT.done }, io: Io = te
           json: Boolean(options.json),
           plain: Boolean(options.plain) || noColor(),
         };
-        outcome.exit = runCheck(files, opts, io);
+        outcome.exit = (await import("./check")).runCheck(files, opts, io);
       },
     );
 
@@ -83,7 +84,7 @@ export function buildProgram(outcome: Outcome = { exit: EXIT.done }, io: Io = te
     .option("--json", "print the rules as one JSON object on stdout")
     .option("--plain", "no colours, even in a terminal")
     .action(
-      (
+      async (
         rule: string | undefined,
         options: { profile?: string; for?: string; config?: string; json?: boolean; plain?: boolean },
       ) => {
@@ -94,7 +95,7 @@ export function buildProgram(outcome: Outcome = { exit: EXIT.done }, io: Io = te
           json: Boolean(options.json),
           plain: Boolean(options.plain) || noColor(),
         };
-        outcome.exit = runRules(rule ?? null, opts, io);
+        outcome.exit = (await import("./rules")).runRules(rule ?? null, opts, io);
       },
     );
 
@@ -111,7 +112,7 @@ export function buildProgram(outcome: Outcome = { exit: EXIT.done }, io: Io = te
         json: Boolean(options.json),
         plain: Boolean(options.plain) || "NO_COLOR" in process.env,
       };
-      outcome.exit = await runIds(files, opts, io);
+      outcome.exit = await (await import("./ids")).runIds(files, opts, io);
     });
 
   program
@@ -137,7 +138,7 @@ export function buildProgram(outcome: Outcome = { exit: EXIT.done }, io: Io = te
           web: Boolean(options.web),
           name: options.name ?? null,
         };
-        outcome.exit = await runGrade(results, opts, io);
+        outcome.exit = await (await import("./grade")).runGrade(results, opts, io);
       },
     );
   return program;
