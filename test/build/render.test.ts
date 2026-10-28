@@ -29,7 +29,7 @@ describe("markdown for the page", () => {
     expect(md.block("<script>alert(1)</script>")).not.toContain("<script>");
   });
 
-  it("keeps maths as escaped text until the maths slice", () => {
+  it("keeps maths as escaped text when it is given no maths tool", () => {
     expect(md.inline("$a < b$")).toBe('<span class="math">$a &lt; b$</span>');
   });
 });

@@ -1,5 +1,5 @@
 import { execFileSync } from "node:child_process";
-import { copyFileSync, mkdtempSync, readFileSync } from "node:fs";
+import { copyFileSync, cpSync, mkdtempSync, readFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import AxeBuilder from "@axe-core/playwright";
@@ -70,8 +70,8 @@ export async function expectGradeMatches(
   return onPage.results;
 }
 
-export async function noViolations(page: Page): Promise<void> {
-  const result = await new AxeBuilder({ page }).analyze();
+export async function noViolations(page: Page, skip: string[] = []): Promise<void> {
+  const result = await new AxeBuilder({ page }).disableRules(skip).analyze();
   expect(
     result.violations.map((v) => ({ id: v.id, nodes: v.nodes.map((n) => n.target.join(" ")).slice(0, 3) })),
   ).toEqual([]);
@@ -92,3 +92,12 @@ export function watch(page: Page) {
 }
 
 export const card = (page: Page, id: string) => page.locator(`article[data-qid="${id}"]`);
+
+/** Like `buildIn`, for a quiz that has a folder (images, sheets): the whole folder is copied. */
+export function buildFolder(sourceDir: string, name = "quiz.md"): { dir: string; url: string } {
+  const dir = mkdtempSync(join(tmpdir(), "fm-e2e-"));
+  execFileSync(process.execPath, ["-e", `require("fs").mkdirSync(${JSON.stringify(join(dir, ".git"))})`]);
+  cpSync(join(root, sourceDir), dir, { recursive: true });
+  run(dir, "build", name, "--built-at", "2026-10-28T10:00:00+07:00");
+  return { dir, url: `file:///${join(dir, name.replace(/\.md$/, ".html")).replaceAll("\\", "/")}` };
+}

@@ -61,6 +61,10 @@ export type PageQuiz = {
   plan: Plan;
   /** the answer key blob (`core/keyblob`) */
   key: string;
+  /** the materials sheets in the order listed, as HTML; absent when the quiz has none */
+  materials?: { name: string; html: string }[];
+  /** present (true) when the quiz has maths: the page then carries KaTeX's styles and fonts */
+  hasMath?: true;
 };
 
 export type PageData = { version: 1; quizzes: PageQuiz[] };

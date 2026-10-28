@@ -10,14 +10,16 @@ import { planFor } from "../core/plan";
 import { App } from "../page/App";
 import type { KeyBlob, PageCriterion, PageData, PageItem, PageQuestion, PageQuiz, PageSection } from "../page/data";
 import { createStore } from "../page/store";
-import { type Asset, createRenderer } from "./render";
+import type { Highlight } from "./highlight";
+import { type Asset, createRenderer, type RenderTools } from "./render";
+import type { MathTools } from "./tex";
 
 /** One quiz to put on a page: the IR the check passed, its hash, and the files it refers to. */
 export type BuildQuiz = {
   quiz: Quiz;
   hash: string;
   assets: readonly Asset[];
-  /** the materials sheets in the order listed, for the sidebar (2f) and the paper (2k); the page does not use them yet */
+  /** the materials sheets in the order listed, rendered into `PageQuiz.materials` (the sidebar of 2f shows them) */
   sheets?: readonly { path: string; name: string; source: string }[];
 };
 
@@ -28,6 +30,10 @@ export type PageOptions = {
   /** an ISO time, written into the generator meta; the CLI reads the clock, never this module */
   builtAt: string;
   version: string;
+  /** KaTeX, when it is available: without it maths stays as its source */
+  math?: MathTools;
+  /** the highlighter for the languages the quizzes use (`loadHighlighter`); null or absent: code stays plain */
+  highlight?: Highlight | null;
 };
 
 /** A lone `<p>…</p>` loses its paragraph, so a choice is not set apart from its marker. */
@@ -78,10 +84,14 @@ const ENTITIES: [string, string][] = [
 const plain = (html: string): string =>
   ENTITIES.reduce((text, [entity, char]) => text.replaceAll(entity, char), html.replace(/<[^>]*>/g, "")).trim();
 
-const item = (md: Md, source: string): PageItem => {
-  const html = unwrap(md.block(source));
-  return { html, label: plain(html) };
-};
+/**
+ * An item of `ordering` or `matching`. Its label (an `aria-label`, an `<option>`) cannot hold HTML, so it is made from
+ * the source with the maths left as TeX between `$` signs, not from KaTeX's text.
+ */
+const item = (md: Md, labels: Md, source: string): PageItem => ({
+  html: unwrap(md.block(source)),
+  label: plain(unwrap(labels.block(source))),
+});
 
 /** A rubric's criteria as the page lists them before Submit; null when `show_rubric` is false or there are none. */
 function criteriaOf(q: { rubric: Rubric | null; showRubric: boolean }, md: Md): PageCriterion[] | null {
@@ -108,7 +118,13 @@ const inShownOrder = <T>(list: readonly T[], order: readonly number[] | undefine
 };
 
 /** One question as the page sees it: its prompt and what the learner sees to answer, never its key. */
-function pageQuestion(q: Question, md: Md, t: Messages["page"], order: readonly number[] | undefined): PageQuestion {
+function pageQuestion(
+  q: Question,
+  md: Md,
+  labels: Md,
+  t: Messages["page"],
+  order: readonly number[] | undefined,
+): PageQuestion {
   const base = {
     id: q.id,
     points: q.points,
@@ -159,14 +175,18 @@ function pageQuestion(q: Question, md: Md, t: Messages["page"], order: readonly 
         labels: q.labels.map((l) => ({ value: l.value, html: unwrap(md.block(l.text)) })),
       };
     case "ordering":
-      return { ...base, type: "ordering", items: inShownOrder(q.items, order, q.id).map((i) => item(md, i.text)) };
+      return {
+        ...base,
+        type: "ordering",
+        items: inShownOrder(q.items, order, q.id).map((i) => item(md, labels, i.text)),
+      };
     case "matching": {
       const rights = [...q.pairs.map((p) => p.right), ...q.distractors.map((d) => d.text)];
       return {
         ...base,
         type: "matching",
         lefts: q.pairs.map((p) => unwrap(md.block(p.left))),
-        rights: inShownOrder(rights, order, q.id).map((r) => item(md, r)),
+        rights: inShownOrder(rights, order, q.id).map((r) => item(md, labels, r)),
       };
     }
     case "essay":
@@ -177,8 +197,26 @@ function pageQuestion(q: Question, md: Md, t: Messages["page"], order: readonly 
 }
 
 /** `plan` is for tests: it replaces the plan the quiz would be given. */
-export function pageQuizOf({ quiz, hash, assets }: BuildQuiz, plan?: ReturnType<typeof planFor>): PageQuiz {
-  const md = createRenderer(assets);
+export function pageQuizOf(
+  { quiz, hash, assets, sheets }: BuildQuiz,
+  plan?: ReturnType<typeof planFor>,
+  tools: Pick<RenderTools, "math" | "highlight"> = {},
+): PageQuiz {
+  let hasMath = false;
+  const used: Pick<RenderTools, "math" | "highlight"> = {
+    ...tools,
+    ...(tools.math
+      ? {
+          math: (tex: string, display: boolean) => {
+            const html = (tools.math as NonNullable<RenderTools["math"]>)(tex, display);
+            hasMath = true;
+            return html;
+          },
+        }
+      : {}),
+  };
+  const md = createRenderer(assets, used);
+  const labels = createRenderer(assets);
   const t = quiz.frontMatter.uiLang === "vi" ? vi.page : en.page;
   plan ??= planFor(quiz, { source: "full", quizHash: hash });
   const explanations: Record<string, string> = {};
@@ -191,9 +229,14 @@ export function pageQuizOf({ quiz, hash, assets }: BuildQuiz, plan?: ReturnType<
       if (q.explanation) explanations[q.id] = md.block(q.explanation.text);
       const sample = sampleHtml(q, md);
       if (sample !== null) samples[q.id] = sample;
-      return pageQuestion(q, md, t, plan.optionOrder?.[q.id]);
+      return pageQuestion(q, md, labels, t, plan.optionOrder?.[q.id]);
     }),
   }));
+  const materials = (sheets ?? []).map((s) => {
+    const slash = s.path.lastIndexOf("/");
+    const sheet = createRenderer(assets, { ...used, base: slash < 0 ? "" : s.path.slice(0, slash) });
+    return { name: s.name, html: sheet.block(s.source.replace(/^\uFEFF/, "")) };
+  });
   return {
     id: quiz.frontMatter.id,
     hash,
@@ -204,6 +247,9 @@ export function pageQuizOf({ quiz, hash, assets }: BuildQuiz, plan?: ReturnType<
     sections,
     plan,
     key: encodeKey(keyOf(quiz, explanations, samples), hash),
+    // only when there is something: a quiz without sheets or maths keeps the data it had
+    ...(materials.length > 0 ? { materials } : {}),
+    ...(hasMath ? { hasMath: true as const } : {}),
   };
 }
 
@@ -224,13 +270,19 @@ const escapeAttr = (text: string): string =>
 export function buildPage(quizzes: readonly BuildQuiz[], options: PageOptions): string {
   if (quizzes.length === 0) throw new Error("a page needs at least one quiz");
   if (options.runtime.toLowerCase().includes("</script")) throw new Error("the runtime holds a closing script tag");
-  const data: PageData = { version: 1, quizzes: quizzes.map((q) => pageQuizOf(q)) };
+  const maths = options.math?.start();
+  const data: PageData = {
+    version: 1,
+    quizzes: quizzes.map((q) => pageQuizOf(q, undefined, { math: maths?.render, highlight: options.highlight })),
+  };
   const tree = renderToString(h(App, { store: createStore(data) }));
   const first = data.quizzes[0] as PageQuiz;
+  // KaTeX's styles and fonts, once, and only for a page that has maths
+  const mathCss = data.quizzes.some((q) => q.hasMath) ? (maths?.css() ?? null) : null;
   const csp = [
     "default-src 'none'",
     `script-src ${sha256Source(options.runtime)}`,
-    `style-src ${sha256Source(options.css)}`,
+    `style-src ${[options.css, ...(mathCss === null ? [] : [mathCss])].map(sha256Source).join(" ")}`,
     "img-src data:",
     "media-src data:",
     "font-src data:",
@@ -247,6 +299,7 @@ export function buildPage(quizzes: readonly BuildQuiz[], options: PageOptions): 
     `<meta name="generator" content="${escapeAttr(`fullmark ${options.version}; built ${options.builtAt}`)}">`,
     `<title>${escapeAttr(first.title)}</title>`,
     `<style>${options.css}</style>`,
+    ...(mathCss === null ? [] : [`<style id="fm-katex">${mathCss}</style>`]),
     "</head>",
     "<body>",
     `<div id="fm-root">${tree}</div>`,

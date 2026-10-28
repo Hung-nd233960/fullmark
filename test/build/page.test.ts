@@ -237,10 +237,16 @@ describe("build page: what it refuses", () => {
 });
 
 describe("build page: sheets", () => {
-  it("accepts BuildQuiz.sheets and leaves the page unchanged", () => {
-    const sheets = [{ path: "materials/a.md", name: "A", source: "# A\n\nsecret-sheet-text\n" }];
-    const withSheets = buildPage([{ ...singles, sheets }], options);
-    expect(withSheets).toBe(buildPage([singles], options));
-    expect(withSheets).not.toContain("secret-sheet-text");
+  it("puts the sheets in the page data, as HTML in the order listed, and nothing else changes", () => {
+    const sheets = [
+      { path: "materials/a.md", name: "A", source: "# A\n\nsheet-text-a\n" },
+      { path: "materials/b.md", name: "B", source: "# B\n\nsheet-text-b\n" },
+    ];
+    const dataOf = (html: string) => JSON.parse(/id="fm-data">([\s\S]*?)<\/script>/.exec(html)?.[1] ?? "null");
+    const data = dataOf(buildPage([{ ...singles, sheets }], options));
+    expect(data.quizzes[0].materials.map((m: { name: string }) => m.name)).toEqual(["A", "B"]);
+    expect(data.quizzes[0].materials[1].html).toContain("<p>sheet-text-b</p>");
+    delete data.quizzes[0].materials;
+    expect(data).toEqual(dataOf(buildPage([singles], options)));
   });
 });

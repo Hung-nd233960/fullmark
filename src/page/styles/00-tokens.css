@@ -21,3 +21,21 @@
     --font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   }
 }
+
+/* Colours of highlighted code (build-time Shiki, CSS-variables theme). Provisional light values: the themes slice
+   generates these from the theme tokens, and gives the dark themes their own. */
+@layer tokens {
+  :root {
+    --fm-code-foreground: #23252b;
+    --fm-code-background: #eeece4;
+    --fm-code-token-comment: #5d6270;
+    --fm-code-token-keyword: #8a2b6b;
+    --fm-code-token-string: #2d6a3e;
+    --fm-code-token-string-expression: #2d6a3e;
+    --fm-code-token-constant: #1f5f8a;
+    --fm-code-token-parameter: #8a5a12;
+    --fm-code-token-function: #5b3a99;
+    --fm-code-token-punctuation: #23252b;
+    --fm-code-token-link: #2f5f8a;
+  }
+}

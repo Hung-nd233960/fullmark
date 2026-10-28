@@ -446,3 +446,54 @@
     border-top: 1px solid var(--border);
   }
 }
+
+@layer components {
+  .fm-hl {
+    margin: 10px 0;
+    padding: 10px 12px;
+    overflow-x: auto;
+    color: var(--fm-code-foreground);
+    background: var(--fm-code-background);
+    border-radius: 4px;
+    font-family: ui-monospace, "Cascadia Code", Consolas, Menlo, monospace;
+    font-size: 0.92rem;
+    tab-size: 4;
+  }
+
+  .fm-hl code {
+    font: inherit;
+  }
+
+  .fm-tk-comment {
+    color: var(--fm-code-token-comment);
+  }
+
+  .fm-tk-keyword {
+    color: var(--fm-code-token-keyword);
+  }
+
+  .fm-tk-string,
+  .fm-tk-string-expression {
+    color: var(--fm-code-token-string);
+  }
+
+  .fm-tk-constant {
+    color: var(--fm-code-token-constant);
+  }
+
+  .fm-tk-parameter {
+    color: var(--fm-code-token-parameter);
+  }
+
+  .fm-tk-function {
+    color: var(--fm-code-token-function);
+  }
+
+  .fm-tk-punctuation {
+    color: var(--fm-code-token-punctuation);
+  }
+
+  .fm-tk-link {
+    color: var(--fm-code-token-link);
+  }
+}

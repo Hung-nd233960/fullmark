@@ -2,6 +2,8 @@ import type { MarkdownIt as Md } from "markdown-it";
 import { toBase64 } from "../core/keyblob";
 import { scanBlanks } from "../core/parse/blanks";
 import { createMarkdown } from "../core/parse/markdown";
+import { mathParts } from "../core/parse/tex";
+import { type Highlight, languageOf } from "./highlight";
 
 const MARK_OPEN = String.fromCharCode(0xe000);
 const MARK_CLOSE = String.fromCharCode(0xe001);
@@ -26,6 +28,15 @@ const MIME: Record<string, string> = {
 const extensionOf = (path: string): string => path.slice(path.lastIndexOf(".") + 1).toLowerCase();
 const isAudio = (path: string): boolean => (MIME[extensionOf(path)] ?? "").startsWith("audio/");
 
+/** What the renderer is given to make maths and code: without them maths stays text and code stays plain. */
+export type RenderTools = {
+  /** the HTML of one maths span; may throw, and then the span is shown as its source */
+  math?: (tex: string, display: boolean) => string;
+  highlight?: Highlight | null;
+  /** the folder of the file the Markdown is from, relative to the quiz folder (`/` separators): a sheet's images */
+  base?: string;
+};
+
 /** `a/./b/../c` to `a/c`, as the loader keys the assets. */
 function normalisePath(path: string): string {
   const out: string[] = [];
@@ -46,9 +57,13 @@ export function dataUri(assets: readonly Asset[], path: string): string | null {
 
 /**
  * Markdown to HTML for the page (TECHNICAL_DESIGN.md, foundation 3): raw HTML is off, images and audio become `data:`
- * URIs, and an image's `{width=N}` sets its width. Maths stays as plain text until the maths slice.
+ * URIs, and an image's `{width=N}` sets its width. Maths is KaTeX's HTML and fenced code is highlighted when `tools`
+ * says how; without them both stay plain.
  */
-export function createRenderer(assets: readonly Asset[]): {
+export function createRenderer(
+  assets: readonly Asset[],
+  tools: RenderTools = {},
+): {
   block(source: string): string;
   inline(source: string): string;
   /** a `blanks` prompt with each `[[…]]` replaced by an `<input class="fm-blank">`; throws unless it finds `kinds.length` */
@@ -57,12 +72,36 @@ export function createRenderer(assets: readonly Asset[]): {
   const md: Md = createMarkdown();
   md.set({ html: false });
   const esc = md.utils.escapeHtml;
-  md.renderer.rules.math_inline = (tokens, i) => `<span class="math">${esc(tokens[i]?.content ?? "")}</span>`;
-  md.renderer.rules.math_block = (tokens, i) => `<div class="math">${esc(tokens[i]?.content ?? "")}</div>\n`;
+  /** a maths span as KaTeX's HTML; as its escaped source when there is no KaTeX, or the TeX is bad (check stops that) */
+  const mathHtml = (content: string): string => {
+    if (tools.math) {
+      const { tex, display } = mathParts(content);
+      try {
+        return tools.math(tex, display);
+      } catch {
+        // fall through: the source, so that a bad span is visible and does not stop the page
+      }
+    }
+    return esc(content);
+  };
+  md.renderer.rules.math_inline = (tokens, i) => `<span class="math">${mathHtml(tokens[i]?.content ?? "")}</span>`;
+  md.renderer.rules.math_block = (tokens, i) => `<div class="math">${mathHtml(tokens[i]?.content ?? "")}</div>\n`;
+  // A fence of a known language is highlighted. A blank cut from it stands as a marker; for the highlighter it is a
+  // word of letters (one token in every grammar), and it is a marker again in the HTML that comes back.
+  const plainFence = md.renderer.rules.fence;
+  md.renderer.rules.fence = (tokens, i, options, env, self) => {
+    const token = tokens[i];
+    const lang = languageOf(token?.info ?? "");
+    if (!token || !tools.highlight || lang === "") return plainFence?.(tokens, i, options, env, self) ?? "";
+    const code = token.content.replace(MARKER, (_m, n: string) => `FMBLANK${n}FM`);
+    const html = tools.highlight(code, lang);
+    if (html === null) return plainFence?.(tokens, i, options, env, self) ?? "";
+    return html.replace(/FMBLANK([0-9]+)FM/g, (_m, n: string) => `${MARK_OPEN}${n}${MARK_CLOSE}`);
+  };
   md.renderer.rules.image = (tokens, i, _options, _env, self) => {
     const token = tokens[i];
     if (!token) return "";
-    const path = String(token.attrGet("src") ?? "");
+    const path = `${tools.base ? `${tools.base}/` : ""}${String(token.attrGet("src") ?? "")}`;
     const src = dataUri(assets, path);
     const alt = esc(self.renderInlineAsText(token.children ?? [], md.options, {}));
     if (src === null) return `<span class="missing-asset">${alt}</span>`;

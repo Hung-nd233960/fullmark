@@ -1,7 +1,9 @@
 import { existsSync, readFileSync } from "node:fs";
 import { basename, dirname, extname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { languagesUsed, loadHighlighter } from "../build/highlight";
 import { buildPage } from "../build/page";
+import { katexTools } from "../build/tex";
 import { type WriteError, writeFileAtomic } from "./atomic";
 import { type CheckIo, checkFile, describeOutcome, humanIssue } from "./check";
 import { EXIT, type ExitCode } from "./exit-codes";
@@ -84,6 +86,8 @@ export async function runBuild(patterns: readonly string[], opts: BuildOptions, 
     return EXIT.usage;
   }
 
+  // Shiki loads only if the quiz or a sheet has a fence of a known language; KaTeX only when a span is rendered
+  const highlight = await loadHighlighter(languagesUsed(result.loaded.quiz, result.loaded.sheets));
   const builtAt = opts.builtAt ?? (io.now?.() ?? new Date()).toISOString();
   const html = buildPage(
     [
@@ -99,6 +103,8 @@ export async function runBuild(patterns: readonly string[], opts: BuildOptions, 
       css,
       builtAt,
       version: opts.version,
+      math: katexTools(),
+      highlight,
     },
   );
 
