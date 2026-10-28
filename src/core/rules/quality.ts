@@ -358,6 +358,73 @@ export const QUALITY_RULES: QualityRule[] = [
       return out;
     },
   }),
+  rule({
+    id: "rubric.missing",
+    level: "warning",
+    summary: "a graded essay or code question has no rubric",
+    why: "Without a rubric every grader invents their own criteria, and the marks cannot be compared.",
+    example: file("## Discuss it. {type=essay id=q points=4}"),
+    fix: "add a rubric: list of criteria to the answer block",
+    run(quiz) {
+      const out: Finding[] = [];
+      for (const q of questions(quiz)) {
+        if (q.graded && (q.type === "essay" || q.type === "code") && !q.rubric) {
+          out.push({ line: q.line, message: "the question has no rubric", fix: "add a `rubric:` to the answer block" });
+        }
+      }
+      return out;
+    },
+  }),
+  rule({
+    id: "rubric.thin",
+    level: "warning",
+    summary: "a rubric has too few criteria to grade from",
+    why: "One or two criteria leave most of the mark to impression; a grader needs something to check each point against.",
+    example: file("## Discuss it. {type=essay id=q}\n\n```answer\nrubric:\n  - Defines it\n```"),
+    fix: "split the rubric into at least three things a grader can check",
+    options: z.object({ min: z.number().int().positive().default(3) }).strict(),
+    run(quiz, _ctx, o) {
+      const min = Number(o.min);
+      const out: Finding[] = [];
+      for (const q of questions(quiz)) {
+        if (!q.graded || (q.type !== "essay" && q.type !== "code") || !q.rubric || q.rubric.preset !== null) continue;
+        if (q.rubric.criteria.length < min) {
+          out.push({
+            line: q.rubric.line,
+            message: `the rubric has ${q.rubric.criteria.length} criteria; at least ${min} are expected`,
+            fix: "split the rubric into more things a grader can check",
+          });
+        }
+      }
+      return out;
+    },
+  }),
+  rule({
+    id: "rubric.points-in-text",
+    level: "warning",
+    summary: "a holistic rubric bullet carries points, which nothing adds up",
+    why: "In a holistic rubric the grader gives one mark; a '(1 pts)' in a bullet reads like a share of it but is ignored.",
+    example: file(
+      "## Discuss it. {type=essay id=q points=2}\n\n```answer\nrubric:\n  - Defines it (1 pts)\n  - Uses it (1 pts)\n  - Gives an example\n```",
+    ),
+    fix: "add `mode: additive` so the points count, or remove them from the text",
+    run(quiz) {
+      const out: Finding[] = [];
+      for (const q of questions(quiz)) {
+        if (!q.graded || (q.type !== "essay" && q.type !== "code") || q.rubric?.mode !== "holistic") continue;
+        for (const c of q.rubric.criteria) {
+          if (c.points !== null) {
+            out.push({
+              line: c.line,
+              message: `\`${c.id}\` names ${c.points} pts, but a holistic rubric does not add points up`,
+              fix: "add `mode: additive` so the points count, or remove them from the text",
+            });
+          }
+        }
+      }
+      return out;
+    },
+  }),
 ];
 
 export type { RuleContext };

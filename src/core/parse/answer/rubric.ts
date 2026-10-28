@@ -27,6 +27,7 @@ export function parseRubric(root: YamlRoot, entry: Entry, r: Reporter): Rubric |
       preset: null,
       step: null,
       scale: null,
+      scaleLine: null,
       round: null,
       criteria: criteria(root, seq.items as (Node | null)[], r),
     };
@@ -43,6 +44,7 @@ export function parseRubric(root: YamlRoot, entry: Entry, r: Reporter): Rubric |
     preset: null,
     step: null,
     scale: null,
+    scaleLine: null,
     round: null,
     criteria: [],
   };
@@ -65,6 +67,7 @@ export function parseRubric(root: YamlRoot, entry: Entry, r: Reporter): Rubric |
   out.step = number(src.get("step"));
   const scale = src.get("scale");
   if (scale) {
+    out.scaleLine = scale.line;
     const s = mapSource(root, scale.value);
     if (!s) {
       r.error("syntax.value", scale.line, "`scale` must be a mapping with min, max and step");

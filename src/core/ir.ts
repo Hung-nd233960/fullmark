@@ -75,6 +75,8 @@ export const RubricSchema = z.object({
   preset: z.enum(["ielts-writing-task1", "ielts-writing-task2"]).nullable(),
   step: z.number().nullable(),
   scale: z.object({ min: z.number(), max: z.number(), step: z.number() }).nullable(),
+  /** the line of `scale:` (even when unreadable), where `rubric.scale` reports; null without one */
+  scaleLine: line.nullable(),
   round: z.enum(["nearest-step", "down", "ielts"]).nullable(),
   criteria: z.array(RubricCriterionSchema),
 });

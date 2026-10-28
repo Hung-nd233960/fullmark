@@ -1,4 +1,5 @@
 import type { Rubric } from "../../ir";
+import { checkRubric } from "../../rubric/check";
 import { boolValue, scalarText } from "../yaml-view";
 import type { AnswerEnv } from "./env";
 import { parseRubric } from "./rubric";
@@ -12,8 +13,10 @@ export function parseOpenParts(src: MapSource, env: AnswerEnv): OpenParts {
   const out: OpenParts = { rubric: null, sampleAnswer: null, showRubric: true };
   const rubric = src.get("rubric");
   if (rubric) {
-    if (env.graded) out.rubric = parseRubric(src.root, rubric, r);
-    else {
+    if (env.graded) {
+      out.rubric = parseRubric(src.root, rubric, r);
+      if (out.rubric) checkRubric(out.rubric, env.points, r);
+    } else {
       r.error(
         "question.ungraded-key",
         rubric.line,

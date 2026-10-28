@@ -41,19 +41,15 @@ describe("every rule has a fixture", () => {
   ]);
   const qualityFixtures = new Set(QUALITY_RULES.map((r) => r.id));
 
-  it("triggers each fixed rule (the rubric rules wait for the grading slice)", () => {
+  it("triggers each fixed rule", () => {
     const missing = RULE_IDS.filter(
-      (id) =>
-        !fromInvalid.has(id) &&
-        !byCheckTests.has(id) &&
-        !briefRules.has(id) &&
-        !qualityFixtures.has(id) &&
-        !id.startsWith("rubric."),
+      (id) => !fromInvalid.has(id) && !byCheckTests.has(id) && !briefRules.has(id) && !qualityFixtures.has(id),
     );
     expect(missing).toEqual([]);
   });
 
-  it("holds a fixture for each of the six rubric rules, kept pending until slice 1d", () => {
-    for (const id of RULE_IDS.filter((r) => r.startsWith("rubric."))) expect(fromInvalid.has(id), id).toBe(true);
+  it("holds a fixture for each of the six rubric rules", () => {
+    for (const id of RULE_IDS.filter((r) => r.startsWith("rubric.") && !qualityFixtures.has(r)))
+      expect(fromInvalid.has(id), id).toBe(true);
   });
 });

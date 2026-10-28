@@ -49,6 +49,9 @@ describe("quality rules under each built-in profile", () => {
     "answers.position-skew": ["warning", "info", "error", "off"],
     "code.unknown-language": ["warning", "info", "error", "warning"],
     "question.points-ignored": ["warning", "info", "error", "warning"],
+    "rubric.missing": ["warning", "info", "error", "warning"],
+    "rubric.thin": ["warning", "info", "error", "warning"],
+    "rubric.points-in-text": ["warning", "info", "error", "warning"],
   };
   const profiles = ["default", "draft", "exam", "survey"];
 

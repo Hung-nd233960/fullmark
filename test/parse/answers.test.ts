@@ -241,17 +241,26 @@ describe("rubrics", () => {
     expect(q.type === "essay" && q.rubric).toMatchObject({ preset: "ielts-writing-task2", mode: null, criteria: [] });
   });
 
-  it("keeps inconsistent rubrics, which the grading slice judges", () => {
-    expect(found(withAnswer("type=essay points=3", "rubric:\n  criteria:\n    - {id: a, text: A, points: 1}"))).toEqual(
-      [],
-    );
+  it("judges a rubric against its question", () => {
+    const run = (points: string, body: string) => found(withAnswer(`type=essay ${points}`, body));
+    expect(run("points=3", "rubric:\n  criteria:\n    - {id: a, text: A, points: 1}")).toEqual([
+      "rubric.mode-missing@8",
+    ]);
+    expect(run("points=3", "rubric:\n  mode: additive\n  criteria:\n    - A (1 pts)\n    - B (1 pts)")).toEqual([
+      "rubric.sum@8",
+    ]);
+    expect(run("points=2", "rubric:\n  mode: additive\n  criteria:\n    - A (1 pts)\n    - A (1 pts)")).toEqual([
+      "rubric.duplicate-id@12",
+    ]);
+    expect(run("points=0.3", "rubric:\n  mode: additive\n  step: 0.1\n  criteria:\n    - A (0.3 pts)")).toEqual([]);
+    expect(run("points=0.3", "rubric:\n  mode: additive\n  criteria:\n    - A (0.3 pts)")).toEqual(["rubric.step@11"]);
+    expect(run("points=9", "rubric:\n  mode: banded\n  criteria:\n    - A")).toEqual(["rubric.scale@8"]);
     expect(
-      found(
-        withAnswer("type=essay points=3", "rubric:\n  mode: additive\n  criteria:\n    - A (1 pts)\n    - A (1 pts)"),
-      ),
-    ).toEqual([]);
+      run("points=9", "rubric:\n  mode: banded\n  scale: {min: 0, max: 9, step: 2}\n  criteria:\n    - A"),
+    ).toEqual(["rubric.scale@10"]);
+    expect(run("points=9", "rubric:\n  preset: ielts-writing-task1\n  round: down")).toEqual(["syntax.value@8"]);
+    expect(run("points=9", "rubric:\n  - A (1 pts)\n  - B")).toEqual([]);
   });
-
   it("reports the shape of a rubric that cannot be read", () => {
     expect(found(withAnswer("type=essay", "rubric: nothing"))).toEqual(["syntax.value@8"]);
     expect(found(withAnswer("type=essay", "rubric:\n  mode: odd"))).toEqual(["syntax.value@9"]);

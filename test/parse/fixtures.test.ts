@@ -15,9 +15,6 @@ const opts = { profile: null, config: null, strict: false, review: null, json: t
 type Expected = Record<string, { rule: string; line: number }>;
 const expected: Expected = JSON.parse(readFileSync(join(invalidDir, "expected.json"), "utf8"));
 
-/** The rules judged by a later slice: the grading slice for `rubric.*`. */
-const pending = (rule: string) => rule.startsWith("rubric.");
-
 /** The rules `check` raises over a parsed quiz, not the parser: they are judged through `quiz check`. */
 const byCheck = (rule: string) => rule === "ignore.invalid" || rule === "profile.unknown";
 
@@ -49,13 +46,6 @@ describe("valid quizzes parse with no issue", () => {
 describe("invalid fixtures give exactly their rule and line", () => {
   for (const [name, want] of Object.entries(expected)) {
     const file = join(invalidDir, `${name}.md`);
-    if (pending(want.rule)) {
-      it.todo(`${name}: ${want.rule} at line ${want.line} (judged in a later slice)`);
-      it(`${name}: no other issue is raised meanwhile`, () => {
-        expect(loadQuiz(file).issues).toEqual([]);
-      });
-      continue;
-    }
     if (byCheck(want.rule)) {
       it(`${name}: ${want.rule} at line ${want.line}, through check`, () => {
         const c = capture(invalidDir);

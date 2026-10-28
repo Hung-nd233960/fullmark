@@ -324,7 +324,7 @@
   },
   "rubric-step": {
     "rule": "rubric.step",
-    "line": 8
+    "line": 12
   },
   "rubric-sum": {
     "rule": "rubric.sum",
@@ -332,7 +332,7 @@
   },
   "rubric-weights": {
     "rule": "rubric.weights",
-    "line": 11,
+    "line": 12,
     "note": "the criterion with the bad weight"
   },
   "scale-graded-true": {
