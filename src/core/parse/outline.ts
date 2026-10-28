@@ -46,10 +46,13 @@ export function outline(text: string): Outline {
   const stack: Entry[] = [];
   const realDepth = () => stack.filter((e) => !e.phantom).length;
   let containerDepth = 0;
+  // Table cells carry no line map: they take the line of their row.
+  let rowLine = 0;
 
   for (let i = 0; i < tokens.length; i++) {
     const t = tokens[i] as Token;
-    collect(t, out);
+    if (t.type === "tr_open" && t.map) rowLine = t.map[0];
+    collect(t, out, rowLine);
     if (t.nesting === 1) {
       const isContainer = t.type === "container_q_open";
       const [start, end] = t.map ?? [0, 0];
@@ -84,8 +87,8 @@ export function outline(text: string): Outline {
 }
 
 /** Records raw HTML, images and text pieces from a token, wherever it sits. */
-function collect(t: Token, out: Outline): void {
-  const start = t.map?.[0] ?? 0;
+function collect(t: Token, out: Outline, rowLine: number): void {
+  const start = t.map?.[0] ?? rowLine;
   if (t.type === "html_block") {
     out.rawHtml.push({ line: start, tag: tagName(t.content) });
   } else if (t.type === "inline") {

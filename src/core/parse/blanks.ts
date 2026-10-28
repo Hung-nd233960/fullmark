@@ -1,4 +1,5 @@
 import { readNumber } from "../number";
+import { createMarkdown } from "./markdown";
 import { findSpans, lineAt, spanAt } from "./spans";
 
 export type TextBlank = { kind: "text"; answers: string[] };
@@ -54,6 +55,11 @@ export function scanBlanks(
   while (i < text.length) {
     const open = text.indexOf("[[", i);
     if (open < 0) break;
+    if (mode === "markdown" && backslashesBefore(text, open) % 2 === 1) {
+      // `\[[` is text: the first bracket is escaped
+      i = open + 1;
+      continue;
+    }
     const span = spanAt(spans, open);
     const line = lineAt(text, open, firstLine);
     if (mode === "math" || span?.kind === "math") {
@@ -79,4 +85,40 @@ export function scanBlanks(
     i = close + 2;
   }
   return out;
+}
+
+function backslashesBefore(text: string, pos: number): number {
+  let n = 0;
+  while (pos - n > 0 && text[pos - n - 1] === "\\") n++;
+  return n;
+}
+
+const MARK_OPEN = String.fromCharCode(0xe000);
+const MARK_CLOSE = String.fromCharCode(0xe001);
+const MARKER = new RegExp(`${MARK_OPEN}([0-9]+)${MARK_CLOSE}`, "g");
+
+/**
+ * The indices of the scanned blanks that sit inside a link's text or an image's alt text. Each blank is swapped for a
+ * marker, the text is read as inline Markdown, and a marker found under a link or in an image's alt text is a hit.
+ */
+export function blanksInLinkText(text: string, scan: BlankScan): number[] {
+  if (scan.at.length === 0) return [];
+  let marked = text;
+  for (let i = scan.at.length - 1; i >= 0; i--) {
+    const at = scan.at[i] as { start: number; end: number };
+    marked = `${marked.slice(0, at.start)}${MARK_OPEN}${i}${MARK_CLOSE}${marked.slice(at.end)}`;
+  }
+  const hits = new Set<number>();
+  const note = (s: string) => {
+    for (const m of s.matchAll(MARKER)) hits.add(Number(m[1]));
+  };
+  const tokens = createMarkdown().parseInline(marked, {});
+  let depth = 0;
+  for (const child of tokens[0]?.children ?? []) {
+    if (child.type === "link_open") depth++;
+    else if (child.type === "link_close") depth--;
+    else if (child.type === "image") note(child.content);
+    else if (depth > 0) note(child.content);
+  }
+  return [...hits].sort((a, b) => a - b);
 }

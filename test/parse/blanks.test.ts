@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { parseBlankBody, scanBlanks } from "../../src/core/parse/blanks";
+import { blanksInLinkText, parseBlankBody, scanBlanks } from "../../src/core/parse/blanks";
 import { parseTaskMarker } from "../../src/core/parse/task-list";
 
 describe("parseBlankBody", () => {
@@ -80,5 +80,24 @@ describe("parseTaskMarker", () => {
     expect(parseTaskMarker("[x]a")).toBeNull();
     expect(parseTaskMarker("[y] a")).toBeNull();
     expect(parseTaskMarker("[] a")).toBeNull();
+  });
+});
+
+describe("escaped and linked blanks", () => {
+  it("reads \\[[ as text", () => {
+    expect(scanBlanks("a \\[[x]] b", 1).blanks).toEqual([]);
+    expect(scanBlanks("a \\\\[[x]] b", 1).blanks).toHaveLength(1);
+    expect(scanBlanks("a \\[[x]] [[y]]", 1).blanks).toHaveLength(1);
+  });
+
+  it("keeps a backslash in code literal", () => {
+    expect(scanBlanks("\\[[x]]", 1, "code").blanks).toHaveLength(1);
+  });
+
+  it("finds blanks inside link text and alt text", () => {
+    const hit = (t: string) => blanksInLinkText(t, scanBlanks(t, 1));
+    expect(hit("a [see [[x]] here](u.md) [[y]]")).toEqual([0]);
+    expect(hit("![alt [[x]]](p.png) and [[y]]")).toEqual([0]);
+    expect(hit("plain [[x]] and [[y]]")).toEqual([]);
   });
 });

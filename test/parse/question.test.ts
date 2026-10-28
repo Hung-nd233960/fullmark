@@ -261,3 +261,20 @@ describe("prompts", () => {
     expect(q.prompt).toBe(`Read this\n\n${body}`);
   });
 });
+
+describe("blanks in tables", () => {
+  it("finds a blank in every cell, with | as a pipe", () => {
+    const q = oneQuestion("## Q {type=blanks id=q}\n\n| a | b |\n|---|---|\n| [[x\\|y]] | [[z]] |");
+    if (q.type !== "blanks") throw new Error("type");
+    expect(q.blanks.map((b) => (b.kind === "text" ? b.answers : []))).toEqual([["x", "y"], ["z"]]);
+    expect(q.blanks.map((b) => b.line)).toEqual([9, 9]);
+  });
+
+  it("reports a blank in link text", () => {
+    expect(found("## Q {type=blanks id=q}\n\nSee [a [[b]]](u.md).")).toEqual(["blanks.syntax@7"]);
+  });
+
+  it("does not count [[ as a blank", () => {
+    expect(found("## Q {type=blanks id=q}\n\nA \\[[b]] only.")).toEqual(["blanks.none@5"]);
+  });
+});

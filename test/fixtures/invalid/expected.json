@@ -28,6 +28,14 @@
     "rule": "syntax.attributes",
     "line": 5
   },
+  "blanks-in-alt": {
+    "rule": "blanks.syntax",
+    "line": 7
+  },
+  "blanks-in-link": {
+    "rule": "blanks.syntax",
+    "line": 7
+  },
   "blanks-in-math": {
     "rule": "blanks.in-math",
     "line": 7

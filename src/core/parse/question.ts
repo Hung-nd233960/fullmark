@@ -9,7 +9,7 @@ import { parseNumeric } from "./answer/numeric";
 import { parseScale } from "./answer/scale";
 import { parseShort } from "./answer/short";
 import { parseTrueFalse } from "./answer/truefalse";
-import { type Blank, scanBlanks } from "./blanks";
+import { type Blank, blanksInLinkText, scanBlanks } from "./blanks";
 import { analyseHeading, withoutId } from "./heading";
 import { QUESTION_ATTRS, readPairs, readQuestionAttrs } from "./heading-attrs";
 import { trimBlankLines, unclaimedLines } from "./lines";
@@ -216,9 +216,18 @@ export function parseQuestion(region: Region, ctx: QuestionCtx): Question {
   let sawOpening = false;
   for (const p of pieces) {
     const scan = scanBlanks(p.text, p.line, p.mode);
-    if (p.text.includes("[[")) sawOpening = true;
+    if (scan.blanks.length > 0 || scan.problems.length > 0) sawOpening = true;
     if (type === "blanks") {
       for (const b of scan.blanks) blanks.push(b);
+      if (p.mode === "markdown") {
+        for (const k of blanksInLinkText(p.text, scan))
+          r.error(
+            "blanks.syntax",
+            scan.blanks[k]?.line ?? p.line,
+            "a blank cannot be inside link text or an image's alt text",
+            "move the blank out of the link or the alt text",
+          );
+      }
       for (const problem of scan.problems) r.error(problem.rule, problem.line, problem.message);
     } else if (type !== null && p.mode === "markdown") {
       for (const b of scan.blanks)
