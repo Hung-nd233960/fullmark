@@ -64,7 +64,8 @@ export function QuestionCard({
         <span class="fm-question-number">{t.questionLabel(number)}</span>
         {question.graded ? <span class="fm-question-points">{t.pointsLabel(String(question.points))}</span> : null}
       </header>
-      <Html html={question.promptHtml} class="fm-prompt" id={`${name}/prompt`} />
+      {/* a blanks prompt holds the boxes, so its own body shows it */}
+      {question.type === "blanks" ? null : <Html html={question.promptHtml} class="fm-prompt" id={`${name}/prompt`} />}
       {question.hintHtml !== null ? (
         <details class="fm-hint">
           <summary>{t.hint}</summary>

@@ -41,7 +41,14 @@ export function Html({
 export function ResultLine({ t, result, quizId }: { t: PageMessages; result: GradedQuestion; quizId: string }) {
   const points = result.points > 0 ? ` · ${t.scoreLine(String(result.earned ?? 0), String(result.points))}` : "";
   return (
-    <p class="fm-result" data-status={result.status} data-qid={result.id} data-quiz={quizId}>
+    <p
+      class="fm-result"
+      data-status={result.status}
+      data-qid={result.id}
+      data-quiz={quizId}
+      data-earned={result.earned ?? 0}
+      data-points={result.points}
+    >
       <strong>{t.status[result.status]}</strong>
       {points}
     </p>

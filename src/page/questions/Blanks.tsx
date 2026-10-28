@@ -47,7 +47,7 @@ export function Blanks({ q, c }: { q: Extract<PageQuestion, { type: "blanks" }>;
   return (
     <div>
       <div ref={root} onInput={onInput}>
-        <Html html={q.promptHtml} class="fm-blanks-prompt" />
+        <Html html={q.promptHtml} class="fm-prompt" id={`${c.name}/prompt`} />
       </div>
       {!c.submitted
         ? numeric
