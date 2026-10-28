@@ -1,6 +1,6 @@
 # Proposal: sample questions in materials sheets
 
-**Status: proposal, not in v1 scope.** Raised on 2026-10-28. In v1 a `materials` sheet holds no question syntax at all: a `{type=…}` attribute, an `answer` block, a `- [x]` or `- [ ]` choice line or a `[[…]]` blank is `materials.question`, an error ([QUIZ_SYNTAX.md](../QUIZ_SYNTAX.md), sections 2 and 8a). Worked examples are written as text. Starting strict keeps this open: no v1 sheet uses that syntax, so a later version can give it a meaning without breaking one.
+**Status: unlikely; kept as a record.** Raised on 2026-10-28, and set aside the same day: materials are the sheets an exam hands out (QUIZ_SYNTAX.md, section 2), and worked examples are study material, the learner's own side, so they do not fit that purpose. In v1 a `materials` sheet holds no question syntax at all: a `{type=…}` attribute, an `answer` block, a `- [x]` or `- [ ]` choice line or a `[[…]]` blank is `materials.question`, an error ([QUIZ_SYNTAX.md](../QUIZ_SYNTAX.md), sections 2 and 8a). Worked examples are written as text. Starting strict keeps this open: no v1 sheet uses that syntax, so a later version can give it a meaning without breaking one.
 
 ## The idea
 
