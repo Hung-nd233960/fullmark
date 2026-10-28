@@ -21,7 +21,7 @@ The owner's working rules: state what, why and what done means before a big job 
 | 1b parser and `quiz ids` | done, reviewed | `0789b52`..`b49918f` |
 | 1c rules, config, `check`, `rules` | done, reviewed, gaps decided | `8a632b5`..`201d9fb` |
 | 1d grader and `grade` | done, reviewed, gaps decided; follow-up fixes done | `402bb97`..`9c350a3`, `869db1d`..`49dba98` |
-| 1e contract tests | brief written (below), ready to delegate | |
+| 1e contract tests | delegated to Sonnet; its work so far is uncommitted in the tree, not reviewed | |
 
 `npm run check` after 1d: 37 test files, 1010 passed, 0 todo. Branch `1.0` is not on GitHub; nothing has been pushed.
 
@@ -29,8 +29,21 @@ The owner's working rules: state what, why and what done means before a big job 
 
 ### Next steps, in order
 
-1. Delegate 1e to Sonnet with a short prompt pointing at "Slice 1e" below. Review it: read the golden files themselves, since they become the contract; bring its gaps to the owner.
+1. 1e was delegated to Sonnet on 2026-10-28 and the session ended while it was still running. Its work so far (`.gitattributes`, `biome.json`, `package.json`, `scripts/`, `test/golden/`, plus whatever it committed) is in the tree, unreviewed. Check `git log` and `git status`, then finish or re-delegate what is missing from "Slice 1e" below. Review it: read the golden files themselves, since they become the contract; bring its gaps (and its path-printing proposal) to the owner.
 2. With 1e reviewed, step 1 is done. Step 2 (`build`, the page runtime, themes, `replay`) gets its own plan file, `docs/plans/STEP2.md`, cut into slices the same way.
+
+### Design work in parallel (themes and pages)
+
+The mockups are a Design canvas: <https://claude.ai/artifact/HPX2k7wM7ENHVQLc3zzjL5> (tokens and fonts, the quiz screen in all five themes, the start screen). The owner reviews by commenting there. The local copy sat in a session scratchpad, so read the artifact back before changing it. Decided so far: OLED uses near-black cards on a pure black page, with softened colours (written into TECHNICAL_DESIGN.md section 8). The rest (darker light-theme status colours, flag colours, the explanation box, the start screen with "the whole quiz" pinned above a 5-row scrolling list of parts, single choice) is agreed on the canvas but not yet written into section 8.
+
+Open questions for the owner:
+
+1. Can every page take one part on its own, or only one served with `serve --section`? Recommended: every page.
+2. Did "launch page" mean the quiz start screen (as designed), or something else?
+3. Light tints behind highlights and explanations: derive them from the main colour (`color-mix`), or list them as tokens in each theme? Recommended: derive them.
+4. Explanation text: full bold, or semibold (600) as now?
+
+Next design work: **Focus Mode** and the **Review page**.
 
 ### Loose ends outside this plan
 
