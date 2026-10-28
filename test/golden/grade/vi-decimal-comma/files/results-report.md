@@ -1,8 +1,8 @@
 # Báo cáo: Bài kiểm tra ngắn
 
-- **Bài kiểm tra:** quiz
+- **Bài kiểm tra:** quiz.md
 - **Phiên bản:** `c970e45fdd7e`
-- **Câu hỏi:** 3 (full)
+- **Câu hỏi:** 3 (đầy đủ)
 - **Bắt đầu:** 2026-10-23T16:02:00
 - **Nộp bài:** 2026-10-23T16:30:00
 - **Thời gian làm bài:** 28 phút
@@ -11,7 +11,7 @@
 
 **3 trên 3 điểm (100%)**
 
-Điểm đạt 50%: đạt
+Mục tiêu 50%: đã đạt
 
 ## Theo phần
 

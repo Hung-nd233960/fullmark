@@ -79,7 +79,7 @@ quality/rubric.points-in-text.ok.md:8: warning rubric.thin: the rubric has 2 cri
     fix: split the rubric into more things a grader can check
 quality/rubric.points-in-text.ok.md: 0 errors, 1 warning
 quality/rubric.thin.md: profile default (built-in) from the default; config: none
-quality/rubric.thin.md:8: warning rubric.thin: the rubric has 1 criteria; at least 3 are expected
+quality/rubric.thin.md:8: warning rubric.thin: the rubric has 1 criterion; at least 3 are expected
     fix: split the rubric into more things a grader can check
 quality/rubric.thin.md: 0 errors, 1 warning
 quality/rubric.thin.ok.md: profile default (built-in) from the default; config: none

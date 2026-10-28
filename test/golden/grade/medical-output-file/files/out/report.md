@@ -1,6 +1,6 @@
 # Report: Cardiac physiology: a medical-science quiz
 
-- **Quiz:** quiz
+- **Quiz:** medical/quiz.md
 - **Version:** `b3c0c6258b65`
 - **Questions:** 10 (full)
 - **Started:** 2026-10-23T16:02:00
@@ -13,7 +13,7 @@
 
 4 points are waiting for a grader and are not in the score
 
-Pass mark 60%: passed
+Goal 60%*: reached
 
 ## By section
 

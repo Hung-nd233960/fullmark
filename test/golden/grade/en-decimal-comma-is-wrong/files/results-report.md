@@ -1,6 +1,6 @@
 # Report: Short quiz
 
-- **Quiz:** quiz
+- **Quiz:** quiz.md
 - **Version:** `2e8d3e6f83c9`
 - **Questions:** 2 (full)
 - **Started:** 2026-10-23T16:02:00

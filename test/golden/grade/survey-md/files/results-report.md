@@ -1,6 +1,6 @@
 # Answers: Study habits check-in
 
-- **Quiz:** study-habits
+- **Quiz:** survey/quiz.md
 - **Version:** `eac5e065639d`
 - **Questions:** 8 (full)
 - **Started:** 2026-10-23T16:02:00

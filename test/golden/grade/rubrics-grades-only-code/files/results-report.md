@@ -1,6 +1,6 @@
 # Report: Rubric modes
 
-- **Quiz:** quiz
+- **Quiz:** quiz.md
 - **Version:** `2792abce882e`
 - **Questions:** 6 (full)
 - **Started:** 2026-10-23T16:02:00
@@ -13,7 +13,7 @@
 
 22 points are waiting for a grader and are not in the score
 
-Pass mark 50%: passed
+Goal 50%*: reached
 
 ## By section
 
@@ -35,7 +35,7 @@ Pass mark 50%: passed
 
 > Write `double`.
 
-**Your answer:** 
+**Your answer:**
 
 ```
 def double(x):
