@@ -39,7 +39,7 @@ Item 6 (what 1c chose for profiles, `[check]`, the survey default, the built-in 
 
 ### Next steps, in order
 
-1. Delegate 1d to Sonnet with a short prompt pointing at "Slice 1d" below. Review it; bring its proposals (`AttemptState`, `results-v2` and its answer shapes, `rubric_hash`, `results_hash`) and gaps to the owner.
+1. Delegate 1d to Sonnet with a short prompt pointing at "Slice 1d" below. Review it; bring its proposals (`AttemptState`, `results-v2` and its answer shapes) and gaps to the owner.
 2. Write the 1e brief and delegate it: 1e (contract tests, golden files, the startup budget), which closes step 1.
 
 ### Loose ends outside this plan
@@ -229,10 +229,7 @@ The serialised `Attempt`, in `src/core/attempt/results.ts`, with a zod schema. I
 
 TECHNICAL_DESIGN.md section 6, "`grades-v2`", in `src/core/rubric/grades.ts`: the template (written with every id, text, maximum or scale in place and `null` cells), validation (every rule in the "Validation" list, exit 1 with every problem listed, nothing written), the two warnings, and the computed result. A `grades-v1` file is refused like a 0.x results file.
 
-Two hashes are not defined yet; implement these and report them as proposals:
-
-- **`rubric_hash`**: SHA-256 over the canonical JSON (sorted keys, no spaces) of the parsed rubric: mode, step, scale, round, and each criterion's id, text, maximum and weight. Rewording YAML formatting does not change it; changing a criterion does.
-- **`results_hash`**: SHA-256 over the results file's bytes as written.
+`rubric_hash` and `results_hash` are defined in section 6 (decided 2026-10-28): SHA-256 over canonical JSON of the parsed content, never over bytes. One canonical-JSON function in core serves both. Tests: re-indenting the rubric's YAML or rewriting the results file with CRLF and other spacing keeps each hash; changing a criterion's text, points or weight, or one answer, changes it.
 
 ### Reports
 
@@ -255,7 +252,7 @@ None expected. If one seems needed, it must be in TECHNICAL_DESIGN.md section 3;
 - `grades-v2`: for each mode a valid file, and one fixture per validation error and per warning; a `grades-v1` file and a 0.x results file are refused.
 - `quiz grade` tests: one file and several, Markdown and `--json`, `--grades` with a partly graded file (the rest pending), a hash mismatch (exit 1), `--web` (exit 2), a survey (no score), and a `vi` report (headings from the catalog). Running twice gives byte-identical output.
 - `npm run check` passes.
-- The report proposes, for the design docs: `AttemptState`, the `results-v2` schema with every answer shape, `rubric_hash`, `results_hash`, and anything else the docs left open.
+- The report proposes, for the design docs: `AttemptState`, the `results-v2` schema with every answer shape, and anything else the docs left open.
 
 ## Slice 1e
 

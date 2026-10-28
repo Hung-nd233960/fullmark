@@ -358,6 +358,11 @@ The tool writes the template with every criterion's id, text and maximum (or sca
 
 Warnings: `rubric_hash` differs from the current rubric ("graded against an older rubric"); `results_hash` differs from the attempt.
 
+**The two hashes are over content, not bytes,** so reformatting a file, an editor's or git's line endings, or a re-indented YAML block never raises a false warning. Both are SHA-256, lowercase hex, over canonical JSON: keys sorted at every level, no whitespace, UTF-8.
+
+- `rubric_hash`: over the parsed rubric: `mode`, `step`, `scale`, `round`, `preset`, and each criterion's `id`, `text`, maximum and `weight`. Changing a criterion's wording, points or weight changes it; YAML layout and comments do not.
+- `results_hash`: over the parsed results file, every key included.
+
 **Computed.** With the example above:
 
 - `laplace-essay` scores 0.5 + 1.25 + 0.5 = **2.25 / 3**.
