@@ -2,7 +2,7 @@ import { z } from "zod";
 import type { QuestionType } from "../ir";
 
 /**
- * The answer shapes of `results-v2` (a proposal for the design docs): one per question type, all kept from 0.x's
+ * The answer shapes of `results-v2` (TECHNICAL_DESIGN.md, section 4, "`results-v2`"): one per question type, all kept from 0.x's
  * `response` objects except where noted. Every index refers to the **source order** of the quiz (the order in the
  * Markdown), never to the shuffled order a page showed (`optionOrder`), so grading never depends on the shuffle.
  * An unanswered question is `null` in `state.answers` (or has no entry); a key left out of an answer, or `null`,

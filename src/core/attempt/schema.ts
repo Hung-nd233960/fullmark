@@ -22,7 +22,7 @@ export type Plan = z.infer<typeof PlanSchema>;
 const iso = z.string().regex(/^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(?:\.\d+)?(?:Z|[+-]\d\d:\d\d)?$/, "an ISO date and time");
 
 /**
- * Everything that changes while a quiz is taken (a proposal for the design docs): what grading, reports and `stats`
+ * Everything that changes while a quiz is taken (TECHNICAL_DESIGN.md, section 4, "`results-v2`"): what grading, reports and `stats`
  * need, and what the page's reducer restores on resume and replay. Every key is required.
  */
 export const AttemptStateSchema = z.object({
