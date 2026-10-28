@@ -1,0 +1,11 @@
+quizzes/a.md: added 3 ids
+  line 7: q-k23hui
+  line 12: q-ugirc7
+  line 24: q-54zb31
+quizzes/b.md: left untouched
+  quizzes/b.md:10: question.id-duplicate: the id "same" is already used on line 5
+quizzes/c.md: added 3 ids
+  line 7: q-hdr5s5
+  line 12: q-d7pjp4
+  line 24: q-91q077
+2 done, 1 failed

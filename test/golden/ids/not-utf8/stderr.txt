@@ -1,0 +1,1 @@
+quiz.md: the file is not valid UTF-8, so it is left untouched

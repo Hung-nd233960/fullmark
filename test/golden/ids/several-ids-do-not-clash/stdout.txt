@@ -1,0 +1,3 @@
+{"status":"written","file":"a.md","added":[{"line":7,"id":"q-k23hui"},{"line":12,"id":"q-ugirc7"},{"line":24,"id":"q-54zb31"}],"problems":[]}
+{"status":"written","file":"b.md","added":[{"line":7,"id":"q-hdr5s5"},{"line":12,"id":"q-d7pjp4"},{"line":24,"id":"q-91q077"}],"problems":[]}
+{"status":"done","ok":2,"failed":0}

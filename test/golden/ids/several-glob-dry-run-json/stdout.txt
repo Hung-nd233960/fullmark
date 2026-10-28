@@ -1,0 +1,4 @@
+{"status":"unchanged","file":"quizzes/a.md","added":[{"line":7,"id":"q-k23hui"},{"line":12,"id":"q-ugirc7"},{"line":24,"id":"q-54zb31"}],"problems":[],"dryRun":true}
+{"status":"problems","file":"quizzes/b.md","added":[],"problems":[{"rule":"question.id-duplicate","line":10,"message":"the id \"same\" is already used on line 5"}]}
+{"status":"unchanged","file":"quizzes/c.md","added":[{"line":7,"id":"q-hdr5s5"},{"line":12,"id":"q-d7pjp4"},{"line":24,"id":"q-91q077"}],"problems":[],"dryRun":true}
+{"status":"done","ok":2,"failed":1}

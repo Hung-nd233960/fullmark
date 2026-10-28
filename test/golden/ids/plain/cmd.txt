@@ -1,0 +1,4 @@
+ids
+a.md
+b.md
+--plain

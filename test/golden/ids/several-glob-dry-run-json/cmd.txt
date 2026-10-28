@@ -1,0 +1,4 @@
+ids
+quizzes/*.md
+--dry-run
+--json

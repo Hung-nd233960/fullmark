@@ -1,0 +1,1 @@
+{"status":"problems","file":"quiz.md","added":[],"problems":[{"rule":"question.id-duplicate","line":10,"message":"the id \"same\" is already used on line 5"}]}

@@ -1,0 +1,2 @@
+quiz.md: left untouched
+  quiz.md:10: question.id-duplicate: the id "same" is already used on line 5
