@@ -7,10 +7,14 @@ import { shownPath } from "./paths";
  * PowerShell does not expand them; matches are sorted with a fixed comparison; repeated names are dropped; a
  * folder is refused, so a README.md is never processed by accident.
  */
+export type InputError = { input: string; message: string };
+
 export type Inputs = {
   files: string[];
   /** inputs that cannot be used: a missing file, a folder, a glob with no match */
-  errors: { input: string; message: string }[];
+  errors: InputError[];
+  /** the files and the errors together, in the order the inputs were given: commands work through this */
+  items: ({ file: string } | { error: InputError })[];
 };
 
 const GLOB_CHARS = /[*?[]/;
@@ -105,28 +109,35 @@ function isDirectory(path: string): boolean {
 
 export function expandInputs(patterns: readonly string[], cwd: string): Inputs {
   const files: string[] = [];
-  const errors: Inputs["errors"] = [];
+  const errors: InputError[] = [];
+  const items: Inputs["items"] = [];
   const seen = new Set<string>();
+  const fail = (input: string, message: string) => {
+    const error = { input: shownPath(input, cwd), message };
+    errors.push(error);
+    items.push({ error });
+  };
   const add = (path: string, shown: string) => {
     const key = process.platform === "win32" ? resolve(cwd, path).toLowerCase() : resolve(cwd, path);
     if (seen.has(key)) return;
     seen.add(key);
     files.push(shown);
+    items.push({ file: shown });
   };
   for (const input of patterns) {
     if (GLOB_CHARS.test(input)) {
       const matches = expand(input, cwd).sort(compare);
-      if (matches.length === 0) errors.push({ input: shownPath(input, cwd), message: "no file matches" });
+      if (matches.length === 0) fail(input, "no file matches");
       for (const m of matches) {
         add(m, shownPath(m, cwd));
       }
     } else if (!existsSync(resolve(cwd, input))) {
-      errors.push({ input: shownPath(input, cwd), message: "no such file" });
+      fail(input, "no such file");
     } else if (isDirectory(resolve(cwd, input))) {
-      errors.push({ input: shownPath(input, cwd), message: "is a folder, not a quiz file" });
+      fail(input, "is a folder, not a quiz file");
     } else {
       add(input, shownPath(input, cwd));
     }
   }
-  return { files, errors };
+  return { files, errors, items };
 }

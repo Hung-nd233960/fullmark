@@ -270,14 +270,19 @@ export function runCheck(patterns: readonly string[], opts: CheckOptions, io: Ch
     } else for (const line of describeOutcome(r, several, color)) (r.status === "error" ? io.err : io.out)(line);
   };
 
-  for (const e of inputs.errors) {
-    emit({ status: "error", file: e.input, message: e.message });
-    failed++;
-    exit = worst(exit, EXIT.usage);
-  }
   const progress = !opts.json && !opts.plain && io.tty && inputs.files.length > 1;
-  for (const [i, file] of inputs.files.entries()) {
-    if (progress) io.errRaw(`\r[${i + 1}/${inputs.files.length}] ${file}`);
+  let n = 0;
+  // one after another, in the order given (COMMANDS.md, "Several files"): an unusable input fails in its place
+  for (const item of inputs.items) {
+    if ("error" in item) {
+      emit({ status: "error", file: item.error.input, message: item.error.message });
+      failed++;
+      exit = worst(exit, EXIT.usage);
+      continue;
+    }
+    const file = item.file;
+    n++;
+    if (progress) io.errRaw(`\r[${n}/${inputs.files.length}] ${file}`);
     const result = checkFile(file, opts, io);
     if (progress) io.errRaw("\r\u001b[K");
     emit(result);

@@ -41,6 +41,21 @@ describe("expandInputs", () => {
     ]);
   });
 
+  it("lists files and errors together in the order the inputs were given", () => {
+    const r = expandInputs(["a.md", "nope.md", "b.md", "deep", "*.zip"], dir);
+    expect(r.items).toEqual([
+      { file: "a.md" },
+      { error: { input: "nope.md", message: "no such file" } },
+      { file: "b.md" },
+      { error: { input: "deep", message: "is a folder, not a quiz file" } },
+      { error: { input: "*.zip", message: "no file matches" } },
+    ]);
+  });
+
+  it("prints every path with / and relative to the working directory", () => {
+    expect(expandInputs(["deep\\x\\c.md", join(dir, "a.md")], dir).files).toEqual(["deep/x/c.md", "a.md"]);
+  });
+
   it("does not let a glob match a folder", () => {
     expect(expandInputs(["d*"], dir).files).toEqual([]);
   });

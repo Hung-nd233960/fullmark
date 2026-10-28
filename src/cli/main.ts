@@ -2,7 +2,7 @@ import { Command } from "commander";
 import { type CheckOptions, runCheck } from "./check";
 import { EXIT, type ExitCode } from "./exit-codes";
 import { type GradeOptions, runGrade } from "./grade";
-import { type IdsOptions, type Io, runIds } from "./ids";
+import { type IdsOptions, type Io, runIds, seededIds } from "./ids";
 import { type RulesOptions, runRules } from "./rules";
 
 export const VERSION = "1.0.0-alpha.0";
@@ -17,6 +17,8 @@ function terminalIo(): Io {
     errRaw: (text) => process.stderr.write(text),
     cwd: process.cwd(),
     tty: Boolean(process.stderr.isTTY),
+    // TEST-ONLY: a fixed seed makes `quiz ids` repeatable, for the golden files. Nothing else reads this variable.
+    ...(process.env.FULLMARK_TEST_SEED ? { newId: seededIds(process.env.FULLMARK_TEST_SEED) } : {}),
   };
 }
 

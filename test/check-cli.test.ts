@@ -113,7 +113,7 @@ describe("several files", () => {
     const dir = tree({ "a.md": quiz("- [x] only one") });
     const c = capture(dir);
     expect(runCheck(["a.md", "nope.md"], opts({ json: true }), c.io)).toBe(2);
-    expect(json(c.out).map((l) => l.status)).toEqual(["error", "failed", "done"]);
+    expect(json(c.out).map((l) => l.status)).toEqual(["failed", "error", "done"]);
   });
 
   it("expands globs, and refuses a folder", () => {

@@ -22,7 +22,13 @@ export type Io = {
 };
 
 type FileResult =
-  | { status: "written" | "unchanged"; file: string; added: { line: number; id: string }[]; dryRun?: true }
+  | {
+      status: "written" | "unchanged";
+      file: string;
+      added: { line: number; id: string }[];
+      problems: [];
+      dryRun?: true;
+    }
   | { status: "problems"; file: string; added: []; problems: IdProblem[] }
   | { status: "error"; file: string; message: string };
 
@@ -35,6 +41,30 @@ export function randomId(used: ReadonlySet<string>): string {
     for (let i = 0; i < 6; i++) id += ALPHABET[randomInt(ALPHABET.length)];
     if (!used.has(id)) return id;
   }
+}
+
+/**
+ * TEST-ONLY. Ids from a seeded generator (mulberry32 over the seed's characters), so the golden files of `quiz ids`
+ * are stable. It is switched on by the environment variable `FULLMARK_TEST_SEED`, which only `main.ts` reads; the
+ * ids it makes are predictable, so it is never to be used for a real quiz.
+ */
+export function seededIds(seed: string): (used: ReadonlySet<string>) => string {
+  let state = 0x811c9dc5;
+  for (const c of seed) state = Math.imul(state ^ c.charCodeAt(0), 0x01000193) >>> 0;
+  const next = (): number => {
+    state = (state + 0x6d2b79f5) >>> 0;
+    let t = state;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+  return (used) => {
+    for (;;) {
+      let id = "q-";
+      for (let i = 0; i < 6; i++) id += ALPHABET[Math.floor(next() * ALPHABET.length)];
+      if (!used.has(id)) return id;
+    }
+  };
 }
 
 async function idsForFile(file: string, opts: IdsOptions, io: Io): Promise<FileResult> {
@@ -51,7 +81,7 @@ async function idsForFile(file: string, opts: IdsOptions, io: Io): Promise<FileR
   }
   const plan = planIds(text);
   if (plan.problems.length > 0) return { status: "problems", file, added: [], problems: plan.problems };
-  if (plan.missing.length === 0) return { status: "unchanged", file, added: [] };
+  if (plan.missing.length === 0) return { status: "unchanged", file, added: [], problems: [] };
 
   const used = new Set(plan.used);
   const next = io.newId ?? randomId;
@@ -61,13 +91,13 @@ async function idsForFile(file: string, opts: IdsOptions, io: Io): Promise<FileR
     return id;
   });
   const added = plan.missing.map((m, i) => ({ line: m.line, id: ids[i] ?? "" }));
-  if (opts.dryRun) return { status: "unchanged", file, added, dryRun: true };
+  if (opts.dryRun) return { status: "unchanged", file, added, problems: [], dryRun: true };
   try {
     await writeFileAtomic(path, Buffer.from(applyIds(text, plan.missing, ids), "utf8"));
   } catch (error) {
     return { status: "error", file, message: (error as Error).message };
   }
-  return { status: "written", file, added };
+  return { status: "written", file, added, problems: [] };
 }
 
 function describe(r: FileResult, opts: IdsOptions): string[] {
@@ -105,18 +135,23 @@ export async function runIds(patterns: readonly string[], opts: IdsOptions, io: 
     else for (const line of describe(r, opts)) (r.status === "error" ? io.err : io.out)(line);
   };
 
-  for (const e of inputs.errors) {
-    emit({ status: "error", file: e.input, message: e.message });
-    failed++;
-    exit = worst(exit, EXIT.usage);
-  }
-  if (inputs.files.length === 0) {
-    if (inputs.errors.length === 0) io.err("nothing to work on: give at least one quiz file");
+  if (inputs.items.length === 0) {
+    io.err("nothing to work on: give at least one quiz file");
     return EXIT.usage;
   }
 
-  for (const [i, file] of inputs.files.entries()) {
-    if (progress) io.errRaw(`\r[${i + 1}/${inputs.files.length}] ${file}`);
+  let n = 0;
+  // one after another, in the order given (COMMANDS.md, "Several files"): an unusable input is a failure in its place
+  for (const item of inputs.items) {
+    if ("error" in item) {
+      emit({ status: "error", file: item.error.input, message: item.error.message });
+      failed++;
+      exit = worst(exit, EXIT.usage);
+      continue;
+    }
+    const file = item.file;
+    n++;
+    if (progress) io.errRaw(`\r[${n}/${inputs.files.length}] ${file}`);
     const result = await idsForFile(file, opts, io);
     if (progress) io.errRaw("\r\u001b[K");
     emit(result);

@@ -208,12 +208,15 @@ export async function runGrade(patterns: readonly string[], opts: GradeOptions, 
   let exit: ExitCode = EXIT.done;
   let ok = 0;
   let failed = 0;
-  for (const e of inputs.errors) {
-    emit({ status: "error", file: e.input, message: e.message });
-    failed++;
-    exit = worst(exit, EXIT.usage);
-  }
-  for (const file of inputs.files) {
+  // one after another, in the order given (COMMANDS.md, "Several files"): an unusable input is a failure in its place
+  for (const item of inputs.items) {
+    if ("error" in item) {
+      emit({ status: "error", file: item.error.input, message: item.error.message });
+      failed++;
+      exit = worst(exit, EXIT.usage);
+      continue;
+    }
+    const file = item.file;
     const result = await gradeOne(
       file,
       loaded.quiz,

@@ -151,11 +151,12 @@ describe("quiz ids", () => {
       status: "written",
       file: "a.md",
       added: [{ line: 5, id: "q-test01" }],
+      problems: [],
     });
     expect(read("a.md")).toBe(two.replace("{type=single}", "{type=single id=q-test01}"));
     const second = await run(["a.md", "--json"], counter());
     expect(second.exit).toBe(0);
-    expect(JSON.parse(second.out[0] ?? "")).toEqual({ status: "unchanged", file: "a.md", added: [] });
+    expect(JSON.parse(second.out[0] ?? "")).toEqual({ status: "unchanged", file: "a.md", added: [], problems: [] });
     expect(read("a.md")).toBe(two.replace("{type=single}", "{type=single id=q-test01}"));
   });
 
