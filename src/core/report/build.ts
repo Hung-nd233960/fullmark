@@ -7,7 +7,7 @@ import { type ResolvedRubric, resolveRubric } from "../rubric/model";
 import { describeAnswer, describeKey } from "./describe";
 
 export const REPORT_FORMAT = "fullmark-report";
-export const REPORT_VERSION = 1;
+export const REPORT_VERSION = 2;
 
 export type ReportScore = {
   earned: number;
