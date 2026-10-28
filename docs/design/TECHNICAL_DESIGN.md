@@ -345,7 +345,7 @@ In the library, the same steps are `library grade NAME --json`, then filling in,
 
 ### `grades-v2`
 
-The tool writes the template with every criterion's id, text and maximum (or scale) already in place. The grader fills in only the `null` cells and the text fields, and cannot add criteria or change maximums. The template holds `"grader": null` and one entry per answered essay or code question; each entry's components (`score`, `band`, `verdict`), `note`, `justification` and `improvement` start as `null`. `quiz grade --json` writes it only when no `--grades` is given, so a filled-in file is never overwritten.
+The tool writes the template with every criterion's id, text and maximum (or scale) already in place. The grader fills in only the `null` cells and the text fields, and cannot add criteria or change maximums. The template holds `"grader": null` and one entry per answered essay or code question; each entry's components (`score`, `band`, `verdict`), `note`, `justification` and `improvement` start as `null`. `quiz grade --json` writes it only when no `--grades` is given and no `*-grades.json` exists yet, so a filled-in file is never overwritten.
 
 ```json
 {
@@ -384,7 +384,7 @@ The tool writes the template with every criterion's id, text and maximum (or sca
 
 **Grader identity.** `grader` is required. `kind` is `ai` or `human`, and `name` is required (for an AI, also `model`). A question can carry its own `grader`, for example when one essay is re-graded by hand. A human grade made over an AI grade records `reviewed` with the AI grader. The identity is a declaration: the tool cannot verify which model wrote a file.
 
-**Validation** (exit 1 with every problem listed, nothing written):
+**Validation** (exit 1, nothing written). It runs in two stages, structure (format, grader, ids, the template's fixed values) and then scores, and lists every problem of the first stage that fails:
 
 - `grader` is missing, or its `kind` or `name` is empty.
 - A score is below 0, above its maximum, or not a multiple of `step`.
@@ -410,7 +410,7 @@ Warnings: `rubric_hash` differs from the current rubric ("graded against an olde
 
 The final report holds, for each question, `earned`, `points`, `status`, `graded_by`, `rubric_current` and a criteria list with `earned`, `max` and `note`. The JSON report is `{"format": "fullmark-report", "version": 2}` (versions start at 2, as for `results-v2`) with `quiz`, `attempt`, `score` (`null` for a survey), `sections`, `tags`, `questions`, `wrong`, `open`, `grades` and `unknown`. A report carries no time of its own making, so the same inputs give the same bytes.
 
-**The score while grades are pending.** The score and the pass mark are judged on the points scored so far: auto-graded questions and graded essays and code. Essays and code still waiting for a grade are left out of both earned and possible points until graded; an unanswered one counts as 0 of its points. So whether the goal is reached can change once grades come in.
+**The score while grades are pending.** The score and the pass mark are judged on the points scored so far: auto-graded questions and graded essays and code. Essays and code still waiting for a grade are left out of both earned and possible points until graded; an unanswered one counts as 0 of its points. So whether the goal is reached can change once grades come in. The Markdown report words the goal as the results card does (section 8): "Goal 60%: reached" or "Goal 60%: not reached yet", never "failed", with the asterisk while grades are pending. Every word in it comes from the `ui_lang` catalog, the attempt's source (full, a part, a retry) included.
 
 **Re-grading never overwrites.** Each grades file stays in `reports/`. The newest counts unless another is chosen, which keeps a later comparison between graders possible.
 
@@ -754,7 +754,7 @@ Not in v1: terminal forms other than `brief --tui` (`review` needs rendered ques
 ## 11. Testing
 
 - **Starting data from 0.x:** `grading_cases.json` and 0.x's examples and fixtures, rewritten in 1.0 syntax, are the first test inputs. They carry behaviour that was already debugged; nothing is compared against 0.x's output.
-- **Contract tests** run `quiz` as a subprocess and compare with golden files (exit codes, messages, JSON, built bytes). Golden files are produced by 1.0, reviewed once, and committed; a change to one is a reviewed diff.
+- **Contract tests** run `quiz` as a subprocess and compare with golden files (exit codes, messages, JSON, built bytes). Golden files are produced by 1.0, reviewed once, and committed; a change to one is a reviewed diff. They hold some wording from dependencies (commander's usage errors and help); dependencies are pinned exactly, so an upgrade shows as a golden diff. `quiz ids` is made repeatable by `FULLMARK_TEST_SEED`, read only in `src/cli/main.ts` and for tests only.
 - **Grader:** the 0.x grading cases plus new Unicode, BOM and decimal-comma cases. They run once, because there is one grader.
 - **Determinism:** two builds of the same input are byte-identical, and so are two publishes. A `build` page is byte-identical with and without the server features, and contains no server code.
 - **Round trip:** publish, then `import --into` an empty folder, then publish again to the same folder gives `unchanged`.

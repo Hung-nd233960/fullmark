@@ -21,7 +21,8 @@ The owner's working rules: state what, why and what done means before a big job 
 | 1b parser and `quiz ids` | done, reviewed | `0789b52`..`b49918f` |
 | 1c rules, config, `check`, `rules` | done, reviewed, gaps decided | `8a632b5`..`201d9fb` |
 | 1d grader and `grade` | done, reviewed, gaps decided; follow-up fixes done | `402bb97`..`9c350a3`, `869db1d`..`49dba98` |
-| 1e contract tests | done by Sonnet, not reviewed | `379039b`..`3a92ec8` (16 commits) |
+| 1e contract tests | done, reviewed, gaps decided | `379039b`..`3a92ec8` (16 commits) |
+| 1f 1e's follow-ups | brief written, delegated to Sonnet | |
 
 `npm run check` after 1d: 37 test files, 1010 passed, 0 todo. Branch `1.0` is not on GitHub; nothing has been pushed.
 
@@ -29,20 +30,8 @@ The owner's working rules: state what, why and what done means before a big job 
 
 ### Next steps, in order
 
-1. Review 1e, in a fresh session (the owner's choice on 2026-10-28; the design session ended there). Sonnet reports `npm run check` passing: 39 files, 1287 tests (268 golden cases), then the startup test alone; it takes about 68 s. Startup medians on the laptop: `--version` about 85 ms; `check` about 126 ms, once 146 ms, a thin margin under 150 ms. It got there by loading commands lazily. Read the golden files themselves, since they become the contract. Its full report, with the promise-to-case table, is in the 2026-10-28 session transcript. Bring these to the owner:
-   - **Proposals:** (a) Print paths relative to the working directory when the file is under it, else absolute, always with `/` (`src/cli/paths.ts`). (b) `FULLMARK_TEST_SEED` is read only in `src/cli/main.ts` and is for tests only.
-   - **Fixes it made under COMMANDS.md promises:** inputs are now handled in the order given; `ids --json` always has `problems`; a progress line and `--plain` added to `grade`; OS read errors became "no such file" / "is a folder" / "permission denied".
-   - **Gaps:**
-     1. **Data loss:** `grade --json` without `--grades` overwrites a filled-in `*-grades.json` beside the results. Recommended: skip the template, with a warning, unless the file is an empty template.
-     2. Grades validation is staged: structure first, then scores. So "every problem is listed" holds only per stage.
-     3. `--acknowledgements` does not exist yet.
-     4. `quiz` with no command exits 0. Should it exit 2?
-     5. `--plain` is missing from the synopses of `check`, `rules` and `ids`.
-     6. Undocumented JSON shapes: error lines, `rules` errors, `"dryRun":true`.
-     7. `grade -o FILE` with several results files makes a folder. `build` exits 2 in that case.
-     8. Golden files hold library and V8 wording, so upgrading a dependency can change them.
-     9. Cosmetic: "1 criteria"; a trailing space in "Your answer: "; `Quiz:` shows "quiz" for every `quiz.md`.
-2. With 1e reviewed, step 1 is done. Step 2 (`build`, the page runtime, themes, `replay`) gets its own plan file, `docs/plans/STEP2.md`, cut into slices the same way.
+1. Review 1f (brief below). 1e's review on 2026-10-28: `npm run check` passed (39 files, 1287 tests; startup medians 80 ms for `--version`, 127 ms for `check`). Both proposals were accepted (paths relative or absolute with `/`; `FULLMARK_TEST_SEED` test-only), and every gap was decided as recommended; the decisions are in COMMANDS.md and TECHNICAL_DESIGN.md sections 6 and 11, and are 1f's tasks.
+2. With 1f reviewed, step 1 is done. Step 2 (`build`, the page runtime, themes, `replay`, and `--acknowledgements`, which needs the page's third-party list) gets its own plan file, `docs/plans/STEP2.md`, cut into slices the same way.
 
 ### Design work in parallel (themes and pages)
 
@@ -91,6 +80,7 @@ The core of fullmark 1.0 and the commands that need no page: `check`, `rules`, `
 | **1c** | Rule registry, quality rules, `fullmark.toml` and profiles, custom checks, inline ignores, message catalogs for what pages and reports show; `check` and `rules` | every rule has a fixture that triggers it and one that does not, under each built-in profile; config errors point to `file:line` |
 | **1d** | Plan and Attempt, `results-v2`, the grader, rubric modes and presets, `grades-v2`, reports; `grade` | the 0.x grading cases pass; rubric golden cases, IELTS rounding edges included; a `grades-v1` file is refused |
 | **1e** | Contract tests across the commands: golden files, several files, `--json` lines, exit codes, the startup budget | the step's done criteria above |
+| **1f** | 1e's follow-ups: the grades file never overwritten, JSON failures, `-o` and write errors, the report's goal line and wording | below |
 
 ## Slice 1a: scaffold and test data
 
@@ -313,3 +303,27 @@ Make a table, in the report, of every promise COMMANDS.md makes about `check`, `
 - The startup budget test passes, with its medians in the report.
 - The COMMANDS.md promise table has a case for every row.
 - `npm run check` passes.
+
+## Slice 1f: 1e's follow-ups, which close step 1
+
+1e is reviewed (commits `379039b` to `3a92ec8`). The owner accepted every recommendation on 2026-10-28, and the decisions are in the design docs (the commit that adds this brief). 1f makes the code match them. Each task changes behaviour or wording, so each comes with golden cases: update the affected expected files with `npm run golden:update`, read the diff, and commit it on its own, as 1e did.
+
+### Tasks
+
+1. **Never overwrite a grades file.** `grade --json` without `--grades` skips the template when `<RESULTS>-grades.json` (or the one under `-o`) already exists, with a warning on stderr and in the JSON line's `warnings` that says to delete the file for a fresh template; `grades_template` is then absent. Cases: a second `grade --json` beside a filled-in grades file leaves it byte-identical; a first run still writes the template (COMMANDS.md `quiz grade`; TECHNICAL_DESIGN.md section 6).
+2. **Two-stage validation is the documented behaviour.** No code change expected; check the wording of `grade`'s exit `1` in COMMANDS.md against the code and the `rubrics-grades-invalid-everything` case, and report if they differ.
+3. **`quiz` with no command** prints the help on stderr and exits 2 (COMMANDS.md, Exit codes). Update `top/no-command`.
+4. **`--plain`** is in the synopses now; check that every one of `check`, `rules`, `grade`, `ids` accepts it (it does) and that `--help` lists it.
+5. **JSON failures** follow COMMANDS.md, Common options (`--json`): `{"status":"error","message"}`, plus `"file"` for one input and `"errors"` for a malformed config, and the human text also on stderr. `grade --json` with a missing results file prints nothing on stderr today (`grade/several-missing-file`); make it print the human line, as `check` does. Look for any other command that differs.
+6. **`-o` naming an existing file with several inputs** exits 2 before any input is handled, with a plain message (COMMANDS.md, Several files, Output). Add a case for `grade`.
+7. **Write errors in plain words, with shown paths** (COMMANDS.md, Paths in output). `grade` writing into a path it cannot create prints the OS message with an absolute `\` path and `EEXIST` today; route every write failure in `grade` and `ids` through the same plain wording as `readFailure` (add `EEXIST`/`ENOTDIR` as "a file is in the way"), and print the path with `shownPath`.
+8. **The report's goal line** uses the results card's words (TECHNICAL_DESIGN.md section 6, "The score while grades are pending"): `Goal 60%: reached` or `Goal 60%: not reached yet`, with `*` after the percentage while grades are pending; never "passed", "not passed" or "failed". Both catalogs (`src/core/i18n/en.ts`, `vi.ts`; the Vietnamese should read naturally, for example "Mục tiêu 60%: đã đạt" / "chưa đạt"). The JSON report keeps `score.pass` as it is.
+9. **The attempt's source in the report** (`Questions: 10 (full)`, `src/core/report/markdown.ts`) comes from the catalog in both languages, for every source value the Attempt allows.
+10. **Cosmetic:** "1 criterion" (singular where a count is 1); no trailing space after "Your answer:" when the answer is empty; the report's `Quiz:` line shows the `--quiz` path as given (shown with `shownPath`) instead of the file's stem; `check --profile`'s help text loses its stray colon (`src/cli/main.ts:41`); the `help [command]` line says "help for a command" like the other help lines.
+11. **`--acknowledgements`** is not built in step 1: it needs the page's third-party list, so it moves to step 2. Change nothing; leave `top/` without it.
+
+### Done when
+
+- Every task above has a golden case or an existing case updated, each golden diff reviewed and committed on its own.
+- `npm run check` passes; print the test counts and the startup medians.
+- The report lists commits, anything the design docs leave open, and anything decided differently, with the reason.

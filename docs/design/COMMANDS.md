@@ -19,11 +19,13 @@ The program is `quiz`. `fullmark` runs the same program, for systems where anoth
 | `2` | Usage error, I/O error, timeout, or nothing to work on |
 | `3` | Needs input: a human-only value is missing. The output says which value and how to provide it (a flag or a form) |
 
+`quiz` with no command prints the help on stderr and exits 2.
+
 ### Common options
 
 | Option | Meaning |
 |---|---|
-| `--json` | Print the outcome as one JSON object on stdout. Human text goes to stderr. With `--json`, a command never prompts. Commands that run the one-shot server (`serve`, `review`, `brief --web`, `grade --web`, `library take`) first print a `listening` line, so the outcome is the second line: see `serve` |
+| `--json` | Print the outcome as one JSON object on stdout. Human text goes to stderr. With `--json`, a command never prompts. Commands that run the one-shot server (`serve`, `review`, `brief --web`, `grade --web`, `library take`) first print a `listening` line, so the outcome is the second line: see `serve`. A failure is `{"status": "error", "message"}`, with `"file"` when it concerns one input and `"errors": [{"file", "line", "message", "fix"}]` for a malformed config; its human text also goes to stderr |
 | `--plain` | Plain text with no colours, even in a terminal. `NO_COLOR` does the same |
 | `--open` / `--no-open` | Open, or don't open, the page in the default browser |
 | `--port N` | Port on 127.0.0.1 for the one-shot server. Default: a free port |
@@ -44,9 +46,13 @@ Commands that handle each input on its own take `FILE...`: `check`, `build`, `id
 - **Inputs.** Globs (`signals/*.md`) are expanded by fullmark, since PowerShell does not expand them. They are sorted and repeated names are dropped. A folder is refused, so a `README.md` is never processed by accident.
 - **Order and exit.** One after another, in the order given. Every input is attempted, and the exit code is the worst one (`2` over `1` over `0`). `library register` is the exception: it is all or nothing, because it changes the library.
 - **Options that name one thing** (`--review`, `--grades`, `--web`, `--serve`, `-n`, `--update`) exit 2 with several inputs. `--quiz` is one quiz for all the results of `grade`; a results file taken on another version fails on its own and the others go on.
-- **Output.** `-o` names a folder (created if missing) and each output keeps its input's name. Without `-o`, each output goes beside its input as for a single file.
+- **Output.** `-o` names a folder (created if missing) and each output keeps its input's name. If `-o` names an existing file, the command exits 2 before handling any input. Without `-o`, each output goes beside its input as for a single file.
 - **Progress.** On a terminal, stderr shows one updating line, `[3/12] signals.md`, then each failure in full and a summary (`10 done, 2 failed`). Nothing is shown with `--json`, `--plain` or when stderr is not a terminal. There is no progress-bar dependency: one file takes milliseconds.
 - **`--json`.** One line per input, the command's usual object with `"file"` added, then `{"status": "done", "ok", "failed"}`.
+
+### Paths in output
+
+A path is printed relative to the working directory when it lies under it, else absolute, and always with `/`, on Windows too. A file that cannot be read or written is reported in plain words ("no such file", "is a folder", "permission denied"), not with the operating system's message.
 
 ### Names, ids and stamps
 
@@ -90,7 +96,7 @@ Core commands work on files. They need no setup and no config, and never touch a
 **changed**: every finding has a rule id, and there are profiles and config.
 
 ```text
-quiz check FILE... [--profile P] [--config TOML] [--strict] [--review REVIEW] [--json]
+quiz check FILE... [--profile P] [--config TOML] [--strict] [--review REVIEW] [--json] [--plain]
 ```
 
 Validates a quiz under one profile. Reports every issue with a level, a rule id, `file:line` and a fix hint. If a `brief.yaml` sits next to the quiz, `check` also warns when the quiz does not match the brief (count, mix, mode). The first line of human output names the profile and the config files used, for example `profile exam (fullmark.toml:4)`.
@@ -111,7 +117,7 @@ Exit: `0` no errors, `1` errors (or warnings with `--strict` or `fail-on = "warn
 **new**.
 
 ```text
-quiz rules [RULE] [--profile P] [--for FILE] [--config TOML] [--json]
+quiz rules [RULE] [--profile P] [--for FILE] [--config TOML] [--json] [--plain]
 ```
 
 The rule catalogue. Use it to see what a profile checks and why a quiz was held to a rule.
@@ -301,7 +307,7 @@ Exit: `0` written, `2` usage error, timeout, form cancelled, or `--tui` without 
 **changed**: `grades-v2` with rubric modes and a grader, and `--web`.
 
 ```text
-quiz grade RESULTS... --quiz FILE [-o OUT] [--grades GRADES] [--json]
+quiz grade RESULTS... --quiz FILE [-o OUT] [--grades GRADES] [--json] [--plain]
 quiz grade RESULTS --quiz FILE --web [--grades GRADES] [--name NAME] [--open]
                    [--timeout SECONDS] [--port N] [--json]
 ```
@@ -314,14 +320,14 @@ Re-grades an attempt with the shared grader and writes a report: score, per-sect
 | `--quiz FILE` | Required. The quiz source, for the answer key and rubrics. Must match the results' `quizHash` (exit 1 otherwise) |
 | `-o`, `--output OUT` | Default: `RESULTS` with `-report.md` (or `-report.json`). With several files, a folder |
 | `--grades GRADES` | Validate a filled-in grades file, compute totals and bands from its components, and fold it into the report. Questions left entirely empty stay pending. Only an explicit `--grades` is read: unlike `replay`, `grade` never picks up `<RESULTS>-grades.json` by itself, since that is also the name of the empty template |
-| `--json` | Write `*-report.json` instead of Markdown, plus a `*-grades.json` template holding each rubric's structure with empty cells |
+| `--json` | Write `*-report.json` instead of Markdown, plus a `*-grades.json` template holding each rubric's structure with empty cells. An existing `*-grades.json` is never overwritten: the template is skipped with a warning that says to delete the file for a fresh one |
 | `--web` | Grade by hand in a form: the answer next to the rubric, inputs limited to valid steps or bands, a running total. With `--grades`, that file's grades are pre-filled to accept or adjust. Writes a new grades file with `kind: human` (and `reviewed` naming the earlier grader), then the report. Waits `1800` seconds by default, as for `serve` |
 | `--name NAME` | With `--web`: the human grader's name. Without it, the form asks |
 
 Exit:
 
 - `0`: written.
-- `1`: hash mismatch, or invalid grades. Every problem is listed and nothing is written. Problems include a missing grader, a score off its step or above its maximum, an unknown criterion, a lost mark with no note, or a half-filled question.
+- `1`: hash mismatch, or invalid grades. Nothing is written. The file is checked in two stages: its structure first (format, grader, ids, the template's fixed values), then the scores; every problem of the first stage that fails is listed. Problems include a missing grader, a score off its step or above its maximum, an unknown criterion, a lost mark with no note, or a half-filled question.
 - `2`: I/O error, timeout, or the form was cancelled.
 
 ### quiz replay
@@ -405,7 +411,7 @@ Exit: `0` copied, `1` the `--from` file does not parse, `2` unknown template or 
 **new**.
 
 ```text
-quiz ids FILE... [--dry-run] [--json]
+quiz ids FILE... [--dry-run] [--json] [--plain]
 ```
 
 Gives every question without an `id` a random one and writes it into the file ([QUIZ_SYNTAX.md](QUIZ_SYNTAX.md), ids). An id is `q-` and six characters from `a-z0-9`, unique within the file. It is added at the end of the heading's `{…}` block, or as a new block when there is none. Nothing else in the file changes, byte for byte, and an existing id is never changed, so running it again is safe. It does not run `check`.
@@ -415,7 +421,7 @@ Gives every question without an `id` a random one and writes it into the file ([
 
 | Option | Meaning |
 |---|---|
-| `--dry-run` | List the ids it would add, and write nothing. The status is `unchanged`, with `added` listing what a real run would add |
+| `--dry-run` | List the ids it would add, and write nothing. The status is `unchanged`, with `added` listing what a real run would add, and the JSON has `"dryRun": true` |
 | `--json` | `{"status": "written" \| "unchanged" \| "problems", "file", "added": [{"line", "id"}], "problems": [{"rule", "line", "message"}]}` |
 
 Exit: `0` written or nothing to add, `1` a duplicate id or a heading that does not parse (that file untouched), `2` I/O error.
