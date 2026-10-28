@@ -94,6 +94,13 @@ labels:
 2. zq-check
 3. zq-render
 
+## Put the zqstages in order. {type=ordering id=o2 points=4}
+
+1. zq-one
+2. zq-two
+3. zq-three
+4. zq-four
+
 ## Match each zqtool to its job. {type=matching id=g1 points=3}
 
 - zq-lint :: finds style problems

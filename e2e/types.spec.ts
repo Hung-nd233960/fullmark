@@ -1,8 +1,23 @@
-import { expect, test } from "@playwright/test";
+import { expect, type Locator, test } from "@playwright/test";
 import { buildIn, card, expectGradeMatches, noViolations, watch } from "./helpers";
 
 const types = buildIn("test/fixtures/page/types.md", "types.md");
 const typesVi = buildIn("test/fixtures/page/types-vi.md", "types-vi.md");
+/** The source indices of an ordering card's items, top to bottom. */
+const sourcesOf = (list: Locator): Promise<number[]> =>
+  list.locator(".fm-order-item").evaluateAll((els) => els.map((el) => Number(el.getAttribute("data-source"))));
+
+/** Moves an ordering card's items, with their up buttons, into this order of source indices. */
+async function arrange(list: Locator, target: number[]): Promise<void> {
+  for (let place = 0; place < target.length; place++) {
+    const now = await sourcesOf(list);
+    for (let at = now.indexOf(target[place] as number); at > place; at--) {
+      await list.locator(".fm-order-item").nth(at).locator('[data-dir="up"]').click();
+    }
+  }
+  expect(await sourcesOf(list)).toEqual(target);
+}
+
 const exam = buildIn("examples/exam/quiz.md", "exam.md");
 
 test("every simple type: status and points on the page equal quiz grade", async ({ page, context }) => {
@@ -14,7 +29,7 @@ test("every simple type: status and points on the page equal quiz grade", async 
   const seen = watch(page);
   await page.goto(types.url);
   await page.getByRole("button", { name: "Start" }).click();
-  await expect(page.locator(".fm-question")).toHaveCount(11);
+  await expect(page.locator(".fm-question")).toHaveCount(16);
   await noViolations(page);
 
   await card(page, "s1").getByRole("radio").nth(1).check(); // right
@@ -35,6 +50,14 @@ test("every simple type: status and points on the page equal quiz grade", async 
   await fields.nth(1).fill("nope"); // wrong
   await fields.nth(2).fill("a note"); // not scored
   await card(page, "c1").getByRole("radio").nth(3).check();
+  await arrange(card(page, "o1"), [0, 1, 2]); // right
+  await arrange(card(page, "o2"), [1, 0, 2, 3]); // the last two are right: partly right
+  const lefts = card(page, "g1").locator("select");
+  await lefts.nth(0).selectOption({ label: "finds style problems" }); // right
+  await lefts.nth(1).selectOption({ label: "packs the files" }); // wrong
+  // the third stays at "—"
+  await card(page, "e1").locator("textarea").fill("a cache saves work");
+  await card(page, "k1").locator("textarea").fill("fn zqlargest() {}");
 
   await page.getByRole("button", { name: "Submit" }).click();
   await expect(page.locator(".fm-total")).toBeVisible();
@@ -52,6 +75,11 @@ test("every simple type: status and points on the page equal quiz grade", async 
     b1: "partial",
     f1: "partial",
     c1: "ungraded",
+    o1: "correct",
+    o2: "partial",
+    g1: "partial",
+    e1: "pending",
+    k1: "pending",
   });
   await noViolations(page);
 
@@ -71,9 +99,93 @@ test("every simple type: status and points on the page equal quiz grade", async 
   await expect(card(page, "h2")).not.toContainText("zq-pat-");
   await expect(card(page, "h1")).toContainText("zq-accept-alpha");
 
+  // ordering: each item marked, with its place when wrong; matching: each pair, with the right match when wrong
+  await expect(card(page, "o1").locator(".fm-order-item[data-result=correct]")).toHaveCount(3);
+  await expect(card(page, "o2").locator(".fm-order-item[data-result=wrong]")).toHaveCount(2);
+  await expect(card(page, "o2").locator(".fm-order-item[data-result=wrong]").first()).toContainText("belongs at");
+  await expect(card(page, "g1").locator(".fm-match[data-result=correct]")).toHaveCount(1);
+  await expect(card(page, "g1").locator(".fm-match").nth(1)).toContainText("runs the checks");
+  // essay and code wait for a grader and show the model answer; the boxes are read-only
+  await expect(card(page, "e1")).toContainText("Waiting for a grader");
+  await expect(card(page, "e1").locator(".fm-sample")).toContainText("zq-sample-essay");
+  await expect(card(page, "k1").locator(".fm-sample pre")).toContainText("zqlargest");
+  await expect(card(page, "k1").locator("textarea")).toHaveAttribute("readonly", "");
+
   expect(seen.problems).toEqual([]);
   expect(seen.requests).toEqual([]);
   expect(blocked).toBe(0);
+});
+
+test("ordering by keyboard: Enter on a button moves the item, the focus stays, the live region speaks", async ({
+  page,
+}) => {
+  await page.goto(types.url);
+  await page.getByRole("button", { name: "Start" }).click();
+  const list = card(page, "o1");
+  const before = await sourcesOf(list);
+  expect(before).not.toEqual([0, 1, 2]);
+  const first = list.locator(".fm-order-item").first();
+  await expect(first.locator('[data-dir="up"]')).toBeDisabled();
+  await first.locator('[data-dir="down"]').focus();
+  await page.keyboard.press("Enter");
+  expect(await sourcesOf(list)).toEqual([before[1], before[0], before[2]]);
+  const focused = () =>
+    page.evaluate(() => {
+      const el = document.activeElement as HTMLElement | null;
+      return `${el?.closest("li")?.getAttribute("data-source")}:${el?.getAttribute("data-dir")}`;
+    });
+  expect(await focused()).toBe(`${before[0]}:down`);
+  await expect(list.locator('[role="status"]')).toHaveText("Moved to position 2 of 3");
+  await page.keyboard.press("Enter");
+  // now last: its down button is disabled, so the focus moves to its up button
+  expect(await sourcesOf(list)).toEqual([before[1], before[2], before[0]]);
+  expect(await focused()).toBe(`${before[0]}:up`);
+  await expect(list.locator('[role="status"]')).toHaveText("Moved to position 3 of 3");
+  await expect(list.locator('[data-dir="down"]').first()).toHaveAccessibleName(/^Move down: zq-/);
+  // the move is stored: after Submit the question is answered
+  await page.getByRole("button", { name: "Submit" }).click();
+  await expect(list.locator(".fm-result")).not.toHaveAttribute("data-status", "unanswered");
+});
+
+test("the word count is live and never blocks Submit; clearing a code box does not bring the starter back", async ({
+  page,
+}) => {
+  await page.goto(types.url);
+  await page.getByRole("button", { name: "Start" }).click();
+  const essay = card(page, "e1");
+  await expect(essay.locator(".fm-count")).toHaveText("0 words, 3 to 6");
+  await expect(essay.locator(".fm-rubric")).toContainText("Names the cost saved");
+  await essay.locator("textarea").fill("one two three four five six seven eight");
+  await expect(essay.locator(".fm-count")).toHaveText("8 words, 3 to 6 · over the maximum");
+  const code = card(page, "k1").locator("textarea");
+  await expect(code).toHaveValue(/todo!\(\)/);
+  await expect(code).toHaveAttribute("spellcheck", "false");
+  await code.fill("");
+  await expect(code).toHaveValue("");
+  await page.getByRole("button", { name: "Submit" }).click();
+  await expect(card(page, "e1").locator(".fm-result")).toHaveAttribute("data-status", "pending");
+  await expect(card(page, "k1").locator(".fm-result")).toHaveAttribute("data-status", "unanswered");
+  // an untouched ordering and matching are unanswered
+  await expect(card(page, "o1").locator(".fm-result")).toHaveAttribute("data-status", "unanswered");
+  await expect(card(page, "g1").locator(".fm-result")).toHaveAttribute("data-status", "unanswered");
+});
+
+test("a vi quiz's export grades the same with quiz grade", async ({ page }) => {
+  await page.goto(typesVi.url);
+  await page.getByRole("button", { name: "Bắt đầu" }).click();
+  await card(page, "s1").getByRole("radio").nth(1).check();
+  await card(page, "n3").locator("input.fm-text").fill("2,5");
+  await arrange(card(page, "o1"), [0, 2, 1]);
+  await card(page, "g1").locator("select").nth(2).selectOption({ label: "packs the files" });
+  await card(page, "e1").locator("textarea").fill("một hai ba");
+  await page.getByRole("button", { name: "Nộp bài" }).click();
+  await expect(page.locator(".fm-total")).toBeVisible();
+  const results = await expectGradeMatches(page, typesVi.dir, "types-vi.md", "Xuất kết quả");
+  const status = Object.fromEntries(results.map((r) => [r.id, r.status]));
+  expect(status.n3).toBe("correct");
+  expect(status.g1).toBe("partial");
+  expect(status.e1).toBe("pending");
+  await noViolations(page);
 });
 
 test("examples/exam, answered in part, grades the same", async ({ page }) => {

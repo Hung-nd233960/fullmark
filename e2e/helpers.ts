@@ -43,10 +43,15 @@ export async function shown(page: Page): Promise<{ results: Shown; earned: numbe
 }
 
 /** Exports from the page, grades the file with the CLI, and checks status and points of every question. */
-export async function expectGradeMatches(page: Page, dir: string, quizFile: string): Promise<Shown> {
+export async function expectGradeMatches(
+  page: Page,
+  dir: string,
+  quizFile: string,
+  exportLabel = "Export results",
+): Promise<Shown> {
   const onPage = await shown(page);
   const download = page.waitForEvent("download");
-  await page.getByRole("button", { name: "Export results" }).click();
+  await page.getByRole("button", { name: exportLabel }).click();
   const file = await download;
   await file.saveAs(join(dir, file.suggestedFilename()));
   const out = JSON.parse(
