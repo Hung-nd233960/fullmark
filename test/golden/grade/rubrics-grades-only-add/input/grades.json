@@ -1,0 +1,151 @@
+{
+  "format": "fullmark-grades",
+  "version": 2,
+  "results_hash": "cdb9d8a4b551be0586485b8e68a0b0f547c587407e53baf16de0aeec64a8f2a3",
+  "grader": {
+    "kind": "ai",
+    "name": "Claude Opus 5.5",
+    "model": "claude-opus-5-5",
+    "at": "2026-10-24T09:00:00"
+  },
+  "grades": {
+    "add": {
+      "mode": "additive",
+      "rubric_hash": "393a310a0b7565af0d662fb1875d394c18077ab022c1ff5053e0eb3d75da8d8c",
+      "points": 3,
+      "step": 0.25,
+      "criteria": {
+        "defs": {
+          "text": "Define the terms",
+          "max": 0.5,
+          "score": 0.5,
+          "note": null
+        },
+        "derive": {
+          "text": "Derive the result",
+          "max": 1.5,
+          "score": 1.25,
+          "note": "Skips the zero initial-conditions assumption."
+        },
+        "interp": {
+          "text": "Interpret it",
+          "max": 1,
+          "score": 0.5,
+          "note": "Does not link the result to stability."
+        }
+      },
+      "justification": "Solid derivation; the interpretation is the weak part.",
+      "improvement": "Say why the result matters."
+    },
+    "ielts": {
+      "mode": "banded",
+      "rubric_hash": "d4a406656d42df725dde3e1522d03496b8819e8a01894f643d9da1fa78bdaa1d",
+      "points": 9,
+      "scale": {
+        "min": 0,
+        "max": 9,
+        "step": 0.5
+      },
+      "round": "ielts",
+      "criteria": {
+        "TR": {
+          "text": "Task Response",
+          "weight": 1,
+          "band": null,
+          "note": null
+        },
+        "CC": {
+          "text": "Coherence and Cohesion",
+          "weight": 1,
+          "band": null,
+          "note": null
+        },
+        "LR": {
+          "text": "Lexical Resource",
+          "weight": 1,
+          "band": null,
+          "note": null
+        },
+        "GRA": {
+          "text": "Grammatical Range and Accuracy",
+          "weight": 1,
+          "band": null,
+          "note": null
+        }
+      },
+      "justification": null,
+      "improvement": null
+    },
+    "banded": {
+      "mode": "banded",
+      "rubric_hash": "f12d0525dd0500c2d262782107dd100a9cb5f79cd4144e558405e978b172672b",
+      "points": 6,
+      "scale": {
+        "min": 0,
+        "max": 6,
+        "step": 1
+      },
+      "round": "down",
+      "criteria": {
+        "content": {
+          "text": "Content",
+          "weight": 2,
+          "band": null,
+          "note": null
+        },
+        "style": {
+          "text": "Style",
+          "weight": 1,
+          "band": null,
+          "note": null
+        }
+      },
+      "justification": null,
+      "improvement": null
+    },
+    "holistic": {
+      "mode": "holistic",
+      "rubric_hash": "eb63d7cf367b2b43d92464f6d384ffc4aacb1878f0df0582e060a7d7ad7e6888",
+      "points": 4,
+      "score": null,
+      "bullets": {
+        "names-the-nyquist-rate": {
+          "text": "Names the Nyquist rate",
+          "verdict": null
+        },
+        "gives-an-example": {
+          "text": "Gives an example",
+          "verdict": null
+        },
+        "explains-how-to-avoid-it": {
+          "text": "Explains how to avoid it",
+          "verdict": null
+        }
+      },
+      "justification": null,
+      "improvement": null
+    },
+    "code": {
+      "mode": "additive",
+      "rubric_hash": "db83fa1f945cbbdb8944d27de1c79d890e17663a8d67ed6374a3c110be5f5fdc",
+      "points": 2,
+      "step": 0.5,
+      "criteria": {
+        "works": {
+          "text": "Returns twice its argument",
+          "max": 1,
+          "score": null,
+          "note": null
+        },
+        "style": {
+          "text": "Is short and clear",
+          "max": 1,
+          "score": null,
+          "note": null
+        }
+      },
+      "justification": null,
+      "improvement": null
+    }
+  }
+}

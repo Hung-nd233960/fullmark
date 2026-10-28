@@ -1,0 +1,46 @@
+{
+  "format": "fullmark-results",
+  "version": 2,
+  "quizHash": "2792abce882e1f9c4b7b2b87adbb7d1ec5f5024c30b46396cdbe483d54e031d6",
+  "plan": {
+    "source": "full",
+    "questions": [
+      "prime",
+      "add",
+      "ielts",
+      "banded",
+      "holistic",
+      "code"
+    ]
+  },
+  "state": {
+    "answers": {
+      "prime": {
+        "choice": 1
+      },
+      "add": {
+        "text": "The transform maps a signal to the frequency domain. Starting from the definition we apply it to the input and divide by the transform of the output, which gives the transfer function."
+      },
+      "ielts": {
+        "text": "I agree to a large extent. Cities that invest in cycling routes see less traffic, cleaner air and healthier residents, although some trips still need a car."
+      },
+      "banded": {
+        "text": "Design A is cheaper but slower; design B costs more and is easier to maintain."
+      },
+      "holistic": {
+        "text": "Aliasing happens when a signal is sampled below twice its highest frequency, as with a wagon wheel on film."
+      },
+      "code": {
+        "code": "def double(x):\n    return x + x\n",
+        "language": "python"
+      }
+    },
+    "startedAt": "2026-10-23T16:02:00",
+    "submittedAt": "2026-10-23T16:30:00",
+    "timeUsed": 1680,
+    "sectionTime": {},
+    "flagged": [],
+    "timedOut": false
+  },
+  "phase": "submitted"
+}

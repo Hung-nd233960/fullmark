@@ -1,0 +1,10 @@
+results.json: invalid grades
+  grader: grader.kind must be "ai" or "human"
+  grader: grader.name is empty
+  grades.add: criteria.defs: score 0.3 is not a multiple of the step 0.25
+  grades.add: criteria.derive: score 2 is outside 0 to 1.5
+  grades.add: criteria.interp: a note is needed when marks are lost (0.5 of 1)
+  grades.ielts: criteria.TR: band 10 is outside the scale 0 to 9
+  grades.holistic: a holistic grade needs a justification
+  grades.code: criteria.style: score is empty while others are filled in (half-filled question)
+  grades.nope: no answered essay or code question with this id is waiting for a grade

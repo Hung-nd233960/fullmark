@@ -1,0 +1,3 @@
+{"status":"written","file":"r/one.json","report":"r/one-report.json","grades_template":"r/one-grades.json","score":{"earned":3,"points":3,"percent":100,"pending":0,"pass":{"mark":60,"passed":true}},"pending":0,"warnings":[]}
+{"status":"error","file":"r/nope.json","message":"no such file"}
+{"status":"done","ok":1,"failed":1}

@@ -1,0 +1,110 @@
+{
+  "format": "fullmark-report",
+  "version": 2,
+  "quiz": {
+    "title": "Cardiac physiology: a medical-science quiz",
+    "id": "quiz",
+    "hash": "b3c0c6258b651d76c759696cf9cb6c4c04f5aadab2f7c9c701f06805f0a18e29",
+    "kind": "quiz",
+    "lang": "en"
+  },
+  "attempt": {
+    "phase": "submitted",
+    "source": "full",
+    "questions": 2,
+    "started": "2026-10-23T16:02:00",
+    "submitted": "2026-10-23T16:30:00",
+    "time_used": 1680,
+    "timed_out": false
+  },
+  "score": {
+    "earned": 2,
+    "points": 3,
+    "percent": 66.67,
+    "pending": 0,
+    "pass": {
+      "mark": 60,
+      "passed": true
+    }
+  },
+  "sections": [
+    {
+      "id": "structure-and-conduction",
+      "title": "Structure and conduction",
+      "earned": 0,
+      "points": 1,
+      "percent": 0,
+      "pending": 0,
+      "questions": 1
+    },
+    {
+      "id": "haemodynamics",
+      "title": "Haemodynamics",
+      "earned": 2,
+      "points": 2,
+      "percent": 100,
+      "pending": 0,
+      "questions": 1
+    }
+  ],
+  "tags": [
+    {
+      "id": "conduction",
+      "title": null,
+      "earned": 0,
+      "points": 1,
+      "percent": 0,
+      "pending": 0,
+      "questions": 1
+    },
+    {
+      "id": "haemodynamics",
+      "title": null,
+      "earned": 2,
+      "points": 2,
+      "percent": 100,
+      "pending": 0,
+      "questions": 1
+    }
+  ],
+  "questions": [
+    {
+      "id": "sa-node",
+      "section": "structure-and-conduction",
+      "type": "single",
+      "tags": [
+        "conduction"
+      ],
+      "points": 1,
+      "earned": 0,
+      "status": "incorrect",
+      "prompt": "Which structure is the normal pacemaker of the heart?",
+      "answer": "The atrioventricular (AV) node",
+      "key": "The sinoatrial (SA) node",
+      "explanation": "The SA node depolarises fastest (about 60 to 100 times a minute), so it sets the rhythm. The AV node, bundle of His and Purkinje fibres can pace the heart only if the nodes above them fail, and then at slower rates.",
+      "words": null
+    },
+    {
+      "id": "co",
+      "section": "haemodynamics",
+      "type": "numeric",
+      "tags": [
+        "haemodynamics"
+      ],
+      "points": 2,
+      "earned": 2,
+      "status": "correct",
+      "prompt": "A resting heart rate is 72 beats per minute and the stroke volume is 70 mL. What is the cardiac output?",
+      "answer": "5",
+      "key": "5.04 L/min",
+      "explanation": "$72 \\times 70 = 5040$ mL/min, which is 5.04 L/min. A common slip is leaving the answer in mL/min.",
+      "words": null
+    }
+  ],
+  "wrong": [
+    "sa-node"
+  ],
+  "open": [],
+  "grades": null,
+  "unknown": []
+}

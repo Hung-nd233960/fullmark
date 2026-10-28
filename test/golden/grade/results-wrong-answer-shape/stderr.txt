@@ -1,0 +1,3 @@
+results.json: answers that do not fit their questions
+  sa-node: `choice` does not fit a single question: Invalid input: expected number, received string
+  co: `raw` does not fit a numeric question: Invalid input: expected string, received number

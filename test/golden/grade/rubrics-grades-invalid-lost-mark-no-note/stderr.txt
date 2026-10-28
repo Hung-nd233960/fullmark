@@ -1,0 +1,1 @@
+results.json: grades.add: criteria.derive: a note is needed when marks are lost (1.25 of 1.5)

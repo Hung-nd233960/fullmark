@@ -1,0 +1,64 @@
+{
+  "format": "fullmark-results",
+  "version": 2,
+  "quizHash": "eac5e065639d73e40bfe16a2836407aecb13e657a0186dbbf05054cd93ba8f83",
+  "plan": {
+    "source": "full",
+    "questions": [
+      "where",
+      "prepare",
+      "tools",
+      "rank",
+      "confidence",
+      "days",
+      "routine",
+      "ideas"
+    ]
+  },
+  "state": {
+    "answers": {
+      "where": {
+        "choice": 0
+      },
+      "prepare": {
+        "choice": 1
+      },
+      "tools": {
+        "choices": [
+          0,
+          2
+        ]
+      },
+      "rank": {
+        "order": [
+          1,
+          0,
+          3,
+          2
+        ]
+      },
+      "confidence": {
+        "value": 3
+      },
+      "days": {
+        "value": 5
+      },
+      "routine": {
+        "fields": [
+          "Evening",
+          "6"
+        ]
+      },
+      "ideas": {
+        "text": "Quieter rooms and shorter lectures would help me a lot."
+      }
+    },
+    "startedAt": "2026-10-23T16:02:00",
+    "submittedAt": "2026-10-23T16:30:00",
+    "timeUsed": 1680,
+    "sectionTime": {},
+    "flagged": [],
+    "timedOut": false
+  },
+  "phase": "submitted"
+}

@@ -1,0 +1,3 @@
+results.json: invalid grades
+  grades.ielts: scale changed: the template's scale cannot be edited
+  grades.banded: criteria.content: weight changed from 2

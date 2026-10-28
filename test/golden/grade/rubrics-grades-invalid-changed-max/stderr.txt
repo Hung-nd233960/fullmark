@@ -1,0 +1,1 @@
+results.json: grades.add: criteria.defs: max changed from 0.5

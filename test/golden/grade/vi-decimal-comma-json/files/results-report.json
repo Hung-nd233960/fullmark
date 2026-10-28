@@ -1,0 +1,115 @@
+{
+  "format": "fullmark-report",
+  "version": 2,
+  "quiz": {
+    "title": "Bài kiểm tra ngắn",
+    "id": "quiz",
+    "hash": "c970e45fdd7e0c45467da9d870b96fc19102f08d94f299ff1a3e4bf56b3cee74",
+    "kind": "quiz",
+    "lang": "vi"
+  },
+  "attempt": {
+    "phase": "submitted",
+    "source": "full",
+    "questions": 3,
+    "started": "2026-10-23T16:02:00",
+    "submitted": "2026-10-23T16:30:00",
+    "time_used": 1680,
+    "timed_out": false
+  },
+  "score": {
+    "earned": 3,
+    "points": 3,
+    "percent": 100,
+    "pending": 0,
+    "pass": {
+      "mark": 50,
+      "passed": true
+    }
+  },
+  "sections": [
+    {
+      "id": "phan-mot",
+      "title": "Phần một",
+      "earned": 3,
+      "points": 3,
+      "percent": 100,
+      "pending": 0,
+      "questions": 3
+    }
+  ],
+  "tags": [
+    {
+      "id": "dia-ly",
+      "title": null,
+      "earned": 1,
+      "points": 1,
+      "percent": 100,
+      "pending": 0,
+      "questions": 1
+    },
+    {
+      "id": "so-hoc",
+      "title": null,
+      "earned": 2,
+      "points": 2,
+      "percent": 100,
+      "pending": 0,
+      "questions": 2
+    }
+  ],
+  "questions": [
+    {
+      "id": "nua",
+      "section": "phan-mot",
+      "type": "numeric",
+      "tags": [
+        "so-hoc"
+      ],
+      "points": 1,
+      "earned": 1,
+      "status": "correct",
+      "prompt": "Một nửa của 5 là bao nhiêu?",
+      "answer": "2,5",
+      "key": "2.5",
+      "explanation": "Năm chia hai bằng hai phẩy năm.",
+      "words": null
+    },
+    {
+      "id": "thudo",
+      "section": "phan-mot",
+      "type": "short",
+      "tags": [
+        "dia-ly"
+      ],
+      "points": 1,
+      "earned": 1,
+      "status": "correct",
+      "prompt": "Thủ đô của nước ta là gì?",
+      "answer": "Hà Nội",
+      "key": "Hà Nội",
+      "explanation": "Hà Nội là thủ đô của nước ta.",
+      "words": null
+    },
+    {
+      "id": "nguyento",
+      "section": "phan-mot",
+      "type": "single",
+      "tags": [
+        "so-hoc"
+      ],
+      "points": 1,
+      "earned": 1,
+      "status": "correct",
+      "prompt": "Chọn số nguyên tố.",
+      "answer": "7",
+      "key": "7",
+      "explanation": "Bảy chỉ chia hết cho một và chính nó.",
+      "words": null
+    }
+  ],
+  "wrong": [],
+  "open": [],
+  "grades": null,
+  "unknown": []
+}

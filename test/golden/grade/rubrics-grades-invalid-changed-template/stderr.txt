@@ -1,0 +1,3 @@
+results.json: invalid grades
+  grades.add: points changed from 3: the template's values cannot be edited
+  grades.banded: round changed from down

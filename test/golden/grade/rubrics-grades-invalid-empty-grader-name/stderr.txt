@@ -1,0 +1,3 @@
+results.json: invalid grades
+  grader: grader.name is empty
+  grader: an AI grader needs grader.model

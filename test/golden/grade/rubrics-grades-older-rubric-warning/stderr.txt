@@ -1,0 +1,2 @@
+results.json: warning: results_hash differs from this attempt: these grades were made for another results file
+results.json: warning: grades.add: graded against an older rubric (rubric_hash differs)

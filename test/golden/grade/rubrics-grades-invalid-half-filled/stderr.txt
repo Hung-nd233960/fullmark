@@ -1,0 +1,1 @@
+results.json: grades.add: criteria.interp: score is empty while others are filled in (half-filled question)

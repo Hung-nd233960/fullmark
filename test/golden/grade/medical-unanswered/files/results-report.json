@@ -1,0 +1,264 @@
+{
+  "format": "fullmark-report",
+  "version": 2,
+  "quiz": {
+    "title": "Cardiac physiology: a medical-science quiz",
+    "id": "quiz",
+    "hash": "b3c0c6258b651d76c759696cf9cb6c4c04f5aadab2f7c9c701f06805f0a18e29",
+    "kind": "quiz",
+    "lang": "en"
+  },
+  "attempt": {
+    "phase": "submitted",
+    "source": "full",
+    "questions": 10,
+    "started": "2026-10-23T16:02:00",
+    "submitted": "2026-10-23T16:30:00",
+    "time_used": 1680,
+    "timed_out": false
+  },
+  "score": {
+    "earned": 0,
+    "points": 20,
+    "percent": 0,
+    "pending": 0,
+    "pass": {
+      "mark": 60,
+      "passed": false
+    }
+  },
+  "sections": [
+    {
+      "id": "structure-and-conduction",
+      "title": "Structure and conduction",
+      "earned": 0,
+      "points": 8,
+      "percent": 0,
+      "pending": 0,
+      "questions": 4
+    },
+    {
+      "id": "haemodynamics",
+      "title": "Haemodynamics",
+      "earned": 0,
+      "points": 8,
+      "percent": 0,
+      "pending": 0,
+      "questions": 5
+    },
+    {
+      "id": "written-answer",
+      "title": "Written answer",
+      "earned": 0,
+      "points": 4,
+      "percent": 0,
+      "pending": 0,
+      "questions": 1
+    }
+  ],
+  "tags": [
+    {
+      "id": "anatomy",
+      "title": null,
+      "earned": 0,
+      "points": 1,
+      "percent": 0,
+      "pending": 0,
+      "questions": 1
+    },
+    {
+      "id": "conduction",
+      "title": null,
+      "earned": 0,
+      "points": 7,
+      "percent": 0,
+      "pending": 0,
+      "questions": 3
+    },
+    {
+      "id": "ecg",
+      "title": null,
+      "earned": 0,
+      "points": 4,
+      "percent": 0,
+      "pending": 0,
+      "questions": 2
+    },
+    {
+      "id": "haemodynamics",
+      "title": null,
+      "earned": 0,
+      "points": 11,
+      "percent": 0,
+      "pending": 0,
+      "questions": 5
+    }
+  ],
+  "questions": [
+    {
+      "id": "sa-node",
+      "section": "structure-and-conduction",
+      "type": "single",
+      "tags": [
+        "conduction"
+      ],
+      "points": 1,
+      "earned": 0,
+      "status": "unanswered",
+      "prompt": "Which structure is the normal pacemaker of the heart?",
+      "answer": null,
+      "key": "The sinoatrial (SA) node",
+      "explanation": "The SA node depolarises fastest (about 60 to 100 times a minute), so it sets the rhythm. The AV node, bundle of His and Purkinje fibres can pace the heart only if the nodes above them fail, and then at slower rates.",
+      "words": null
+    },
+    {
+      "id": "pathway",
+      "section": "structure-and-conduction",
+      "type": "ordering",
+      "tags": [
+        "conduction"
+      ],
+      "points": 3,
+      "earned": 0,
+      "status": "unanswered",
+      "prompt": "Put the path of an electrical impulse through the heart in order.",
+      "answer": null,
+      "key": "1. Sinoatrial node 2. Atrioventricular node 3. Bundle of His 4. Left and right bundle branches 5. Purkinje fibres",
+      "explanation": "The impulse spreads across the atria, is delayed in the AV node so the ventricles fill, and then travels down the septum and out to the ventricular muscle.",
+      "words": null
+    },
+    {
+      "id": "ecg-match",
+      "section": "structure-and-conduction",
+      "type": "matching",
+      "tags": [
+        "conduction",
+        "ecg"
+      ],
+      "points": 3,
+      "earned": 0,
+      "status": "unanswered",
+      "prompt": "Match each ECG wave to the heart event it records.",
+      "answer": null,
+      "key": "P wave - Atrial depolarisation; QRS complex - Ventricular depolarisation; T wave - Ventricular repolarisation",
+      "explanation": "Atrial repolarisation happens during the QRS complex and is hidden by it, which is why it has no wave of its own and works as the distractor.",
+      "words": null
+    },
+    {
+      "id": "mitral",
+      "section": "structure-and-conduction",
+      "type": "blanks",
+      "tags": [
+        "anatomy"
+      ],
+      "points": 1,
+      "earned": 0,
+      "status": "unanswered",
+      "prompt": "The valve between the left atrium and the left ventricle is the [[mitral|bicuspid]] valve.",
+      "answer": null,
+      "key": "1: mitral / bicuspid",
+      "explanation": "It has two cusps, hence \"bicuspid\". The tricuspid valve sits on the right side.",
+      "words": null
+    },
+    {
+      "id": "co",
+      "section": "haemodynamics",
+      "type": "numeric",
+      "tags": [
+        "haemodynamics"
+      ],
+      "points": 2,
+      "earned": 0,
+      "status": "unanswered",
+      "prompt": "A resting heart rate is 72 beats per minute and the stroke volume is 70 mL. What is the cardiac output?",
+      "answer": null,
+      "key": "5.04 L/min",
+      "explanation": "$72 \\times 70 = 5040$ mL/min, which is 5.04 L/min. A common slip is leaving the answer in mL/min.",
+      "words": null
+    },
+    {
+      "id": "hr",
+      "section": "haemodynamics",
+      "type": "numeric",
+      "tags": [
+        "ecg"
+      ],
+      "points": 1,
+      "earned": 0,
+      "status": "unanswered",
+      "prompt": "On an ECG the R-R interval is 0.8 s. What is the heart rate?",
+      "answer": null,
+      "key": "75 beats/min",
+      "explanation": "$60 / 0.8 = 75$ beats per minute. The interval is the time for one beat, so divide 60 s by it.",
+      "words": null
+    },
+    {
+      "id": "sv",
+      "section": "haemodynamics",
+      "type": "multi",
+      "tags": [
+        "haemodynamics"
+      ],
+      "points": 2,
+      "earned": 0,
+      "status": "unanswered",
+      "prompt": "Which of these increase stroke volume?",
+      "answer": null,
+      "key": "Greater venous return (preload); Stronger myocardial contractility; Lower arterial resistance (afterload)",
+      "explanation": "More filling stretches the muscle and it ejects more (Frank-Starling), more contractility ejects more, and lower afterload is easier to eject against. Higher afterload lowers stroke volume, and vagal tone mainly slows the rate rather than changing stroke volume directly.",
+      "words": null
+    },
+    {
+      "id": "map-true",
+      "section": "haemodynamics",
+      "type": "truefalse",
+      "tags": [
+        "haemodynamics"
+      ],
+      "points": 1,
+      "earned": 0,
+      "status": "unanswered",
+      "prompt": "Mean arterial pressure is roughly the diastolic pressure plus one third of the pulse pressure.",
+      "answer": null,
+      "key": "true",
+      "explanation": "The heart spends about two thirds of each cycle in diastole, so the mean pressure sits closer to the diastolic value. MAP = DBP + (SBP - DBP) / 3.",
+      "words": null
+    },
+    {
+      "id": "bp-fields",
+      "section": "haemodynamics",
+      "type": "fields",
+      "tags": [
+        "haemodynamics"
+      ],
+      "points": 2,
+      "earned": 0,
+      "status": "unanswered",
+      "prompt": "A patient has a blood pressure of 120/80 mmHg. Work out the pressures.",
+      "answer": null,
+      "key": "Pulse pressure (mmHg): 40; Mean arterial pressure (mmHg, one decimal place): 93.3",
+      "explanation": "Pulse pressure is 120 - 80 = 40 mmHg. MAP is 80 + 40 / 3 = 93.3 mmHg.",
+      "words": null
+    },
+    {
+      "id": "frank-starling",
+      "section": "written-answer",
+      "type": "essay",
+      "tags": [
+        "haemodynamics"
+      ],
+      "points": 4,
+      "earned": null,
+      "status": "unanswered",
+      "prompt": "Explain the Frank-Starling mechanism and why it matters.",
+      "answer": null,
+      "key": null,
+      "explanation": null,
+      "words": 0
+    }
+  ],
+  "wrong": [],
+  "open": [],
+  "grades": null,
+  "unknown": []
+}

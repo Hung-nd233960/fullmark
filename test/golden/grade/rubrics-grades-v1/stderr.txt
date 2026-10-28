@@ -1,0 +1,1 @@
+grades.json: this is a 0.x grades file (version 1): fullmark 1.0 reads only version 2; grade the attempt again from the template that `quiz grade --json` writes

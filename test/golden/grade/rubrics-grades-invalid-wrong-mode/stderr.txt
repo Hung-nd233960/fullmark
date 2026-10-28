@@ -1,0 +1,1 @@
+results.json: grades.holistic: mode is "additive", but the rubric is holistic

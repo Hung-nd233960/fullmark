@@ -1,0 +1,5 @@
+results.json: the results file is malformed:
+  quizHash: a SHA-256 in lower-case hex
+  plan: Invalid input: expected object, received undefined
+  state: Invalid input: expected object, received undefined
+  phase: Invalid option: expected one of "start"|"answering"|"submitted"

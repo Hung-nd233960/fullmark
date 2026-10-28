@@ -1,0 +1,26 @@
+{
+  "format": "fullmark-results",
+  "version": 2,
+  "quizHash": "b3c0c6258b651d76c759696cf9cb6c4c04f5aadab2f7c9c701f06805f0a18e29",
+  "plan": {
+    "source": "full",
+    "questions": [
+      "sa-node",
+      "co"
+    ]
+  },
+  "state": {
+    "answers": {
+      "sa-node": {
+        "choice": 1
+      }
+    },
+    "startedAt": "2026-10-23T16:02:00",
+    "submittedAt": "2026-10-23T16:30:00",
+    "timeUsed": 1680,
+    "sectionTime": {},
+    "flagged": [],
+    "timedOut": false
+  },
+  "phase": "answering"
+}

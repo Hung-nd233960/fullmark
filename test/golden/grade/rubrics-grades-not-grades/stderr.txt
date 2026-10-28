@@ -1,0 +1,1 @@
+grades.json: not a grades file: its format is not "fullmark-grades"

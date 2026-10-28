@@ -1,0 +1,3 @@
+r/one.json: wrote reports/one-report.md
+r/three.json: wrote reports/three-report.md
+2 done, 0 failed

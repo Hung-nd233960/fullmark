@@ -1,0 +1,34 @@
+{
+  "format": "fullmark-grades",
+  "version": 2,
+  "results_hash": "dd01385a360d1bd10b11f417499dccd7219cdc558dc1d0ca31ffb951a565173e",
+  "grader": null,
+  "grades": {
+    "frank-starling": {
+      "mode": "holistic",
+      "rubric_hash": "dc9565756216b0e07e2afcd3c79a26ca1a5731f636aed0b443b101e6ab92e0a7",
+      "points": 4,
+      "score": null,
+      "bullets": {
+        "states-that-greater-end-diastolic-filling-stretches-the-fibres-and-increases-the-force-of-contraction": {
+          "text": "States that greater end-diastolic filling stretches the fibres and increases the force of contraction",
+          "verdict": null
+        },
+        "links-this-to-a-larger-stroke-volume-for-the-same-heart-rate": {
+          "text": "Links this to a larger stroke volume for the same heart rate",
+          "verdict": null
+        },
+        "gives-a-clinical-or-physiological-consequence-for-example-balancing-left-and-right-output-or-the-effect-of-reduced-venous-return": {
+          "text": "Gives a clinical or physiological consequence, for example balancing left and right output or the effect of reduced venous return",
+          "verdict": null
+        },
+        "uses-correct-terms-such-as-preload-end-diastolic-volume-and-stroke-volume": {
+          "text": "Uses correct terms such as preload, end-diastolic volume and stroke volume",
+          "verdict": null
+        }
+      },
+      "justification": null,
+      "improvement": null
+    }
+  }
+}

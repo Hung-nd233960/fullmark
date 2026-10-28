@@ -1,0 +1,1 @@
+{"status":"written","file":"results.json","report":"results-report.json","grades_template":"results-grades.json","score":{"earned":1,"points":1,"percent":100,"pending":24,"pass":{"mark":50,"passed":true}},"pending":24,"warnings":[]}

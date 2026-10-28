@@ -1,0 +1,33 @@
+{
+  "format": "fullmark-results",
+  "version": 2,
+  "quizHash": "c970e45fdd7e0c45467da9d870b96fc19102f08d94f299ff1a3e4bf56b3cee74",
+  "plan": {
+    "source": "full",
+    "questions": [
+      "nua",
+      "thudo",
+      "nguyento"
+    ]
+  },
+  "state": {
+    "answers": {
+      "nua": {
+        "raw": "2,5"
+      },
+      "thudo": {
+        "text": "Hà Nội"
+      },
+      "nguyento": {
+        "choice": 1
+      }
+    },
+    "startedAt": "2026-10-23T16:02:00",
+    "submittedAt": "2026-10-23T16:30:00",
+    "timeUsed": 1680,
+    "sectionTime": {},
+    "flagged": [],
+    "timedOut": false
+  },
+  "phase": "submitted"
+}

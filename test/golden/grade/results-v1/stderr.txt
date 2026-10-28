@@ -1,0 +1,1 @@
+results.json: this is a 0.x results file (version 1): fullmark 1.0 reads only version 2; the move-in script converts the old files once (TECHNICAL_DESIGN.md, section 12, step 6)
