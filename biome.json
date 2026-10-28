@@ -8,6 +8,7 @@
       "test/**",
       "*.json",
       "*.ts",
+      "e2e/**",
       "!test/fixtures",
       "!test/data",
       "!test/golden",
@@ -23,6 +24,7 @@
   },
   "linter": {
     "enabled": true,
+    "domains": { "playwright": "none" },
     "rules": {
       "preset": "recommended",
       "style": { "useTemplate": "off", "noNonNullAssertion": "off", "useConst": "warn" },

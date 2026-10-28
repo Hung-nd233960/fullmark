@@ -1,4 +1,5 @@
 import { Command } from "commander";
+import type { BuildOptions } from "./build";
 import type { CheckOptions } from "./check";
 import { EXIT, type ExitCode } from "./exit-codes";
 import type { GradeOptions } from "./grade";
@@ -152,6 +153,57 @@ export function buildProgram(outcome: Outcome = { exit: EXIT.done }, io: Io = te
         outcome.exit = await (await import("./grade")).runGrade(results, opts, io);
       },
     );
+
+  const LATER = [
+    "build-file",
+    "json",
+    "open",
+    "print",
+    "answers",
+    "answer-sheet",
+    "seed",
+    "ui-lang",
+    "fonts",
+    "watch",
+    "serve",
+    "port",
+  ] as const;
+  program
+    .command("build")
+    .description("check a quiz, then write it as one offline HTML page")
+    .argument("<files...>", "quiz .md file (one, for now)")
+    .option("-o, --output <out>", "the page to write (default: the quiz file with .html)")
+    .option("--profile <name>", "the check profile; overrides the quiz's profile")
+    .option("--config <toml>", "use this config file instead of the nearest fullmark.toml")
+    .option("--strict", "warnings count as errors, and nothing is written")
+    .option("--built-at <iso>", "pin the build time, so a build is byte-identical across runs (default: now)")
+    // these arrive with later slices; they are accepted so that the refusal is a plain message
+    .option("--build-file <build>", "(not available yet)")
+    .option("--json", "(not available yet)")
+    .option("--open", "(not available yet)")
+    .option("--print", "(not available yet)")
+    .option("--answers <mode>", "(not available yet)")
+    .option("--answer-sheet", "(not available yet)")
+    .option("--seed <s>", "(not available yet)")
+    .option("--ui-lang <lang>", "(not available yet)")
+    .option("--fonts <which>", "(not available yet)")
+    .option("--watch", "(not available yet)")
+    .option("--serve", "(not available yet)")
+    .option("--port <n>", "(not available yet)")
+    .action(async (files: string[], options: Record<string, unknown>) => {
+      const opts: BuildOptions = {
+        profile: (options.profile as string | undefined) ?? null,
+        config: (options.config as string | undefined) ?? null,
+        strict: Boolean(options.strict),
+        output: (options.output as string | undefined) ?? null,
+        builtAt: (options.builtAt as string | undefined) ?? null,
+        later: LATER.filter(
+          (name) => options[name.replace(/-(\w)/g, (_m, c: string) => c.toUpperCase())] !== undefined,
+        ),
+        version: VERSION,
+      };
+      outcome.exit = await (await import("./build")).runBuild(files, opts, io);
+    });
   return program;
 }
 

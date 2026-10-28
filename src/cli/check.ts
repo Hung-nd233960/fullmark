@@ -19,7 +19,7 @@ import { EXIT, type ExitCode } from "./exit-codes";
 import { fail } from "./fail";
 import { expandInputs } from "./files";
 import type { Io } from "./ids";
-import { loadQuiz } from "./load";
+import { type LoadedQuiz, loadQuiz } from "./load";
 import { readFailure, shownPath } from "./paths";
 
 export type CheckOptions = {
@@ -48,6 +48,8 @@ export type FileOutcome =
       ignored: { rule: string; line: number; because: string }[];
       /** the first line of human output */
       header: string;
+      /** the quiz as loaded, for the commands that go on to use it (`build`) */
+      loaded: LoadedQuiz;
     }
   | { status: "error"; file: string; message: string; configErrors?: ConfigError[] };
 
@@ -178,19 +180,20 @@ export function checkFile(file: string, opts: CheckOptions, io: CheckIo): FileOu
     issues: result.issues,
     ignored: result.ignored,
     header: describeProfile(resolved.profile, choice, config.files),
+    loaded,
   };
 }
 
 const plural = (n: number, word: string) => `${n} ${word}${n === 1 ? "" : "s"}`;
 
-function humanIssue(i: Issue, color: boolean): string[] {
+export function humanIssue(i: Issue, color: boolean): string[] {
   const paint = !color ? (s: string) => s : i.level === "error" ? pc.red : i.level === "warning" ? pc.yellow : pc.cyan;
   const lines = [`${i.file}:${i.line}: ${paint(i.level)} ${i.rule}: ${i.message}`];
   if (i.fix) lines.push(`    fix: ${i.fix}`);
   return lines;
 }
 
-function describeOutcome(r: FileOutcome, several: boolean, color: boolean): string[] {
+export function describeOutcome(r: FileOutcome, several: boolean, color: boolean): string[] {
   if (r.status === "error") {
     const out = [`${r.file}: ${r.message}`];
     for (const e of r.configErrors ?? []) {

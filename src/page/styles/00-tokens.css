@@ -1,0 +1,23 @@
+@layer tokens, base, components;
+
+/* One placeholder token set, from 0.x's light look. The five themes arrive with their own slice. */
+@layer tokens {
+  :root {
+    color-scheme: light;
+    --bg: #f6f5f1;
+    --surface: #ffffff;
+    --text: #23252b;
+    --muted: #5d6270;
+    --border: #d9d6cc;
+    --accent: #2f5f8a;
+    --accent-text: #ffffff;
+    --good: #2d6a3e;
+    --good-bg: #e6f2e8;
+    --bad: #9b2c2c;
+    --bad-bg: #f8e6e4;
+    --warn: #8a5a12;
+    --radius: 8px;
+    --gap: 16px;
+    --font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+}

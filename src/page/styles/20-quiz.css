@@ -1,0 +1,148 @@
+@layer components {
+  .fm-page {
+    max-width: 46rem;
+    margin: 0 auto;
+    padding: 24px 16px 64px;
+  }
+
+  .fm-quiz + .fm-quiz {
+    margin-top: 48px;
+  }
+
+  .fm-header h1 {
+    margin: 0 0 4px;
+    font-size: 1.6rem;
+  }
+
+  .fm-description {
+    margin: 0 0 var(--gap);
+    color: var(--muted);
+  }
+
+  .fm-start {
+    margin: var(--gap) 0;
+    padding: 20px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+  }
+
+  .fm-section h2 {
+    margin: 32px 0 8px;
+    font-size: 1.2rem;
+  }
+
+  .fm-question {
+    margin: var(--gap) 0;
+    padding: 18px 20px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+  }
+
+  .fm-question-head {
+    display: flex;
+    justify-content: space-between;
+    color: var(--muted);
+    font-size: 0.85rem;
+  }
+
+  .fm-prompt p {
+    margin: 0.4em 0;
+  }
+
+  .fm-choices {
+    margin: 12px 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .fm-choice {
+    margin: 6px 0;
+    padding: 8px 10px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+  }
+
+  .fm-choice label {
+    display: flex;
+    gap: 10px;
+    align-items: baseline;
+    cursor: pointer;
+  }
+
+  .fm-choice[data-correct="true"] {
+    border-color: var(--good);
+    background: var(--good-bg);
+  }
+
+  .fm-choice[data-picked="true"][data-correct="false"] {
+    border-color: var(--bad);
+    background: var(--bad-bg);
+  }
+
+  .fm-choice-input {
+    display: block;
+    width: 100%;
+    margin-top: 8px;
+    padding: 6px 8px;
+    font: inherit;
+    color: inherit;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+  }
+
+  .fm-hint {
+    margin: 8px 0;
+    color: var(--muted);
+  }
+
+  .fm-result {
+    margin: 12px 0 0;
+  }
+
+  .fm-result[data-status="correct"] {
+    color: var(--good);
+  }
+
+  .fm-result[data-status="incorrect"] {
+    color: var(--bad);
+  }
+
+  .fm-explanation {
+    margin-top: 8px;
+    padding: 8px 12px;
+    border-left: 3px solid var(--accent);
+    color: var(--muted);
+  }
+
+  .fm-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+    margin-top: var(--gap);
+  }
+
+  .fm-total {
+    margin: 0;
+    font-size: 1.15rem;
+  }
+
+  .fm-button {
+    padding: 10px 18px;
+    font: inherit;
+    color: var(--text);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    cursor: pointer;
+  }
+
+  .fm-primary {
+    color: var(--accent-text);
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+}
