@@ -35,7 +35,7 @@ The program is `quiz`. `fullmark` runs the same program, for systems where anoth
 | `--config TOML` | Use this config file instead of looking for the nearest `fullmark.toml`. Same commands as `--profile` |
 | `--fonts quiz\|all\|none` | Which fonts the page embeds, on every command that writes a page (`build`, `replay`, `serve`, `library take`, `library replay`, `library share`, `library publish`). `quiz`: the quiz's own font; `all`: every font, about 0.5 MB, so a learner can switch freely; `none`: no embedded font, the smallest page. Default: `fonts` in `config.toml`, else `quiz`. `publish` remembers its value in the shelf manifest. See [TECHNICAL_DESIGN.md](TECHNICAL_DESIGN.md), section 8 |
 
-How the profile and the config are chosen is in [TECHNICAL_DESIGN.md](TECHNICAL_DESIGN.md), section 5. A malformed config file, or an unknown profile given with `--profile`, exits 2 with the config's `file:line`.
+How the profile and the config are chosen is in [TECHNICAL_DESIGN.md](TECHNICAL_DESIGN.md), section 5. A malformed config file exits 2 with the config's `file:line`; an unknown profile given with `--profile` exits 2 with a plain message naming the known profiles.
 
 ### Several files
 
@@ -70,7 +70,7 @@ Commands that handle each input on its own take `FILE...`: `check`, `build`, `id
 | `quiz.md` plus `assets/` | fullmark Markdown (`quiz guide`) | the author or an agent |
 | `quiz.html` | one self-contained offline page | `build`, `library share` |
 | `*-results-*.json` | `results-v2` (serialised Attempt) | the page (**Export**), `serve`, `library take` |
-| `*-report.md`, `*-report.json` | `report-v1` | `grade`, `library grade` |
+| `*-report.md`, `*-report.json` | `report-v2` (the JSON; TECHNICAL_DESIGN.md, section 6) | `grade`, `library grade` |
 | `*-grades.json` | `grades-v2`: the grader's identity, and per question the rubric mode with scores or bands per criterion and notes | template from `grade --json`, filled in by an agent or through `grade --web` |
 | `review.json` | `review-v1`: keep, fix or drop per question | `review` |
 | `brief.yaml` plus `content/` | brief | `brief` |

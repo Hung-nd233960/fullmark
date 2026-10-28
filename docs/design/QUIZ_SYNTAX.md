@@ -286,7 +286,7 @@ Written in the correct order; the page shows it shuffled, never in the right ord
 - :: frequency only
 ```
 
-`left :: right`; a bullet that starts with `::` adds a distractor. At least two pairs, unique right-hand items. With `partial`, scored per pair.
+`left :: right`; a bullet that starts with `::` adds a distractor. At least two pairs, unique right-hand items. With `partial`, scored per pair. The page always shows the right-hand items (distractors included) shuffled, never in source order, whatever `shuffle_choices` says, so the answers never sit opposite their left items.
 
 ### essay
 

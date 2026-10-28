@@ -19,28 +19,18 @@ The owner's working rules: state what, why and what done means before a big job 
 |---|---|---|
 | 1a scaffold and test data | done, reviewed | `764bd07`..`4e1b0cf` |
 | 1b parser and `quiz ids` | done, reviewed | `0789b52`..`b49918f` |
-| 1c rules, config, `check`, `rules` | done, reviewed; its gaps decided (below) | `8a632b5`..`201d9fb` |
-| 1d grader and `grade` | brief written (below), ready to delegate | |
-| 1e contract tests | after 1d | |
+| 1c rules, config, `check`, `rules` | done, reviewed, gaps decided | `8a632b5`..`201d9fb` |
+| 1d grader and `grade` | done, reviewed, gaps decided; follow-up fixes done | `402bb97`..`9c350a3`, `869db1d`..`49dba98` |
+| 1e contract tests | brief written (below), ready to delegate | |
 
-`npm run check` after 1c: 30 test files, 603 passed, 166 todo (the 160 0.x grading cases and the 6 `rubric.*` fixtures, both for 1d). Branch `1.0` is not on GitHub; nothing has been pushed.
+`npm run check` after 1d: 37 test files, 1010 passed, 0 todo. Branch `1.0` is not on GitHub; nothing has been pushed.
 
-### Slice 1c's gaps: decided 2026-10-28, written into the design docs
-
-The owner accepted all six, with one change to the first, and confirmed that rules get no numeric codes. What the code still has to catch up on (slice 1d's first tasks):
-
-1. **`brief.yaml` has no defaults when read** (COMMANDS.md, `quiz brief`, "The file"). `quiz brief` writes every key; `readBrief` must require every key, and a missing one is `brief.invalid` like an unknown one. `BriefSchema` in `src/core/ir.ts` loses its `.default(...)`s (the defaults belong to `quiz brief`, step 3), an empty `brief.yaml` is `brief.invalid`, and `profile` is a string, not nullable.
-2. **`brief.mode`** quality warning (TECHNICAL_DESIGN.md, section 5, the catalogue).
-3. **`profile.unknown`** fixed rule for an unknown front-matter profile, instead of `syntax.value`; an unknown `--profile` exits 2 with a plain message naming the known profiles.
-4. **`because` without `check-ignore`** is `ignore.invalid`.
-5. **`build.size`** registered, with no check until step 2.
-
-Item 6 (what 1c chose for profiles, `[check]`, the survey default, the built-in rule lists, unknown-rule ignores, `kind: "custom"`) only needed writing down; the code already does it.
+1d's proposals and gaps were decided on 2026-10-28 and are in the design docs (commits `d274e3d` and the one after it): `results-v2` with `AttemptState` and every answer shape (TECHNICAL_DESIGN.md section 4); `optionOrder` also for ordering and matching, and matching always shown shuffled (QUIZ_SYNTAX.md); `report-v2`; the score while grades are pending; the rubric rule details, rounding, the grades template and validation (section 6); `grade --quiz` required and `--grades` explicit (COMMANDS.md). The code already matches all of it.
 
 ### Next steps, in order
 
-1. Delegate 1d to Sonnet with a short prompt pointing at "Slice 1d" below. Review it; bring its proposals (`AttemptState`, `results-v2` and its answer shapes) and gaps to the owner.
-2. Write the 1e brief and delegate it: 1e (contract tests, golden files, the startup budget), which closes step 1.
+1. Delegate 1e to Sonnet with a short prompt pointing at "Slice 1e" below. Review it: read the golden files themselves, since they become the contract; bring its gaps to the owner.
+2. With 1e reviewed, step 1 is done. Step 2 (`build`, the page runtime, themes, `replay`) gets its own plan file, `docs/plans/STEP2.md`, cut into slices the same way.
 
 ### Loose ends outside this plan
 
@@ -254,6 +244,48 @@ None expected. If one seems needed, it must be in TECHNICAL_DESIGN.md section 3;
 - `npm run check` passes.
 - The report proposes, for the design docs: `AttemptState`, the `results-v2` schema with every answer shape, and anything else the docs left open.
 
-## Slice 1e
+## Slice 1e: contract tests, which close step 1
 
-Outlined above; it gets its full brief here after 1d is reviewed.
+1d is reviewed (commits `402bb97` to `9c350a3`, follow-ups `869db1d` to `49dba98`). Its proposals and gaps are settled in the design docs (2026-10-28): see the handoff above.
+
+1e adds little new behaviour. It pins what `check`, `rules`, `grade` and `ids` do, as seen from outside, so that step 2 cannot change it by accident. Read first, beyond the usual: TECHNICAL_DESIGN.md section 11 (Testing) and section 7 (the budgets table); COMMANDS.md Conventions (exit codes, common options, "Several files", Files) and the four commands in full.
+
+### Golden files
+
+- **Layout:** `test/golden/<command>/<case>/` holding `cmd.txt` (the arguments, one per line, paths relative to the case's input folder), the inputs (or a pointer to an example or fixture), and the expected `stdout.txt`, `stderr.txt`, `exit.txt` and every file the command writes. One runner test finds every case folder and runs it.
+- **They run the built bundle** (`node dist/cli.js`) as a subprocess, as TECHNICAL_DESIGN.md section 11 says, with a temporary copy of the inputs as the working directory, `NO_COLOR` set, no terminal, and `FULLMARK_CONFIG` pointing at a file inside the case (or at a missing one), so the owner's real config is never read.
+- **Normalisation, the only one allowed:** the temporary folder's path becomes `<dir>`, and Windows backslashes in paths become `/`. Nothing else is masked: no timestamps or random values may appear in this output (`ids` is the exception, see below). If anything else differs between two runs, it is a determinism bug to fix, not to mask.
+- **Updating:** `npm run golden:update` (an environment variable read by the runner) rewrites the expected files; a plain run only compares. A changed golden file is a reviewed diff in its own commit.
+- **Paths in output:** COMMANDS.md does not say how a path is printed. Today `grade --json` prints its input path with `/` and the files it wrote with `\` in one line. Make it consistent: a path is printed relative to the working directory when it lies under it, else absolute, always with `/`. Report this as a proposal.
+
+### The cases
+
+For each of `check`, `rules`, `grade` and `ids`: every option of COMMANDS.md, every exit code it lists, human output and `--json`. At least:
+
+- **Several files:** three quizzes of which one is broken, for `check` and `ids` (exit 1, three JSON lines then the summary line, the human summary `2 done, 1 failed`); globs, repeated names dropped, a folder refused; an option that names one thing (`--grades`, `--review`) with several inputs (exit 2); `-o` as a folder for `grade`.
+- **Exit codes:** each command's `0`, `1` and `2` paths, and `3` wherever a command can return it (none of these four should; say so if one does).
+- **`check`:** every example under its profile (exit 0); a broken fixture per rule family; `--strict`; `--profile` unknown (exit 2, plain message); a `fullmark.toml` with an error (exit 2, `file:line`); a quiz beside a `brief.yaml` it does not match; `--review` (exit 2, not available yet).
+- **`rules`:** no arguments; one fixed, one quality and one custom rule; `--for FILE` showing where values came from; `--profile exam`; an unknown rule (exit 2).
+- **`grade`:** Markdown and `--json` reports for an attempt on an example with every auto-graded type; the grades template; `--grades` filled in for each rubric mode, a partly graded file, and an invalid one (exit 1, every problem listed); a hash mismatch; a survey; a `vi` quiz (headings from the catalog, `2,5` read as 2.5); `--web` (exit 2).
+- **`ids`:** a quiz missing ids is the one place random values appear. Run it with a fixed seed through a test-only environment variable (`FULLMARK_TEST_SEED`, read only in `src/cli`, and documented in the code as test-only), so the golden file is stable; plus `--dry-run`, an `unchanged` second run, and a CRLF file.
+- **Top level:** `--version`, `--help`, `--acknowledgements` if it exists yet (if not, report it), an unknown command (exit 2).
+
+### Determinism
+
+Every case runs twice in the runner and must give byte-identical output and files. Grader cases from section 11 that 1d did not add: Unicode (NFD answers, full-width digits if the number reader accepts them, a BOM at the start of a results file) and `2,5` in both an `en` and a `vi` quiz.
+
+### The startup budget
+
+TECHNICAL_DESIGN.md section 7: `quiz --version` and `check` on a small quiz under 150 ms on the Windows laptop. A test runs each 7 times through `node dist/cli.js`, takes the median and fails above the limit. Print the measured medians in the report. If the budget fails, find where the time goes (imports at startup, most likely) and fix it in `src/cli` by loading heavy modules only in the commands that need them; report what was done.
+
+### A final pass over COMMANDS.md
+
+Make a table, in the report, of every promise COMMANDS.md makes about `check`, `rules`, `grade` and `ids` (each option, output shape and exit), with the golden case that covers it. A promise with no case gets one. A promise the code does not keep is a bug to fix if the doc is clear, or a gap to report if it is not.
+
+### Done when
+
+- The step's done criteria (Goal, above) hold: every example passes `check`; the grading cases pass; `check`, `rules`, `grade` and `ids` match reviewed golden files for one file and for several, including three quizzes of which one is broken.
+- Every case gives the same bytes twice.
+- The startup budget test passes, with its medians in the report.
+- The COMMANDS.md promise table has a case for every row.
+- `npm run check` passes.
