@@ -116,4 +116,29 @@ describe("planFor", () => {
     );
     expect(Object.keys(planFor(off, { source: "full", seed: "s" }).optionOrder ?? {})).toEqual(["b"]);
   });
+
+  it("records the display order of ordering items and matching right-hand sides, distractors included", () => {
+    const mixed = quiz(
+      [
+        "## Sort. {type=ordering id=o}\n\n1. a\n2. b\n3. c\n4. d\n",
+        "## Match. {type=matching id=m}\n\n- L1 :: R1\n- L2 :: R2\n- :: R3\n",
+        q(1),
+      ].join("\n"),
+    );
+    expect(planFor(mixed, { source: "full" }).optionOrder).toBeUndefined();
+    const plan = planFor(mixed, { source: "full", seed: "k" });
+    const order = plan.optionOrder ?? {};
+    expect(Object.keys(order).sort()).toEqual(["m", "o"]);
+    expect([...(order.o ?? [])].sort()).toEqual([0, 1, 2, 3]);
+    expect([...(order.m ?? [])].sort()).toEqual([0, 1, 2]);
+    expect(planFor(mixed, { source: "full", seed: "k" })).toEqual(plan);
+    expect(PlanSchema.safeParse(plan).success).toBe(true);
+  });
+
+  it("never shows ordering items in the right order", () => {
+    const two = quiz("## Sort. {type=ordering id=o}\n\n1. a\n2. b\n");
+    for (let i = 0; i < 40; i++) {
+      expect(planFor(two, { source: "full", seed: `s${i}` }).optionOrder?.o).toEqual([1, 0]);
+    }
+  });
 });
