@@ -21,7 +21,7 @@ The owner's working rules: state what, why and what done means before a big job 
 | 1b parser and `quiz ids` | done, reviewed | `0789b52`..`b49918f` |
 | 1c rules, config, `check`, `rules` | done, reviewed, gaps decided | `8a632b5`..`201d9fb` |
 | 1d grader and `grade` | done, reviewed, gaps decided; follow-up fixes done | `402bb97`..`9c350a3`, `869db1d`..`49dba98` |
-| 1e contract tests | delegated to Sonnet; committed as it went, not reviewed | `62aeaf4` and the commits around it |
+| 1e contract tests | done by Sonnet, not reviewed | `379039b`..`3a92ec8` (16 commits) |
 
 `npm run check` after 1d: 37 test files, 1010 passed, 0 todo. Branch `1.0` is not on GitHub; nothing has been pushed.
 
@@ -29,7 +29,19 @@ The owner's working rules: state what, why and what done means before a big job 
 
 ### Next steps, in order
 
-1. 1e was delegated to Sonnet on 2026-10-28 and the session ended while it was still running. Its work so far is committed, unreviewed. Check `git log` and `git status`, then finish or re-delegate what is missing from "Slice 1e" below. Review it: read the golden files themselves, since they become the contract; bring its gaps (and its path-printing proposal) to the owner.
+1. Review 1e. Sonnet reports `npm run check` passing: 39 files, 1287 tests (268 golden cases), then the startup test alone; it takes about 68 s. Startup medians on the laptop: `--version` about 85 ms; `check` about 126 ms, once 146 ms, a thin margin under 150 ms. It got there by loading commands lazily. Read the golden files themselves, since they become the contract. Its full report, with the promise-to-case table, is in the 2026-10-28 session transcript. Bring these to the owner:
+   - **Proposals:** (a) Print paths relative to the working directory when the file is under it, else absolute, always with `/` (`src/cli/paths.ts`). (b) `FULLMARK_TEST_SEED` is read only in `src/cli/main.ts` and is for tests only.
+   - **Fixes it made under COMMANDS.md promises:** inputs are now handled in the order given; `ids --json` always has `problems`; a progress line and `--plain` added to `grade`; OS read errors became "no such file" / "is a folder" / "permission denied".
+   - **Gaps:**
+     1. **Data loss:** `grade --json` without `--grades` overwrites a filled-in `*-grades.json` beside the results. Recommended: skip the template, with a warning, unless the file is an empty template.
+     2. Grades validation is staged: structure first, then scores. So "every problem is listed" holds only per stage.
+     3. `--acknowledgements` does not exist yet.
+     4. `quiz` with no command exits 0. Should it exit 2?
+     5. `--plain` is missing from the synopses of `check`, `rules` and `ids`.
+     6. Undocumented JSON shapes: error lines, `rules` errors, `"dryRun":true`.
+     7. `grade -o FILE` with several results files makes a folder. `build` exits 2 in that case.
+     8. Golden files hold library and V8 wording, so upgrading a dependency can change them.
+     9. Cosmetic: "1 criteria"; a trailing space in "Your answer: "; `Quiz:` shows "quiz" for every `quiz.md`.
 2. With 1e reviewed, step 1 is done. Step 2 (`build`, the page runtime, themes, `replay`) gets its own plan file, `docs/plans/STEP2.md`, cut into slices the same way.
 
 ### Design work in parallel (themes and pages)
