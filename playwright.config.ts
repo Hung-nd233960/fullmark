@@ -1,10 +1,16 @@
 import { defineConfig } from "@playwright/test";
 
-/** Browser tests (TECHNICAL_DESIGN.md, section 11). Chromium only for now; Firefox joins in slice 2d. */
+/**
+ * Browser tests (TECHNICAL_DESIGN.md, section 11): Chromium and Firefox. Firefox isolates `file://` storage per file
+ * (foundation 2), which is what resume has to work with; a test that cannot run in one of them says why in a `test.skip`.
+ */
 export default defineConfig({
   testDir: "e2e",
   testMatch: "**/*.spec.ts",
   fullyParallel: true,
   reporter: [["list"]],
-  projects: [{ name: "chromium", use: { browserName: "chromium" } }],
+  projects: [
+    { name: "chromium", use: { browserName: "chromium" } },
+    { name: "firefox", use: { browserName: "firefox" } },
+  ],
 });
