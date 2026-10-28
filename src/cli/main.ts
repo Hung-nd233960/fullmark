@@ -30,6 +30,7 @@ export function buildProgram(outcome: Outcome = { exit: EXIT.done }, io: Io = te
     .description("Markdown in, one offline HTML quiz out.")
     .version(`fullmark ${VERSION}`, "--version", "print the version")
     .helpOption("-h, --help", "help for the command")
+    .helpCommand("help [command]", "help for a command")
     .exitOverride();
 
   const noColor = () => "NO_COLOR" in process.env;
@@ -38,7 +39,7 @@ export function buildProgram(outcome: Outcome = { exit: EXIT.done }, io: Io = te
     .command("check")
     .description("check quizzes under a profile: syntax errors, quality warnings, the brief beside the quiz")
     .argument("<files...>", "quiz .md files (globs are expanded)")
-    .option("--profile <name>", "the check profile; overrides the quiz's profile:")
+    .option("--profile <name>", "the check profile; overrides the quiz's profile")
     .option("--config <toml>", "use this config file instead of the nearest fullmark.toml")
     .option("--strict", "warnings count as errors")
     .option(
@@ -157,7 +158,13 @@ export function buildProgram(outcome: Outcome = { exit: EXIT.done }, io: Io = te
 async function main(argv: string[]): Promise<number> {
   const outcome: Outcome = { exit: EXIT.done };
   try {
-    await buildProgram(outcome).parseAsync(argv);
+    const program = buildProgram(outcome);
+    // no command: the help goes to stderr and the exit code is 2 (COMMANDS.md, Exit codes)
+    if (argv.length <= 2) {
+      program.outputHelp({ error: true });
+      return EXIT.usage;
+    }
+    await program.parseAsync(argv);
     return outcome.exit;
   } catch (error) {
     const code = (error as { code?: string }).code ?? "";

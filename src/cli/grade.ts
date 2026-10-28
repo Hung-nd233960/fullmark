@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync, statSync } from "node:fs";
 import { basename, dirname, join, resolve } from "node:path";
 import { answerProblem, attemptOf, parseResults } from "../core/attempt";
 import { grade } from "../core/grade";
@@ -6,8 +6,9 @@ import { en, vi } from "../core/i18n";
 import type { Quiz } from "../core/ir";
 import { buildReport, type Report, renderMarkdown } from "../core/report";
 import { type AppliedGrades, applyGrades, type GradesFile, gradesTemplate, parseGrades } from "../core/rubric/grades";
-import { writeFileAtomic } from "./atomic";
+import { type WriteError, writeFileAtomic } from "./atomic";
 import { EXIT, type ExitCode } from "./exit-codes";
+import { fail } from "./fail";
 import { expandInputs } from "./files";
 import type { Io } from "./ids";
 import { loadQuiz } from "./load";
@@ -53,6 +54,8 @@ function reportPath(results: string, opts: GradeOptions, several: boolean, io: I
   const out = resolve(io.cwd, opts.output);
   return several ? join(out, `${stemOf(results)}${ext}`) : out;
 }
+
+const isFile = (path: string): boolean => existsSync(path) && !statSync(path).isDirectory();
 
 const readText = (path: string): string => readFileSync(path).toString("utf8");
 
@@ -103,19 +106,31 @@ async function gradeOne(
   const report = buildReport({ quiz, quizHash, attempt, applied: gradesApplied }, m);
   const target = reportPath(results, opts, several, io);
   const files: [string, string][] = [
-    [target, opts.json ? `${JSON.stringify(report, null, 2)}\n` : renderMarkdown(report, m)],
+    [target, opts.json ? `${JSON.stringify(report, null, 2)}\n` : renderMarkdown(report, m, quizFile)],
   ];
   let template: string | undefined;
+  const warnings: string[] = [];
   if (opts.json && gradesFile === null) {
-    template = join(dirname(target), `${stemOf(results)}-grades.json`);
-    files.push([template, `${JSON.stringify(gradesTemplate(quiz, grade(quiz, attempt), read.json), null, 2)}\n`]);
+    const path = join(dirname(target), `${stemOf(results)}-grades.json`);
+    // An existing grades file may hold a grader's work: it is never overwritten (COMMANDS.md, `quiz grade`).
+    if (existsSync(path)) {
+      warnings.push(
+        `${shownPath(path, io.cwd)} already exists, so no grades template was written; delete it for a fresh template`,
+      );
+    } else {
+      template = path;
+      files.push([path, `${JSON.stringify(gradesTemplate(quiz, grade(quiz, attempt), read.json), null, 2)}\n`]);
+    }
   }
-  try {
-    for (const [path, content] of files) await writeFileAtomic(path, Buffer.from(content, "utf8"));
-  } catch (error) {
-    return { status: "error", file: results, message: (error as Error).message };
+  for (const [path, content] of files) {
+    try {
+      await writeFileAtomic(path, Buffer.from(content, "utf8"));
+    } catch (error) {
+      const message = `cannot write ${shownPath((error as WriteError).file ?? path, io.cwd)}: ${(error as Error).message}`;
+      return { status: "error", file: results, message };
+    }
   }
-  const warnings = [...(gradesApplied?.warnings ?? [])];
+  warnings.push(...(gradesApplied?.warnings ?? []));
   if (attempt.phase !== "submitted")
     warnings.push(`the attempt was never submitted (phase ${attempt.phase}); graded as it stands`);
   return {
@@ -136,31 +151,47 @@ async function gradeOne(
  */
 export async function runGrade(patterns: readonly string[], opts: GradeOptions, io: Io): Promise<ExitCode> {
   if (opts.web) {
-    io.err(`--web ${NOT_YET}`);
+    fail(io, opts.json, `--web ${NOT_YET}`);
     return EXIT.usage;
   }
   if (opts.name !== null) {
-    io.err(`--name ${NOT_YET} (it names the grader of --web)`);
+    fail(io, opts.json, `--name ${NOT_YET} (it names the grader of --web)`);
     return EXIT.usage;
   }
   if (opts.quiz === null) {
-    io.err("give the quiz the attempt was taken on with --quiz FILE: the answer key and the rubrics are in it");
+    fail(
+      io,
+      opts.json,
+      "give the quiz the attempt was taken on with --quiz FILE: the answer key and the rubrics are in it",
+    );
     return EXIT.usage;
   }
   const inputs = expandInputs(patterns, io.cwd);
   const several = inputs.files.length + inputs.errors.length > 1;
   if (opts.grades !== null && several) {
-    io.err("--grades takes one results file: it grades one attempt");
+    fail(io, opts.json, "--grades takes one results file: it grades one attempt");
+    return EXIT.usage;
+  }
+  // -o names a folder when there are several inputs: a file in its place is refused before any input is handled
+  if (opts.output !== null && several && isFile(resolve(io.cwd, opts.output))) {
+    fail(
+      io,
+      opts.json,
+      `-o names a folder when there are several results files, but ${shownPath(opts.output, io.cwd)} is a file`,
+    );
     return EXIT.usage;
   }
   if (inputs.files.length === 0 && inputs.errors.length === 0) {
-    io.err("nothing to work on: give at least one results file");
+    fail(io, opts.json, "nothing to work on: give at least one results file");
     return EXIT.usage;
   }
 
   const emit = (r: FileResult) => {
     if (opts.json) {
       io.out(JSON.stringify(r));
+      // the human text also goes to stderr: a failure's line, and every warning (COMMANDS.md, Common options)
+      if (r.status === "error") io.err(`${r.file}: ${r.message}`);
+      else if (r.status === "written") for (const w of r.warnings) io.err(`${r.file}: warning: ${w}`);
       return;
     }
     if (r.status === "written") {
@@ -178,14 +209,18 @@ export async function runGrade(patterns: readonly string[], opts: GradeOptions, 
   try {
     loaded = loadQuiz(quizPath);
   } catch (error) {
-    io.err(`${shownPath(opts.quiz, io.cwd)}: cannot read the quiz: ${readFailure(error)}`);
+    const file = shownPath(opts.quiz, io.cwd);
+    fail(io, opts.json, `cannot read the quiz: ${readFailure(error)}`, { file });
     return EXIT.usage;
   }
   if (loaded.quiz === null || loaded.hash === null) {
-    io.err(
-      `${shownPath(opts.quiz, io.cwd)}: the quiz has errors, so it cannot grade anything; run \`quiz check\` on it`,
+    fail(
+      io,
+      opts.json,
+      "the quiz has errors, so it cannot grade anything; run `quiz check` on it",
+      { file: shownPath(opts.quiz, io.cwd) },
+      loaded.issues.filter((x) => x.level === "error").map((i) => `  ${i.line}: ${i.rule}: ${i.message}`),
     );
-    for (const i of loaded.issues.filter((x) => x.level === "error")) io.err(`  ${i.line}: ${i.rule}: ${i.message}`);
     return EXIT.problems;
   }
 
@@ -195,12 +230,14 @@ export async function runGrade(patterns: readonly string[], opts: GradeOptions, 
     try {
       gradesText = readText(resolve(io.cwd, opts.grades));
     } catch (error) {
-      io.err(`${shownPath(opts.grades, io.cwd)}: cannot read the grades file: ${readFailure(error)}`);
+      fail(io, opts.json, `cannot read the grades file: ${readFailure(error)}`, {
+        file: shownPath(opts.grades, io.cwd),
+      });
       return EXIT.usage;
     }
     const read = parseGrades(gradesText);
     if (!read.ok) {
-      io.err(`${shownPath(opts.grades, io.cwd)}: ${read.message}`);
+      fail(io, opts.json, read.message, { file: shownPath(opts.grades, io.cwd) });
       return EXIT.problems;
     }
     gradesFile = read.file;

@@ -16,6 +16,7 @@ import { readBrief } from "../core/rules/brief-read";
 import { runChecks } from "../core/rules/check";
 import { type LoadedConfig, loadConfig, type Machine, realMachine } from "./config";
 import { EXIT, type ExitCode } from "./exit-codes";
+import { fail } from "./fail";
 import { expandInputs } from "./files";
 import type { Io } from "./ids";
 import { loadQuiz } from "./load";
@@ -223,13 +224,15 @@ export function runCheck(patterns: readonly string[], opts: CheckOptions, io: Ch
   let failed = 0;
 
   if (opts.review !== null) {
-    io.err(
+    fail(
+      io,
+      opts.json,
       "quiz check --review is not available yet: it needs the review.json that `quiz review` writes, which arrives with that command",
     );
     return EXIT.usage;
   }
   if (inputs.files.length === 0 && inputs.errors.length === 0) {
-    io.err("nothing to work on: give at least one quiz file");
+    fail(io, opts.json, "nothing to work on: give at least one quiz file");
     return EXIT.usage;
   }
 

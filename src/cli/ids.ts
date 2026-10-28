@@ -2,8 +2,9 @@ import { randomInt } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { applyIds, type IdProblem, planIds } from "../core/ids";
-import { writeFileAtomic } from "./atomic";
+import { type WriteError, writeFileAtomic } from "./atomic";
 import { EXIT, type ExitCode } from "./exit-codes";
+import { fail } from "./fail";
 import { expandInputs } from "./files";
 import { readFailure } from "./paths";
 import { ALPHABET } from "./seed";
@@ -73,7 +74,7 @@ async function idsForFile(file: string, opts: IdsOptions, io: Io): Promise<FileR
   try {
     await writeFileAtomic(path, Buffer.from(applyIds(text, plan.missing, ids), "utf8"));
   } catch (error) {
-    return { status: "error", file, message: (error as Error).message };
+    return { status: "error", file, message: `cannot write the file: ${(error as WriteError).message}` };
   }
   return { status: "written", file, added, problems: [] };
 }
@@ -109,12 +110,15 @@ export async function runIds(patterns: readonly string[], opts: IdsOptions, io: 
   let failed = 0;
   const progress = !opts.json && !opts.plain && io.tty && inputs.files.length > 1;
   const emit = (r: FileResult) => {
-    if (opts.json) io.out(JSON.stringify(r));
-    else for (const line of describe(r, opts)) (r.status === "error" ? io.err : io.out)(line);
+    if (opts.json) {
+      io.out(JSON.stringify(r));
+      // a failure's human text also goes to stderr (COMMANDS.md, Common options)
+      if (r.status === "error") io.err(`${r.file}: ${r.message}`);
+    } else for (const line of describe(r, opts)) (r.status === "error" ? io.err : io.out)(line);
   };
 
   if (inputs.items.length === 0) {
-    io.err("nothing to work on: give at least one quiz file");
+    fail(io, opts.json, "nothing to work on: give at least one quiz file");
     return EXIT.usage;
   }
 

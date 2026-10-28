@@ -8,6 +8,7 @@ import { findRule, RULES } from "../core/rules/registry";
 import { type CheckIo, describeProfile } from "./check";
 import { loadConfig, realMachine } from "./config";
 import { EXIT, type ExitCode } from "./exit-codes";
+import { fail as failure } from "./fail";
 import { loadQuiz } from "./load";
 import { readFailure, shownPath } from "./paths";
 
@@ -52,10 +53,8 @@ function rowsOf(profile: ResolvedProfile): Row[] {
 /** `quiz rules [RULE]` (COMMANDS.md). */
 export function runRules(rule: string | null, opts: RulesOptions, io: CheckIo): ExitCode {
   const machine = io.machine ?? { ...realMachine(), cwd: io.cwd };
-  const fail = (message: string, details: string[] = []): ExitCode => {
-    if (opts.json) io.out(JSON.stringify({ status: "error", message }));
-    io.err(message);
-    for (const d of details) io.err(d);
+  const fail = (message: string, details: string[] = [], file?: string): ExitCode => {
+    failure(io, opts.json, message, file === undefined ? {} : { file }, details);
     return EXIT.usage;
   };
 
@@ -65,11 +64,11 @@ export function runRules(rule: string | null, opts: RulesOptions, io: CheckIo): 
   let brief: Brief | null = null;
   if (opts.for !== null) {
     const path = resolve(io.cwd, opts.for);
-    if (!existsSync(path)) return fail(`no such file: ${opts.for}`);
+    if (!existsSync(path)) return fail("no such file", [], shownPath(opts.for, io.cwd));
     try {
       fm = loadQuiz(path).frontMatter;
     } catch (error) {
-      return fail(`cannot read ${opts.for}: ${readFailure(error)}`);
+      return fail(`cannot read the file: ${readFailure(error)}`, [], shownPath(opts.for, io.cwd));
     }
     quizDir = dirname(path);
     const briefPath = join(quizDir, "brief.yaml");

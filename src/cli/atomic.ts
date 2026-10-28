@@ -1,16 +1,20 @@
 import { randomBytes } from "node:crypto";
-import { mkdir, rename, rm, writeFile } from "node:fs/promises";
+import { mkdir, rename, rm, stat, writeFile } from "node:fs/promises";
 import { basename, dirname, join } from "node:path";
+import { readFailure } from "./paths";
 
 const RETRYABLE = new Set(["EPERM", "EBUSY", "EACCES"]);
 
-/** An I/O error with the file named, for exit code 2. */
+/**
+ * An I/O error with the file named, for exit code 2. `message` is plain words with no path (see `readFailure`):
+ * the caller names the file with `shownPath`.
+ */
 export class WriteError extends Error {
   constructor(
     readonly file: string,
     cause: unknown,
   ) {
-    super(`cannot write ${file}: ${(cause as Error).message ?? String(cause)}`);
+    super(readFailure(cause));
   }
 }
 
@@ -22,6 +26,7 @@ export class WriteError extends Error {
 export async function writeFileAtomic(file: string, data: Uint8Array): Promise<void> {
   const temp = join(dirname(file), `.${basename(file)}.${randomBytes(4).toString("hex")}.tmp`);
   try {
+    if (await isFolder(file)) throw Object.assign(new Error("is a folder"), { code: "EISDIR" });
     await mkdir(dirname(file), { recursive: true });
     await writeFile(temp, data);
     const deadline = Date.now() + 1000;
@@ -40,3 +45,9 @@ export async function writeFileAtomic(file: string, data: Uint8Array): Promise<v
     throw new WriteError(file, error);
   }
 }
+
+const isFolder = (path: string): Promise<boolean> =>
+  stat(path).then(
+    (s) => s.isDirectory(),
+    () => false,
+  );
