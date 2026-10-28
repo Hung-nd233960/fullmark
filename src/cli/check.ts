@@ -1,6 +1,7 @@
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { dirname, join, resolve, sep } from "node:path";
 import pc from "picocolors";
+import { lazyParseTex } from "../build/tex";
 import {
   chooseProfile,
   type ProfileChoice,
@@ -12,6 +13,7 @@ import {
 import type { ConfigError } from "../core/config/types";
 import type { Brief } from "../core/ir";
 import type { Issue } from "../core/issue";
+import type { ParseTex } from "../core/parse/tex";
 import { readBrief } from "../core/rules/brief-read";
 import { runChecks } from "../core/rules/check";
 import { type LoadedConfig, loadConfig, type Machine, realMachine } from "./config";
@@ -32,7 +34,7 @@ export type CheckOptions = {
 };
 
 /** An `Io` plus what the config commands read from the machine; both default to the real ones. */
-export type CheckIo = Io & { machine?: Machine };
+export type CheckIo = Io & { machine?: Machine; parseTex?: ParseTex };
 
 type Counts = { errors: number; warnings: number };
 
@@ -82,7 +84,7 @@ export function checkFile(file: string, opts: CheckOptions, io: CheckIo): FileOu
   const path = resolve(io.cwd, file);
   let loaded: ReturnType<typeof loadQuiz>;
   try {
-    loaded = loadQuiz(path);
+    loaded = loadQuiz(path, { parseTex: io.parseTex ?? lazyParseTex() });
   } catch (error) {
     return { status: "error", file, message: `cannot read the file: ${readFailure(error)}` };
   }

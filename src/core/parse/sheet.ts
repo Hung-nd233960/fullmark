@@ -1,6 +1,8 @@
 import type { AssetRef } from "../ir";
 import type { Issue } from "../issue";
 import { scanBlanks } from "./blanks";
+import type { ParseOptions } from "./index";
+import { mathIssues } from "./math";
 import { outline } from "./outline";
 import { Reporter } from "./report";
 import { parseTaskMarker } from "./task-list";
@@ -24,13 +26,14 @@ export type ParsedSheet = {
  * It raises `materials.heading`, `materials.empty` (a warning) and the Markdown rules of a
  * quiz (raw HTML, alt text, containers, a second `#`). `materials.question` is raised for question syntax.
  */
-export function parseSheet(text: string, path: string): ParsedSheet {
+export function parseSheet(text: string, path: string, options: ParseOptions = {}): ParsedSheet {
   const r = new Reporter(path);
   const body = text.replace(/^﻿/, "");
   // One empty line in front, so that the file is never read as having front matter, and markdown-it's 0-based
   // line numbers are the sheet's 1-based ones.
   const o = outline(`\n${body}`);
   const assets: AssetRef[] = o.images.map((i) => ({ path: i.src, line: i.line }));
+  if (options.parseTex) mathIssues(o.maths, 0, options.parseTex, r);
 
   for (const h of o.rawHtml) {
     r.error(

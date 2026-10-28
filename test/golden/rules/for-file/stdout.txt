@@ -44,6 +44,7 @@ blanks.none               fixed    error    a blanks question without blanks  [b
 blanks.outside            fixed    error    [[...]] in a question that is not blanks  [built-in]
 blanks.in-math            fixed    error    a blank inside maths  [built-in]
 blanks.syntax             fixed    error    a malformed blank  [built-in]
+math.syntax               fixed    error    maths between `$` signs that KaTeX cannot parse  [built-in]
 fields.empty              fixed    error    no fields, or a graded fields question with no graded field  [built-in]
 fields.key                fixed    error    a field with both numeric and text keys  [built-in]
 fields.points             fixed    error    field points that are mixed or do not add up  [built-in]

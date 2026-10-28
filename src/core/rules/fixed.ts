@@ -350,6 +350,13 @@ export const FIXED_RULES: FixedRule[] = [
     "write [[answer|variant]] or [[=0.5±0.01]]",
   ),
   fixed(
+    "math.syntax",
+    "check",
+    "maths between `$` signs that KaTeX cannot parse",
+    q("Q {type=single id=q}", "The value is $\\badmacro{x}$.\n\n- [x] a\n- [ ] b"),
+    "check the TeX between the `$` signs",
+  ),
+  fixed(
     "fields.empty",
     "parser",
     "no fields, or a graded fields question with no graded field",

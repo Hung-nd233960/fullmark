@@ -16,7 +16,7 @@ type Expected = Record<string, { rule: string; line: number }>;
 const expected: Expected = JSON.parse(readFileSync(join(invalidDir, "expected.json"), "utf8"));
 
 /** The rules `check` raises over a parsed quiz, not the parser: they are judged through `quiz check`. */
-const byCheck = (rule: string) => rule === "ignore.invalid" || rule === "profile.unknown";
+const byCheck = (rule: string) => rule === "ignore.invalid" || rule === "profile.unknown" || rule === "math.syntax";
 
 function validFiles(): string[] {
   const out: string[] = [];

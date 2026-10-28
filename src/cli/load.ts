@@ -3,7 +3,7 @@ import { dirname, extname, isAbsolute, join, relative, resolve, sep } from "node
 import { type AssetBytes, quizHash, type SheetText } from "../core/hash";
 import type { AssetRef, FrontMatter, Quiz } from "../core/ir";
 import type { Issue } from "../core/issue";
-import { parse } from "../core/parse";
+import { type ParseOptions, parse } from "../core/parse";
 import { parseSheet } from "../core/parse/sheet";
 
 const IMAGE_TYPES = [".png", ".jpg", ".jpeg", ".gif", ".webp", ".svg"];
@@ -59,9 +59,9 @@ function caseMismatch(folder: string, rel: string): string | null {
 }
 
 /** Reads a quiz file, parses it and resolves its assets and sheets. Throws when the file itself cannot be read. */
-export function loadQuiz(file: string): LoadedQuiz {
+export function loadQuiz(file: string, options: ParseOptions = {}): LoadedQuiz {
   const text = readFileSync(file).toString("utf8");
-  const parsed = parse(text, file);
+  const parsed = parse(text, file, options);
   const issues = [...parsed.issues];
   const assets: AssetBytes[] = [];
   const sheetTexts: SheetText[] = [];
@@ -197,7 +197,7 @@ export function loadQuiz(file: string): LoadedQuiz {
     found.push({ rel: sheet.key, text: readFileSync(sheet.real).toString("utf8"), shown: display(sheet.key) });
   }
   for (const f of found) {
-    const sheet = parseSheet(f.text, f.shown);
+    const sheet = parseSheet(f.text, f.shown, options);
     for (const issue of sheet.issues) {
       issues.push(issue);
       if (issue.level === "error") sheetErrors = true;

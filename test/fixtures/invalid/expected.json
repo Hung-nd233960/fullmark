@@ -525,5 +525,14 @@
     "rule": "syntax.value",
     "line": 5,
     "note": "interpretation: the type is an attribute with a closed set"
+  },
+  "math-syntax": {
+    "rule": "math.syntax",
+    "line": 7
+  },
+  "math-syntax-sheet": {
+    "rule": "math.syntax",
+    "line": 5,
+    "note": "line in the sheet"
   }
 }

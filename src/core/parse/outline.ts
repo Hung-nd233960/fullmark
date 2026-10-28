@@ -29,6 +29,8 @@ export type Outline = {
   rawHtml: { line: number; tag: string }[];
   images: { src: string; line: number; alt: string }[];
   chunks: Chunk[];
+  /** every maths span outside code, with the (0-based) line it is on */
+  maths: { content: string; line: number }[];
 };
 
 const CLOSER = /^ {0,3}:{3,}[ \t]*$/;
@@ -40,7 +42,7 @@ export function outline(text: string): Outline {
   // The front matter is blanked, not cut, so that markdown-it's line numbers are the file's.
   const body = lines.map((l, i) => (i < bodyStart ? "" : l)).join("\n");
   const tokens = createMarkdown().parse(body, {});
-  const out: Outline = { lines, bodyStart, frontMatter, units: [], rawHtml: [], images: [], chunks: [] };
+  const out: Outline = { lines, bodyStart, frontMatter, units: [], rawHtml: [], images: [], chunks: [], maths: [] };
 
   type Entry = { phantom: boolean; unitStart: number | null };
   const stack: Entry[] = [];
@@ -96,6 +98,7 @@ function collect(t: Token, out: Outline, rowLine: number): void {
     let line = start;
     for (const child of t.children ?? []) {
       if (child.type === "softbreak" || child.type === "hardbreak") line++;
+      else if (child.type === "math_inline") out.maths.push({ content: child.content, line });
       else if (child.type === "html_inline") out.rawHtml.push({ line, tag: tagName(child.content) });
       else if (child.type === "image")
         out.images.push({ src: decodeSrc(String(child.attrGet("src") ?? "")), line, alt: child.content });
@@ -104,6 +107,7 @@ function collect(t: Token, out: Outline, rowLine: number): void {
     out.chunks.push({ text: t.content, line: start + (t.type === "fence" ? 1 : 0), mode: "code" });
   } else if (t.type === "math_block") {
     out.chunks.push({ text: t.content, line: start, mode: "math" });
+    out.maths.push({ content: t.content, line: start });
   }
 }
 

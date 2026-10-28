@@ -1,10 +1,12 @@
 import type { AssetRef, FrontMatter, Question, Quiz, Section } from "../ir";
 import type { Issue } from "../issue";
 import { parseFrontMatter } from "./front-matter";
+import { mathIssues } from "./math";
 import { outline, type Unit } from "./outline";
 import { parseQuestion, type Region } from "./question";
 import { Reporter } from "./report";
 import { parseSectionHead, type SectionRegion } from "./section";
+import type { ParseTex } from "./tex";
 
 export type ParseResult = {
   /** null when there is any error: the IR is only ever built from a quiz without syntax errors */
@@ -16,6 +18,9 @@ export type ParseResult = {
   assets: AssetRef[];
 };
 
+/** `parseTex` is KaTeX's parser, injected by the CLI: without it, `math.syntax` is not raised. */
+export type ParseOptions = { parseTex?: ParseTex };
+
 type SectionDraft = SectionRegion & { questions: Region[] };
 
 /**
@@ -23,10 +28,11 @@ type SectionDraft = SectionRegion & { questions: Region[] };
  * run reports every problem; the quiz is returned only when there is none. `file` is the name issues carry, and
  * the default quiz id is made from it.
  */
-export function parse(text: string, file: string): ParseResult {
+export function parse(text: string, file: string, options: ParseOptions = {}): ParseResult {
   const o = outline(text);
   const r = new Reporter(file);
   const fm = parseFrontMatter(o, file, r);
+  if (options.parseTex) mathIssues(o.maths, 1, options.parseTex, r);
 
   for (const h of o.rawHtml) {
     r.error(

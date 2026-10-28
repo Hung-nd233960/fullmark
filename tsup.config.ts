@@ -17,6 +17,8 @@ export default defineConfig({
   banner: {
     js: '#!/usr/bin/env node\nimport { createRequire as __fullmarkCreateRequire } from "node:module";\nconst require = __fullmarkCreateRequire(import.meta.url);',
   },
-  // The CLI is one file: dependencies are bundled in.
-  noExternal: [/.*/],
+  // The CLI is one file: dependencies are bundled in, except KaTeX and Shiki, which stay in node_modules and load only
+  // when a quiz uses them (a bundled copy would be parsed at every start).
+  noExternal: [/^(?!katex$|shiki(\/|$)|@shikijs\/).*/],
+  external: ["katex", /^shiki(\/|$)/, /^@shikijs\//],
 });
