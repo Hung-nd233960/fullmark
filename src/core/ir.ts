@@ -251,38 +251,37 @@ export const CONTENT_KINDS = ["lecture-slides", "textbook", "notes", "past-exams
 export const MIX_KINDS = ["recall", "understanding", "calculation", "code", "essay"] as const;
 
 /**
- * `brief.yaml`, written by `quiz brief` and read by `check` (COMMANDS.md, `quiz brief`). The keys are snake-case as
- * in the file and follow the options of `quiz brief`; `decided_by` records who chose each value (the human-only
- * ones must not be `agent` unless the user handed them over). Unknown keys are an error. This is a proposal for the
- * design docs: the format was not written down when slice 1c built it.
+ * `brief.yaml`, written by `quiz brief` and read by `check` (COMMANDS.md, `quiz brief`, "The file"). The file holds
+ * every key, always: `quiz brief` fills the defaults when it writes, so the reader has none, and a missing key is
+ * `brief.invalid` like an unknown one. The keys are snake-case as in the file; `decided_by` records who chose each
+ * value (the human-only ones must not be `agent` unless the user handed them over).
  */
 export const BriefSchema = z
   .object({
-    purpose: z.enum(PURPOSES).default("self-study"),
-    scope: z.string().default(""),
+    purpose: z.enum(PURPOSES),
+    scope: z.string(),
     content: z
       .object({
-        kinds: z.array(z.enum(CONTENT_KINDS)).default([]),
-        kinds_other: z.string().default(""),
-        elsewhere: z.string().default(""),
+        kinds: z.array(z.enum(CONTENT_KINDS)),
+        kinds_other: z.string(),
+        elsewhere: z.string(),
       })
-      .strict()
-      .default({ kinds: [], kinds_other: "", elsewhere: "" }),
-    count: z.number().int().min(1).default(20),
+      .strict(),
+    count: z.number().int().min(1),
     /** the time limit in minutes; 0 for none */
-    minutes: z.number().min(0).default(0),
-    mix: z.array(z.enum(MIX_KINDS)).default(["recall", "understanding"]),
-    difficulty: z.enum(["warm-up", "like-the-exam", "harder"]).default("like-the-exam"),
-    mode: z.enum(["each-question", "at-the-end", "timed-exam"]).default("at-the-end"),
-    weak_topics: z.boolean().default(false),
-    /** topics to stress, filled from earlier results when `weak_topics` is true */
-    focus_tags: z.array(z.string()).default([]),
-    language: z.enum(["en", "vi"]).default("en"),
-    request: z.string().default(""),
+    minutes: z.number().min(0),
+    mix: z.array(z.enum(MIX_KINDS)),
+    difficulty: z.enum(["warm-up", "like-the-exam", "harder"]),
+    mode: z.enum(["each-question", "at-the-end", "timed-exam"]),
+    weak_topics: z.boolean(),
+    /** topics to stress, filled from earlier results when `weak_topics` is true; empty otherwise */
+    focus_tags: z.array(z.string()),
+    language: z.enum(["en", "vi"]),
+    request: z.string(),
     /** the check profile for the quiz: from the purpose unless `--profile` was given */
-    profile: z.string().nullable().default(null),
+    profile: z.string(),
     /** who decided each value */
-    decided_by: z.record(z.string(), z.enum(["user", "default", "agent"])).default({}),
+    decided_by: z.record(z.string(), z.enum(["user", "default", "agent"])),
   })
   .strict();
 export type Brief = z.infer<typeof BriefSchema>;

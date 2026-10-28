@@ -31,10 +31,11 @@ export function readBrief(text: string, file: string): BriefRead {
   const first = yaml.errors[0];
   if (first) return bad(first.line, `brief.yaml is not valid YAML: ${first.message}`);
   const node = yaml.node;
-  if (node === null) return { brief: BriefSchema.parse({}), issues: [] };
+  if (node === null) return bad(1, "brief.yaml is empty: it holds every key, and `quiz brief` writes them");
   if (!asMap(node)) return bad(1, "brief.yaml must be a mapping of keys to values");
 
-  const parsed = BriefSchema.safeParse(node.toJSON());
+  const raw: unknown = node.toJSON();
+  const parsed = BriefSchema.safeParse(raw);
   if (parsed.success) return { brief: parsed.data, issues: [] };
 
   const issues: Issue[] = [];
@@ -52,6 +53,16 @@ export function readBrief(text: string, file: string): BriefRead {
           ).issues[0] as Issue,
         );
       }
+    } else if (valueAt(raw, e.path) === undefined) {
+      // a missing key is reported at the mapping that should hold it
+      const path = e.path.map(String);
+      issues.push(
+        bad(
+          lineOfPath(yaml, path.slice(0, -1), false, true),
+          `brief.yaml has no \`${path.join(".")}\`: it holds every key`,
+          "add the key: `quiz brief` writes them all, and can write the file again",
+        ).issues[0] as Issue,
+      );
     } else {
       const path = e.path.map(String);
       issues.push(
@@ -68,7 +79,7 @@ function knownKeys(path: PropertyKey[]): string[] {
 }
 
 /** The line of a key (or of the value at `path`), falling back to the longest prefix found, then to line 1. */
-function lineOfPath(root: YamlRoot, path: readonly PropertyKey[], keyOnly: boolean): number {
+function lineOfPath(root: YamlRoot, path: readonly PropertyKey[], keyOnly: boolean, mapping = false): number {
   let node: unknown = root.node;
   let line = 1;
   for (const [i, part] of path.entries()) {
@@ -87,5 +98,19 @@ function lineOfPath(root: YamlRoot, path: readonly PropertyKey[], keyOnly: boole
       node = item;
     } else break;
   }
+  // a missing key belongs to its mapping: the line of the mapping's first key (line 1 for the file itself)
+  if (mapping) {
+    const first = asMap(node as never)?.items[0];
+    if (first) return root.lineOf(first.key as never);
+  }
   return line;
+}
+
+function valueAt(value: unknown, path: readonly PropertyKey[]): unknown {
+  let at = value;
+  for (const part of path) {
+    if (at === null || typeof at !== "object") return undefined;
+    at = (at as Record<PropertyKey, unknown>)[part];
+  }
+  return at;
 }

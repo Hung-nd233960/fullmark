@@ -1,3 +1,30 @@
 purpose: "self-study"
 scope: "lectures 3 to 5, the Fourier transform"
+content:
+  kinds: []
+  kinds_other: ""
+  elsewhere: ""
 count: 10
+minutes: 0
+mix: ["recall","understanding"]
+difficulty: "like-the-exam"
+mode: "at-the-end"
+weak_topics: false
+focus_tags: []
+language: "en"
+request: ""
+profile: "default"
+decided_by:
+  purpose: user
+  scope: user
+  content: default
+  count: default
+  minutes: default
+  mix: default
+  difficulty: default
+  mode: default
+  weak_topics: default
+  focus_tags: default
+  language: default
+  request: default
+  profile: default

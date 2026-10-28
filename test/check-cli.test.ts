@@ -3,6 +3,7 @@ import { readdirSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
 import { type CheckOptions, listContent, runCheck } from "../src/cli/check";
+import { briefYaml } from "./helpers/brief";
 import { capture, quiz, tempTree } from "./helpers/cli";
 
 const root = resolve(import.meta.dirname, "..");
@@ -161,9 +162,9 @@ describe("profiles", () => {
       ".git/HEAD": "",
       "cfg/quiz.md": quiz(),
       "brief/quiz.md": quiz(),
-      "brief/brief.yaml": "profile: exam\ncount: 1\n",
+      "brief/brief.yaml": briefYaml({ profile: "exam", count: 1 }),
       "front/quiz.md": quiz("- [x] a\n- [ ] b", "title: T\nprofile: exam"),
-      "front/brief.yaml": "profile: draft\ncount: 1\n",
+      "front/brief.yaml": briefYaml({ profile: "draft", count: 1 }),
     });
     const name = (file: string, o: Partial<CheckOptions> = {}) => {
       const c = capture(dir);
@@ -288,9 +289,9 @@ describe("a brief beside the quiz", () => {
   it("adds the brief rules: count, generated_by, and a brief that cannot be read", () => {
     const dir = tree({
       "a/quiz.md": quiz(),
-      "a/brief.yaml": "count: 10\n",
+      "a/brief.yaml": briefYaml({ count: 10 }),
       "b/quiz.md": quiz(),
-      "b/brief.yaml": "count: many\n",
+      "b/brief.yaml": briefYaml({ count: "many" as never }),
     });
     const a = capture(dir);
     expect(runCheck([join("a", "quiz.md")], opts({ json: true }), a.io)).toBe(0);
@@ -299,14 +300,14 @@ describe("a brief beside the quiz", () => {
     runCheck([join("b", "quiz.md")], opts({ json: true }), b.io);
     const issues = json(b.out)[0]?.issues as { rule: string; file: string; line: number }[];
     expect(issues).toEqual([
-      expect.objectContaining({ rule: "brief.invalid", file: join("b", "brief.yaml"), line: 1 }),
+      expect.objectContaining({ rule: "brief.invalid", file: join("b", "brief.yaml"), line: 7 }),
     ]);
   });
 
   it("looks at content/ for brief.content-kinds", () => {
     const dir = tree({
       "q/quiz.md": quiz("- [x] a\n- [ ] b", "title: T\ngenerated_by: m"),
-      "q/brief.yaml": "count: 1\ncontent:\n  kinds: [textbook]\n",
+      "q/brief.yaml": briefYaml({ count: 1, content: { kinds: ["textbook"], kinds_other: "", elsewhere: "" } }),
       "q/content/README.md": "x",
       "q/content/notes.txt": "x",
     });
@@ -319,14 +320,14 @@ describe("a brief beside the quiz", () => {
   it("an unknown profile named in the brief falls back, with a warning on the brief's line", () => {
     const dir = tree({
       "quiz.md": quiz("- [x] a\n- [ ] b", "title: T\ngenerated_by: m"),
-      "brief.yaml": "count: 1\nprofile: exma\n",
+      "brief.yaml": briefYaml({ count: 1, profile: "exma" }),
     });
     const c = capture(dir);
     expect(runCheck(["quiz.md"], opts({ json: true }), c.io)).toBe(0);
     const [r] = json(c.out);
     expect(r?.profile).toBe("default");
     expect(r?.issues).toEqual([
-      expect.objectContaining({ rule: "brief.invalid", file: "brief.yaml", line: 2, level: "warning" }),
+      expect.objectContaining({ rule: "brief.invalid", file: "brief.yaml", line: 16, level: "warning" }),
     ]);
   });
 });

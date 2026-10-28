@@ -6,6 +6,7 @@ import { parse } from "../../src/core/parse";
 import { BRIEF_RULES } from "../../src/core/rules/brief";
 import { readBrief } from "../../src/core/rules/brief-read";
 import { defaultOptions } from "../../src/core/rules/registry";
+import { briefYaml } from "../helpers/brief";
 
 const base = resolve(import.meta.dirname, "..", "fixtures", "brief");
 
@@ -53,35 +54,70 @@ describe("brief rules", () => {
     const brief = readBrief(readFileSync(join(base, "past-exams", "brief.yaml"), "utf8"), "brief.yaml").brief;
     const rule = BRIEF_RULES.find((r) => r.id === "brief.content-kinds");
     expect(rule?.run(quiz, { brief, contentFiles: [] }, {})).toEqual([]);
-    const textbook = readBrief("content:\n  kinds: [textbook]\n", "brief.yaml").brief;
+    const textbook = readBrief(
+      briefYaml({ content: { kinds: ["textbook"], kinds_other: "", elsewhere: "" } }),
+      "brief.yaml",
+    ).brief;
     expect(rule?.run(quiz, { brief: textbook, contentFiles: null }, {})).toEqual([]);
     expect(rule?.run(quiz, { brief: textbook, contentFiles: [] }, {})).toHaveLength(1);
   });
 });
 
 describe("reading brief.yaml", () => {
-  it("fills the defaults of an empty brief", () => {
-    const { brief, issues } = readBrief("", "brief.yaml");
+  it("reads a complete brief, and fills nothing in", () => {
+    const { brief, issues } = readBrief(briefYaml({ count: 12 }), "brief.yaml");
     expect(issues).toEqual([]);
-    expect(brief).toMatchObject({ purpose: "self-study", count: 20, minutes: 0, mix: ["recall", "understanding"] });
+    expect(brief).toMatchObject({ purpose: "self-study", count: 12, minutes: 0, profile: "default" });
+  });
+
+  it("an empty brief.yaml is brief.invalid, with no defaults", () => {
+    for (const text of ["", "# nothing but a comment\n"]) {
+      const { brief, issues } = readBrief(text, "brief.yaml");
+      expect(brief).toBeNull();
+      expect(issues.map((i) => [i.rule, i.line])).toEqual([["brief.invalid", 1]]);
+      expect(issues[0]?.message).toContain("empty");
+    }
+  });
+
+  it("a missing key is brief.invalid like an unknown one, at the line of its mapping", () => {
+    for (const key of ["scope", "count", "decided_by", "profile", "focus_tags"] as const) {
+      const { brief, issues } = readBrief(briefYaml({ [key]: undefined }), "brief.yaml");
+      expect(brief, key).toBeNull();
+      expect(
+        issues.map((i) => [i.rule, i.line, i.message.includes(`\`${key}\``)]),
+        key,
+      ).toEqual([["brief.invalid", 1, true]]);
+    }
+    const nested = readBrief(briefYaml({ content: { kinds: [], elsewhere: "" } as never }), "brief.yaml");
+    expect(nested.issues.map((i) => [i.line, i.message.includes("`content.kinds_other`")])).toEqual([[4, true]]);
+    // a comment before the first key does not move the line of the mapping's first key
+    const shifted = readBrief(`# written by quiz brief\n${briefYaml({ scope: undefined })}`, "brief.yaml");
+    expect(shifted.issues.map((i) => i.line)).toEqual([2]);
+  });
+
+  it("a null profile is a bad value: the profile is a string", () => {
+    const { brief, issues } = readBrief(briefYaml({ profile: null as never }), "brief.yaml");
+    expect(brief).toBeNull();
+    expect(issues.map((i) => [i.rule, i.line])).toEqual([["brief.invalid", 16]]);
   });
 
   it("reports a bad value as brief.invalid on the line of its key", () => {
     const { brief, issues } = readBrief(readFileSync(join(base, "invalid", "brief.yaml"), "utf8"), "brief.yaml");
     expect(brief).toBeNull();
-    expect(issues.map((i) => [i.rule, i.file, i.line])).toEqual([["brief.invalid", "brief.yaml", 2]]);
+    expect(issues.map((i) => [i.rule, i.file, i.line])).toEqual([["brief.invalid", "brief.yaml", 7]]);
     expect(issues[0]?.message).toContain("count");
   });
 
   it("reports unknown keys with a suggestion, nested ones too", () => {
     const { issues } = readBrief(readFileSync(join(base, "invalid-key", "brief.yaml"), "utf8"), "brief.yaml");
-    expect(issues.map((i) => i.line).sort()).toEqual([4, 5]);
-    expect(issues.find((i) => i.line === 5)?.fix).toBe("did you mean `scope`?");
-    expect(issues.find((i) => i.line === 4)?.fix).toBe("did you mean `kinds_other`?");
+    expect(issues.map((i) => i.line).sort()).toEqual([2, 6]);
+    expect(issues.find((i) => i.line === 2)?.fix).toBe("did you mean `scope`?");
+    expect(issues.find((i) => i.line === 6)?.fix).toBe("did you mean `kinds_other`?");
   });
 
   it("reports YAML that does not parse", () => {
     const { issues } = readBrief("count: [1,\n", "brief.yaml");
+    expect(issues).toHaveLength(1);
     expect(issues[0]?.rule).toBe("brief.invalid");
     expect(issues[0]?.message).toContain("not valid YAML");
   });

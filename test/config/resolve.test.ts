@@ -4,6 +4,7 @@ import { chooseProfile, type Layers, resolveProfile, validateLayers } from "../.
 import type { Brief } from "../../src/core/ir";
 import { BriefSchema } from "../../src/core/ir";
 import { parse } from "../../src/core/parse";
+import { BASE_BRIEF } from "../helpers/brief";
 
 function layers(project: string | null, user: string | null = null): Layers {
   const read = (text: string | null, file: string, kind: "project" | "user") => {
@@ -182,7 +183,7 @@ ${text}
 `,
       "q.md",
     ).quiz?.frontMatter ?? null;
-  const brief = (profile: string | null): Brief => BriefSchema.parse({ profile });
+  const brief = (profile: string): Brief => BriefSchema.parse({ ...BASE_BRIEF, profile });
   const config = layers('[check]\nprofile = "practice"\n\n[profiles.practice]\n');
 
   it("--profile first", () => {
@@ -217,7 +218,7 @@ ${text}
   it("then the brief's, then [check] profile, then default", () => {
     const fm = front("title: T");
     expect(chooseProfile({ cli: null, frontMatter: fm, brief: brief("exam"), layers: config }).name).toBe("exam");
-    expect(chooseProfile({ cli: null, frontMatter: fm, brief: brief(null), layers: config })).toEqual({
+    expect(chooseProfile({ cli: null, frontMatter: fm, brief: null, layers: config })).toEqual({
       name: "practice",
       from: "[check] profile",
       line: 2,
