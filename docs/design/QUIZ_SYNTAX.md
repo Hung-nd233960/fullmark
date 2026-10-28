@@ -7,7 +7,7 @@ Each field is marked **S** (structure) or **C** (content). `quiz new --skeleton`
 ## 1. A quiz file
 
 - One UTF-8 Markdown file: YAML front matter, then optional `#` sections, then `##` questions. `###` and deeper headings are errors.
-- Assets (images, audio) sit in the quiz's folder or below it and are referenced by relative path. A path that leaves the folder is a fixed-rule error (`asset.outside`).
+- Assets (images, audio) sit in the quiz's folder or below it and are referenced by a path relative to the file that names them (the quiz file, or a `materials` sheet), matching the file's letter case exactly, so a quiz that passes on Windows also works on Linux and macOS. A path that leaves the quiz folder is a fixed-rule error (`asset.outside`).
 - No raw HTML (`markdown.raw-html`); the extensions in [section 8](#8-markdown-inside-a-quiz) cover what HTML was used for. An HTML comment is raw HTML too.
 - Hashes are taken over normalised text (LF, NFC, no BOM, trailing whitespace trimmed), so line endings and editors do not split a quiz's history.
 
@@ -59,7 +59,7 @@ Unknown keys are errors.
 | `generated_by` | the exact model id that wrote this version, one line | none | C |
 | `materials` | a list of Markdown files, relative paths inside the quiz folder: sheets (formula tables, identities, constants) the learner can open at any time, also printed after the paper | none | C |
 
-**Materials.** A sheet is ordinary Markdown, with maths, tables and images, and holds no questions. It starts with one `#` heading, its name in the page (`materials.heading`); `##` and `###` headings may follow, as in any Markdown file. Keep sheets in a subfolder (`materials/formulas.md`), as images sit in `assets/`, so a glob such as `signals/*.md` never takes a sheet for a quiz. The quiz's `materials:` list is the only thing that makes a file a sheet: a sheet has no front matter and no marker, and `check` and `build` reach it only through the quiz that lists it, reporting its problems at the sheet's own path and line. It is rendered at build, in the order listed, and the quiz hash covers it like an asset, so editing a sheet makes a new version. Sheets follow the asset rules (inside the quiz folder, no URLs) and the Markdown rules of [section 8](#8-markdown-inside-a-quiz), except that `##` and `###` headings are allowed. A sheet can give away an answer; the author decides what it holds. How the page and the paper show them: TECHNICAL_DESIGN.md, section 8.
+**Materials.** A sheet is ordinary Markdown, with maths, tables and images, and holds no questions. It starts with one `#` heading, its name in the page (`materials.heading`); `##` and `###` headings may follow, as in any Markdown file. Keep sheets in a subfolder (`materials/formulas.md`), as images sit in `assets/`, so a glob such as `signals/*.md` never takes a sheet for a quiz. The quiz's `materials:` list is the only thing that makes a file a sheet: a sheet has no front matter and no marker, and `check` and `build` reach it only through the quiz that lists it, reporting its problems at the sheet's own path and line. It is rendered at build, in the order listed, and the quiz hash covers it like an asset, so editing a sheet makes a new version. A sheet's image paths are relative to the sheet's own folder, as Markdown previews read them, and must stay inside the quiz folder: from `materials/formulas.md`, the quiz's shared images are `../assets/z-table.png`. One `assets/` folder for questions and sheets alike is the layout the guide and templates show; any other folder inside the quiz folder works. Sheets follow the asset rules (inside the quiz folder, no URLs) and the Markdown rules of [section 8](#8-markdown-inside-a-quiz), except that `##` and `###` headings are allowed. A sheet can give away an answer; the author decides what it holds. How the page and the paper show them: TECHNICAL_DESIGN.md, section 8.
 
 ## 3. Sections
 
@@ -416,7 +416,7 @@ Every rule below is a **fixed rule**: an error that no profile can change or ign
 | `syntax.heading-level` | a `###` or deeper heading |
 | `syntax.container` | an unknown, unclosed, nested or stray `:::` container, one in the wrong place (`passage` outside a section intro), or a second passage in a section |
 | `markdown.raw-html` | any HTML tag or comment |
-| `asset.missing`, `asset.outside`, `asset.type`, `asset.remote` | a missing file, a path outside the quiz folder, an unsupported format, a URL. Checked in that order of precedence: remote, outside, missing, type |
+| `asset.missing`, `asset.outside`, `asset.type`, `asset.remote` | a missing file (or one whose letter case differs from the path's: the fix names the file as it is), a path outside the quiz folder, an unsupported format, a URL. Checked in that order of precedence: remote, outside, missing, type |
 | `asset.alt` | an image without alt text |
 | `materials.missing` | a `materials` file that does not exist (a path outside the folder or a URL is `asset.outside` or `asset.remote`) |
 | `materials.heading` | a sheet that does not start with a `#` heading, or has a second `#` heading |
