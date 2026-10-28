@@ -82,7 +82,8 @@ Also raised on 2026-10-28 and kept outside v1: [proposals/rapid-response.md](../
 
 1. Done: 2b reviewed and decided (above).
 2. Done: 2c2. Reviewed on 2026-10-28: `npm run check` passes (45 files, 1419 vitest tests, 2 startup tests, 5 Playwright tests; the startup test missed its 150 ms budget once in Sonnet's run, at 156 ms, and passed on re-run and in review). Tried by hand: a blank in a table cell, `\[[` as text, a blank in alt text, case mismatches for a sheet and a sheet's image, a second `#`, a sheet with no heading, a `- [x]` in a sheet. **Decided by the owner:** sheets allow `##` to `######` (2c2 made `####` and deeper `syntax.heading-level`: fix in 2c); no `:::` containers in a sheet (as built); an empty sheet is `materials.heading` (as built); loading problems stay at the `materials:` line; the key blob may carry the sheet paths; `blanksInLinkText` makes its markdown-it once (2c); Shiki and blanks tested in 2c. Written into QUIZ_SYNTAX.md section 2.
-3. **Next:** write 2c's brief (`ordering`, `matching`, `essay`, `code`, KaTeX, Shiki, in questions and in sheets). Its first tasks: sheet headings `##` to `######`; `blanksInLinkText` with one markdown-it; the `vi` export through `quiz grade` in Playwright; a blank inside Shiki-highlighted code. A brief that changes what `check` prints lists `src/cli/check.ts` and `src/core/rules/check.ts`.
+3. **2c split in three** (owner, 2026-10-28): 2c the four types, 2c3 KaTeX and Shiki, 2c4 dragging for `ordering` (after 2f). How the four types are answered is in TECHNICAL_DESIGN.md section 8, row "Answering ordering, matching, essay, code". The blank inside Shiki-highlighted code moves to 2c3.
+4. **Next: delegate 2c** (brief below) in a fresh session, then review it.
 
 ## Goal
 
@@ -109,7 +110,8 @@ Step 1's rules hold ([STEP1.md](STEP1.md), "Rules for every slice"): the design 
 | **2a** | Foundation: the page build, the Attempt reducer, `single` only, Submit and Export, `build FILE`, determinism, the CSP, the runtime budget, the two-quiz seam, Playwright |
 | **2b** | `multi`, `truefalse`, `short`, `numeric`, `blanks`, `fields`, `scale` |
 | **2c2** | 2b's fixes; materials in the core: the `materials` key, reading and hashing the sheets, `materials.missing`, `materials.heading`, `materials.question`, `materials.empty`, the field the page and print read; `syntax.reserved` retired. Runs before 2c |
-| **2c** | `ordering`, `matching`, `essay`, `code`; maths (KaTeX) and code highlighting (Shiki) in question text and in sheets |
+| **2c** | `ordering` (↑ and ↓ buttons), `matching`, `essay`, `code`; 2c2's four follow-ups |
+| **2c3** | Maths (KaTeX) and code highlighting (Shiki) at build time, in questions and in sheets; CSS and fonts only when used; the startup budget kept |
 | **2d** | Start screen and part picker, sections and `pick`, shuffling with a seed drawn at Start, the timer, autosave and resume, storage blocked; Playwright adds Firefox here, for its isolated `file://` storage (foundation 2) and one full answer-submit-export run |
 | **2e** | Results card (asterisks, goal line), review filter, Retry missed, `feedback: instant` |
 | **2f** | The top bar and its status line, the docked sidebar (one button, `Q`/`M`/`Esc`, stacked while answering, tabs after Submit, full screen on a phone), the question map with rings and flags, the materials in the sidebar, Focus mode |
@@ -117,6 +119,7 @@ Step 1's rules hold ([STEP1.md](STEP1.md), "Rules for every slice"): the design 
 | **2h** | Fonts: four fonts, `--fonts`, the Vietnamese glyph test, screenshot baselines |
 | **2i** | `build` across the CLI: several files, `--build-file`, `-o`, `--strict`, `--open`, `--json`, `build.size`, `--ui-lang` and the `vi` chrome scan, `--acknowledgements` and the page's licence comment, the 300-question budget, golden files |
 | **2j** | `replay` |
+| **2c4** | Dragging for `ordering` (own pointer-event code, mouse and touch, on top of the buttons; no library); decides whether `matching` gets dragging too. After 2f |
 | **2k** | The printable paper: `--print`, `--answers`, `--answer-sheet`, `--seed` and the mã đề, the materials page and `--materials none` |
 
 Later briefs stay outlines until the slice before is reviewed.
@@ -234,3 +237,39 @@ Two parts, in this order. First 2b's review fixes. Then materials in the core: t
 - `npm run check` passes, Playwright included.
 - Every rule touched has a fixture; the parser and the page find the same blanks in every region.
 - Report: commits, test counts, golden count with one line each, every gap, and what was decided differently and why.
+
+## Slice 2c: ordering, matching, essay and code
+
+The last four question types on 2b's architecture, each answered in the page, graded by the one grader, shown after Submit and exported, plus 2c2's follow-ups first. The test that matters stays 2a's: **for every question, the status and points the page shows equal what `quiz grade` gives for the exported file.** After 2c every type builds; maths and code highlighting are still plain text until 2c3, and `ordering` has no dragging until 2c4.
+
+### Read first
+
+- This brief, and the Handoff's "Next steps" above (2c2's review and the split).
+- QUIZ_SYNTAX.md section 6: "ordering", "matching", "essay", "code", "Rubrics" (the paragraph only).
+- TECHNICAL_DESIGN.md section 4 "`results-v2`", the answer table rows for `essay`, `ordering`, `matching`, `code` and the paragraph "Indices are source order"; section 6, the rubric table row "Page before submit" and the bullet "`show_rubric`"; section 8, the row "Answering ordering, matching, essay, code"; foundation "5. The answer key is obfuscated, not secret".
+- Code: `src/page/questions/` (Card, shared, and one 2b component as a model, e.g. `Fields.tsx`), `src/page/data.ts`, `src/build/page.ts`, `src/core/attempt/answers.ts`, `src/core/grade/types.ts`, `src/core/plan/index.ts` (`optionOrder`), `src/core/ir.ts` (the four types), `src/core/i18n/en.ts` and `vi.ts` (the `page` block), `src/core/parse/sheet.ts` (the heading check), `src/core/parse/blanks.ts` (`blanksInLinkText`), `e2e/types.spec.ts`, `e2e/helpers.ts`, `test/build/types.test.ts`, `test/fixtures/page/types.md` and `types-vi.md`.
+
+### Decided for this slice
+
+- **One component per type**, in `src/page/questions/`, added to the card's table, as in 2b. Native controls only: no new dependency.
+- **Page data** (the union in `src/page/data.ts`): `ordering` carries its items' HTML **in the order the page shows them** (`plan.optionOrder`), never in source order; `matching` carries the left items' HTML in source order and the right-hand items' HTML (distractors included) in the shown order; `essay` carries `minWords`, `maxWords` and, when `show_rubric` is true, the rubric's criteria and points as the page shows them; `code` carries `language` and `starter`. `sample_answer` is only in the key blob (as HTML, like an explanation). The plan in the page still holds `optionOrder`, so a reader of the page source can work the order out: that is foundation 5 (obfuscated, not secret), and the page never shows it by accident.
+- **Stored answers** are exactly section 4's table, in source indices. `ordering` stores `{order}` (source index at each position) only once the learner has moved an item, `null` before; `matching` stores `{pairs}` with `null` for "—", and `null` for the whole answer when every dropdown is "—"; `essay` stores `{text}`, `null` when empty; `code` stores `{code, language}` with the question's `language`, `null` when the box is empty or exactly `starter`. The page never decides a status: every status and point comes from `grade` (`pending` for an answered essay or code).
+- **`ordering`:** a list (`<ol>`), each item with ↑ and ↓ buttons (`aria-label` "Move up: <item text>" and "Move down"; the first item's ↑ and the last's ↓ disabled). After a move the focus stays on the moved item's same button, and a polite live region says "Moved to position N of M". After Submit each item is marked correct or wrong (from `GradedQuestion.results`), and a wrong one says its correct position ("belongs at 2").
+- **`matching`:** one `<select>` per left item, labelled by the left item, options "—" then the right-hand items in the shown order. A right-hand item may be picked for two left items (the grader marks the extra one wrong); no item is removed from the other lists. After Submit each pair is marked, with the right match when wrong.
+- **`essay`:** a `<textarea>` (spellcheck on: it is prose) with a live count under it, "87 / 120 words minimum", "87 / 300 words maximum", "87 words, 120 to 300", or "87 words" with no target; the count uses the grader's own word-count function so the two never disagree; going past `max_words` shows the count as a warning, never blocks typing or Submit. With `show_rubric`, the rubric's criteria and points sit above the box. After Submit: the result line says "Waiting for a grade" (status `pending`), then "Sample answer" with `sample_answer` when there is one.
+- **`code`:** a `<textarea>` with a monospaced font, `spellcheck="false"`, `autocapitalize="off"`, `autocomplete="off"`, filled with `starter`; Tab is never captured. After Submit as for an essay. No highlighting here (2c3).
+- **2c2's follow-ups:** a sheet allows `##` to `######` (`src/core/parse/sheet.ts`: only `#` after the first, and nothing deeper than six which Markdown does not have, stay errors); `blanksInLinkText` builds its markdown-it once per module, not per call.
+- **Still refused:** none. `test/golden/build/other-type` no longer has a type to refuse: delete the case, and report it.
+
+### Tasks
+
+1. **2c2's follow-ups** (one commit): sheet headings, with a fixture sheet using `####` that passes and a test; `blanksInLinkText`'s renderer made once.
+2. **`src/build` and `src/page`** (one commit per type or two): page data, the key blob (`keyOf` strips item, pair and sample text as now), the components, the strings in `en` and `vi` ("Move up", "Move down", "Moved to position N of M", "belongs at N", the word-count lines, "Waiting for a grade", "Sample answer").
+3. **Tests in vitest:** the page data per type holds no `sample_answer` and lists `ordering` items in the shown order, never in source order (with a fixture whose shown order differs); the stored-answer rules above (untouched `ordering`, all-"—" `matching`, `code` equal to `starter`, all `null`); the word count equals the grader's on a few texts (hyphens, numbers, Vietnamese).
+4. **Playwright:** extend the types fixture (or add one) with each of the four: `ordering` moved into the right order and one moved wrong, `matching` partly right, an essay and a code answer; submit, export, and `quiz grade` on the file gives the same status and points for every question, `pending` for essay and code. Keyboard only for one `ordering` (Tab to a button, Enter, the focus and the live-region text). The `vi` fixture's export also goes through `quiz grade` (2b's gap 11). axe after Start and after Submit, no violations.
+5. **Golden files:** the `all-simple-types` page becomes `all-types` (every type); `other-type` removed. Report the count.
+
+### Done when
+
+- `npm run check` passes, Playwright and axe included; every example in `examples/` builds.
+- Report: the runtime's gzipped size (budget 60 KB), test counts, golden count with one line each, every gap, what was decided differently and why, and one line per type on what the page shows before and after Submit.
