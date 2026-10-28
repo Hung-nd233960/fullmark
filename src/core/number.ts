@@ -4,9 +4,10 @@
  * Thousands separators are never accepted. Returns null when the text is not a number.
  */
 export function readNumber(text: string, options: { decimalComma?: boolean } = {}): number | null {
-  let s = text.trim();
+  // U+2212, the minus sign of typeset text, is the same number as the hyphen-minus
+  let s = text.trim().replaceAll("−", "-");
   if (options.decimalComma && !s.includes(".") && /^[+-]?\d+,\d+(?:[eE][+-]?\d+)?$/.test(s)) s = s.replace(",", ".");
-  const fraction = /^([+-]?\d+)\/(\d+)$/.exec(s);
+  const fraction = /^([+-]?\d+)\s*\/\s*(\d+)$/.exec(s);
   if (fraction) {
     const bottom = Number(fraction[2]);
     return bottom === 0 ? null : Number(fraction[1]) / bottom;
@@ -18,7 +19,7 @@ export function readNumber(text: string, options: { decimalComma?: boolean } = {
 
 /** True when the text is written as a fraction, which matches within rounding (QUIZ_SYNTAX.md, numeric). */
 export function isFraction(text: string): boolean {
-  return /^[+-]?\d+\/\d+$/.test(text.trim());
+  return /^[+-]?\d+\s*\/\s*\d+$/.test(text.trim());
 }
 
 /** A duration such as `90s`, `45m` or `1h30m`, in seconds; null when it is not one or is zero. */

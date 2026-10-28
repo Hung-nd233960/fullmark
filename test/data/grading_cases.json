@@ -1,3657 +1,1997 @@
 [
- {
-  "name": "single right",
-  "type": "single",
-  "spec": {
-   "points": 1,
-   "case": "insensitive",
-   "correct": 1
-  },
-  "response": {
-   "choice": 1
-  },
-  "expected_earned": 1,
-  "expected_status": "correct"
- },
- {
-  "name": "single wrong",
-  "type": "single",
-  "spec": {
-   "points": 1,
-   "case": "insensitive",
-   "correct": 1
-  },
-  "response": {
-   "choice": 0
-  },
-  "expected_earned": 0,
-  "expected_status": "incorrect"
- },
- {
-  "name": "single first index right",
-  "type": "single",
-  "spec": {
-   "points": 2,
-   "case": "insensitive",
-   "correct": 0
-  },
-  "response": {
-   "choice": 0
-  },
-  "expected_earned": 2,
-  "expected_status": "correct"
- },
- {
-  "name": "single unanswered null",
-  "type": "single",
-  "spec": {
-   "points": 1,
-   "case": "insensitive",
-   "correct": 1
-  },
-  "response": null,
-  "expected_earned": 0,
-  "expected_status": "unanswered"
- },
- {
-  "name": "single unanswered empty",
-  "type": "single",
-  "spec": {
-   "points": 1,
-   "case": "insensitive",
-   "correct": 1
-  },
-  "response": {},
-  "expected_earned": 0,
-  "expected_status": "unanswered"
- },
- {
-  "name": "single unanswered choice null",
-  "type": "single",
-  "spec": {
-   "points": 1,
-   "case": "insensitive",
-   "correct": 1
-  },
-  "response": {
-   "choice": null
-  },
-  "expected_earned": 0,
-  "expected_status": "unanswered"
- },
- {
-  "name": "multi exact",
-  "type": "multi",
-  "spec": {
-   "points": 2,
-   "case": "insensitive",
-   "correct": [
-    0,
-    2
-   ]
-  },
-  "response": {
-   "choices": [
-    0,
-    2
-   ]
-  },
-  "expected_earned": 2,
-  "expected_status": "correct"
- },
- {
-  "name": "multi exact other order",
-  "type": "multi",
-  "spec": {
-   "points": 2,
-   "case": "insensitive",
-   "correct": [
-    0,
-    2
-   ]
-  },
-  "response": {
-   "choices": [
-    2,
-    0
-   ]
-  },
-  "expected_earned": 2,
-  "expected_status": "correct"
- },
- {
-  "name": "multi half",
-  "type": "multi",
-  "spec": {
-   "points": 2,
-   "case": "insensitive",
-   "correct": [
-    0,
-    2
-   ]
-  },
-  "response": {
-   "choices": [
-    0
-   ]
-  },
-  "expected_earned": 1,
-  "expected_status": "partial"
- },
- {
-  "name": "multi one right one wrong",
-  "type": "multi",
-  "spec": {
-   "points": 2,
-   "case": "insensitive",
-   "correct": [
-    0,
-    2
-   ]
-  },
-  "response": {
-   "choices": [
-    0,
-    1
-   ]
-  },
-  "expected_earned": 0,
-  "expected_status": "incorrect"
- },
- {
-  "name": "multi right plus wrong",
-  "type": "multi",
-  "spec": {
-   "points": 2,
-   "case": "insensitive",
-   "correct": [
-    0,
-    2
-   ]
-  },
-  "response": {
-   "choices": [
-    0,
-    2,
-    1
-   ]
-  },
-  "expected_earned": 1,
-  "expected_status": "partial"
- },
- {
-  "name": "multi only wrong",
-  "type": "multi",
-  "spec": {
-   "points": 2,
-   "case": "insensitive",
-   "correct": [
-    0,
-    2
-   ]
-  },
-  "response": {
-   "choices": [
-    1
-   ]
-  },
-  "expected_earned": 0,
-  "expected_status": "incorrect"
- },
- {
-  "name": "multi floor at zero",
-  "type": "multi",
-  "spec": {
-   "points": 2,
-   "case": "insensitive",
-   "correct": [
-    0,
-    2
-   ]
-  },
-  "response": {
-   "choices": [
-    1,
-    3
-   ]
-  },
-  "expected_earned": 0,
-  "expected_status": "incorrect"
- },
- {
-  "name": "multi unanswered",
-  "type": "multi",
-  "spec": {
-   "points": 2,
-   "case": "insensitive",
-   "correct": [
-    0,
-    2
-   ]
-  },
-  "response": {
-   "choices": []
-  },
-  "expected_earned": 0,
-  "expected_status": "unanswered"
- },
- {
-  "name": "multi null",
-  "type": "multi",
-  "spec": {
-   "points": 2,
-   "case": "insensitive",
-   "correct": [
-    0,
-    2
-   ]
-  },
-  "response": null,
-  "expected_earned": 0,
-  "expected_status": "unanswered"
- },
- {
-  "name": "multi thirds rounded",
-  "type": "multi",
-  "spec": {
-   "points": 1,
-   "case": "insensitive",
-   "correct": [
-    0,
-    1,
-    2
-   ]
-  },
-  "response": {
-   "choices": [
-    0
-   ]
-  },
-  "expected_earned": 0.33,
-  "expected_status": "partial"
- },
- {
-  "name": "multi two thirds rounded",
-  "type": "multi",
-  "spec": {
-   "points": 1,
-   "case": "insensitive",
-   "correct": [
-    0,
-    1,
-    2
-   ]
-  },
-  "response": {
-   "choices": [
-    0,
-    1
-   ]
-  },
-  "expected_earned": 0.67,
-  "expected_status": "partial"
- },
- {
-  "name": "multi a-o-n exact",
-  "type": "multi",
-  "spec": {
-   "points": 2,
-   "case": "insensitive",
-   "correct": [
-    0,
-    2
-   ],
-   "scoring": "all_or_nothing"
-  },
-  "response": {
-   "choices": [
-    0,
-    2
-   ]
-  },
-  "expected_earned": 2,
-  "expected_status": "correct"
- },
- {
-  "name": "multi a-o-n partial gets zero",
-  "type": "multi",
-  "spec": {
-   "points": 2,
-   "case": "insensitive",
-   "correct": [
-    0,
-    2
-   ],
-   "scoring": "all_or_nothing"
-  },
-  "response": {
-   "choices": [
-    0
-   ]
-  },
-  "expected_earned": 0,
-  "expected_status": "incorrect"
- },
- {
-  "name": "multi a-o-n extra gets zero",
-  "type": "multi",
-  "spec": {
-   "points": 2,
-   "case": "insensitive",
-   "correct": [
-    0,
-    2
-   ],
-   "scoring": "all_or_nothing"
-  },
-  "response": {
-   "choices": [
-    0,
-    1,
-    2
-   ]
-  },
-  "expected_earned": 0,
-  "expected_status": "incorrect"
- },
- {
-  "name": "multi single correct set",
-  "type": "multi",
-  "spec": {
-   "points": 1,
-   "case": "insensitive",
-   "correct": [
-    1
-   ]
-  },
-  "response": {
-   "choices": [
-    1
-   ]
-  },
-  "expected_earned": 1,
-  "expected_status": "correct"
- },
- {
-  "name": "tf true right",
-  "type": "truefalse",
-  "spec": {
-   "points": 1,
-   "case": "insensitive",
-   "value": true
-  },
-  "response": {
-   "value": true
-  },
-  "expected_earned": 1,
-  "expected_status": "correct"
- },
- {
-  "name": "tf false right",
-  "type": "truefalse",
-  "spec": {
-   "points": 1,
-   "case": "insensitive",
-   "value": false
-  },
-  "response": {
-   "value": false
-  },
-  "expected_earned": 1,
-  "expected_status": "correct"
- },
- {
-  "name": "tf wrong",
-  "type": "truefalse",
-  "spec": {
-   "points": 1,
-   "case": "insensitive",
-   "value": true
-  },
-  "response": {
-   "value": false
-  },
-  "expected_earned": 0,
-  "expected_status": "incorrect"
- },
- {
-  "name": "tf unanswered",
-  "type": "truefalse",
-  "spec": {
-   "points": 1,
-   "case": "insensitive",
-   "value": true
-  },
-  "response": null,
-  "expected_earned": 0,
-  "expected_status": "unanswered"
- },
- {
-  "name": "tf unanswered null value",
-  "type": "truefalse",
-  "spec": {
-   "points": 1,
-   "case": "insensitive",
-   "value": false
-  },
-  "response": {
-   "value": null
-  },
-  "expected_earned": 0,
-  "expected_status": "unanswered"
- },
- {
-  "name": "num exact",
-  "type": "numeric",
-  "spec": {
-   "points": 1,
-   "case": "insensitive",
-   "values": [
-    0.3333
-   ],
-   "tolerance": 0.001,
-   "rel_tolerance": null
-  },
-  "response": {
-   "raw": "0.3333"
-  },
-  "expected_earned": 1,
-  "expected_status": "correct"
- },
- {
-  "name": "num within tolerance",
-  "type": "numeric",
-  "spec": {
-   "points": 1,
-   "case": "insensitive",
-   "values": [
-    0.3333
-   ],
-   "tolerance": 0.001,
-   "rel_tolerance": null
-  },
-  "response": {
-   "raw": "0.3340"
-  },
-  "expected_earned": 1,
-  "expected_status": "correct"
- },
- {
-  "name": "num boundary inclusive",
-  "type": "numeric",
-  "spec": {
-   "points": 1,
-   "case": "insensitive",
-   "values": [
-    0.3333
-   ],
-   "tolerance": 0.001,
-   "rel_tolerance": null
-  },
-  "response": {
-   "raw": "0.3343"
-  },
-  "expected_earned": 1,
-  "expected_status": "correct"
- },
- {
-  "name": "num outside tolerance",
-  "type": "numeric",
-  "spec": {
-   "points": 1,
-   "case": "insensitive",
-   "values": [
-    0.3333
-   ],
-   "tolerance": 0.001,
-   "rel_tolerance": null
-  },
-  "response": {
-   "raw": "0.335"
-  },
-  "expected_earned": 0,
-  "expected_status": "incorrect"
- },
- {
-  "name": "num fraction",
-  "type": "numeric",
-  "spec": {
-   "points": 1,
-   "case": "insensitive",
-   "values": [
-    0.3333
-   ],
-   "tolerance": 0.001,
-   "rel_tolerance": null
-  },
-  "response": {
-   "raw": "1/3"
-  },
-  "expected_earned": 1,
-  "expected_status": "correct"
- },
- {
-  "name": "num fraction spaces",
-  "type": "numeric",
-  "spec": {
-   "points": 1,
-   "case": "insensitive",
-   "values": [
-    0.3333
-   ],
-   "tolerance": 0.001,
-   "rel_tolerance": null
-  },
-  "response": {
-   "raw": " 1 / 3 "
-  },
-  "expected_earned": 1,
-  "expected_status": "correct"
- },
- {
-  "name": "num fraction zero denominator",
-  "type": "numeric",
-  "spec": {
-   "points": 1,
-   "case": "insensitive",
-   "values": [
-    0.3333
-   ],
-   "tolerance": 0.001,
-   "rel_tolerance": null
-  },
-  "response": {
-   "raw": "1/0"
-  },
-  "expected_earned": 0,
-  "expected_status": "incorrect"
- },
- {
-  "name": "num scientific",
-  "type": "numeric",
-  "spec": {
-   "points": 1,
-   "case": "insensitive",
-   "values": [
-    0.001
-   ],
-   "tolerance": 0
-  },
-  "response": {
-   "raw": "1e-3"
-  },
-  "expected_earned": 1,
-  "expected_status": "correct"
- },
- {
-  "name": "num scientific capital",
-  "type": "numeric",
-  "spec": {
-   "points": 1,
-   "case": "insensitive",
-   "values": [
-    1500
-   ],
-   "tolerance": 0
-  },
-  "response": {
-   "raw": "1.5E3"
-  },
-  "expected_earned": 1,
-  "expected_status": "correct"
- },
- {
-  "name": "num integer",
-  "type": "numeric",
-  "spec": {
-   "points": 1,
-   "case": "insensitive",
-   "values": [
-    42
-   ],
-   "tolerance": 0
-  },
-  "response": {
-   "raw": "42"
-  },
-  "expected_earned": 1,
-  "expected_status": "correct"
- },
- {
-  "name": "num negative",
-  "type": "numeric",
-  "spec": {
-   "points": 1,
-   "case": "insensitive",
-   "values": [
-    -1
-   ],
-   "tolerance": 0
-  },
-  "response": {
-   "raw": "-1"
-  },
-  "expected_earned": 1,
-  "expected_status": "correct"
- },
- {
-  "name": "num unicode minus",
-  "type": "numeric",
-  "spec": {
-   "points": 1,
-   "case": "insensitive",
-   "values": [
-    -1
-   ],
-   "tolerance": 0
-  },
-  "response": {
-   "raw": "−1"
-  },
-  "expected_earned": 1,
-  "expected_status": "correct"
- },
- {
-  "name": "num leading plus",
-  "type": "numeric",
-  "spec": {
-   "points": 1,
-   "case": "insensitive",
-   "values": [
-    5
-   ],
-   "tolerance": 0
-  },
-  "response": {
-   "raw": "+5"
-  },
-  "expected_earned": 1,
-  "expected_status": "correct"
- },
- {
-  "name": "num leading dot",
-  "type": "numeric",
-  "spec": {
-   "points": 1,
-   "case": "insensitive",
-   "values": [
-    0.5
-   ],
-   "tolerance": 0
-  },
-  "response": {
-   "raw": ".5"
-  },
-  "expected_earned": 1,
-  "expected_status": "correct"
- },
- {
-  "name": "num comma decimal rejected",
-  "type": "numeric",
-  "spec": {
-   "points": 1,
-   "case": "insensitive",
-   "values": [
-    3.14
-   ],
-   "tolerance": 0.01
-  },
-  "response": {
-   "raw": "3,14"
-  },
-  "expected_earned": 0,
-  "expected_status": "incorrect"
- },
- {
-  "name": "num garbage",
-  "type": "numeric",
-  "spec": {
-   "points": 1,
-   "case": "insensitive",
-   "values": [
-    0.3333
-   ],
-   "tolerance": 0.001,
-   "rel_tolerance": null
-  },
-  "response": {
-   "raw": "abc"
-  },
-  "expected_earned": 0,
-  "expected_status": "incorrect"
- },
- {
-  "name": "num empty",
-  "type": "numeric",
-  "spec": {
-   "points": 1,
-   "case": "insensitive",
-   "values": [
-    0.3333
-   ],
-   "tolerance": 0.001,
-   "rel_tolerance": null
-  },
-  "response": {
-   "raw": "  "
-  },
-  "expected_earned": 0,
-  "expected_status": "unanswered"
- },
- {
-  "name": "num null response",
-  "type": "numeric",
-  "spec": {
-   "points": 1,
-   "case": "insensitive",
-   "values": [
-    0.3333
-   ],
-   "tolerance": 0.001,
-   "rel_tolerance": null
-  },
-  "response": null,
-  "expected_earned": 0,
-  "expected_status": "unanswered"
- },
- {
-  "name": "num relative within",
-  "type": "numeric",
-  "spec": {
-   "points": 1,
-   "case": "insensitive",
-   "values": [
-    100
-   ],
-   "rel_tolerance": 0.01
-  },
-  "response": {
-   "raw": "100.9"
-  },
-  "expected_earned": 1,
-  "expected_status": "correct"
- },
- {
-  "name": "num relative outside",
-  "type": "numeric",
-  "spec": {
-   "points": 1,
-   "case": "insensitive",
-   "values": [
-    100
-   ],
-   "rel_tolerance": 0.01
-  },
-  "response": {
-   "raw": "102"
-  },
-  "expected_earned": 0,
-  "expected_status": "incorrect"
- },
- {
-  "name": "num relative negative target",
-  "type": "numeric",
-  "spec": {
-   "points": 1,
-   "case": "insensitive",
-   "values": [
-    -200
-   ],
-   "rel_tolerance": 0.05
-  },
-  "response": {
-   "raw": "-195"
-  },
-  "expected_earned": 1,
-  "expected_status": "correct"
- },
- {
-  "name": "num several values second",
-  "type": "numeric",
-  "spec": {
-   "points": 1,
-   "case": "insensitive",
-   "values": [
-    2,
-    -2
-   ],
-   "tolerance": 0
-  },
-  "response": {
-   "raw": "-2"
-  },
-  "expected_earned": 1,
-  "expected_status": "correct"
- },
- {
-  "name": "num zero tolerance wrong",
-  "type": "numeric",
-  "spec": {
-   "points": 1,
-   "case": "insensitive",
-   "values": [
-    2
-   ],
-   "tolerance": 0
-  },
-  "response": {
-   "raw": "2.0001"
-  },
-  "expected_earned": 0,
-  "expected_status": "incorrect"
- },
- {
-  "name": "short exact",
-  "type": "short",
-  "spec": {
-   "points": 1,
-   "case": "insensitive",
-   "accept": [
-    "3"
-   ],
-   "patterns": []
-  },
-  "response": {
-   "text": "3"
-  },
-  "expected_earned": 1,
-  "expected_status": "correct"
- },
- {
-  "name": "short trims",
-  "type": "short",
-  "spec": {
-   "points": 1,
-   "case": "insensitive",
-   "accept": [
-    "3"
-   ],
-   "patterns": []
-  },
-  "response": {
-   "text": "  3  "
-  },
-  "expected_earned": 1,
-  "expected_status": "correct"
- },
- {
-  "name": "short wrong",
-  "type": "short",
-  "spec": {
-   "points": 1,
-   "case": "insensitive",
-   "accept": [
-    "3"
-   ],
-   "patterns": []
-  },
-  "response": {
-   "text": "4"
-  },
-  "expected_earned": 0,
-  "expected_status": "incorrect"
- },
- {
-  "name": "short empty",
-  "type": "short",
-  "spec": {
-   "points": 1,
-   "case": "insensitive",
-   "accept": [
-    "3"
-   ],
-   "patterns": []
-  },
-  "response": {
-   "text": ""
-  },
-  "expected_earned": 0,
-  "expected_status": "unanswered"
- },
- {
-  "name": "short whitespace only",
-  "type": "short",
-  "spec": {
-   "points": 1,
-   "case": "insensitive",
-   "accept": [
-    "3"
-   ],
-   "patterns": []
-  },
-  "response": {
-   "text": "   "
-  },
-  "expected_earned": 0,
-  "expected_status": "unanswered"
- },
- {
-  "name": "short null",
-  "type": "short",
-  "spec": {
-   "points": 1,
-   "case": "insensitive",
-   "accept": [
-    "3"
-   ],
-   "patterns": []
-  },
-  "response": null,
-  "expected_earned": 0,
-  "expected_status": "unanswered"
- },
- {
-  "name": "short case insensitive",
-  "type": "short",
-  "spec": {
-   "points": 1,
-   "case": "insensitive",
-   "accept": [
-    "Hello World"
-   ],
-   "patterns": []
-  },
-  "response": {
-   "text": "hello WORLD"
-  },
-  "expected_earned": 1,
-  "expected_status": "correct"
- },
- {
-  "name": "short case sensitive wrong",
-  "type": "short",
-  "spec": {
-   "points": 1,
-   "case": "sensitive",
-   "accept": [
-    "Hello"
-   ],
-   "patterns": []
-  },
-  "response": {
-   "text": "hello"
-  },
-  "expected_earned": 0,
-  "expected_status": "incorrect"
- },
- {
-  "name": "short case sensitive right",
-  "type": "short",
-  "spec": {
-   "points": 1,
-   "case": "sensitive",
-   "accept": [
-    "Hello"
-   ],
-   "patterns": []
-  },
-  "response": {
-   "text": "Hello"
-  },
-  "expected_earned": 1,
-  "expected_status": "correct"
- },
- {
-  "name": "short collapses whitespace",
-  "type": "short",
-  "spec": {
-   "points": 1,
-   "case": "insensitive",
-   "accept": [
-    "a b c"
-   ],
-   "patterns": []
-  },
-  "response": {
-   "text": "a   b\t c"
-  },
-  "expected_earned": 1,
-  "expected_status": "correct"
- },
- {
-  "name": "short second accept",
-  "type": "short",
-  "spec": {
-   "points": 1,
-   "case": "insensitive",
-   "accept": [
-    "x",
-    "y"
-   ],
-   "patterns": []
-  },
-  "response": {
-   "text": "y"
-  },
-  "expected_earned": 1,
-  "expected_status": "correct"
- },
- {
-  "name": "short pattern full match",
-  "type": "short",
-  "spec": {
-   "points": 1,
-   "case": "insensitive",
-   "accept": [],
-   "patterns": [
-    "^3(\\.0)?$"
-   ]
-  },
-  "response": {
-   "text": "3.0"
-  },
-  "expected_earned": 1,
-  "expected_status": "correct"
- },
- {
-  "name": "short pattern must be full",
-  "type": "short",
-  "spec": {
-   "points": 1,
-   "case": "insensitive",
-   "accept": [],
-   "patterns": [
-    "3"
-   ]
-  },
-  "response": {
-   "text": "33"
-  },
-  "expected_earned": 0,
-  "expected_status": "incorrect"
- },
- {
-  "name": "short pattern case sensitive",
-  "type": "short",
-  "spec": {
-   "points": 1,
-   "case": "sensitive",
-   "accept": [],
-   "patterns": [
-    "A+"
-   ]
-  },
-  "response": {
-   "text": "aaa"
-  },
-  "expected_earned": 0,
-  "expected_status": "incorrect"
- },
- {
-  "name": "short pattern case insensitive",
-  "type": "short",
-  "spec": {
-   "points": 1,
-   "case": "insensitive",
-   "accept": [],
-   "patterns": [
-    "A+"
-   ]
-  },
-  "response": {
-   "text": "aaa"
-  },
-  "expected_earned": 1,
-  "expected_status": "correct"
- },
- {
-  "name": "short pattern digits ascii",
-  "type": "short",
-  "spec": {
-   "points": 1,
-   "case": "insensitive",
-   "accept": [],
-   "patterns": [
-    "\\d+"
-   ]
-  },
-  "response": {
-   "text": "٣"
-  },
-  "expected_earned": 0,
-  "expected_status": "incorrect"
- },
- {
-  "name": "short unicode accept",
-  "type": "short",
-  "spec": {
-   "points": 1,
-   "case": "insensitive",
-   "accept": [
-    "Na⁺"
-   ],
-   "patterns": []
-  },
-  "response": {
-   "text": "na⁺"
-  },
-  "expected_earned": 1,
-  "expected_status": "correct"
- },
- {
-  "name": "short points kept",
-  "type": "short",
-  "spec": {
-   "points": 4,
-   "case": "insensitive",
-   "accept": [
-    "ok"
-   ],
-   "patterns": []
-  },
-  "response": {
-   "text": "ok"
-  },
-  "expected_earned": 4,
-  "expected_status": "correct"
- },
- {
-  "name": "blanks all right",
-  "type": "blanks",
-  "spec": {
-   "points": 2,
-   "case": "insensitive",
-   "blanks": [
-    {
-     "numeric": false,
-     "accept": [
-      "cos x",
-      "cos(x)"
-     ]
+  {
+    "name": "single right",
+    "type": "single",
+    "question": "## Pick the right option. {type=single id=q}\n\n- [ ] Option 0\n- [x] Option 1\n- [ ] Option 2\n- [ ] Option 3",
+    "answer": {
+      "choice": 1
     },
-    {
-     "numeric": false,
-     "accept": [
-      "e^x",
-      "exp(x)"
-     ]
-    }
-   ]
+    "expected_earned": 1,
+    "expected_status": "correct"
   },
-  "response": {
-   "blanks": [
-    "cos x",
-    "e^x"
-   ]
-  },
-  "expected_earned": 2,
-  "expected_status": "correct",
-  "expected_results": [
-   true,
-   true
-  ]
- },
- {
-  "name": "blanks variant",
-  "type": "blanks",
-  "spec": {
-   "points": 2,
-   "case": "insensitive",
-   "blanks": [
-    {
-     "numeric": false,
-     "accept": [
-      "cos x",
-      "cos(x)"
-     ]
+  {
+    "name": "single wrong",
+    "type": "single",
+    "question": "## Pick the right option. {type=single id=q}\n\n- [ ] Option 0\n- [x] Option 1\n- [ ] Option 2\n- [ ] Option 3",
+    "answer": {
+      "choice": 0
     },
-    {
-     "numeric": false,
-     "accept": [
-      "e^x",
-      "exp(x)"
-     ]
-    }
-   ]
+    "expected_earned": 0,
+    "expected_status": "incorrect"
   },
-  "response": {
-   "blanks": [
-    "cos(x)",
-    "EXP(x)"
-   ]
-  },
-  "expected_earned": 2,
-  "expected_status": "correct",
-  "expected_results": [
-   true,
-   true
-  ]
- },
- {
-  "name": "blanks one of two",
-  "type": "blanks",
-  "spec": {
-   "points": 2,
-   "case": "insensitive",
-   "blanks": [
-    {
-     "numeric": false,
-     "accept": [
-      "cos x",
-      "cos(x)"
-     ]
+  {
+    "name": "single first index right",
+    "type": "single",
+    "question": "## Pick the right option. {type=single id=q points=2}\n\n- [x] Option 0\n- [ ] Option 1\n- [ ] Option 2\n- [ ] Option 3",
+    "answer": {
+      "choice": 0
     },
-    {
-     "numeric": false,
-     "accept": [
-      "e^x",
-      "exp(x)"
-     ]
-    }
-   ]
+    "expected_earned": 2,
+    "expected_status": "correct"
   },
-  "response": {
-   "blanks": [
-    "cos x",
-    "x"
-   ]
+  {
+    "name": "single unanswered null",
+    "type": "single",
+    "question": "## Pick the right option. {type=single id=q}\n\n- [ ] Option 0\n- [x] Option 1\n- [ ] Option 2\n- [ ] Option 3",
+    "answer": null,
+    "expected_earned": 0,
+    "expected_status": "unanswered"
   },
-  "expected_earned": 1,
-  "expected_status": "partial",
-  "expected_results": [
-   true,
-   false
-  ]
- },
- {
-  "name": "blanks none right",
-  "type": "blanks",
-  "spec": {
-   "points": 2,
-   "case": "insensitive",
-   "blanks": [
-    {
-     "numeric": false,
-     "accept": [
-      "cos x",
-      "cos(x)"
-     ]
+  {
+    "name": "single unanswered empty",
+    "type": "single",
+    "question": "## Pick the right option. {type=single id=q}\n\n- [ ] Option 0\n- [x] Option 1\n- [ ] Option 2\n- [ ] Option 3",
+    "answer": {},
+    "expected_earned": 0,
+    "expected_status": "unanswered"
+  },
+  {
+    "name": "single unanswered choice null",
+    "type": "single",
+    "question": "## Pick the right option. {type=single id=q}\n\n- [ ] Option 0\n- [x] Option 1\n- [ ] Option 2\n- [ ] Option 3",
+    "answer": {
+      "choice": null
     },
-    {
-     "numeric": false,
-     "accept": [
-      "e^x",
-      "exp(x)"
-     ]
-    }
-   ]
+    "expected_earned": 0,
+    "expected_status": "unanswered"
   },
-  "response": {
-   "blanks": [
-    "a",
-    "b"
-   ]
-  },
-  "expected_earned": 0,
-  "expected_status": "incorrect",
-  "expected_results": [
-   false,
-   false
-  ]
- },
- {
-  "name": "blanks all empty",
-  "type": "blanks",
-  "spec": {
-   "points": 2,
-   "case": "insensitive",
-   "blanks": [
-    {
-     "numeric": false,
-     "accept": [
-      "cos x",
-      "cos(x)"
-     ]
+  {
+    "name": "multi exact",
+    "type": "multi",
+    "question": "## Pick every right option. {type=multi id=q points=2}\n\n- [x] Option 0\n- [ ] Option 1\n- [x] Option 2\n- [ ] Option 3",
+    "answer": {
+      "choices": [
+        0,
+        2
+      ]
     },
-    {
-     "numeric": false,
-     "accept": [
-      "e^x",
-      "exp(x)"
-     ]
-    }
-   ]
+    "expected_earned": 2,
+    "expected_status": "correct"
   },
-  "response": {
-   "blanks": [
-    "",
-    ""
-   ]
-  },
-  "expected_earned": 0,
-  "expected_status": "unanswered",
-  "expected_results": [
-   false,
-   false
-  ]
- },
- {
-  "name": "blanks null",
-  "type": "blanks",
-  "spec": {
-   "points": 2,
-   "case": "insensitive",
-   "blanks": [
-    {
-     "numeric": false,
-     "accept": [
-      "cos x",
-      "cos(x)"
-     ]
+  {
+    "name": "multi exact other order",
+    "type": "multi",
+    "question": "## Pick every right option. {type=multi id=q points=2}\n\n- [x] Option 0\n- [ ] Option 1\n- [x] Option 2\n- [ ] Option 3",
+    "answer": {
+      "choices": [
+        2,
+        0
+      ]
     },
-    {
-     "numeric": false,
-     "accept": [
-      "e^x",
-      "exp(x)"
-     ]
-    }
-   ]
+    "expected_earned": 2,
+    "expected_status": "correct"
   },
-  "response": null,
-  "expected_earned": 0,
-  "expected_status": "unanswered",
-  "expected_results": [
-   false,
-   false
-  ]
- },
- {
-  "name": "blanks short list",
-  "type": "blanks",
-  "spec": {
-   "points": 2,
-   "case": "insensitive",
-   "blanks": [
-    {
-     "numeric": false,
-     "accept": [
-      "cos x",
-      "cos(x)"
-     ]
+  {
+    "name": "multi half",
+    "type": "multi",
+    "question": "## Pick every right option. {type=multi id=q points=2}\n\n- [x] Option 0\n- [ ] Option 1\n- [x] Option 2\n- [ ] Option 3",
+    "answer": {
+      "choices": [
+        0
+      ]
     },
-    {
-     "numeric": false,
-     "accept": [
-      "e^x",
-      "exp(x)"
-     ]
-    }
-   ]
+    "expected_earned": 1,
+    "expected_status": "partial"
   },
-  "response": {
-   "blanks": [
-    "cos x"
-   ]
-  },
-  "expected_earned": 1,
-  "expected_status": "partial",
-  "expected_results": [
-   true,
-   false
-  ]
- },
- {
-  "name": "blanks split in thirds",
-  "type": "blanks",
-  "spec": {
-   "points": 1,
-   "case": "insensitive",
-   "blanks": [
-    {
-     "numeric": false,
-     "accept": [
-      "a"
-     ]
+  {
+    "name": "multi one right one wrong",
+    "type": "multi",
+    "question": "## Pick every right option. {type=multi id=q points=2}\n\n- [x] Option 0\n- [ ] Option 1\n- [x] Option 2\n- [ ] Option 3",
+    "answer": {
+      "choices": [
+        0,
+        1
+      ]
     },
-    {
-     "numeric": false,
-     "accept": [
-      "a"
-     ]
+    "expected_earned": 0,
+    "expected_status": "incorrect"
+  },
+  {
+    "name": "multi right plus wrong",
+    "type": "multi",
+    "question": "## Pick every right option. {type=multi id=q points=2}\n\n- [x] Option 0\n- [ ] Option 1\n- [x] Option 2\n- [ ] Option 3",
+    "answer": {
+      "choices": [
+        0,
+        2,
+        1
+      ]
     },
-    {
-     "numeric": false,
-     "accept": [
-      "a"
-     ]
-    }
-   ]
+    "expected_earned": 1,
+    "expected_status": "partial"
   },
-  "response": {
-   "blanks": [
-    "a",
-    "x",
-    "x"
-   ]
-  },
-  "expected_earned": 0.33,
-  "expected_status": "partial",
-  "expected_results": [
-   true,
-   false,
-   false
-  ]
- },
- {
-  "name": "blanks case sensitive",
-  "type": "blanks",
-  "spec": {
-   "points": 1,
-   "case": "sensitive",
-   "blanks": [
-    {
-     "numeric": false,
-     "accept": [
-      "mut"
-     ]
-    }
-   ]
-  },
-  "response": {
-   "blanks": [
-    "Mut"
-   ]
-  },
-  "expected_earned": 0,
-  "expected_status": "incorrect",
-  "expected_results": [
-   false
-  ]
- },
- {
-  "name": "blanks numeric within",
-  "type": "blanks",
-  "spec": {
-   "points": 1,
-   "case": "insensitive",
-   "blanks": [
-    {
-     "numeric": true,
-     "value": 0.5,
-     "tolerance": 0.01
-    }
-   ]
-  },
-  "response": {
-   "blanks": [
-    "0.505"
-   ]
-  },
-  "expected_earned": 1,
-  "expected_status": "correct",
-  "expected_results": [
-   true
-  ]
- },
- {
-  "name": "blanks numeric fraction",
-  "type": "blanks",
-  "spec": {
-   "points": 1,
-   "case": "insensitive",
-   "blanks": [
-    {
-     "numeric": true,
-     "value": 0.5,
-     "tolerance": 0.01
-    }
-   ]
-  },
-  "response": {
-   "blanks": [
-    "1/2"
-   ]
-  },
-  "expected_earned": 1,
-  "expected_status": "correct",
-  "expected_results": [
-   true
-  ]
- },
- {
-  "name": "blanks numeric outside",
-  "type": "blanks",
-  "spec": {
-   "points": 1,
-   "case": "insensitive",
-   "blanks": [
-    {
-     "numeric": true,
-     "value": 0.5,
-     "tolerance": 0.01
-    }
-   ]
-  },
-  "response": {
-   "blanks": [
-    "0.6"
-   ]
-  },
-  "expected_earned": 0,
-  "expected_status": "incorrect",
-  "expected_results": [
-   false
-  ]
- },
- {
-  "name": "blanks numeric text",
-  "type": "blanks",
-  "spec": {
-   "points": 1,
-   "case": "insensitive",
-   "blanks": [
-    {
-     "numeric": true,
-     "value": 0.5,
-     "tolerance": 0.01
-    }
-   ]
-  },
-  "response": {
-   "blanks": [
-    "half"
-   ]
-  },
-  "expected_earned": 0,
-  "expected_status": "incorrect",
-  "expected_results": [
-   false
-  ]
- },
- {
-  "name": "blanks symbol",
-  "type": "blanks",
-  "spec": {
-   "points": 1,
-   "case": "insensitive",
-   "blanks": [
-    {
-     "numeric": false,
-     "accept": [
-      "&"
-     ]
-    }
-   ]
-  },
-  "response": {
-   "blanks": [
-    "&"
-   ]
-  },
-  "expected_earned": 1,
-  "expected_status": "correct",
-  "expected_results": [
-   true
-  ]
- },
- {
-  "name": "fields all right",
-  "type": "fields",
-  "spec": {
-   "points": 4,
-   "case": "insensitive",
-   "fields": [
-    {
-     "label": "f'",
-     "kind": "text",
-     "points": null,
-     "values": [],
-     "tolerance": 0,
-     "rel_tolerance": null,
-     "accept": [
-      "3x^2-3",
-      "3x^2 - 3"
-     ],
-     "patterns": []
+  {
+    "name": "multi only wrong",
+    "type": "multi",
+    "question": "## Pick every right option. {type=multi id=q points=2}\n\n- [x] Option 0\n- [ ] Option 1\n- [x] Option 2\n- [ ] Option 3",
+    "answer": {
+      "choices": [
+        1
+      ]
     },
-    {
-     "label": "count",
-     "kind": "numeric",
-     "points": null,
-     "values": [
-      2
-     ],
-     "tolerance": 0,
-     "rel_tolerance": null,
-     "accept": [],
-     "patterns": []
+    "expected_earned": 0,
+    "expected_status": "incorrect"
+  },
+  {
+    "name": "multi floor at zero",
+    "type": "multi",
+    "question": "## Pick every right option. {type=multi id=q points=2}\n\n- [x] Option 0\n- [ ] Option 1\n- [x] Option 2\n- [ ] Option 3",
+    "answer": {
+      "choices": [
+        1,
+        3
+      ]
     },
-    {
-     "label": "max",
-     "kind": "numeric",
-     "points": null,
-     "values": [
-      -1
-     ],
-     "tolerance": 0,
-     "rel_tolerance": null,
-     "accept": [],
-     "patterns": []
+    "expected_earned": 0,
+    "expected_status": "incorrect"
+  },
+  {
+    "name": "multi unanswered",
+    "type": "multi",
+    "question": "## Pick every right option. {type=multi id=q points=2}\n\n- [x] Option 0\n- [ ] Option 1\n- [x] Option 2\n- [ ] Option 3",
+    "answer": {
+      "choices": []
     },
-    {
-     "label": "min",
-     "kind": "numeric",
-     "points": null,
-     "values": [
-      1
-     ],
-     "tolerance": 0,
-     "rel_tolerance": null,
-     "accept": [],
-     "patterns": []
-    }
-   ]
+    "expected_earned": 0,
+    "expected_status": "unanswered"
   },
-  "response": {
-   "fields": [
-    "3x^2-3",
-    "2",
-    "-1",
-    "1"
-   ]
+  {
+    "name": "multi null",
+    "type": "multi",
+    "question": "## Pick every right option. {type=multi id=q points=2}\n\n- [x] Option 0\n- [ ] Option 1\n- [x] Option 2\n- [ ] Option 3",
+    "answer": null,
+    "expected_earned": 0,
+    "expected_status": "unanswered"
   },
-  "expected_earned": 4,
-  "expected_status": "correct",
-  "expected_results": [
-   true,
-   true,
-   true,
-   true
-  ]
- },
- {
-  "name": "fields text variant",
-  "type": "fields",
-  "spec": {
-   "points": 4,
-   "case": "insensitive",
-   "fields": [
-    {
-     "label": "f'",
-     "kind": "text",
-     "points": null,
-     "values": [],
-     "tolerance": 0,
-     "rel_tolerance": null,
-     "accept": [
-      "3x^2-3",
-      "3x^2 - 3"
-     ],
-     "patterns": []
+  {
+    "name": "multi thirds rounded",
+    "type": "multi",
+    "question": "## Pick every right option. {type=multi id=q}\n\n- [x] Option 0\n- [x] Option 1\n- [x] Option 2\n- [ ] Option 3",
+    "answer": {
+      "choices": [
+        0
+      ]
     },
-    {
-     "label": "count",
-     "kind": "numeric",
-     "points": null,
-     "values": [
-      2
-     ],
-     "tolerance": 0,
-     "rel_tolerance": null,
-     "accept": [],
-     "patterns": []
+    "expected_earned": 0.33,
+    "expected_status": "partial"
+  },
+  {
+    "name": "multi two thirds rounded",
+    "type": "multi",
+    "question": "## Pick every right option. {type=multi id=q}\n\n- [x] Option 0\n- [x] Option 1\n- [x] Option 2\n- [ ] Option 3",
+    "answer": {
+      "choices": [
+        0,
+        1
+      ]
     },
-    {
-     "label": "max",
-     "kind": "numeric",
-     "points": null,
-     "values": [
-      -1
-     ],
-     "tolerance": 0,
-     "rel_tolerance": null,
-     "accept": [],
-     "patterns": []
+    "expected_earned": 0.67,
+    "expected_status": "partial"
+  },
+  {
+    "name": "multi a-o-n exact",
+    "type": "multi",
+    "question": "## Pick every right option. {type=multi id=q points=2 partial=false}\n\n- [x] Option 0\n- [ ] Option 1\n- [x] Option 2\n- [ ] Option 3",
+    "answer": {
+      "choices": [
+        0,
+        2
+      ]
     },
-    {
-     "label": "min",
-     "kind": "numeric",
-     "points": null,
-     "values": [
-      1
-     ],
-     "tolerance": 0,
-     "rel_tolerance": null,
-     "accept": [],
-     "patterns": []
-    }
-   ]
+    "expected_earned": 2,
+    "expected_status": "correct"
   },
-  "response": {
-   "fields": [
-    "3x^2 - 3",
-    "2",
-    "-1",
-    "1"
-   ]
-  },
-  "expected_earned": 4,
-  "expected_status": "correct",
-  "expected_results": [
-   true,
-   true,
-   true,
-   true
-  ]
- },
- {
-  "name": "fields half",
-  "type": "fields",
-  "spec": {
-   "points": 4,
-   "case": "insensitive",
-   "fields": [
-    {
-     "label": "f'",
-     "kind": "text",
-     "points": null,
-     "values": [],
-     "tolerance": 0,
-     "rel_tolerance": null,
-     "accept": [
-      "3x^2-3",
-      "3x^2 - 3"
-     ],
-     "patterns": []
+  {
+    "name": "multi a-o-n partial gets zero",
+    "type": "multi",
+    "question": "## Pick every right option. {type=multi id=q points=2 partial=false}\n\n- [x] Option 0\n- [ ] Option 1\n- [x] Option 2\n- [ ] Option 3",
+    "answer": {
+      "choices": [
+        0
+      ]
     },
-    {
-     "label": "count",
-     "kind": "numeric",
-     "points": null,
-     "values": [
-      2
-     ],
-     "tolerance": 0,
-     "rel_tolerance": null,
-     "accept": [],
-     "patterns": []
+    "expected_earned": 0,
+    "expected_status": "incorrect"
+  },
+  {
+    "name": "multi a-o-n extra gets zero",
+    "type": "multi",
+    "question": "## Pick every right option. {type=multi id=q points=2 partial=false}\n\n- [x] Option 0\n- [ ] Option 1\n- [x] Option 2\n- [ ] Option 3",
+    "answer": {
+      "choices": [
+        0,
+        1,
+        2
+      ]
     },
-    {
-     "label": "max",
-     "kind": "numeric",
-     "points": null,
-     "values": [
-      -1
-     ],
-     "tolerance": 0,
-     "rel_tolerance": null,
-     "accept": [],
-     "patterns": []
+    "expected_earned": 0,
+    "expected_status": "incorrect"
+  },
+  {
+    "name": "multi single correct set",
+    "type": "multi",
+    "question": "## Pick every right option. {type=multi id=q}\n\n- [ ] Option 0\n- [x] Option 1\n- [ ] Option 2\n- [ ] Option 3",
+    "answer": {
+      "choices": [
+        1
+      ]
     },
-    {
-     "label": "min",
-     "kind": "numeric",
-     "points": null,
-     "values": [
-      1
-     ],
-     "tolerance": 0,
-     "rel_tolerance": null,
-     "accept": [],
-     "patterns": []
-    }
-   ]
+    "expected_earned": 1,
+    "expected_status": "correct"
   },
-  "response": {
-   "fields": [
-    "3x^2-3",
-    "2",
-    "1",
-    "-1"
-   ]
-  },
-  "expected_earned": 2,
-  "expected_status": "partial",
-  "expected_results": [
-   true,
-   true,
-   false,
-   false
-  ]
- },
- {
-  "name": "fields none right",
-  "type": "fields",
-  "spec": {
-   "points": 4,
-   "case": "insensitive",
-   "fields": [
-    {
-     "label": "f'",
-     "kind": "text",
-     "points": null,
-     "values": [],
-     "tolerance": 0,
-     "rel_tolerance": null,
-     "accept": [
-      "3x^2-3",
-      "3x^2 - 3"
-     ],
-     "patterns": []
+  {
+    "name": "tf true right",
+    "type": "truefalse",
+    "question": "## The statement is true. {type=truefalse id=q}\n\n```answer\nvalue: true\n```",
+    "answer": {
+      "value": true
     },
-    {
-     "label": "count",
-     "kind": "numeric",
-     "points": null,
-     "values": [
-      2
-     ],
-     "tolerance": 0,
-     "rel_tolerance": null,
-     "accept": [],
-     "patterns": []
+    "expected_earned": 1,
+    "expected_status": "correct"
+  },
+  {
+    "name": "tf false right",
+    "type": "truefalse",
+    "question": "## The statement is true. {type=truefalse id=q}\n\n```answer\nvalue: false\n```",
+    "answer": {
+      "value": false
     },
-    {
-     "label": "max",
-     "kind": "numeric",
-     "points": null,
-     "values": [
-      -1
-     ],
-     "tolerance": 0,
-     "rel_tolerance": null,
-     "accept": [],
-     "patterns": []
+    "expected_earned": 1,
+    "expected_status": "correct"
+  },
+  {
+    "name": "tf wrong",
+    "type": "truefalse",
+    "question": "## The statement is true. {type=truefalse id=q}\n\n```answer\nvalue: true\n```",
+    "answer": {
+      "value": false
     },
-    {
-     "label": "min",
-     "kind": "numeric",
-     "points": null,
-     "values": [
-      1
-     ],
-     "tolerance": 0,
-     "rel_tolerance": null,
-     "accept": [],
-     "patterns": []
-    }
-   ]
+    "expected_earned": 0,
+    "expected_status": "incorrect"
   },
-  "response": {
-   "fields": [
-    "x",
-    "9",
-    "9",
-    "9"
-   ]
+  {
+    "name": "tf unanswered",
+    "type": "truefalse",
+    "question": "## The statement is true. {type=truefalse id=q}\n\n```answer\nvalue: true\n```",
+    "answer": null,
+    "expected_earned": 0,
+    "expected_status": "unanswered"
   },
-  "expected_earned": 0,
-  "expected_status": "incorrect",
-  "expected_results": [
-   false,
-   false,
-   false,
-   false
-  ]
- },
- {
-  "name": "fields all empty",
-  "type": "fields",
-  "spec": {
-   "points": 4,
-   "case": "insensitive",
-   "fields": [
-    {
-     "label": "f'",
-     "kind": "text",
-     "points": null,
-     "values": [],
-     "tolerance": 0,
-     "rel_tolerance": null,
-     "accept": [
-      "3x^2-3",
-      "3x^2 - 3"
-     ],
-     "patterns": []
+  {
+    "name": "tf unanswered null value",
+    "type": "truefalse",
+    "question": "## The statement is true. {type=truefalse id=q}\n\n```answer\nvalue: false\n```",
+    "answer": {
+      "value": null
     },
-    {
-     "label": "count",
-     "kind": "numeric",
-     "points": null,
-     "values": [
-      2
-     ],
-     "tolerance": 0,
-     "rel_tolerance": null,
-     "accept": [],
-     "patterns": []
+    "expected_earned": 0,
+    "expected_status": "unanswered"
+  },
+  {
+    "name": "num exact",
+    "type": "numeric",
+    "question": "## Give the value. {type=numeric id=q}\n\n```answer\nvalue: 0.3333\ntolerance: 0.001\n```",
+    "answer": {
+      "raw": "0.3333"
     },
-    {
-     "label": "max",
-     "kind": "numeric",
-     "points": null,
-     "values": [
-      -1
-     ],
-     "tolerance": 0,
-     "rel_tolerance": null,
-     "accept": [],
-     "patterns": []
+    "expected_earned": 1,
+    "expected_status": "correct"
+  },
+  {
+    "name": "num within tolerance",
+    "type": "numeric",
+    "question": "## Give the value. {type=numeric id=q}\n\n```answer\nvalue: 0.3333\ntolerance: 0.001\n```",
+    "answer": {
+      "raw": "0.3340"
     },
-    {
-     "label": "min",
-     "kind": "numeric",
-     "points": null,
-     "values": [
-      1
-     ],
-     "tolerance": 0,
-     "rel_tolerance": null,
-     "accept": [],
-     "patterns": []
-    }
-   ]
+    "expected_earned": 1,
+    "expected_status": "correct"
   },
-  "response": {
-   "fields": [
-    "",
-    "",
-    "",
-    ""
-   ]
-  },
-  "expected_earned": 0,
-  "expected_status": "unanswered",
-  "expected_results": [
-   false,
-   false,
-   false,
-   false
-  ]
- },
- {
-  "name": "fields null",
-  "type": "fields",
-  "spec": {
-   "points": 4,
-   "case": "insensitive",
-   "fields": [
-    {
-     "label": "f'",
-     "kind": "text",
-     "points": null,
-     "values": [],
-     "tolerance": 0,
-     "rel_tolerance": null,
-     "accept": [
-      "3x^2-3",
-      "3x^2 - 3"
-     ],
-     "patterns": []
+  {
+    "name": "num boundary inclusive",
+    "type": "numeric",
+    "question": "## Give the value. {type=numeric id=q}\n\n```answer\nvalue: 0.3333\ntolerance: 0.001\n```",
+    "answer": {
+      "raw": "0.3343"
     },
-    {
-     "label": "count",
-     "kind": "numeric",
-     "points": null,
-     "values": [
-      2
-     ],
-     "tolerance": 0,
-     "rel_tolerance": null,
-     "accept": [],
-     "patterns": []
+    "expected_earned": 1,
+    "expected_status": "correct"
+  },
+  {
+    "name": "num outside tolerance",
+    "type": "numeric",
+    "question": "## Give the value. {type=numeric id=q}\n\n```answer\nvalue: 0.3333\ntolerance: 0.001\n```",
+    "answer": {
+      "raw": "0.335"
     },
-    {
-     "label": "max",
-     "kind": "numeric",
-     "points": null,
-     "values": [
-      -1
-     ],
-     "tolerance": 0,
-     "rel_tolerance": null,
-     "accept": [],
-     "patterns": []
+    "expected_earned": 0,
+    "expected_status": "incorrect"
+  },
+  {
+    "name": "num fraction",
+    "type": "numeric",
+    "question": "## Give the value. {type=numeric id=q}\n\n```answer\nvalue: 0.3333\ntolerance: 0.001\n```",
+    "answer": {
+      "raw": "1/3"
     },
-    {
-     "label": "min",
-     "kind": "numeric",
-     "points": null,
-     "values": [
-      1
-     ],
-     "tolerance": 0,
-     "rel_tolerance": null,
-     "accept": [],
-     "patterns": []
-    }
-   ]
+    "expected_earned": 1,
+    "expected_status": "correct"
   },
-  "response": null,
-  "expected_earned": 0,
-  "expected_status": "unanswered",
-  "expected_results": [
-   false,
-   false,
-   false,
-   false
-  ]
- },
- {
-  "name": "fields one filled",
-  "type": "fields",
-  "spec": {
-   "points": 4,
-   "case": "insensitive",
-   "fields": [
-    {
-     "label": "f'",
-     "kind": "text",
-     "points": null,
-     "values": [],
-     "tolerance": 0,
-     "rel_tolerance": null,
-     "accept": [
-      "3x^2-3",
-      "3x^2 - 3"
-     ],
-     "patterns": []
+  {
+    "name": "num fraction spaces",
+    "type": "numeric",
+    "question": "## Give the value. {type=numeric id=q}\n\n```answer\nvalue: 0.3333\ntolerance: 0.001\n```",
+    "answer": {
+      "raw": " 1 / 3 "
     },
-    {
-     "label": "count",
-     "kind": "numeric",
-     "points": null,
-     "values": [
-      2
-     ],
-     "tolerance": 0,
-     "rel_tolerance": null,
-     "accept": [],
-     "patterns": []
+    "expected_earned": 1,
+    "expected_status": "correct"
+  },
+  {
+    "name": "num fraction zero denominator",
+    "type": "numeric",
+    "question": "## Give the value. {type=numeric id=q}\n\n```answer\nvalue: 0.3333\ntolerance: 0.001\n```",
+    "answer": {
+      "raw": "1/0"
     },
-    {
-     "label": "max",
-     "kind": "numeric",
-     "points": null,
-     "values": [
-      -1
-     ],
-     "tolerance": 0,
-     "rel_tolerance": null,
-     "accept": [],
-     "patterns": []
+    "expected_earned": 0,
+    "expected_status": "incorrect"
+  },
+  {
+    "name": "num scientific",
+    "type": "numeric",
+    "question": "## Give the value. {type=numeric id=q}\n\n```answer\nvalue: 0.001\n```",
+    "answer": {
+      "raw": "1e-3"
     },
-    {
-     "label": "min",
-     "kind": "numeric",
-     "points": null,
-     "values": [
-      1
-     ],
-     "tolerance": 0,
-     "rel_tolerance": null,
-     "accept": [],
-     "patterns": []
-    }
-   ]
+    "expected_earned": 1,
+    "expected_status": "correct"
   },
-  "response": {
-   "fields": [
-    "",
-    "2"
-   ]
-  },
-  "expected_earned": 1,
-  "expected_status": "partial",
-  "expected_results": [
-   false,
-   true,
-   false,
-   false
-  ]
- },
- {
-  "name": "fields ungraded ignored",
-  "type": "fields",
-  "spec": {
-   "points": 3,
-   "case": "insensitive",
-   "fields": [
-    {
-     "label": "a",
-     "kind": "numeric",
-     "points": null,
-     "values": [
-      1
-     ],
-     "tolerance": 0,
-     "rel_tolerance": null,
-     "accept": [],
-     "patterns": []
+  {
+    "name": "num scientific capital",
+    "type": "numeric",
+    "question": "## Give the value. {type=numeric id=q}\n\n```answer\nvalue: 1500\n```",
+    "answer": {
+      "raw": "1.5E3"
     },
-    {
-     "label": "free text",
-     "kind": "none",
-     "points": null,
-     "values": [],
-     "tolerance": 0,
-     "rel_tolerance": null,
-     "accept": [],
-     "patterns": []
+    "expected_earned": 1,
+    "expected_status": "correct"
+  },
+  {
+    "name": "num integer",
+    "type": "numeric",
+    "question": "## Give the value. {type=numeric id=q}\n\n```answer\nvalue: 42\n```",
+    "answer": {
+      "raw": "42"
     },
-    {
-     "label": "b",
-     "kind": "text",
-     "points": null,
-     "values": [],
-     "tolerance": 0,
-     "rel_tolerance": null,
-     "accept": [
-      "yes"
-     ],
-     "patterns": []
-    }
-   ]
+    "expected_earned": 1,
+    "expected_status": "correct"
   },
-  "response": {
-   "fields": [
-    "1",
-    "anything",
-    "yes"
-   ]
-  },
-  "expected_earned": 3,
-  "expected_status": "correct",
-  "expected_results": [
-   true,
-   null,
-   true
-  ]
- },
- {
-  "name": "fields ungraded half",
-  "type": "fields",
-  "spec": {
-   "points": 3,
-   "case": "insensitive",
-   "fields": [
-    {
-     "label": "a",
-     "kind": "numeric",
-     "points": null,
-     "values": [
-      1
-     ],
-     "tolerance": 0,
-     "rel_tolerance": null,
-     "accept": [],
-     "patterns": []
+  {
+    "name": "num negative",
+    "type": "numeric",
+    "question": "## Give the value. {type=numeric id=q}\n\n```answer\nvalue: -1\n```",
+    "answer": {
+      "raw": "-1"
     },
-    {
-     "label": "free text",
-     "kind": "none",
-     "points": null,
-     "values": [],
-     "tolerance": 0,
-     "rel_tolerance": null,
-     "accept": [],
-     "patterns": []
+    "expected_earned": 1,
+    "expected_status": "correct"
+  },
+  {
+    "name": "num unicode minus",
+    "type": "numeric",
+    "question": "## Give the value. {type=numeric id=q}\n\n```answer\nvalue: -1\n```",
+    "answer": {
+      "raw": "−1"
     },
-    {
-     "label": "b",
-     "kind": "text",
-     "points": null,
-     "values": [],
-     "tolerance": 0,
-     "rel_tolerance": null,
-     "accept": [
-      "yes"
-     ],
-     "patterns": []
-    }
-   ]
+    "expected_earned": 1,
+    "expected_status": "correct"
   },
-  "response": {
-   "fields": [
-    "1",
-    "anything",
-    "no"
-   ]
-  },
-  "expected_earned": 1.5,
-  "expected_status": "partial",
-  "expected_results": [
-   true,
-   null,
-   false
-  ]
- },
- {
-  "name": "fields only ungraded answered is not scored",
-  "type": "fields",
-  "spec": {
-   "points": 3,
-   "case": "insensitive",
-   "fields": [
-    {
-     "label": "a",
-     "kind": "numeric",
-     "points": null,
-     "values": [
-      1
-     ],
-     "tolerance": 0,
-     "rel_tolerance": null,
-     "accept": [],
-     "patterns": []
+  {
+    "name": "num leading plus",
+    "type": "numeric",
+    "question": "## Give the value. {type=numeric id=q}\n\n```answer\nvalue: 5\n```",
+    "answer": {
+      "raw": "+5"
     },
-    {
-     "label": "free text",
-     "kind": "none",
-     "points": null,
-     "values": [],
-     "tolerance": 0,
-     "rel_tolerance": null,
-     "accept": [],
-     "patterns": []
+    "expected_earned": 1,
+    "expected_status": "correct"
+  },
+  {
+    "name": "num leading dot",
+    "type": "numeric",
+    "question": "## Give the value. {type=numeric id=q}\n\n```answer\nvalue: 0.5\n```",
+    "answer": {
+      "raw": ".5"
     },
-    {
-     "label": "b",
-     "kind": "text",
-     "points": null,
-     "values": [],
-     "tolerance": 0,
-     "rel_tolerance": null,
-     "accept": [
-      "yes"
-     ],
-     "patterns": []
-    }
-   ]
+    "expected_earned": 1,
+    "expected_status": "correct"
   },
-  "response": {
-   "fields": [
-    "",
-    "essay",
-    ""
-   ]
-  },
-  "expected_earned": 0,
-  "expected_status": "unanswered",
-  "expected_results": [
-   false,
-   null,
-   false
-  ]
- },
- {
-  "name": "fields explicit points big only",
-  "type": "fields",
-  "spec": {
-   "points": 4,
-   "case": "insensitive",
-   "fields": [
-    {
-     "label": "big",
-     "kind": "numeric",
-     "points": 3,
-     "values": [
-      1
-     ],
-     "tolerance": 0,
-     "rel_tolerance": null,
-     "accept": [],
-     "patterns": []
+  {
+    "name": "num comma decimal rejected",
+    "type": "numeric",
+    "question": "## Give the value. {type=numeric id=q}\n\n```answer\nvalue: 3.14\ntolerance: 0.01\n```",
+    "answer": {
+      "raw": "3,14"
     },
-    {
-     "label": "small",
-     "kind": "numeric",
-     "points": null,
-     "values": [
-      2
-     ],
-     "tolerance": 0,
-     "rel_tolerance": null,
-     "accept": [],
-     "patterns": []
-    }
-   ]
+    "expected_earned": 0,
+    "expected_status": "incorrect"
   },
-  "response": {
-   "fields": [
-    "1",
-    "0"
-   ]
-  },
-  "expected_earned": 3,
-  "expected_status": "partial",
-  "expected_results": [
-   true,
-   false
-  ]
- },
- {
-  "name": "fields explicit points small only",
-  "type": "fields",
-  "spec": {
-   "points": 4,
-   "case": "insensitive",
-   "fields": [
-    {
-     "label": "big",
-     "kind": "numeric",
-     "points": 3,
-     "values": [
-      1
-     ],
-     "tolerance": 0,
-     "rel_tolerance": null,
-     "accept": [],
-     "patterns": []
+  {
+    "name": "num garbage",
+    "type": "numeric",
+    "question": "## Give the value. {type=numeric id=q}\n\n```answer\nvalue: 0.3333\ntolerance: 0.001\n```",
+    "answer": {
+      "raw": "abc"
     },
-    {
-     "label": "small",
-     "kind": "numeric",
-     "points": null,
-     "values": [
-      2
-     ],
-     "tolerance": 0,
-     "rel_tolerance": null,
-     "accept": [],
-     "patterns": []
-    }
-   ]
-  },
-  "response": {
-   "fields": [
-    "0",
-    "2"
-   ]
-  },
-  "expected_earned": 1,
-  "expected_status": "partial",
-  "expected_results": [
-   false,
-   true
-  ]
- },
- {
-  "name": "fields numeric tolerance",
-  "type": "fields",
-  "spec": {
-   "points": 1,
-   "case": "insensitive",
-   "fields": [
-    {
-     "label": "x",
-     "kind": "numeric",
-     "points": null,
-     "values": [
-      10
-     ],
-     "tolerance": 0.5,
-     "rel_tolerance": null,
-     "accept": [],
-     "patterns": []
-    }
-   ]
-  },
-  "response": {
-   "fields": [
-    "10.4"
-   ]
-  },
-  "expected_earned": 1,
-  "expected_status": "correct",
-  "expected_results": [
-   true
-  ]
- },
- {
-  "name": "fields text pattern",
-  "type": "fields",
-  "spec": {
-   "points": 1,
-   "case": "insensitive",
-   "fields": [
-    {
-     "label": "x",
-     "kind": "text",
-     "points": null,
-     "values": [],
-     "tolerance": 0,
-     "rel_tolerance": null,
-     "accept": [],
-     "patterns": [
-      "a+b"
-     ]
-    }
-   ]
-  },
-  "response": {
-   "fields": [
-    "AAB"
-   ]
-  },
-  "expected_earned": 1,
-  "expected_status": "correct",
-  "expected_results": [
-   true
-  ]
- },
- {
-  "name": "fields all ungraded",
-  "type": "fields",
-  "spec": {
-   "points": 2,
-   "case": "insensitive",
-   "fields": [
-    {
-     "label": "x",
-     "kind": "none",
-     "points": null,
-     "values": [],
-     "tolerance": 0,
-     "rel_tolerance": null,
-     "accept": [],
-     "patterns": []
-    }
-   ]
-  },
-  "response": {
-   "fields": [
-    "notes"
-   ]
-  },
-  "expected_earned": null,
-  "expected_status": "pending"
- },
- {
-  "name": "essay answered is pending",
-  "type": "essay",
-  "spec": {
-   "points": 10,
-   "case": "insensitive"
-  },
-  "response": {
-   "text": "Some words here.",
-   "word_count": 3
-  },
-  "expected_earned": null,
-  "expected_status": "pending"
- },
- {
-  "name": "essay empty",
-  "type": "essay",
-  "spec": {
-   "points": 10,
-   "case": "insensitive"
-  },
-  "response": {
-   "text": "  "
-  },
-  "expected_earned": null,
-  "expected_status": "unanswered"
- },
- {
-  "name": "essay null",
-  "type": "essay",
-  "spec": {
-   "points": 10,
-   "case": "insensitive"
-  },
-  "response": null,
-  "expected_earned": null,
-  "expected_status": "unanswered"
- },
- {
-  "name": "code answered is pending",
-  "type": "code",
-  "spec": {
-   "points": 3,
-   "case": "insensitive"
-  },
-  "response": {
-   "language": "rust",
-   "code": "fn f() {}"
-  },
-  "expected_earned": null,
-  "expected_status": "pending"
- },
- {
-  "name": "code empty",
-  "type": "code",
-  "spec": {
-   "points": 3,
-   "case": "insensitive"
-  },
-  "response": {
-   "language": "rust",
-   "code": ""
-  },
-  "expected_earned": null,
-  "expected_status": "unanswered"
- },
- {
-  "name": "code null",
-  "type": "code",
-  "spec": {
-   "points": 3,
-   "case": "insensitive"
-  },
-  "response": null,
-  "expected_earned": null,
-  "expected_status": "unanswered"
- },
- {
-  "name": "ordering exact",
-  "type": "ordering",
-  "spec": {
-   "points": 4,
-   "case": "insensitive",
-   "n": 4
-  },
-  "response": {
-   "order": [
-    0,
-    1,
-    2,
-    3
-   ]
-  },
-  "expected_earned": 4,
-  "expected_status": "correct",
-  "expected_results": [
-   true,
-   true,
-   true,
-   true
-  ]
- },
- {
-  "name": "ordering two swapped",
-  "type": "ordering",
-  "spec": {
-   "points": 4,
-   "case": "insensitive",
-   "n": 4
-  },
-  "response": {
-   "order": [
-    1,
-    0,
-    2,
-    3
-   ]
-  },
-  "expected_earned": 2,
-  "expected_status": "partial",
-  "expected_results": [
-   false,
-   false,
-   true,
-   true
-  ]
- },
- {
-  "name": "ordering reversed even",
-  "type": "ordering",
-  "spec": {
-   "points": 4,
-   "case": "insensitive",
-   "n": 4
-  },
-  "response": {
-   "order": [
-    3,
-    2,
-    1,
-    0
-   ]
-  },
-  "expected_earned": 0,
-  "expected_status": "incorrect",
-  "expected_results": [
-   false,
-   false,
-   false,
-   false
-  ]
- },
- {
-  "name": "ordering reversed odd keeps middle",
-  "type": "ordering",
-  "spec": {
-   "points": 3,
-   "case": "insensitive",
-   "n": 3
-  },
-  "response": {
-   "order": [
-    2,
-    1,
-    0
-   ]
-  },
-  "expected_earned": 1,
-  "expected_status": "partial",
-  "expected_results": [
-   false,
-   true,
-   false
-  ]
- },
- {
-  "name": "ordering a-o-n exact",
-  "type": "ordering",
-  "spec": {
-   "points": 4,
-   "case": "insensitive",
-   "n": 4,
-   "scoring": "all_or_nothing"
-  },
-  "response": {
-   "order": [
-    0,
-    1,
-    2,
-    3
-   ]
-  },
-  "expected_earned": 4,
-  "expected_status": "correct"
- },
- {
-  "name": "ordering a-o-n one wrong gets zero",
-  "type": "ordering",
-  "spec": {
-   "points": 4,
-   "case": "insensitive",
-   "n": 4,
-   "scoring": "all_or_nothing"
-  },
-  "response": {
-   "order": [
-    0,
-    1,
-    3,
-    2
-   ]
-  },
-  "expected_earned": 0,
-  "expected_status": "incorrect"
- },
- {
-  "name": "ordering thirds rounded",
-  "type": "ordering",
-  "spec": {
-   "points": 1,
-   "case": "insensitive",
-   "n": 3
-  },
-  "response": {
-   "order": [
-    0,
-    2,
-    1
-   ]
-  },
-  "expected_earned": 0.33,
-  "expected_status": "partial"
- },
- {
-  "name": "ordering null",
-  "type": "ordering",
-  "spec": {
-   "points": 4,
-   "case": "insensitive",
-   "n": 4
-  },
-  "response": null,
-  "expected_earned": 0,
-  "expected_status": "unanswered"
- },
- {
-  "name": "ordering empty",
-  "type": "ordering",
-  "spec": {
-   "points": 4,
-   "case": "insensitive",
-   "n": 4
-  },
-  "response": {},
-  "expected_earned": 0,
-  "expected_status": "unanswered"
- },
- {
-  "name": "ordering wrong length",
-  "type": "ordering",
-  "spec": {
-   "points": 4,
-   "case": "insensitive",
-   "n": 4
-  },
-  "response": {
-   "order": [
-    0,
-    1
-   ]
-  },
-  "expected_earned": 0,
-  "expected_status": "unanswered"
- },
- {
-  "name": "matching all right",
-  "type": "matching",
-  "spec": {
-   "points": 3,
-   "case": "insensitive",
-   "answer": [
-    0,
-    1,
-    2
-   ]
-  },
-  "response": {
-   "pairs": [
-    0,
-    1,
-    2
-   ]
-  },
-  "expected_earned": 3,
-  "expected_status": "correct",
-  "expected_results": [
-   true,
-   true,
-   true
-  ]
- },
- {
-  "name": "matching one right",
-  "type": "matching",
-  "spec": {
-   "points": 3,
-   "case": "insensitive",
-   "answer": [
-    0,
-    1,
-    2
-   ]
-  },
-  "response": {
-   "pairs": [
-    0,
-    2,
-    1
-   ]
-  },
-  "expected_earned": 1,
-  "expected_status": "partial",
-  "expected_results": [
-   true,
-   false,
-   false
-  ]
- },
- {
-  "name": "matching distractor chosen",
-  "type": "matching",
-  "spec": {
-   "points": 3,
-   "case": "insensitive",
-   "answer": [
-    0,
-    1,
-    2
-   ]
-  },
-  "response": {
-   "pairs": [
-    3,
-    3,
-    3
-   ]
-  },
-  "expected_earned": 0,
-  "expected_status": "incorrect",
-  "expected_results": [
-   false,
-   false,
-   false
-  ]
- },
- {
-  "name": "matching some left empty",
-  "type": "matching",
-  "spec": {
-   "points": 3,
-   "case": "insensitive",
-   "answer": [
-    0,
-    1,
-    2
-   ]
-  },
-  "response": {
-   "pairs": [
-    0,
-    null,
-    null
-   ]
-  },
-  "expected_earned": 1,
-  "expected_status": "partial",
-  "expected_results": [
-   true,
-   false,
-   false
-  ]
- },
- {
-  "name": "matching short list is padded",
-  "type": "matching",
-  "spec": {
-   "points": 3,
-   "case": "insensitive",
-   "answer": [
-    0,
-    1,
-    2
-   ]
-  },
-  "response": {
-   "pairs": [
-    0,
-    1
-   ]
-  },
-  "expected_earned": 2,
-  "expected_status": "partial",
-  "expected_results": [
-   true,
-   true,
-   false
-  ]
- },
- {
-  "name": "matching all empty",
-  "type": "matching",
-  "spec": {
-   "points": 3,
-   "case": "insensitive",
-   "answer": [
-    0,
-    1,
-    2
-   ]
-  },
-  "response": {
-   "pairs": [
-    null,
-    null,
-    null
-   ]
-  },
-  "expected_earned": 0,
-  "expected_status": "unanswered",
-  "expected_results": [
-   false,
-   false,
-   false
-  ]
- },
- {
-  "name": "matching null",
-  "type": "matching",
-  "spec": {
-   "points": 3,
-   "case": "insensitive",
-   "answer": [
-    0,
-    1,
-    2
-   ]
-  },
-  "response": null,
-  "expected_earned": 0,
-  "expected_status": "unanswered"
- },
- {
-  "name": "matching a-o-n all right",
-  "type": "matching",
-  "spec": {
-   "points": 3,
-   "case": "insensitive",
-   "answer": [
-    0,
-    1,
-    2
-   ],
-   "scoring": "all_or_nothing"
-  },
-  "response": {
-   "pairs": [
-    0,
-    1,
-    2
-   ]
-  },
-  "expected_earned": 3,
-  "expected_status": "correct"
- },
- {
-  "name": "matching a-o-n one wrong gets zero",
-  "type": "matching",
-  "spec": {
-   "points": 3,
-   "case": "insensitive",
-   "answer": [
-    0,
-    1,
-    2
-   ],
-   "scoring": "all_or_nothing"
-  },
-  "response": {
-   "pairs": [
-    0,
-    1,
-    3
-   ]
-  },
-  "expected_earned": 0,
-  "expected_status": "incorrect"
- },
- {
-  "name": "matching index zero is an answer",
-  "type": "matching",
-  "spec": {
-   "points": 2,
-   "case": "insensitive",
-   "answer": [
-    0,
-    1
-   ]
-  },
-  "response": {
-   "pairs": [
-    0,
-    0
-   ]
-  },
-  "expected_earned": 1,
-  "expected_status": "partial",
-  "expected_results": [
-   true,
-   false
-  ]
- },
- {
-  "name": "ungraded single picked",
-  "type": "single",
-  "spec": {
-   "points": 0,
-   "case": "insensitive",
-   "ungraded": true
-  },
-  "response": {
-   "choice": 0
-  },
-  "expected_earned": null,
-  "expected_status": "ungraded"
- },
- {
-  "name": "ungraded single unanswered",
-  "type": "single",
-  "spec": {
-   "points": 0,
-   "case": "insensitive",
-   "ungraded": true
-  },
-  "response": null,
-  "expected_earned": null,
-  "expected_status": "unanswered"
- },
- {
-  "name": "ungraded single choice null",
-  "type": "single",
-  "spec": {
-   "points": 0,
-   "case": "insensitive",
-   "ungraded": true
-  },
-  "response": {
-   "choice": null
-  },
-  "expected_earned": null,
-  "expected_status": "unanswered"
- },
- {
-  "name": "ungraded multi picked",
-  "type": "multi",
-  "spec": {
-   "points": 0,
-   "case": "insensitive",
-   "ungraded": true
-  },
-  "response": {
-   "choices": [
-    0,
-    2
-   ]
-  },
-  "expected_earned": null,
-  "expected_status": "ungraded"
- },
- {
-  "name": "ungraded multi empty",
-  "type": "multi",
-  "spec": {
-   "points": 0,
-   "case": "insensitive",
-   "ungraded": true
-  },
-  "response": {
-   "choices": []
-  },
-  "expected_earned": null,
-  "expected_status": "unanswered"
- },
- {
-  "name": "ungraded multi null",
-  "type": "multi",
-  "spec": {
-   "points": 0,
-   "case": "insensitive",
-   "ungraded": true
-  },
-  "response": null,
-  "expected_earned": null,
-  "expected_status": "unanswered"
- },
- {
-  "name": "ungraded short text",
-  "type": "short",
-  "spec": {
-   "points": 0,
-   "case": "insensitive",
-   "ungraded": true
-  },
-  "response": {
-   "text": "anything"
-  },
-  "expected_earned": null,
-  "expected_status": "ungraded"
- },
- {
-  "name": "ungraded short blank",
-  "type": "short",
-  "spec": {
-   "points": 0,
-   "case": "insensitive",
-   "ungraded": true
-  },
-  "response": {
-   "text": "   "
-  },
-  "expected_earned": null,
-  "expected_status": "unanswered"
- },
- {
-  "name": "ungraded short null",
-  "type": "short",
-  "spec": {
-   "points": 0,
-   "case": "insensitive",
-   "ungraded": true
-  },
-  "response": null,
-  "expected_earned": null,
-  "expected_status": "unanswered"
- },
- {
-  "name": "ungraded fields one filled",
-  "type": "fields",
-  "spec": {
-   "points": 0,
-   "case": "insensitive",
-   "ungraded": true,
-   "fields": [
-    {
-     "label": "A",
-     "kind": "none",
-     "points": null,
-     "values": [],
-     "tolerance": 0,
-     "rel_tolerance": null,
-     "accept": [],
-     "patterns": []
+    "expected_earned": 0,
+    "expected_status": "incorrect"
+  },
+  {
+    "name": "num empty",
+    "type": "numeric",
+    "question": "## Give the value. {type=numeric id=q}\n\n```answer\nvalue: 0.3333\ntolerance: 0.001\n```",
+    "answer": {
+      "raw": "  "
     },
-    {
-     "label": "B",
-     "kind": "none",
-     "points": null,
-     "values": [],
-     "tolerance": 0,
-     "rel_tolerance": null,
-     "accept": [],
-     "patterns": []
-    }
-   ]
+    "expected_earned": 0,
+    "expected_status": "unanswered"
   },
-  "response": {
-   "fields": [
-    "",
-    "x"
-   ]
+  {
+    "name": "num null response",
+    "type": "numeric",
+    "question": "## Give the value. {type=numeric id=q}\n\n```answer\nvalue: 0.3333\ntolerance: 0.001\n```",
+    "answer": null,
+    "expected_earned": 0,
+    "expected_status": "unanswered"
   },
-  "expected_earned": null,
-  "expected_status": "ungraded"
- },
- {
-  "name": "ungraded fields all blank",
-  "type": "fields",
-  "spec": {
-   "points": 0,
-   "case": "insensitive",
-   "ungraded": true,
-   "fields": [
-    {
-     "label": "A",
-     "kind": "none",
-     "points": null,
-     "values": [],
-     "tolerance": 0,
-     "rel_tolerance": null,
-     "accept": [],
-     "patterns": []
+  {
+    "name": "num relative within",
+    "type": "numeric",
+    "question": "## Give the value. {type=numeric id=q}\n\n```answer\nvalue: 100\nrel_tolerance: 0.01\n```",
+    "answer": {
+      "raw": "100.9"
     },
-    {
-     "label": "B",
-     "kind": "none",
-     "points": null,
-     "values": [],
-     "tolerance": 0,
-     "rel_tolerance": null,
-     "accept": [],
-     "patterns": []
-    }
-   ]
+    "expected_earned": 1,
+    "expected_status": "correct"
   },
-  "response": {
-   "fields": [
-    "",
-    " "
-   ]
-  },
-  "expected_earned": null,
-  "expected_status": "unanswered"
- },
- {
-  "name": "ungraded fields null",
-  "type": "fields",
-  "spec": {
-   "points": 0,
-   "case": "insensitive",
-   "ungraded": true,
-   "fields": [
-    {
-     "label": "A",
-     "kind": "none",
-     "points": null,
-     "values": [],
-     "tolerance": 0,
-     "rel_tolerance": null,
-     "accept": [],
-     "patterns": []
+  {
+    "name": "num relative outside",
+    "type": "numeric",
+    "question": "## Give the value. {type=numeric id=q}\n\n```answer\nvalue: 100\nrel_tolerance: 0.01\n```",
+    "answer": {
+      "raw": "102"
     },
-    {
-     "label": "B",
-     "kind": "none",
-     "points": null,
-     "values": [],
-     "tolerance": 0,
-     "rel_tolerance": null,
-     "accept": [],
-     "patterns": []
-    }
-   ]
+    "expected_earned": 0,
+    "expected_status": "incorrect"
   },
-  "response": null,
-  "expected_earned": null,
-  "expected_status": "unanswered"
- },
- {
-  "name": "ungraded essay text",
-  "type": "essay",
-  "spec": {
-   "points": 0,
-   "case": "insensitive",
-   "ungraded": true
+  {
+    "name": "num relative negative target",
+    "type": "numeric",
+    "question": "## Give the value. {type=numeric id=q}\n\n```answer\nvalue: -200\nrel_tolerance: 0.05\n```",
+    "answer": {
+      "raw": "-195"
+    },
+    "expected_earned": 1,
+    "expected_status": "correct"
   },
-  "response": {
-   "text": "my view",
-   "word_count": 2
+  {
+    "name": "num several values second",
+    "type": "numeric",
+    "question": "## Give the value. {type=numeric id=q}\n\n```answer\nvalues: [2, -2]\n```",
+    "answer": {
+      "raw": "-2"
+    },
+    "expected_earned": 1,
+    "expected_status": "correct"
   },
-  "expected_earned": null,
-  "expected_status": "ungraded"
- },
- {
-  "name": "ungraded essay blank",
-  "type": "essay",
-  "spec": {
-   "points": 0,
-   "case": "insensitive",
-   "ungraded": true
+  {
+    "name": "num zero tolerance wrong",
+    "type": "numeric",
+    "question": "## Give the value. {type=numeric id=q}\n\n```answer\nvalue: 2\n```",
+    "answer": {
+      "raw": "2.0001"
+    },
+    "expected_earned": 0,
+    "expected_status": "incorrect"
   },
-  "response": {
-   "text": ""
+  {
+    "name": "short exact",
+    "type": "short",
+    "question": "## Name it. {type=short id=q}\n\n```answer\naccept: [\"3\"]\n```",
+    "answer": {
+      "text": "3"
+    },
+    "expected_earned": 1,
+    "expected_status": "correct"
   },
-  "expected_earned": null,
-  "expected_status": "unanswered"
- },
- {
-  "name": "ungraded essay null",
-  "type": "essay",
-  "spec": {
-   "points": 0,
-   "case": "insensitive",
-   "ungraded": true
+  {
+    "name": "short trims",
+    "type": "short",
+    "question": "## Name it. {type=short id=q}\n\n```answer\naccept: [\"3\"]\n```",
+    "answer": {
+      "text": "  3  "
+    },
+    "expected_earned": 1,
+    "expected_status": "correct"
   },
-  "response": null,
-  "expected_earned": null,
-  "expected_status": "unanswered"
- },
- {
-  "name": "ungraded ordering ranked",
-  "type": "ordering",
-  "spec": {
-   "points": 0,
-   "case": "insensitive",
-   "ungraded": true,
-   "n": 3
+  {
+    "name": "short wrong",
+    "type": "short",
+    "question": "## Name it. {type=short id=q}\n\n```answer\naccept: [\"3\"]\n```",
+    "answer": {
+      "text": "4"
+    },
+    "expected_earned": 0,
+    "expected_status": "incorrect"
   },
-  "response": {
-   "order": [
-    2,
-    0,
-    1
-   ]
+  {
+    "name": "short empty",
+    "type": "short",
+    "question": "## Name it. {type=short id=q}\n\n```answer\naccept: [\"3\"]\n```",
+    "answer": {
+      "text": ""
+    },
+    "expected_earned": 0,
+    "expected_status": "unanswered"
   },
-  "expected_earned": null,
-  "expected_status": "ungraded"
- },
- {
-  "name": "ungraded ordering written order",
-  "type": "ordering",
-  "spec": {
-   "points": 0,
-   "case": "insensitive",
-   "ungraded": true,
-   "n": 3
+  {
+    "name": "short whitespace only",
+    "type": "short",
+    "question": "## Name it. {type=short id=q}\n\n```answer\naccept: [\"3\"]\n```",
+    "answer": {
+      "text": "   "
+    },
+    "expected_earned": 0,
+    "expected_status": "unanswered"
   },
-  "response": {
-   "order": [
-    0,
-    1,
-    2
-   ]
+  {
+    "name": "short null",
+    "type": "short",
+    "question": "## Name it. {type=short id=q}\n\n```answer\naccept: [\"3\"]\n```",
+    "answer": null,
+    "expected_earned": 0,
+    "expected_status": "unanswered"
   },
-  "expected_earned": null,
-  "expected_status": "ungraded"
- },
- {
-  "name": "ungraded ordering wrong length",
-  "type": "ordering",
-  "spec": {
-   "points": 0,
-   "case": "insensitive",
-   "ungraded": true,
-   "n": 3
+  {
+    "name": "short case insensitive",
+    "type": "short",
+    "question": "## Name it. {type=short id=q}\n\n```answer\naccept: [\"Hello World\"]\n```",
+    "answer": {
+      "text": "hello WORLD"
+    },
+    "expected_earned": 1,
+    "expected_status": "correct"
   },
-  "response": {
-   "order": [
-    0,
-    1
-   ]
+  {
+    "name": "short case sensitive wrong",
+    "type": "short",
+    "question": "## Name it. {type=short id=q case=sensitive}\n\n```answer\naccept: [\"Hello\"]\n```",
+    "answer": {
+      "text": "hello"
+    },
+    "expected_earned": 0,
+    "expected_status": "incorrect"
   },
-  "expected_earned": null,
-  "expected_status": "unanswered"
- },
- {
-  "name": "ungraded ordering null",
-  "type": "ordering",
-  "spec": {
-   "points": 0,
-   "case": "insensitive",
-   "ungraded": true,
-   "n": 3
+  {
+    "name": "short case sensitive right",
+    "type": "short",
+    "question": "## Name it. {type=short id=q case=sensitive}\n\n```answer\naccept: [\"Hello\"]\n```",
+    "answer": {
+      "text": "Hello"
+    },
+    "expected_earned": 1,
+    "expected_status": "correct"
   },
-  "response": null,
-  "expected_earned": null,
-  "expected_status": "unanswered"
- },
- {
-  "name": "scale answered",
-  "type": "scale",
-  "spec": {
-   "points": 0,
-   "case": "insensitive",
-   "min": 1,
-   "max": 5,
-   "labels": {}
+  {
+    "name": "short collapses whitespace",
+    "type": "short",
+    "question": "## Name it. {type=short id=q}\n\n```answer\naccept: [\"a b c\"]\n```",
+    "answer": {
+      "text": "a   b\t c"
+    },
+    "expected_earned": 1,
+    "expected_status": "correct"
   },
-  "response": {
-   "value": 4
+  {
+    "name": "short second accept",
+    "type": "short",
+    "question": "## Name it. {type=short id=q}\n\n```answer\naccept: [\"x\",\"y\"]\n```",
+    "answer": {
+      "text": "y"
+    },
+    "expected_earned": 1,
+    "expected_status": "correct"
   },
-  "expected_earned": null,
-  "expected_status": "ungraded"
- },
- {
-  "name": "scale at the low end",
-  "type": "scale",
-  "spec": {
-   "points": 0,
-   "case": "insensitive",
-   "min": 1,
-   "max": 5,
-   "labels": {}
+  {
+    "name": "short pattern full match",
+    "type": "short",
+    "question": "## Name it. {type=short id=q}\n\n```answer\npatterns: [\"^3(\\\\.0)?$\"]\n```",
+    "answer": {
+      "text": "3.0"
+    },
+    "expected_earned": 1,
+    "expected_status": "correct"
   },
-  "response": {
-   "value": 1
+  {
+    "name": "short pattern must be full",
+    "type": "short",
+    "question": "## Name it. {type=short id=q}\n\n```answer\npatterns: [\"3\"]\n```",
+    "answer": {
+      "text": "33"
+    },
+    "expected_earned": 0,
+    "expected_status": "incorrect"
   },
-  "expected_earned": null,
-  "expected_status": "ungraded"
- },
- {
-  "name": "scale zero is an answer",
-  "type": "scale",
-  "spec": {
-   "points": 0,
-   "case": "insensitive",
-   "min": 0,
-   "max": 5,
-   "labels": {}
+  {
+    "name": "short pattern case sensitive",
+    "type": "short",
+    "question": "## Name it. {type=short id=q case=sensitive}\n\n```answer\npatterns: [\"A+\"]\n```",
+    "answer": {
+      "text": "aaa"
+    },
+    "expected_earned": 0,
+    "expected_status": "incorrect"
   },
-  "response": {
-   "value": 0
+  {
+    "name": "short pattern case insensitive",
+    "type": "short",
+    "question": "## Name it. {type=short id=q}\n\n```answer\npatterns: [\"A+\"]\n```",
+    "answer": {
+      "text": "aaa"
+    },
+    "expected_earned": 1,
+    "expected_status": "correct"
   },
-  "expected_earned": null,
-  "expected_status": "ungraded"
- },
- {
-  "name": "scale unanswered",
-  "type": "scale",
-  "spec": {
-   "points": 0,
-   "case": "insensitive",
-   "min": 1,
-   "max": 5,
-   "labels": {}
+  {
+    "name": "short pattern digits ascii",
+    "type": "short",
+    "question": "## Name it. {type=short id=q}\n\n```answer\npatterns: [\"\\\\d+\"]\n```",
+    "answer": {
+      "text": "٣"
+    },
+    "expected_earned": 0,
+    "expected_status": "incorrect"
   },
-  "response": null,
-  "expected_earned": null,
-  "expected_status": "unanswered"
- },
- {
-  "name": "scale value null",
-  "type": "scale",
-  "spec": {
-   "points": 0,
-   "case": "insensitive",
-   "min": 1,
-   "max": 5,
-   "labels": {}
+  {
+    "name": "short unicode accept",
+    "type": "short",
+    "question": "## Name it. {type=short id=q}\n\n```answer\naccept: [\"Na⁺\"]\n```",
+    "answer": {
+      "text": "na⁺"
+    },
+    "expected_earned": 1,
+    "expected_status": "correct"
   },
-  "response": {
-   "value": null
+  {
+    "name": "short points kept",
+    "type": "short",
+    "question": "## Name it. {type=short id=q points=4}\n\n```answer\naccept: [\"ok\"]\n```",
+    "answer": {
+      "text": "ok"
+    },
+    "expected_earned": 4,
+    "expected_status": "correct"
   },
-  "expected_earned": null,
-  "expected_status": "unanswered"
- },
- {
-  "name": "scale without ungraded flag",
-  "type": "scale",
-  "spec": {
-   "points": 0,
-   "case": "insensitive",
-   "min": 1,
-   "max": 5,
-   "labels": {}
+  {
+    "name": "blanks all right",
+    "type": "blanks",
+    "question": "## Complete the sentence. {type=blanks id=q points=2}\n\nFill in [[cos x|cos(x)]] and [[e^x|exp(x)]].",
+    "answer": {
+      "blanks": [
+        "cos x",
+        "e^x"
+      ]
+    },
+    "expected_earned": 2,
+    "expected_status": "correct",
+    "expected_results": [
+      true,
+      true
+    ]
   },
-  "response": {
-   "value": 3
+  {
+    "name": "blanks variant",
+    "type": "blanks",
+    "question": "## Complete the sentence. {type=blanks id=q points=2}\n\nFill in [[cos x|cos(x)]] and [[e^x|exp(x)]].",
+    "answer": {
+      "blanks": [
+        "cos(x)",
+        "EXP(x)"
+      ]
+    },
+    "expected_earned": 2,
+    "expected_status": "correct",
+    "expected_results": [
+      true,
+      true
+    ]
   },
-  "expected_earned": null,
-  "expected_status": "ungraded"
- },
- {
-  "name": "single right with follow-up text",
-  "type": "single",
-  "spec": {
-   "points": 1,
-   "case": "insensitive",
-   "correct": 1
+  {
+    "name": "blanks one of two",
+    "type": "blanks",
+    "question": "## Complete the sentence. {type=blanks id=q points=2}\n\nFill in [[cos x|cos(x)]] and [[e^x|exp(x)]].",
+    "answer": {
+      "blanks": [
+        "cos x",
+        "x"
+      ]
+    },
+    "expected_earned": 1,
+    "expected_status": "partial",
+    "expected_results": [
+      true,
+      false
+    ]
   },
-  "response": {
-   "choice": 1,
-   "inputs": {
-    "1": "a hackathon"
-   }
+  {
+    "name": "blanks none right",
+    "type": "blanks",
+    "question": "## Complete the sentence. {type=blanks id=q points=2}\n\nFill in [[cos x|cos(x)]] and [[e^x|exp(x)]].",
+    "answer": {
+      "blanks": [
+        "a",
+        "b"
+      ]
+    },
+    "expected_earned": 0,
+    "expected_status": "incorrect",
+    "expected_results": [
+      false,
+      false
+    ]
   },
-  "expected_earned": 1,
-  "expected_status": "correct"
- },
- {
-  "name": "single wrong with follow-up text",
-  "type": "single",
-  "spec": {
-   "points": 1,
-   "case": "insensitive",
-   "correct": 1
+  {
+    "name": "blanks all empty",
+    "type": "blanks",
+    "question": "## Complete the sentence. {type=blanks id=q points=2}\n\nFill in [[cos x|cos(x)]] and [[e^x|exp(x)]].",
+    "answer": {
+      "blanks": [
+        "",
+        ""
+      ]
+    },
+    "expected_earned": 0,
+    "expected_status": "unanswered",
+    "expected_results": [
+      false,
+      false
+    ]
   },
-  "response": {
-   "choice": 0,
-   "inputs": {
-    "0": "because"
-   }
+  {
+    "name": "blanks null",
+    "type": "blanks",
+    "question": "## Complete the sentence. {type=blanks id=q points=2}\n\nFill in [[cos x|cos(x)]] and [[e^x|exp(x)]].",
+    "answer": null,
+    "expected_earned": 0,
+    "expected_status": "unanswered",
+    "expected_results": [
+      false,
+      false
+    ]
   },
-  "expected_earned": 0,
-  "expected_status": "incorrect"
- },
- {
-  "name": "single right without follow-up text",
-  "type": "single",
-  "spec": {
-   "points": 1,
-   "case": "insensitive",
-   "correct": 1
+  {
+    "name": "blanks short list",
+    "type": "blanks",
+    "question": "## Complete the sentence. {type=blanks id=q points=2}\n\nFill in [[cos x|cos(x)]] and [[e^x|exp(x)]].",
+    "answer": {
+      "blanks": [
+        "cos x"
+      ]
+    },
+    "expected_earned": 1,
+    "expected_status": "partial",
+    "expected_results": [
+      true,
+      false
+    ]
   },
-  "response": {
-   "choice": 1
+  {
+    "name": "blanks split in thirds",
+    "type": "blanks",
+    "question": "## Complete the sentence. {type=blanks id=q}\n\nFill in [[a]] and [[a]] and [[a]].",
+    "answer": {
+      "blanks": [
+        "a",
+        "x",
+        "x"
+      ]
+    },
+    "expected_earned": 0.33,
+    "expected_status": "partial",
+    "expected_results": [
+      true,
+      false,
+      false
+    ]
   },
-  "expected_earned": 1,
-  "expected_status": "correct"
- },
- {
-  "name": "single hidden text for an unselected choice",
-  "type": "single",
-  "spec": {
-   "points": 1,
-   "case": "insensitive",
-   "correct": 1
+  {
+    "name": "blanks case sensitive",
+    "type": "blanks",
+    "question": "## Complete the sentence. {type=blanks id=q case=sensitive}\n\nFill in [[mut]].",
+    "answer": {
+      "blanks": [
+        "Mut"
+      ]
+    },
+    "expected_earned": 0,
+    "expected_status": "incorrect",
+    "expected_results": [
+      false
+    ]
   },
-  "response": {
-   "choice": 1,
-   "inputs": {
-    "0": "left over"
-   }
+  {
+    "name": "blanks numeric within",
+    "type": "blanks",
+    "question": "## Complete the sentence. {type=blanks id=q}\n\nFill in [[=0.5±0.01]].",
+    "answer": {
+      "blanks": [
+        "0.505"
+      ]
+    },
+    "expected_earned": 1,
+    "expected_status": "correct",
+    "expected_results": [
+      true
+    ]
   },
-  "expected_earned": 1,
-  "expected_status": "correct"
- },
- {
-  "name": "single text without a choice is unanswered",
-  "type": "single",
-  "spec": {
-   "points": 1,
-   "case": "insensitive",
-   "correct": 1
+  {
+    "name": "blanks numeric fraction",
+    "type": "blanks",
+    "question": "## Complete the sentence. {type=blanks id=q}\n\nFill in [[=0.5±0.01]].",
+    "answer": {
+      "blanks": [
+        "1/2"
+      ]
+    },
+    "expected_earned": 1,
+    "expected_status": "correct",
+    "expected_results": [
+      true
+    ]
   },
-  "response": {
-   "choice": null,
-   "inputs": {
-    "2": "typed"
-   }
+  {
+    "name": "blanks numeric outside",
+    "type": "blanks",
+    "question": "## Complete the sentence. {type=blanks id=q}\n\nFill in [[=0.5±0.01]].",
+    "answer": {
+      "blanks": [
+        "0.6"
+      ]
+    },
+    "expected_earned": 0,
+    "expected_status": "incorrect",
+    "expected_results": [
+      false
+    ]
   },
-  "expected_earned": 0,
-  "expected_status": "unanswered"
- },
- {
-  "name": "single follow-up text on the null response",
-  "type": "single",
-  "spec": {
-   "points": 1,
-   "case": "insensitive",
-   "correct": 1
+  {
+    "name": "blanks numeric text",
+    "type": "blanks",
+    "question": "## Complete the sentence. {type=blanks id=q}\n\nFill in [[=0.5±0.01]].",
+    "answer": {
+      "blanks": [
+        "half"
+      ]
+    },
+    "expected_earned": 0,
+    "expected_status": "incorrect",
+    "expected_results": [
+      false
+    ]
   },
-  "response": null,
-  "expected_earned": 0,
-  "expected_status": "unanswered"
- },
- {
-  "name": "multi right with follow-up text",
-  "type": "multi",
-  "spec": {
-   "points": 2,
-   "case": "insensitive",
-   "correct": [
-    0,
-    2
-   ]
+  {
+    "name": "blanks symbol",
+    "type": "blanks",
+    "question": "## Complete the sentence. {type=blanks id=q}\n\nFill in [[&]].",
+    "answer": {
+      "blanks": [
+        "&"
+      ]
+    },
+    "expected_earned": 1,
+    "expected_status": "correct",
+    "expected_results": [
+      true
+    ]
   },
-  "response": {
-   "choices": [
-    0,
-    2
-   ],
-   "inputs": {
-    "2": "details"
-   }
+  {
+    "name": "fields all right",
+    "type": "fields",
+    "question": "## Work it out. {type=fields id=q points=4}\n\n```answer\nfields:\n  - label: \"f'\"\n    accept: [\"3x^2-3\",\"3x^2 - 3\"]\n  - label: \"count\"\n    value: 2\n  - label: \"max\"\n    value: -1\n  - label: \"min\"\n    value: 1\n```",
+    "answer": {
+      "fields": [
+        "3x^2-3",
+        "2",
+        "-1",
+        "1"
+      ]
+    },
+    "expected_earned": 4,
+    "expected_status": "correct",
+    "expected_results": [
+      true,
+      true,
+      true,
+      true
+    ]
   },
-  "expected_earned": 2,
-  "expected_status": "correct"
- },
- {
-  "name": "multi partial with follow-up text",
-  "type": "multi",
-  "spec": {
-   "points": 2,
-   "case": "insensitive",
-   "correct": [
-    0,
-    2
-   ]
+  {
+    "name": "fields text variant",
+    "type": "fields",
+    "question": "## Work it out. {type=fields id=q points=4}\n\n```answer\nfields:\n  - label: \"f'\"\n    accept: [\"3x^2-3\",\"3x^2 - 3\"]\n  - label: \"count\"\n    value: 2\n  - label: \"max\"\n    value: -1\n  - label: \"min\"\n    value: 1\n```",
+    "answer": {
+      "fields": [
+        "3x^2 - 3",
+        "2",
+        "-1",
+        "1"
+      ]
+    },
+    "expected_earned": 4,
+    "expected_status": "correct",
+    "expected_results": [
+      true,
+      true,
+      true,
+      true
+    ]
   },
-  "response": {
-   "choices": [
-    0
-   ],
-   "inputs": {
-    "0": "x"
-   }
+  {
+    "name": "fields half",
+    "type": "fields",
+    "question": "## Work it out. {type=fields id=q points=4}\n\n```answer\nfields:\n  - label: \"f'\"\n    accept: [\"3x^2-3\",\"3x^2 - 3\"]\n  - label: \"count\"\n    value: 2\n  - label: \"max\"\n    value: -1\n  - label: \"min\"\n    value: 1\n```",
+    "answer": {
+      "fields": [
+        "3x^2-3",
+        "2",
+        "1",
+        "-1"
+      ]
+    },
+    "expected_earned": 2,
+    "expected_status": "partial",
+    "expected_results": [
+      true,
+      true,
+      false,
+      false
+    ]
   },
-  "expected_earned": 1,
-  "expected_status": "partial"
- },
- {
-  "name": "multi hidden text for an unselected choice",
-  "type": "multi",
-  "spec": {
-   "points": 2,
-   "case": "insensitive",
-   "correct": [
-    0,
-    2
-   ]
+  {
+    "name": "fields none right",
+    "type": "fields",
+    "question": "## Work it out. {type=fields id=q points=4}\n\n```answer\nfields:\n  - label: \"f'\"\n    accept: [\"3x^2-3\",\"3x^2 - 3\"]\n  - label: \"count\"\n    value: 2\n  - label: \"max\"\n    value: -1\n  - label: \"min\"\n    value: 1\n```",
+    "answer": {
+      "fields": [
+        "x",
+        "9",
+        "9",
+        "9"
+      ]
+    },
+    "expected_earned": 0,
+    "expected_status": "incorrect",
+    "expected_results": [
+      false,
+      false,
+      false,
+      false
+    ]
   },
-  "response": {
-   "choices": [
-    0,
-    2
-   ],
-   "inputs": {
-    "1": "left over"
-   }
+  {
+    "name": "fields all empty",
+    "type": "fields",
+    "question": "## Work it out. {type=fields id=q points=4}\n\n```answer\nfields:\n  - label: \"f'\"\n    accept: [\"3x^2-3\",\"3x^2 - 3\"]\n  - label: \"count\"\n    value: 2\n  - label: \"max\"\n    value: -1\n  - label: \"min\"\n    value: 1\n```",
+    "answer": {
+      "fields": [
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    "expected_earned": 0,
+    "expected_status": "unanswered",
+    "expected_results": [
+      false,
+      false,
+      false,
+      false
+    ]
   },
-  "expected_earned": 2,
-  "expected_status": "correct"
- },
- {
-  "name": "multi empty choices with text is unanswered",
-  "type": "multi",
-  "spec": {
-   "points": 2,
-   "case": "insensitive",
-   "correct": [
-    0,
-    2
-   ]
+  {
+    "name": "fields null",
+    "type": "fields",
+    "question": "## Work it out. {type=fields id=q points=4}\n\n```answer\nfields:\n  - label: \"f'\"\n    accept: [\"3x^2-3\",\"3x^2 - 3\"]\n  - label: \"count\"\n    value: 2\n  - label: \"max\"\n    value: -1\n  - label: \"min\"\n    value: 1\n```",
+    "answer": null,
+    "expected_earned": 0,
+    "expected_status": "unanswered",
+    "expected_results": [
+      false,
+      false,
+      false,
+      false
+    ]
   },
-  "response": {
-   "choices": [],
-   "inputs": {
-    "2": "typed"
-   }
+  {
+    "name": "fields one filled",
+    "type": "fields",
+    "question": "## Work it out. {type=fields id=q points=4}\n\n```answer\nfields:\n  - label: \"f'\"\n    accept: [\"3x^2-3\",\"3x^2 - 3\"]\n  - label: \"count\"\n    value: 2\n  - label: \"max\"\n    value: -1\n  - label: \"min\"\n    value: 1\n```",
+    "answer": {
+      "fields": [
+        "",
+        "2"
+      ]
+    },
+    "expected_earned": 1,
+    "expected_status": "partial",
+    "expected_results": [
+      false,
+      true,
+      false,
+      false
+    ]
   },
-  "expected_earned": 0,
-  "expected_status": "unanswered"
- },
- {
-  "name": "ungraded single with follow-up text",
-  "type": "single",
-  "spec": {
-   "points": 0,
-   "case": "insensitive",
-   "ungraded": true
+  {
+    "name": "fields ungraded ignored",
+    "type": "fields",
+    "question": "## Work it out. {type=fields id=q points=3}\n\n```answer\nfields:\n  - label: \"a\"\n    value: 1\n  - label: \"free text\"\n  - label: \"b\"\n    accept: [\"yes\"]\n```",
+    "answer": {
+      "fields": [
+        "1",
+        "anything",
+        "yes"
+      ]
+    },
+    "expected_earned": 3,
+    "expected_status": "correct",
+    "expected_results": [
+      true,
+      null,
+      true
+    ]
   },
-  "response": {
-   "choice": 2,
-   "inputs": {
-    "2": "a hackathon"
-   }
+  {
+    "name": "fields ungraded half",
+    "type": "fields",
+    "question": "## Work it out. {type=fields id=q points=3}\n\n```answer\nfields:\n  - label: \"a\"\n    value: 1\n  - label: \"free text\"\n  - label: \"b\"\n    accept: [\"yes\"]\n```",
+    "answer": {
+      "fields": [
+        "1",
+        "anything",
+        "no"
+      ]
+    },
+    "expected_earned": 1.5,
+    "expected_status": "partial",
+    "expected_results": [
+      true,
+      null,
+      false
+    ]
   },
-  "expected_earned": null,
-  "expected_status": "ungraded"
- },
- {
-  "name": "ungraded single unselected with hidden text",
-  "type": "single",
-  "spec": {
-   "points": 0,
-   "case": "insensitive",
-   "ungraded": true
+  {
+    "name": "fields only ungraded answered is not scored",
+    "type": "fields",
+    "question": "## Work it out. {type=fields id=q points=3}\n\n```answer\nfields:\n  - label: \"a\"\n    value: 1\n  - label: \"free text\"\n  - label: \"b\"\n    accept: [\"yes\"]\n```",
+    "answer": {
+      "fields": [
+        "",
+        "essay",
+        ""
+      ]
+    },
+    "expected_earned": 0,
+    "expected_status": "unanswered",
+    "expected_results": [
+      false,
+      null,
+      false
+    ]
   },
-  "response": {
-   "choice": null,
-   "inputs": {
-    "2": "typed"
-   }
+  {
+    "name": "fields explicit points big only",
+    "type": "fields",
+    "question": "## Work it out. {type=fields id=q points=4}\n\n```answer\nfields:\n  - label: \"big\"\n    value: 1\n    points: 3\n  - label: \"small\"\n    value: 2\n    points: 1\n```",
+    "answer": {
+      "fields": [
+        "1",
+        "0"
+      ]
+    },
+    "expected_earned": 3,
+    "expected_status": "partial",
+    "expected_results": [
+      true,
+      false
+    ]
   },
-  "expected_earned": null,
-  "expected_status": "unanswered"
- },
- {
-  "name": "ungraded multi with follow-up text",
-  "type": "multi",
-  "spec": {
-   "points": 0,
-   "case": "insensitive",
-   "ungraded": true
+  {
+    "name": "fields explicit points small only",
+    "type": "fields",
+    "question": "## Work it out. {type=fields id=q points=4}\n\n```answer\nfields:\n  - label: \"big\"\n    value: 1\n    points: 3\n  - label: \"small\"\n    value: 2\n    points: 1\n```",
+    "answer": {
+      "fields": [
+        "0",
+        "2"
+      ]
+    },
+    "expected_earned": 1,
+    "expected_status": "partial",
+    "expected_results": [
+      false,
+      true
+    ]
   },
-  "response": {
-   "choices": [
-    1,
-    2
-   ],
-   "inputs": {
-    "2": "x"
-   }
+  {
+    "name": "fields numeric tolerance",
+    "type": "fields",
+    "question": "## Work it out. {type=fields id=q}\n\n```answer\nfields:\n  - label: \"x\"\n    value: 10\n    tolerance: 0.5\n```",
+    "answer": {
+      "fields": [
+        "10.4"
+      ]
+    },
+    "expected_earned": 1,
+    "expected_status": "correct",
+    "expected_results": [
+      true
+    ]
   },
-  "expected_earned": null,
-  "expected_status": "ungraded"
- }
+  {
+    "name": "fields text pattern",
+    "type": "fields",
+    "question": "## Work it out. {type=fields id=q}\n\n```answer\nfields:\n  - label: \"x\"\n    patterns: [\"a+b\"]\n```",
+    "answer": {
+      "fields": [
+        "AAB"
+      ]
+    },
+    "expected_earned": 1,
+    "expected_status": "correct",
+    "expected_results": [
+      true
+    ]
+  },
+  {
+    "name": "fields all ungraded",
+    "type": "fields",
+    "question": "## Fill in the notes. {type=fields id=q graded=false}\n\n```answer\nfields:\n  - label: \"x\"\n```",
+    "answer": {
+      "fields": [
+        "notes"
+      ]
+    },
+    "expected_earned": null,
+    "expected_status": "ungraded",
+    "changed": "0.x: pending. 1.0: a graded fields question needs a graded field (fields.empty), so the case is an ungraded one"
+  },
+  {
+    "name": "essay answered is pending",
+    "type": "essay",
+    "question": "## Discuss the topic. {type=essay id=q points=10}",
+    "answer": {
+      "text": "Some words here."
+    },
+    "expected_earned": null,
+    "expected_status": "pending"
+  },
+  {
+    "name": "essay empty",
+    "type": "essay",
+    "question": "## Discuss the topic. {type=essay id=q points=10}",
+    "answer": {
+      "text": "  "
+    },
+    "expected_earned": null,
+    "expected_status": "unanswered"
+  },
+  {
+    "name": "essay null",
+    "type": "essay",
+    "question": "## Discuss the topic. {type=essay id=q points=10}",
+    "answer": null,
+    "expected_earned": null,
+    "expected_status": "unanswered"
+  },
+  {
+    "name": "code answered is pending",
+    "type": "code",
+    "question": "## Write the function. {type=code id=q points=3}\n\n```answer\nlanguage: rust\n```",
+    "answer": {
+      "language": "rust",
+      "code": "fn f() {}"
+    },
+    "expected_earned": null,
+    "expected_status": "pending"
+  },
+  {
+    "name": "code empty",
+    "type": "code",
+    "question": "## Write the function. {type=code id=q points=3}\n\n```answer\nlanguage: rust\n```",
+    "answer": {
+      "language": "rust",
+      "code": ""
+    },
+    "expected_earned": null,
+    "expected_status": "unanswered"
+  },
+  {
+    "name": "code null",
+    "type": "code",
+    "question": "## Write the function. {type=code id=q points=3}\n\n```answer\nlanguage: rust\n```",
+    "answer": null,
+    "expected_earned": null,
+    "expected_status": "unanswered"
+  },
+  {
+    "name": "ordering exact",
+    "type": "ordering",
+    "question": "## Put the steps in order. {type=ordering id=q points=4}\n\n1. Step 1\n2. Step 2\n3. Step 3\n4. Step 4",
+    "answer": {
+      "order": [
+        0,
+        1,
+        2,
+        3
+      ]
+    },
+    "expected_earned": 4,
+    "expected_status": "correct",
+    "expected_results": [
+      true,
+      true,
+      true,
+      true
+    ]
+  },
+  {
+    "name": "ordering two swapped",
+    "type": "ordering",
+    "question": "## Put the steps in order. {type=ordering id=q points=4}\n\n1. Step 1\n2. Step 2\n3. Step 3\n4. Step 4",
+    "answer": {
+      "order": [
+        1,
+        0,
+        2,
+        3
+      ]
+    },
+    "expected_earned": 2,
+    "expected_status": "partial",
+    "expected_results": [
+      false,
+      false,
+      true,
+      true
+    ]
+  },
+  {
+    "name": "ordering reversed even",
+    "type": "ordering",
+    "question": "## Put the steps in order. {type=ordering id=q points=4}\n\n1. Step 1\n2. Step 2\n3. Step 3\n4. Step 4",
+    "answer": {
+      "order": [
+        3,
+        2,
+        1,
+        0
+      ]
+    },
+    "expected_earned": 0,
+    "expected_status": "incorrect",
+    "expected_results": [
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  {
+    "name": "ordering reversed odd keeps middle",
+    "type": "ordering",
+    "question": "## Put the steps in order. {type=ordering id=q points=3}\n\n1. Step 1\n2. Step 2\n3. Step 3",
+    "answer": {
+      "order": [
+        2,
+        1,
+        0
+      ]
+    },
+    "expected_earned": 1,
+    "expected_status": "partial",
+    "expected_results": [
+      false,
+      true,
+      false
+    ]
+  },
+  {
+    "name": "ordering a-o-n exact",
+    "type": "ordering",
+    "question": "## Put the steps in order. {type=ordering id=q points=4 partial=false}\n\n1. Step 1\n2. Step 2\n3. Step 3\n4. Step 4",
+    "answer": {
+      "order": [
+        0,
+        1,
+        2,
+        3
+      ]
+    },
+    "expected_earned": 4,
+    "expected_status": "correct"
+  },
+  {
+    "name": "ordering a-o-n one wrong gets zero",
+    "type": "ordering",
+    "question": "## Put the steps in order. {type=ordering id=q points=4 partial=false}\n\n1. Step 1\n2. Step 2\n3. Step 3\n4. Step 4",
+    "answer": {
+      "order": [
+        0,
+        1,
+        3,
+        2
+      ]
+    },
+    "expected_earned": 0,
+    "expected_status": "incorrect"
+  },
+  {
+    "name": "ordering thirds rounded",
+    "type": "ordering",
+    "question": "## Put the steps in order. {type=ordering id=q}\n\n1. Step 1\n2. Step 2\n3. Step 3",
+    "answer": {
+      "order": [
+        0,
+        2,
+        1
+      ]
+    },
+    "expected_earned": 0.33,
+    "expected_status": "partial"
+  },
+  {
+    "name": "ordering null",
+    "type": "ordering",
+    "question": "## Put the steps in order. {type=ordering id=q points=4}\n\n1. Step 1\n2. Step 2\n3. Step 3\n4. Step 4",
+    "answer": null,
+    "expected_earned": 0,
+    "expected_status": "unanswered"
+  },
+  {
+    "name": "ordering empty",
+    "type": "ordering",
+    "question": "## Put the steps in order. {type=ordering id=q points=4}\n\n1. Step 1\n2. Step 2\n3. Step 3\n4. Step 4",
+    "answer": {},
+    "expected_earned": 0,
+    "expected_status": "unanswered"
+  },
+  {
+    "name": "ordering wrong length",
+    "type": "ordering",
+    "question": "## Put the steps in order. {type=ordering id=q points=4}\n\n1. Step 1\n2. Step 2\n3. Step 3\n4. Step 4",
+    "answer": {
+      "order": [
+        0,
+        1
+      ]
+    },
+    "expected_earned": 0,
+    "expected_status": "unanswered"
+  },
+  {
+    "name": "matching all right",
+    "type": "matching",
+    "question": "## Match each item. {type=matching id=q points=3}\n\n- Left 0 :: Right 0\n- Left 1 :: Right 1\n- Left 2 :: Right 2\n- :: Distractor",
+    "answer": {
+      "pairs": [
+        0,
+        1,
+        2
+      ]
+    },
+    "expected_earned": 3,
+    "expected_status": "correct",
+    "expected_results": [
+      true,
+      true,
+      true
+    ]
+  },
+  {
+    "name": "matching one right",
+    "type": "matching",
+    "question": "## Match each item. {type=matching id=q points=3}\n\n- Left 0 :: Right 0\n- Left 1 :: Right 1\n- Left 2 :: Right 2\n- :: Distractor",
+    "answer": {
+      "pairs": [
+        0,
+        2,
+        1
+      ]
+    },
+    "expected_earned": 1,
+    "expected_status": "partial",
+    "expected_results": [
+      true,
+      false,
+      false
+    ]
+  },
+  {
+    "name": "matching distractor chosen",
+    "type": "matching",
+    "question": "## Match each item. {type=matching id=q points=3}\n\n- Left 0 :: Right 0\n- Left 1 :: Right 1\n- Left 2 :: Right 2\n- :: Distractor",
+    "answer": {
+      "pairs": [
+        3,
+        3,
+        3
+      ]
+    },
+    "expected_earned": 0,
+    "expected_status": "incorrect",
+    "expected_results": [
+      false,
+      false,
+      false
+    ]
+  },
+  {
+    "name": "matching some left empty",
+    "type": "matching",
+    "question": "## Match each item. {type=matching id=q points=3}\n\n- Left 0 :: Right 0\n- Left 1 :: Right 1\n- Left 2 :: Right 2\n- :: Distractor",
+    "answer": {
+      "pairs": [
+        0,
+        null,
+        null
+      ]
+    },
+    "expected_earned": 1,
+    "expected_status": "partial",
+    "expected_results": [
+      true,
+      false,
+      false
+    ]
+  },
+  {
+    "name": "matching short list is padded",
+    "type": "matching",
+    "question": "## Match each item. {type=matching id=q points=3}\n\n- Left 0 :: Right 0\n- Left 1 :: Right 1\n- Left 2 :: Right 2\n- :: Distractor",
+    "answer": {
+      "pairs": [
+        0,
+        1
+      ]
+    },
+    "expected_earned": 2,
+    "expected_status": "partial",
+    "expected_results": [
+      true,
+      true,
+      false
+    ]
+  },
+  {
+    "name": "matching all empty",
+    "type": "matching",
+    "question": "## Match each item. {type=matching id=q points=3}\n\n- Left 0 :: Right 0\n- Left 1 :: Right 1\n- Left 2 :: Right 2\n- :: Distractor",
+    "answer": {
+      "pairs": [
+        null,
+        null,
+        null
+      ]
+    },
+    "expected_earned": 0,
+    "expected_status": "unanswered",
+    "expected_results": [
+      false,
+      false,
+      false
+    ]
+  },
+  {
+    "name": "matching null",
+    "type": "matching",
+    "question": "## Match each item. {type=matching id=q points=3}\n\n- Left 0 :: Right 0\n- Left 1 :: Right 1\n- Left 2 :: Right 2\n- :: Distractor",
+    "answer": null,
+    "expected_earned": 0,
+    "expected_status": "unanswered"
+  },
+  {
+    "name": "matching a-o-n all right",
+    "type": "matching",
+    "question": "## Match each item. {type=matching id=q points=3 partial=false}\n\n- Left 0 :: Right 0\n- Left 1 :: Right 1\n- Left 2 :: Right 2\n- :: Distractor",
+    "answer": {
+      "pairs": [
+        0,
+        1,
+        2
+      ]
+    },
+    "expected_earned": 3,
+    "expected_status": "correct"
+  },
+  {
+    "name": "matching a-o-n one wrong gets zero",
+    "type": "matching",
+    "question": "## Match each item. {type=matching id=q points=3 partial=false}\n\n- Left 0 :: Right 0\n- Left 1 :: Right 1\n- Left 2 :: Right 2\n- :: Distractor",
+    "answer": {
+      "pairs": [
+        0,
+        1,
+        3
+      ]
+    },
+    "expected_earned": 0,
+    "expected_status": "incorrect"
+  },
+  {
+    "name": "matching index zero is an answer",
+    "type": "matching",
+    "question": "## Match each item. {type=matching id=q points=2}\n\n- Left 0 :: Right 0\n- Left 1 :: Right 1\n- :: Distractor",
+    "answer": {
+      "pairs": [
+        0,
+        0
+      ]
+    },
+    "expected_earned": 1,
+    "expected_status": "partial",
+    "expected_results": [
+      true,
+      false
+    ]
+  },
+  {
+    "name": "ungraded single picked",
+    "type": "single",
+    "question": "## Pick the right option. {type=single id=q graded=false}\n\n- [ ] Option 0\n- [ ] Option 1\n- [ ] Option 2\n- [ ] Option 3",
+    "answer": {
+      "choice": 0
+    },
+    "expected_earned": null,
+    "expected_status": "ungraded"
+  },
+  {
+    "name": "ungraded single unanswered",
+    "type": "single",
+    "question": "## Pick the right option. {type=single id=q graded=false}\n\n- [ ] Option 0\n- [ ] Option 1\n- [ ] Option 2\n- [ ] Option 3",
+    "answer": null,
+    "expected_earned": null,
+    "expected_status": "unanswered"
+  },
+  {
+    "name": "ungraded single choice null",
+    "type": "single",
+    "question": "## Pick the right option. {type=single id=q graded=false}\n\n- [ ] Option 0\n- [ ] Option 1\n- [ ] Option 2\n- [ ] Option 3",
+    "answer": {
+      "choice": null
+    },
+    "expected_earned": null,
+    "expected_status": "unanswered"
+  },
+  {
+    "name": "ungraded multi picked",
+    "type": "multi",
+    "question": "## Pick every right option. {type=multi id=q graded=false}\n\n- [ ] Option 0\n- [ ] Option 1\n- [ ] Option 2\n- [ ] Option 3",
+    "answer": {
+      "choices": [
+        0,
+        2
+      ]
+    },
+    "expected_earned": null,
+    "expected_status": "ungraded"
+  },
+  {
+    "name": "ungraded multi empty",
+    "type": "multi",
+    "question": "## Pick every right option. {type=multi id=q graded=false}\n\n- [ ] Option 0\n- [ ] Option 1\n- [ ] Option 2\n- [ ] Option 3",
+    "answer": {
+      "choices": []
+    },
+    "expected_earned": null,
+    "expected_status": "unanswered"
+  },
+  {
+    "name": "ungraded multi null",
+    "type": "multi",
+    "question": "## Pick every right option. {type=multi id=q graded=false}\n\n- [ ] Option 0\n- [ ] Option 1\n- [ ] Option 2\n- [ ] Option 3",
+    "answer": null,
+    "expected_earned": null,
+    "expected_status": "unanswered"
+  },
+  {
+    "name": "ungraded short text",
+    "type": "short",
+    "question": "## Say it in a few words. {type=short id=q graded=false}",
+    "answer": {
+      "text": "anything"
+    },
+    "expected_earned": null,
+    "expected_status": "ungraded"
+  },
+  {
+    "name": "ungraded short blank",
+    "type": "short",
+    "question": "## Say it in a few words. {type=short id=q graded=false}",
+    "answer": {
+      "text": "   "
+    },
+    "expected_earned": null,
+    "expected_status": "unanswered"
+  },
+  {
+    "name": "ungraded short null",
+    "type": "short",
+    "question": "## Say it in a few words. {type=short id=q graded=false}",
+    "answer": null,
+    "expected_earned": null,
+    "expected_status": "unanswered"
+  },
+  {
+    "name": "ungraded fields one filled",
+    "type": "fields",
+    "question": "## Fill in the notes. {type=fields id=q graded=false}\n\n```answer\nfields:\n  - label: \"A\"\n  - label: \"B\"\n```",
+    "answer": {
+      "fields": [
+        "",
+        "x"
+      ]
+    },
+    "expected_earned": null,
+    "expected_status": "ungraded"
+  },
+  {
+    "name": "ungraded fields all blank",
+    "type": "fields",
+    "question": "## Fill in the notes. {type=fields id=q graded=false}\n\n```answer\nfields:\n  - label: \"A\"\n  - label: \"B\"\n```",
+    "answer": {
+      "fields": [
+        "",
+        " "
+      ]
+    },
+    "expected_earned": null,
+    "expected_status": "unanswered"
+  },
+  {
+    "name": "ungraded fields null",
+    "type": "fields",
+    "question": "## Fill in the notes. {type=fields id=q graded=false}\n\n```answer\nfields:\n  - label: \"A\"\n  - label: \"B\"\n```",
+    "answer": null,
+    "expected_earned": null,
+    "expected_status": "unanswered"
+  },
+  {
+    "name": "ungraded essay text",
+    "type": "essay",
+    "question": "## Discuss the topic. {type=essay id=q graded=false}",
+    "answer": {
+      "text": "my view"
+    },
+    "expected_earned": null,
+    "expected_status": "ungraded"
+  },
+  {
+    "name": "ungraded essay blank",
+    "type": "essay",
+    "question": "## Discuss the topic. {type=essay id=q graded=false}",
+    "answer": {
+      "text": ""
+    },
+    "expected_earned": null,
+    "expected_status": "unanswered"
+  },
+  {
+    "name": "ungraded essay null",
+    "type": "essay",
+    "question": "## Discuss the topic. {type=essay id=q graded=false}",
+    "answer": null,
+    "expected_earned": null,
+    "expected_status": "unanswered"
+  },
+  {
+    "name": "ungraded ordering ranked",
+    "type": "ordering",
+    "question": "## Put the steps in order. {type=ordering id=q graded=false}\n\n1. Step 1\n2. Step 2\n3. Step 3",
+    "answer": {
+      "order": [
+        2,
+        0,
+        1
+      ]
+    },
+    "expected_earned": null,
+    "expected_status": "ungraded"
+  },
+  {
+    "name": "ungraded ordering written order",
+    "type": "ordering",
+    "question": "## Put the steps in order. {type=ordering id=q graded=false}\n\n1. Step 1\n2. Step 2\n3. Step 3",
+    "answer": {
+      "order": [
+        0,
+        1,
+        2
+      ]
+    },
+    "expected_earned": null,
+    "expected_status": "ungraded"
+  },
+  {
+    "name": "ungraded ordering wrong length",
+    "type": "ordering",
+    "question": "## Put the steps in order. {type=ordering id=q graded=false}\n\n1. Step 1\n2. Step 2\n3. Step 3",
+    "answer": {
+      "order": [
+        0,
+        1
+      ]
+    },
+    "expected_earned": null,
+    "expected_status": "unanswered"
+  },
+  {
+    "name": "ungraded ordering null",
+    "type": "ordering",
+    "question": "## Put the steps in order. {type=ordering id=q graded=false}\n\n1. Step 1\n2. Step 2\n3. Step 3",
+    "answer": null,
+    "expected_earned": null,
+    "expected_status": "unanswered"
+  },
+  {
+    "name": "scale answered",
+    "type": "scale",
+    "question": "## How confident are you? {type=scale id=q}",
+    "answer": {
+      "value": 4
+    },
+    "expected_earned": null,
+    "expected_status": "ungraded"
+  },
+  {
+    "name": "scale at the low end",
+    "type": "scale",
+    "question": "## How confident are you? {type=scale id=q}",
+    "answer": {
+      "value": 1
+    },
+    "expected_earned": null,
+    "expected_status": "ungraded"
+  },
+  {
+    "name": "scale zero is an answer",
+    "type": "scale",
+    "question": "## How confident are you? {type=scale id=q}\n\n```answer\nmin: 0\n```",
+    "answer": {
+      "value": 0
+    },
+    "expected_earned": null,
+    "expected_status": "ungraded"
+  },
+  {
+    "name": "scale unanswered",
+    "type": "scale",
+    "question": "## How confident are you? {type=scale id=q}",
+    "answer": null,
+    "expected_earned": null,
+    "expected_status": "unanswered"
+  },
+  {
+    "name": "scale value null",
+    "type": "scale",
+    "question": "## How confident are you? {type=scale id=q}",
+    "answer": {
+      "value": null
+    },
+    "expected_earned": null,
+    "expected_status": "unanswered"
+  },
+  {
+    "name": "scale without ungraded flag",
+    "type": "scale",
+    "question": "## How confident are you? {type=scale id=q}",
+    "answer": {
+      "value": 3
+    },
+    "expected_earned": null,
+    "expected_status": "ungraded"
+  },
+  {
+    "name": "single right with follow-up text",
+    "type": "single",
+    "question": "## Pick the right option. {type=single id=q}\n\n- [ ] Option 0\n- [x] Option 1 {input=\"Which one?\"}\n- [ ] Option 2\n- [ ] Option 3",
+    "answer": {
+      "choice": 1,
+      "inputs": {
+        "1": "a hackathon"
+      }
+    },
+    "expected_earned": 1,
+    "expected_status": "correct"
+  },
+  {
+    "name": "single wrong with follow-up text",
+    "type": "single",
+    "question": "## Pick the right option. {type=single id=q}\n\n- [ ] Option 0 {input=\"Which one?\"}\n- [x] Option 1\n- [ ] Option 2\n- [ ] Option 3",
+    "answer": {
+      "choice": 0,
+      "inputs": {
+        "0": "because"
+      }
+    },
+    "expected_earned": 0,
+    "expected_status": "incorrect"
+  },
+  {
+    "name": "single right without follow-up text",
+    "type": "single",
+    "question": "## Pick the right option. {type=single id=q}\n\n- [ ] Option 0\n- [x] Option 1\n- [ ] Option 2\n- [ ] Option 3",
+    "answer": {
+      "choice": 1
+    },
+    "expected_earned": 1,
+    "expected_status": "correct"
+  },
+  {
+    "name": "single hidden text for an unselected choice",
+    "type": "single",
+    "question": "## Pick the right option. {type=single id=q}\n\n- [ ] Option 0 {input=\"Which one?\"}\n- [x] Option 1\n- [ ] Option 2\n- [ ] Option 3",
+    "answer": {
+      "choice": 1,
+      "inputs": {
+        "0": "left over"
+      }
+    },
+    "expected_earned": 1,
+    "expected_status": "correct"
+  },
+  {
+    "name": "single text without a choice is unanswered",
+    "type": "single",
+    "question": "## Pick the right option. {type=single id=q}\n\n- [ ] Option 0\n- [x] Option 1\n- [ ] Option 2 {input=\"Which one?\"}\n- [ ] Option 3",
+    "answer": {
+      "choice": null,
+      "inputs": {
+        "2": "typed"
+      }
+    },
+    "expected_earned": 0,
+    "expected_status": "unanswered"
+  },
+  {
+    "name": "single follow-up text on the null response",
+    "type": "single",
+    "question": "## Pick the right option. {type=single id=q}\n\n- [ ] Option 0\n- [x] Option 1\n- [ ] Option 2\n- [ ] Option 3",
+    "answer": null,
+    "expected_earned": 0,
+    "expected_status": "unanswered"
+  },
+  {
+    "name": "multi right with follow-up text",
+    "type": "multi",
+    "question": "## Pick every right option. {type=multi id=q points=2}\n\n- [x] Option 0\n- [ ] Option 1\n- [x] Option 2 {input=\"Which one?\"}\n- [ ] Option 3",
+    "answer": {
+      "choices": [
+        0,
+        2
+      ],
+      "inputs": {
+        "2": "details"
+      }
+    },
+    "expected_earned": 2,
+    "expected_status": "correct"
+  },
+  {
+    "name": "multi partial with follow-up text",
+    "type": "multi",
+    "question": "## Pick every right option. {type=multi id=q points=2}\n\n- [x] Option 0 {input=\"Which one?\"}\n- [ ] Option 1\n- [x] Option 2\n- [ ] Option 3",
+    "answer": {
+      "choices": [
+        0
+      ],
+      "inputs": {
+        "0": "x"
+      }
+    },
+    "expected_earned": 1,
+    "expected_status": "partial"
+  },
+  {
+    "name": "multi hidden text for an unselected choice",
+    "type": "multi",
+    "question": "## Pick every right option. {type=multi id=q points=2}\n\n- [x] Option 0\n- [ ] Option 1 {input=\"Which one?\"}\n- [x] Option 2\n- [ ] Option 3",
+    "answer": {
+      "choices": [
+        0,
+        2
+      ],
+      "inputs": {
+        "1": "left over"
+      }
+    },
+    "expected_earned": 2,
+    "expected_status": "correct"
+  },
+  {
+    "name": "multi empty choices with text is unanswered",
+    "type": "multi",
+    "question": "## Pick every right option. {type=multi id=q points=2}\n\n- [x] Option 0\n- [ ] Option 1\n- [x] Option 2 {input=\"Which one?\"}\n- [ ] Option 3",
+    "answer": {
+      "choices": [],
+      "inputs": {
+        "2": "typed"
+      }
+    },
+    "expected_earned": 0,
+    "expected_status": "unanswered"
+  },
+  {
+    "name": "ungraded single with follow-up text",
+    "type": "single",
+    "question": "## Pick the right option. {type=single id=q graded=false}\n\n- [ ] Option 0\n- [ ] Option 1\n- [ ] Option 2 {input=\"Which one?\"}\n- [ ] Option 3",
+    "answer": {
+      "choice": 2,
+      "inputs": {
+        "2": "a hackathon"
+      }
+    },
+    "expected_earned": null,
+    "expected_status": "ungraded"
+  },
+  {
+    "name": "ungraded single unselected with hidden text",
+    "type": "single",
+    "question": "## Pick the right option. {type=single id=q graded=false}\n\n- [ ] Option 0\n- [ ] Option 1\n- [ ] Option 2 {input=\"Which one?\"}\n- [ ] Option 3",
+    "answer": {
+      "choice": null,
+      "inputs": {
+        "2": "typed"
+      }
+    },
+    "expected_earned": null,
+    "expected_status": "unanswered"
+  },
+  {
+    "name": "ungraded multi with follow-up text",
+    "type": "multi",
+    "question": "## Pick every right option. {type=multi id=q graded=false}\n\n- [ ] Option 0\n- [ ] Option 1\n- [ ] Option 2 {input=\"Which one?\"}\n- [ ] Option 3",
+    "answer": {
+      "choices": [
+        1,
+        2
+      ],
+      "inputs": {
+        "2": "x"
+      }
+    },
+    "expected_earned": null,
+    "expected_status": "ungraded"
+  }
 ]
