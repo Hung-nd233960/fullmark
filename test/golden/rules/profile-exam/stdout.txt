@@ -10,7 +10,6 @@ profile.unknown           fixed    error    a `profile:` in the front matter tha
 syntax.attributes         fixed    error    a {...} block that does not parse, or a name given twice
 syntax.heading-level      fixed    error    a ### or deeper heading
 syntax.container          fixed    error    an unknown, unclosed, nested or stray ::: container, one in the wrong place, or a second passage in a section
-syntax.reserved           fixed    error    a name reserved for a later version
 markdown.raw-html         fixed    error    any HTML tag or comment
 asset.missing             fixed    error    a referenced file does not exist
 asset.outside             fixed    error    a referenced file is outside the quiz folder

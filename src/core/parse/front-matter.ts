@@ -25,6 +25,7 @@ const KEYS = [
   "font",
   "look",
   "tags",
+  "materials",
   "generated_by",
 ] as const;
 
@@ -51,6 +52,7 @@ export function defaultFrontMatter(file: string): FrontMatter {
     font: "system",
     look: "free",
     tags: [],
+    materials: [],
     generatedBy: null,
     keyLines: {},
   };
@@ -64,7 +66,7 @@ export function parseFrontMatter(o: Outline, file: string, r: Reporter): FrontMa
       "syntax.front-matter",
       1,
       "the file has no front matter",
-      "start the file with --- , a title: line and --- ",
+      "start the file with --- , a title: line and --- . A materials sheet has no front matter: check the quiz that lists it",
     );
     return fm;
   }
@@ -86,9 +88,7 @@ export function parseFrontMatter(o: Outline, file: string, r: Reporter): FrontMa
 
   const seen = new Map<string, Entry>();
   for (const entry of entriesOf(yaml, map)) {
-    if (entry.key === "reference") {
-      r.error("syntax.reserved", entry.line, "`reference` is reserved for a later version");
-    } else if (!(KEYS as readonly string[]).includes(entry.key)) {
+    if (!(KEYS as readonly string[]).includes(entry.key)) {
       const u = unknownKey("front-matter key", entry.key, KEYS);
       r.error("syntax.unknown-key", entry.line, u.message, u.fix);
     } else {
@@ -195,6 +195,18 @@ export function parseFrontMatter(o: Outline, file: string, r: Reporter): FrontMa
         const items = seq?.items.map((n) => scalarText(n as Node | null)) ?? [];
         if (!seq || items.some((t) => t === null)) bad(e, "a list of text");
         else fm.tags = items as string[];
+        break;
+      }
+      case "materials": {
+        const seq = asSeq(e.value);
+        const items = seq?.items.map((n) => scalarText(n as Node | null)) ?? [];
+        if (!seq || items.some((t) => t === null || t.trim() === "")) bad(e, "a list of file paths");
+        else {
+          const paths = (items as string[]).map((t) => t.trim());
+          const twice = paths.find((t, i) => paths.indexOf(t) !== i);
+          if (twice !== undefined) r.error("syntax.value", e.line, `\`materials\` lists "${twice}" twice`);
+          else fm.materials = paths;
+        }
         break;
       }
       case "generated_by": {

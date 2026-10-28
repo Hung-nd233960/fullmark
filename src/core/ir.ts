@@ -42,6 +42,8 @@ export const FrontMatterSchema = z.object({
   font: z.enum(FONTS),
   look: z.enum(["free", "locked"]),
   tags: z.array(z.string()),
+  /** the sheets, as the paths written in `materials:`; the loader reads them */
+  materials: z.array(z.string()),
   generatedBy: z.string().nullable(),
   /** the 1-based line of each key the file writes, for the checks that hold a key to the brief */
   keyLines: z.record(z.string(), line),

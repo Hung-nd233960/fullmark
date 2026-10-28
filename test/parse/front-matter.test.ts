@@ -28,6 +28,7 @@ describe("front matter", () => {
       font: "system",
       look: "free",
       tags: [],
+      materials: [],
       generatedBy: null,
       keyLines: { title: 2 },
     });
@@ -113,11 +114,29 @@ describe("front matter", () => {
     expect(found(Q, "title: A\ntitle: B")[0]).toBe("syntax.front-matter@3");
   });
 
-  it("reports unknown keys, with a suggestion, and the reserved key", () => {
+  it("reports unknown keys, with a suggestion; `reference` is one like any other", () => {
     expect(found(Q, "title: T\ntime_limt: 5m")).toEqual(["syntax.unknown-key@3"]);
     expect(parseBody(Q, "title: T\ntime_limt: 5m").issues[0]?.fix).toContain("time_limit");
-    expect(found(Q, "title: T\nreference: sheet.md")).toEqual(["syntax.reserved@3"]);
-    expect(parseBody(Q, "title: T\nreference: sheet.md").issues[0]?.message).toContain("reserved for a later version");
+    expect(found(Q, "title: T\nreference: sheet.md")).toEqual(["syntax.unknown-key@3"]);
+  });
+
+  it("reads `materials` as a list of paths, in order", () => {
+    const fm = parseBody(Q, "title: T\nmaterials:\n  - materials/a.md\n  - materials/b.md").quiz?.frontMatter;
+    expect(fm?.materials).toEqual(["materials/a.md", "materials/b.md"]);
+    expect(fm?.keyLines.materials).toBe(3);
+    expect(parseBody(Q).quiz?.frontMatter.materials).toEqual([]);
+  });
+
+  it("refuses `materials` that is not a list of paths, or lists a path twice", () => {
+    expect(found(Q, "title: T\nmaterials: a.md")).toEqual(["syntax.value@3"]);
+    expect(found(Q, "title: T\nmaterials:\n  - a: b")).toEqual(["syntax.value@3"]);
+    expect(found(Q, "title: T\nmaterials:\n  - a.md\n  - a.md")).toEqual(["syntax.value@3"]);
+  });
+
+  it("tells a file with no front matter that a sheet is checked through its quiz", () => {
+    expect(parse("## Q {type=single id=q}\n\n- [x] a\n- [ ] b\n", "sheet.md").issues[0]?.fix).toContain(
+      "A materials sheet has no front matter",
+    );
   });
 
   it("reports values outside their set or range", () => {

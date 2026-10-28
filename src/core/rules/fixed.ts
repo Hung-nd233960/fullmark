@@ -101,13 +101,6 @@ export const FIXED_RULES: FixedRule[] = [
     "close a container with a line holding only :::, and use only hint, explanation and passage (a passage in a section's intro)",
   ),
   fixed(
-    "syntax.reserved",
-    "parser",
-    "a name reserved for a later version",
-    file("## Q {type=single id=q}\n\n- [x] a\n- [ ] b", "title: T\nreference: sheet.md"),
-    "remove the key",
-  ),
-  fixed(
     "markdown.raw-html",
     "parser",
     "any HTML tag or comment",

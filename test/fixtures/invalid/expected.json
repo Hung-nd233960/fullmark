@@ -134,6 +134,10 @@
     "rule": "syntax.front-matter",
     "line": 1
   },
+  "fm-reference": {
+    "rule": "syntax.unknown-key",
+    "line": 3
+  },
   "fm-unknown-key": {
     "rule": "syntax.unknown-key",
     "line": 3
@@ -310,10 +314,6 @@
   "raw-html-tag": {
     "rule": "markdown.raw-html",
     "line": 7
-  },
-  "reserved-reference": {
-    "rule": "syntax.reserved",
-    "line": 3
   },
   "rubric-duplicate-id": {
     "rule": "rubric.duplicate-id",
