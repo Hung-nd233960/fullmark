@@ -16,4 +16,5 @@ Options:
                       of Markdown, and print JSON
   --web               grade by hand in a form (not available yet)
   --name <name>       with --web: the human grader's name (not available yet)
+  --plain             no progress line, even in a terminal
   -h, --help          help for the command
