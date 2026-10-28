@@ -9,7 +9,7 @@ import { type CheckIo, describeProfile } from "./check";
 import { loadConfig, realMachine } from "./config";
 import { EXIT, type ExitCode } from "./exit-codes";
 import { loadQuiz } from "./load";
-import { shownPath } from "./paths";
+import { readFailure, shownPath } from "./paths";
 
 export type RulesOptions = {
   profile: string | null;
@@ -69,7 +69,7 @@ export function runRules(rule: string | null, opts: RulesOptions, io: CheckIo): 
     try {
       fm = loadQuiz(path).frontMatter;
     } catch (error) {
-      return fail(`cannot read ${opts.for}: ${(error as Error).message}`);
+      return fail(`cannot read ${opts.for}: ${readFailure(error)}`);
     }
     quizDir = dirname(path);
     const briefPath = join(quizDir, "brief.yaml");

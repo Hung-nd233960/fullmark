@@ -5,6 +5,7 @@ import { applyIds, type IdProblem, planIds } from "../core/ids";
 import { writeFileAtomic } from "./atomic";
 import { EXIT, type ExitCode } from "./exit-codes";
 import { expandInputs } from "./files";
+import { readFailure } from "./paths";
 
 export type IdsOptions = { dryRun: boolean; json: boolean; plain: boolean };
 
@@ -73,7 +74,7 @@ async function idsForFile(file: string, opts: IdsOptions, io: Io): Promise<FileR
   try {
     buffer = await readFile(path);
   } catch (error) {
-    return { status: "error", file, message: `cannot read the file: ${(error as Error).message}` };
+    return { status: "error", file, message: `cannot read the file: ${readFailure(error)}` };
   }
   const text = buffer.toString("utf8");
   if (!Buffer.from(text, "utf8").equals(buffer)) {

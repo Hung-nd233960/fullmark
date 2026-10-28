@@ -19,7 +19,7 @@ import { EXIT, type ExitCode } from "./exit-codes";
 import { expandInputs } from "./files";
 import type { Io } from "./ids";
 import { loadQuiz } from "./load";
-import { shownPath } from "./paths";
+import { readFailure, shownPath } from "./paths";
 
 export type CheckOptions = {
   profile: string | null;
@@ -81,7 +81,7 @@ export function checkFile(file: string, opts: CheckOptions, io: CheckIo): FileOu
   try {
     loaded = loadQuiz(path);
   } catch (error) {
-    return { status: "error", file, message: `cannot read the file: ${(error as Error).message}` };
+    return { status: "error", file, message: `cannot read the file: ${readFailure(error)}` };
   }
   const dir = dirname(path);
   const config: LoadedConfig = loadConfig(machine, dir, opts.config);

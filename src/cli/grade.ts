@@ -11,7 +11,7 @@ import { EXIT, type ExitCode } from "./exit-codes";
 import { expandInputs } from "./files";
 import type { Io } from "./ids";
 import { loadQuiz } from "./load";
-import { shownPath } from "./paths";
+import { readFailure, shownPath } from "./paths";
 
 export type GradeOptions = {
   quiz: string | null;
@@ -69,7 +69,7 @@ async function gradeOne(
   try {
     text = readText(resolve(io.cwd, results));
   } catch (error) {
-    return { status: "error", file: results, message: `cannot read the file: ${(error as Error).message}` };
+    return { status: "error", file: results, message: `cannot read the file: ${readFailure(error)}` };
   }
   const read = parseResults(text);
   if (!read.ok) return { status: "problems", file: results, message: read.message, problems: [read.message] };
@@ -177,7 +177,7 @@ export async function runGrade(patterns: readonly string[], opts: GradeOptions, 
   try {
     loaded = loadQuiz(quizPath);
   } catch (error) {
-    io.err(`${shownPath(opts.quiz, io.cwd)}: cannot read the quiz: ${(error as Error).message}`);
+    io.err(`${shownPath(opts.quiz, io.cwd)}: cannot read the quiz: ${readFailure(error)}`);
     return EXIT.usage;
   }
   if (loaded.quiz === null || loaded.hash === null) {
@@ -194,7 +194,7 @@ export async function runGrade(patterns: readonly string[], opts: GradeOptions, 
     try {
       gradesText = readText(resolve(io.cwd, opts.grades));
     } catch (error) {
-      io.err(`${shownPath(opts.grades, io.cwd)}: cannot read the grades file: ${(error as Error).message}`);
+      io.err(`${shownPath(opts.grades, io.cwd)}: cannot read the grades file: ${readFailure(error)}`);
       return EXIT.usage;
     }
     const read = parseGrades(gradesText);
