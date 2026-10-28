@@ -246,7 +246,7 @@ Exit: `0` written, `2` timeout or usage error.
 quiz brief DIR [--web [--no-open] [--timeout SECONDS] [--port N] | --tui]
                [--purpose P] [--scope TEXT] [--kinds LIST] [--kinds-other TEXT]
                [--elsewhere TEXT] [--count N] [--minutes N] [--mix LIST]
-               [--difficulty D] [--mode M] [--weak-topics yes|no]
+               [--difficulty D] [--mode M] [--weak-topics yes|no] [--commitment N]
                [--language en|vi] [--request TEXT] [--profile P]
                [--accept-defaults] [--json]
 ```
@@ -268,6 +268,7 @@ Writes `DIR/brief.yaml` and an empty `DIR/content/` for a quiz an agent will wri
 | `--difficulty` | `warm-up`, `like-the-exam`, `harder` | `like-the-exam` | no |
 | `--mode` | `each-question`, `at-the-end`, `timed-exam` | `at-the-end` | no |
 | `--weak-topics` | `yes`, `no` | `no` | no |
+| `--commitment` | the score the learner commits to, a percent from 1 to 100; `0` for none. The form asks "What score are you committing to?" and may be left empty. The agent writes it into the quiz as `pass_mark`, and the results card shows it as the goal | `0` | yes |
 | `--language` | `en`, `vi`: the quiz's language, written as `lang` and copied into the quiz's front matter | `en` | no |
 | `--request` | free text for the agent | empty | no |
 | `--profile` | a built-in or configured profile | from purpose: `exam-prep` gives `exam`, `survey` gives `survey`, others `default` | no |
@@ -289,6 +290,7 @@ Exit: `0` written, `2` usage error, timeout, form cancelled, or `--tui` without 
 | `content` | `--kinds`, `--kinds-other`, `--elsewhere` | a mapping with exactly `kinds` (a list), `kinds_other` and `elsewhere` (text, empty when not given) |
 | `count`, `minutes`, `mix`, `difficulty`, `mode`, `language`, `request` | the option of the same name | as the options; `mix` is a list |
 | `weak_topics` | `--weak-topics` | `true` or `false` |
+| `commitment` | `--commitment` | a number, `0` for none |
 | `focus_tags` | earlier results, when `weak_topics` is true | a list of tags, empty otherwise |
 | `profile` | `--profile` | the profile name, resolved from the purpose when not given |
 | `decided_by` | | for each key above, who chose it: `user`, `default` or `agent` |

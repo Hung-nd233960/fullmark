@@ -49,7 +49,7 @@ Unknown keys are errors.
 | `time_limit` | `90s`, `45m`, `1h30m` | untimed | S |
 | `on_timeout` | `submit` \| `warn` | `submit` | S |
 | `feedback` | `end` \| `instant` | `end` | S |
-| `pass_mark` | 0 to 100, percent of auto-graded points | none | S |
+| `pass_mark` | 0 to 100, percent of auto-graded points; shown on the results card as the goal. A quiz made from a brief takes it from the brief's `commitment` | none | S |
 | `shuffle_questions`, `shuffle_choices` | `true` \| `false` | `false` | S |
 | `partial` | `true` \| `false`: partial credit in `multi`, `ordering` and `matching`. `blanks` and `fields` always give partial credit (an equal share per blank, or each field's points) and ignore it | `true` | S |
 | `theme` | `auto`, `light`, `dark`, `oled`, `white`, `paper` | `auto` | S |
