@@ -66,6 +66,12 @@ describe("numbers follow the quiz's lang, never ui_lang", () => {
     expect(earned(numeric(), { raw: "2,5" }, "lang: vi\nui_lang: en")).toBe(1);
   });
 
+  it("does not read full-width digits: ２.５ is text, not 2.5, in either language", () => {
+    expect(earned(numeric(), { raw: "２.５" })).toBe(0);
+    expect(earned(numeric(), { raw: "２,５" }, "lang: vi")).toBe(0);
+    expect(earned(numeric(), { raw: "−2.5" })).toBe(0);
+  });
+
   it("never reads a thousands separator: 1.500 is 1.5, and 1,500 in vi is 1.5 too", () => {
     const body = "## N? {type=numeric id=q}\n\n```answer\nvalue: 1500\n```";
     expect(earned(body, { raw: "1.500" })).toBe(0);
