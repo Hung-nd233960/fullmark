@@ -1,0 +1,23 @@
+explanation.short  (quality rule)
+level: error  (profile exam, under profile exam)
+options:
+  min-words = 8  (profile exam)
+
+What it catches: an explanation is too short to teach anything
+Why it matters: An explanation should say why the answer is right and what the wrong ones get wrong.
+
+An example that triggers it:
+    ---
+    title: Example
+    ---
+    
+    ## Pick one. {type=single id=q}
+    
+    - [x] a
+    - [ ] b
+    
+    ::: explanation
+    Because.
+    :::
+
+How to fix it: say why the answer is right and what the wrong ones get wrong

@@ -1,0 +1,4 @@
+rules
+--profile
+signals-exam
+--json

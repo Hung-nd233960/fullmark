@@ -1,0 +1,1 @@
+{"status":"error","message":"the config has errors","errors":[{"file":"fullmark.toml","line":3,"message":"`choice.count` is a fixed rule: no profile can change it","fix":"fixed rules say whether a quiz can work at all; fix the quiz instead"}]}

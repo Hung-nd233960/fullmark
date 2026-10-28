@@ -1,0 +1,1 @@
+{"profile":"signals-exam","chain":["signals-exam","exam","default"],"config":["fullmark.toml"],"rules":[{"id":"custom.two-essays","kind":"custom","level":"error","options":{},"origin":"fullmark.toml:5","description":"The real exam has two essays at most.","optionOrigins":{},"why":null,"example":null,"fix":null,"summary":"The real exam has two essays at most."}]}

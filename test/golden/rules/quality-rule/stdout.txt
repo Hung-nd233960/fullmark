@@ -1,0 +1,21 @@
+choice.correct-longest  (quality rule)
+level: warning  (built-in, under profile default)
+options:
+  min-length = 40  (built-in)
+  ratio = 1.8  (built-in)
+
+What it catches: the right choice is much longer than every wrong one
+Why it matters: A learner can pick the longest choice without knowing the answer.
+
+An example that triggers it:
+    ---
+    title: Example
+    ---
+    
+    ## Why is energy conserved? {type=single id=q}
+    
+    - [x] Because the total energy of a closed and isolated system stays constant
+    - [ ] Luck
+    - [ ] Chance
+
+How to fix it: shorten the right choice, or lengthen the wrong ones to match

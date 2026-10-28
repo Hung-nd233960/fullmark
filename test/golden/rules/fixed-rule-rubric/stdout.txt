@@ -1,0 +1,21 @@
+rubric.sum  (fixed rule)
+level: error  (built-in, under profile default)
+
+What it catches: an additive rubric whose maximums do not add up to the question's points
+Why it matters: A quiz with this problem cannot be built or graded correctly, so no profile can relax it.
+
+An example that triggers it:
+    ---
+    title: Example
+    ---
+    
+    ## Q {type=essay id=q points=3}
+    
+    ```answer
+    rubric:
+      mode: additive
+      criteria:
+        - Defines it (1 pts)
+    ```
+
+How to fix it: make the criteria's points add up to the question's points

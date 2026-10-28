@@ -1,0 +1,4 @@
+custom.two-essays  (custom rule)
+level: error  (fullmark.toml:5, under profile signals-exam)
+
+What it catches: The real exam has two essays at most.

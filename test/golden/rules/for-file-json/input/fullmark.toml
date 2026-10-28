@@ -1,0 +1,11 @@
+[profiles.signals-exam]
+extends = "exam"
+rules."explanation.short" = { level = "error", min-words = 6 }
+
+[[profiles.signals-exam.checks]]
+id = "custom.two-essays"
+kind = "count"
+where = { type = "essay" }
+max = 2
+level = "error"
+message = "The real exam has two essays at most."

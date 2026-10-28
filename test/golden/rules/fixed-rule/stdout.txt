@@ -1,0 +1,18 @@
+syntax.yaml  (fixed rule)
+level: error  (built-in, under profile default)
+
+What it catches: an answer block whose YAML does not parse
+Why it matters: A quiz with this problem cannot be built or graded correctly, so no profile can relax it.
+
+An example that triggers it:
+    ---
+    title: Example
+    ---
+    
+    ## Q {type=numeric id=q}
+    
+    ```answer
+    value: [1, 2
+    ```
+
+How to fix it: fix the YAML of the ```answer block: close the bracket, quote text that has a colon

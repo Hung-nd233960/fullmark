@@ -1,0 +1,2 @@
+unknown rule `nope.nothing`
+`quiz rules` lists the rules

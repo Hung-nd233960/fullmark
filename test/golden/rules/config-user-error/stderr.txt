@@ -1,0 +1,3 @@
+the config has errors
+user-config.toml:1: not valid TOML: illegal character in key
+    fix: fix the syntax at that line: keys are `name = value`, tables are `[name]`, text is in quotes
