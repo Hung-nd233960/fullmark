@@ -17,6 +17,7 @@ New in step 2: **a slice is sized to fit one Sonnet session** (about the work of
 | 2a foundation | done, reviewed, gaps decided | `ef9bac7`..`963a180` |
 | 2b the simple types | done, reviewed, gaps decided | `868cf82`, `97a6f6e`, `47aca74` |
 | 2c2 materials in the core | done, reviewed, gaps decided | `94341aa`..`9797716` |
+| 2c ordering, matching, essay, code | done, reviewed, gaps decided | `06ab9f3`..`92af933` |
 
 Step 1 is done (see [STEP1.md](STEP1.md)): `check`, `rules`, `grade` and `ids`, 1309 tests.
 
@@ -83,7 +84,11 @@ Also raised on 2026-10-28 and kept outside v1: [proposals/rapid-response.md](../
 1. Done: 2b reviewed and decided (above).
 2. Done: 2c2. Reviewed on 2026-10-28: `npm run check` passes (45 files, 1419 vitest tests, 2 startup tests, 5 Playwright tests; the startup test missed its 150 ms budget once in Sonnet's run, at 156 ms, and passed on re-run and in review). Tried by hand: a blank in a table cell, `\[[` as text, a blank in alt text, case mismatches for a sheet and a sheet's image, a second `#`, a sheet with no heading, a `- [x]` in a sheet. **Decided by the owner:** sheets allow `##` to `######` (2c2 made `####` and deeper `syntax.heading-level`: fix in 2c); no `:::` containers in a sheet (as built); an empty sheet is `materials.heading` (as built); loading problems stay at the `materials:` line; the key blob may carry the sheet paths; `blanksInLinkText` makes its markdown-it once (2c); Shiki and blanks tested in 2c. Written into QUIZ_SYNTAX.md section 2.
 3. **2c split in three** (owner, 2026-10-28): 2c the four types, 2c3 KaTeX and Shiki, 2c4 dragging for `ordering` (after 2f). How the four types are answered is in TECHNICAL_DESIGN.md section 8, row "Answering ordering, matching, essay, code". The blank inside Shiki-highlighted code moves to 2c3.
-4. **Next: delegate 2c** (brief below) in a fresh session, then review it.
+4. Done: 2c. Reviewed on 2026-10-28: `npm run check` passes (45 files, 1428 vitest tests, 2 startup tests, 8 Playwright tests, axe clean); the runtime is 28.4 KB gzipped; every example builds. The keyboard `ordering` test was flaky (it read the focus before the effect that moves it ran; 1 failure in 5): fixed in review to poll (`92af933`). Sonnet's choices kept: `NotAvailableError` and its exit 2 deleted; `KeyBlob.samples` (sample answers as HTML); page items `{html, label}`; essay and code read-only after Submit; the rubric shown above a `code` box too; the pending line keeps the catalog's "Waiting for a grader". **Decided by the owner** (written into TECHNICAL_DESIGN.md section 8, row "Answering ordering, matching, essay, code"), the first tasks of 2c3:
+   - **G.** Unanswered after Submit: an untouched `ordering` marks no item right or wrong, only "belongs at N"; a `matching` pair left at "—" says "No answer" with the right match (as an empty blank). Today both say "Incorrect" on every item.
+   - **H.** `pageQuestion` falls back to source order when the plan has no `optionOrder` for an `ordering` or `matching` question, which would show the answer: make it a build error instead (it cannot happen today).
+   - **Code reset.** Clearing a `code` box leaves it empty; while it is empty and the question has a `starter`, a "Reset to starter" button under the box puts the starter back (a new string in `en` and `vi`; a Playwright test: clear, reset, the answer is `null` again).
+5. **Next: write the 2c3 brief** (KaTeX and Shiki, with G, H and the code reset first), commit it, and delegate it.
 
 ## Goal
 
