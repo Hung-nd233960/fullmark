@@ -420,7 +420,7 @@ Every rule below is a **fixed rule**: an error that no profile can change or ign
 | `asset.alt` | an image without alt text |
 | `materials.missing` | a `materials` file that does not exist (a path outside the folder or a URL is `asset.outside` or `asset.remote`) |
 | `materials.heading` | a sheet that does not start with a `#` heading, or has a second `#` heading |
-| `materials.question` | question syntax in a sheet: a `{type=…}` attribute, a choice list with `[x]` or `[ ]`, an `answer` block, or a blank `[[…]]` (it would never be scored) |
+| `materials.question` | question syntax in a sheet: a `{type=…}` attribute, a choice list with `[x]` or `[ ]`, an `answer` block, or a blank `[[…]]` (it would never be scored; write a worked example as text. Sample questions: [proposals/sample-questions.md](proposals/sample-questions.md)) |
 | `theme.unknown`, `theme.unknown-font` | a theme or font fullmark does not have |
 | `section.id-duplicate` | two sections with the same id |
 | `section.pick` | `pick` below 1 or above the section's question count |
