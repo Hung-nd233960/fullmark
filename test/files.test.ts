@@ -24,7 +24,7 @@ describe("expandInputs", () => {
   });
 
   it("expands ** across folders", () => {
-    expect(expandInputs(["deep/**/*.md"], dir).files).toEqual([join("deep", "d.md"), join("deep", "x", "c.md")]);
+    expect(expandInputs(["deep/**/*.md"], dir).files).toEqual(["deep/d.md", "deep/x/c.md"]);
   });
 
   it("keeps the order given and drops repeated names", () => {

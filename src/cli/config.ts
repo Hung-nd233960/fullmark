@@ -1,9 +1,10 @@
 import { existsSync, readFileSync, statSync } from "node:fs";
 import { homedir } from "node:os";
-import { dirname, isAbsolute, join, relative, resolve } from "node:path";
+import { dirname, join, resolve } from "node:path";
 import { parseConfig } from "../core/config/parse";
 import { type Layers, validateLayers } from "../core/config/resolve";
 import type { ConfigError, ConfigFileData } from "../core/config/types";
+import { shownPath } from "./paths";
 
 /** What the config commands need from the machine, so that tests can supply their own. */
 export type Machine = {
@@ -52,12 +53,6 @@ export function findProjectConfig(start: string): string | null {
   }
 }
 
-/** A path as the user would read it: relative to the folder they are in when it is below it, else absolute. */
-export function displayPath(path: string, cwd: string): string {
-  const rel = relative(cwd, path);
-  return rel !== "" && !rel.startsWith("..") && !isAbsolute(rel) ? rel : path;
-}
-
 export type LoadedConfig = {
   layers: Layers;
   /** the files read, as displayed in messages and in `--json`: the user config first, then fullmark.toml */
@@ -102,9 +97,9 @@ export function loadConfig(m: Machine, quizDir: string, override: string | null)
   const errors: ConfigError[] = [];
 
   const user = userConfigPath(m);
-  const userRead = readConfig(user.path, user.path, "user", user.explicit);
+  const userRead = readConfig(user.path, shownPath(user.path, m.cwd), "user", user.explicit);
   errors.push(...userRead.errors);
-  if (userRead.read) files.push(user.path);
+  if (userRead.read) files.push(shownPath(user.path, m.cwd));
 
   let projectPath: string | null;
   let mustExist = false;
@@ -114,7 +109,7 @@ export function loadConfig(m: Machine, quizDir: string, override: string | null)
   } else projectPath = findProjectConfig(quizDir);
   let project: ConfigFileData | null = null;
   if (projectPath !== null) {
-    const shown = displayPath(projectPath, m.cwd);
+    const shown = shownPath(projectPath, m.cwd);
     const read = readConfig(projectPath, shown, "project", mustExist);
     errors.push(...read.errors);
     project = read.data;

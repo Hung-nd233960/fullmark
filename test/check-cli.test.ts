@@ -265,7 +265,7 @@ describe("the config", () => {
     expect(runCheck(["quiz.md"], opts({ json: true, profile: "mine" }), c.io)).toBe(0);
     const [r] = json(c.out);
     expect(r?.warnings).toBe(1);
-    expect(r?.config).toEqual([join(dir, "mine.toml")]);
+    expect(r?.config).toEqual(["mine.toml"]);
   });
 
   it("a config error exits 2 and names file:line, in the text and in --json", () => {
@@ -317,9 +317,7 @@ describe("a brief beside the quiz", () => {
     const b = capture(dir);
     runCheck([join("b", "quiz.md")], opts({ json: true }), b.io);
     const issues = json(b.out)[0]?.issues as { rule: string; file: string; line: number }[];
-    expect(issues).toEqual([
-      expect.objectContaining({ rule: "brief.invalid", file: join("b", "brief.yaml"), line: 7 }),
-    ]);
+    expect(issues).toEqual([expect.objectContaining({ rule: "brief.invalid", file: "b/brief.yaml", line: 7 })]);
   });
 
   it("looks at content/ for brief.content-kinds", () => {

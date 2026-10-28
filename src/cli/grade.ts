@@ -11,6 +11,7 @@ import { EXIT, type ExitCode } from "./exit-codes";
 import { expandInputs } from "./files";
 import type { Io } from "./ids";
 import { loadQuiz } from "./load";
+import { shownPath } from "./paths";
 
 export type GradeOptions = {
   quiz: string | null;
@@ -119,8 +120,8 @@ async function gradeOne(
   return {
     status: "written",
     file: results,
-    report: target,
-    ...(template ? { grades_template: template } : {}),
+    report: shownPath(target, io.cwd),
+    ...(template ? { grades_template: shownPath(template, io.cwd) } : {}),
     score: report.score,
     pending: report.score?.pending ?? 0,
     warnings,
@@ -176,11 +177,13 @@ export async function runGrade(patterns: readonly string[], opts: GradeOptions, 
   try {
     loaded = loadQuiz(quizPath);
   } catch (error) {
-    io.err(`${opts.quiz}: cannot read the quiz: ${(error as Error).message}`);
+    io.err(`${shownPath(opts.quiz, io.cwd)}: cannot read the quiz: ${(error as Error).message}`);
     return EXIT.usage;
   }
   if (loaded.quiz === null || loaded.hash === null) {
-    io.err(`${opts.quiz}: the quiz has errors, so it cannot grade anything; run \`quiz check\` on it`);
+    io.err(
+      `${shownPath(opts.quiz, io.cwd)}: the quiz has errors, so it cannot grade anything; run \`quiz check\` on it`,
+    );
     for (const i of loaded.issues.filter((x) => x.level === "error")) io.err(`  ${i.line}: ${i.rule}: ${i.message}`);
     return EXIT.problems;
   }
@@ -191,12 +194,12 @@ export async function runGrade(patterns: readonly string[], opts: GradeOptions, 
     try {
       gradesText = readText(resolve(io.cwd, opts.grades));
     } catch (error) {
-      io.err(`${opts.grades}: cannot read the grades file: ${(error as Error).message}`);
+      io.err(`${shownPath(opts.grades, io.cwd)}: cannot read the grades file: ${(error as Error).message}`);
       return EXIT.usage;
     }
     const read = parseGrades(gradesText);
     if (!read.ok) {
-      io.err(`${opts.grades}: ${read.message}`);
+      io.err(`${shownPath(opts.grades, io.cwd)}: ${read.message}`);
       return EXIT.problems;
     }
     gradesFile = read.file;
@@ -211,7 +214,16 @@ export async function runGrade(patterns: readonly string[], opts: GradeOptions, 
     exit = worst(exit, EXIT.usage);
   }
   for (const file of inputs.files) {
-    const result = await gradeOne(file, loaded.quiz, loaded.hash, opts.quiz, gradesFile, opts, several, io);
+    const result = await gradeOne(
+      file,
+      loaded.quiz,
+      loaded.hash,
+      shownPath(opts.quiz, io.cwd),
+      gradesFile,
+      opts,
+      several,
+      io,
+    );
     emit(result);
     if (result.status === "written") ok++;
     else {

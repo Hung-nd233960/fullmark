@@ -221,9 +221,9 @@ describe("quiz ids", () => {
     expect(r.exit).toBe(0);
     const lines = r.out.map((l) => JSON.parse(l));
     expect(lines.map((l) => [l.status, l.file])).toEqual([
-      ["written", join("quizzes", "a.md")],
-      ["written", join("quizzes", "b.md")],
-      ["unchanged", join("quizzes", "done.md")],
+      ["written", "quizzes/a.md"],
+      ["written", "quizzes/b.md"],
+      ["unchanged", "quizzes/done.md"],
       ["done", undefined],
     ]);
     expect(lines[3]).toEqual({ status: "done", ok: 3, failed: 0 });

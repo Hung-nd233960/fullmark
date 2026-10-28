@@ -9,6 +9,7 @@ import { type CheckIo, describeProfile } from "./check";
 import { loadConfig, realMachine } from "./config";
 import { EXIT, type ExitCode } from "./exit-codes";
 import { loadQuiz } from "./load";
+import { shownPath } from "./paths";
 
 export type RulesOptions = {
   profile: string | null;
@@ -72,7 +73,7 @@ export function runRules(rule: string | null, opts: RulesOptions, io: CheckIo): 
     }
     quizDir = dirname(path);
     const briefPath = join(quizDir, "brief.yaml");
-    if (existsSync(briefPath)) brief = readBrief(readFileSync(briefPath, "utf8"), briefPath).brief;
+    if (existsSync(briefPath)) brief = readBrief(readFileSync(briefPath, "utf8"), shownPath(briefPath, io.cwd)).brief;
   }
 
   const config = loadConfig(machine, quizDir, opts.config);

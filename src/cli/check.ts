@@ -19,6 +19,7 @@ import { EXIT, type ExitCode } from "./exit-codes";
 import { expandInputs } from "./files";
 import type { Io } from "./ids";
 import { loadQuiz } from "./load";
+import { shownPath } from "./paths";
 
 export type CheckOptions = {
   profile: string | null;
@@ -96,7 +97,7 @@ export function checkFile(file: string, opts: CheckOptions, io: CheckIo): FileOu
   if (existsSync(briefPath)) {
     try {
       briefText = readFileSync(briefPath, "utf8").replace(/^﻿/, "");
-      const read = readBrief(briefText, displayName(briefPath, io.cwd));
+      const read = readBrief(briefText, shownPath(briefPath, io.cwd));
       brief = read.brief;
       briefIssues = read.issues;
     } catch (error) {
@@ -114,7 +115,7 @@ export function checkFile(file: string, opts: CheckOptions, io: CheckIo): FileOu
       {
         rule: "brief.invalid",
         level: "warning",
-        file: displayName(briefPath, io.cwd),
+        file: shownPath(briefPath, io.cwd),
         line: Math.max(line, 1),
         message: `brief.yaml names the profile \`${choice.name}\`, which does not exist, so the next choice was used`,
         fix: unknownProfileFix(choice.name, config.layers),
@@ -178,11 +179,6 @@ export function checkFile(file: string, opts: CheckOptions, io: CheckIo): FileOu
     header: describeProfile(resolved.profile, choice, config.files),
   };
 }
-
-const displayName = (path: string, cwd: string): string => {
-  const rel = path.startsWith(cwd) ? path.slice(cwd.length + 1) : path;
-  return rel === "" ? path : rel;
-};
 
 const plural = (n: number, word: string) => `${n} ${word}${n === 1 ? "" : "s"}`;
 

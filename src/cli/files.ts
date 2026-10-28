@@ -1,5 +1,6 @@
 import { existsSync, readdirSync, statSync } from "node:fs";
 import { isAbsolute, join, resolve, sep } from "node:path";
+import { shownPath } from "./paths";
 
 /**
  * The inputs of a command that takes `FILE...` (COMMANDS.md, "Several files"): globs are expanded here, since
@@ -115,17 +116,16 @@ export function expandInputs(patterns: readonly string[], cwd: string): Inputs {
   for (const input of patterns) {
     if (GLOB_CHARS.test(input)) {
       const matches = expand(input, cwd).sort(compare);
-      if (matches.length === 0) errors.push({ input, message: "no file matches" });
+      if (matches.length === 0) errors.push({ input: shownPath(input, cwd), message: "no file matches" });
       for (const m of matches) {
-        // show the match the way the user wrote the pattern: relative to the folder they are in
-        add(m, isAbsolute(input) ? m : m.slice(cwd.length + 1) || m);
+        add(m, shownPath(m, cwd));
       }
     } else if (!existsSync(resolve(cwd, input))) {
-      errors.push({ input, message: "no such file" });
+      errors.push({ input: shownPath(input, cwd), message: "no such file" });
     } else if (isDirectory(resolve(cwd, input))) {
-      errors.push({ input, message: "is a folder, not a quiz file" });
+      errors.push({ input: shownPath(input, cwd), message: "is a folder, not a quiz file" });
     } else {
-      add(input, input);
+      add(input, shownPath(input, cwd));
     }
   }
   return { files, errors };
