@@ -14,13 +14,34 @@ New in step 2: **a slice is sized to fit one Sonnet session** (about the work of
 
 | Slice | State | Commits |
 |---|---|---|
-| 2a foundation | brief written | |
+| 2a foundation | done, reviewed, gaps decided | `ef9bac7`..`963a180` |
+| 2b the simple types | brief written | |
 
 Step 1 is done (see [STEP1.md](STEP1.md)): `check`, `rules`, `grade` and `ids`, 1309 tests.
 
+**2a's review (2026-10-28).** `npm run check` passes: 42 files, 1341 vitest tests, 2 startup tests, 2 Playwright tests. The runtime is 24.2 KB gzipped (budget 60; `dist/page.js` 67 KB raw, `dist/page.css` 2.6 KB). Sonnet's own report was not kept, so the gaps below come from the review. Found:
+
+- **Bug:** `scriptJson` in `src/build/page.ts` writes `"<"` (and `" "`, `" "`) as TypeScript string escapes, which are the characters themselves, so nothing is escaped. A quiz whose title holds `</script>` ends the data block early and breaks the page (tried by hand). Fixed in 2b, task 1.
+- **Housekeeping:** `test-results/.last-run.json` (Playwright's output) was committed and is not ignored.
+- **Proposal from 2a:** the export is named `<quiz id>-results-YYYYMMDD-HHMMSS.json`, the stamp in the learner's local time.
+- **Done differently:** the answer shapes moved from `zod` to `zod/mini` (the same package; the full one added 110 KB gzipped to the runtime). Same shapes and messages.
+- **Not in any slice:** `shuffle_questions` and `shuffle_choices` (the page's plan is made at build without a seed, so it never shuffles), and `feedback: instant` (a Check button per question).
+
+**Decided by the owner on 2026-10-28**, and written into the design docs (TECHNICAL_DESIGN.md sections 3, 4 "Seeds" and "`results-v2`", 8 "Results" and "Printable paper"; COMMANDS.md `quiz build --seed` and the file table):
+
+1. The export is named `<quiz id>-results-YYYYMMDD-HHMMSS.json`, local time.
+2. `zod/mini` for code bundled into the page.
+3. Shuffling arrives in **2d**: the page draws a random seed at Start and records it with the order it produced; replay reads the record and never shuffles again.
+4. `feedback: instant` arrives in **2e**.
+5. A `short` question with only `patterns` shows its result and no accepted answer.
+6. **Mã đề:** `build --print --seed S` prints `S` (1 to 8 letters or digits) as the paper's code, "Mã đề" or "Paper code", in the header, the footer, the key, and a box on the answer sheet. Slice 2k.
+7. **Default seed:** without a seed, the seed is the quiz's short version (the first 4 hex characters of `quizHash`). `ordering` and `matching` are always scrambled, so they are never shown in the right order; questions and choices stay in source order unless asked. Lands in 2b's task 1, before 2c brings `ordering`.
+
+Also raised on 2026-10-28 and kept outside v1: [proposals/rapid-response.md](../design/proposals/rapid-response.md) (one question at a time, keyboard answering).
+
 ### Next steps, in order
 
-1. Delegate 2a, then review it.
+1. Commit (the review, the decisions, the brief), then delegate 2b and review it.
 
 ## Goal
 
@@ -47,14 +68,14 @@ Step 1's rules hold ([STEP1.md](STEP1.md), "Rules for every slice"): the design 
 | **2a** | Foundation: the page build, the Attempt reducer, `single` only, Submit and Export, `build FILE`, determinism, the CSP, the runtime budget, the two-quiz seam, Playwright |
 | **2b** | `multi`, `truefalse`, `short`, `numeric`, `blanks`, `fields`, `scale` |
 | **2c** | `ordering`, `matching`, `essay`, `code`; maths (KaTeX) and code highlighting (Shiki) in question text |
-| **2d** | Start screen and part picker, sections and `pick`, the timer, autosave and resume, storage blocked; Playwright adds Firefox here, for its isolated `file://` storage (foundation 2) and one full answer-submit-export run |
-| **2e** | Results card (asterisks, goal line), review filter, Retry missed |
+| **2d** | Start screen and part picker, sections and `pick`, shuffling with a seed drawn at Start, the timer, autosave and resume, storage blocked; Playwright adds Firefox here, for its isolated `file://` storage (foundation 2) and one full answer-submit-export run |
+| **2e** | Results card (asterisks, goal line), review filter, Retry missed, `feedback: instant` |
 | **2f** | Question map and flags, the collapsible panel, Focus mode |
 | **2g** | Themes: five token sets, the light/dark toggle, `look: locked`, the contrast test |
 | **2h** | Fonts: four fonts, `--fonts`, the Vietnamese glyph test, screenshot baselines |
 | **2i** | `build` across the CLI: several files, `--build-file`, `-o`, `--strict`, `--open`, `--json`, `build.size`, `--ui-lang` and the `vi` chrome scan, `--acknowledgements` and the page's licence comment, the 300-question budget, golden files |
 | **2j** | `replay` |
-| **2k** | The printable paper: `--print`, `--answers`, `--answer-sheet`, `--seed` |
+| **2k** | The printable paper: `--print`, `--answers`, `--answer-sheet`, `--seed` and the mã đề |
 
 Later briefs stay outlines until the slice before is reviewed.
 
@@ -95,3 +116,39 @@ One question type from source to graded export, on the architecture every later 
 
 - Every task above has its tests; `npm run check` passes, Playwright included.
 - Report: the runtime's gzipped size, the startup medians, the export file name proposal, and anything the docs left open.
+
+## Slice 2b: the simple types
+
+`multi`, `truefalse`, `short`, `numeric`, `blanks`, `fields` and `scale` on 2a's architecture: each answered in the page, graded by the one grader, shown in review, and exported. The test that matters stays 2a's: **for every question, the status and points the page shows equal what `quiz grade` gives for the exported file.** After 2b, `examples/exam` builds.
+
+### Read first
+
+- This brief, and 2a's review above.
+- QUIZ_SYNTAX.md section 6: "single and multi", "truefalse", "numeric", "short", "blanks", "fields", "scale"; section 7 (ungraded questions) only for what an ungraded question shows.
+- TECHNICAL_DESIGN.md section 4 "`results-v2`" (the answer table); section 8 "New UI for the v1 features", the row "Results (after Submit)" only for what a question shows after Submit (the results card itself is 2e).
+- Code: `src/page/` (all of it, it is small), `src/build/page.ts`, `src/build/render.ts`, `src/core/attempt/answers.ts`, `src/core/grade/types.ts` (`GradedQuestion` and its `results`), `src/core/number.ts` (`readNumber`), `src/core/parse/blanks.ts` and the place in `src/core/parse/question.ts` that calls `scanBlanks`, `src/core/i18n/en.ts` and `vi.ts` (the `page` block), `e2e/single.spec.ts`, `test/build/page.test.ts`.
+
+### Decided for this slice
+
+- **One component per type**, in `src/page/questions/`, chosen by a table keyed on the type. The card around them (number, points, prompt, hint, result line, explanation) is one shared component, taken out of 2a's `SingleQuestion`. `single` and `multi` share the choice list (radio or checkbox; `{input}` on any picked choice).
+- **Page data is a union on `type`.** Each type carries only what the learner may see: `multi` its choices; `truefalse` nothing more; `numeric` its `unit`; `short` nothing more; `blanks` the prompt with its blanks cut out (below) and the blank count; `fields` each field's label (HTML) and whether it is graded; `scale` `min`, `max` and the labels. Every key (`value`, `values`, tolerances, `accept`, `patterns`, blank answers, field keys, `[x]`) is only in the key blob, as in 2a.
+- **Blanks in the page.** At build, the prompt's blanks are found with the parser's own `scanBlanks` (extended to return each blank's start and end offset; never a second regex), in the same regions the parser scans (body, fenced code, heading), and each is replaced by an `<input>` written into the prompt HTML (`class="fm-blank" data-blank="N"`, an `aria-label` "Blank N"). The number found must equal `q.blanks.length`, or build throws. The component reads them by event delegation on the prompt and sets their value, `disabled` and result after Submit from an effect; Preact does not render inside that HTML.
+- **Inputs.** Text boxes are `type="text"` (a numeric answer may be `1/3` or `1e-3`), with `autocomplete="off"` and `spellcheck="false"`. `truefalse` is two radios, True then False, in the UI language. `scale` is one radio row from `min` to `max`, each label under its value.
+- **What the page stores** is exactly the answer table of section 4. Clearing every box of a question, or a `multi` with nothing ticked, stores `null` (unanswered). `blanks` and `fields` store one text per box, `""` for an empty one. The page never decides a status itself: every status, point and per-blank or per-field result on screen comes from `grade`.
+- **The comma warning.** In a quiz with `lang: en`, a numeric box (a `numeric` question, a numeric blank or a numeric field) that holds a comma shows at once, under the box, "Use a point for decimals: 2.5, not 2,5" (and the `vi` catalog's wording when `ui_lang: vi`). It never changes what is stored. With `lang: vi` there is no warning; `2,5` is read as 2.5 by the grader. The rule follows `lang`, never `ui_lang`.
+- **After Submit,** each question shows 2a's result line, then: `multi` marks "Your answer" and "Correct answer" on the choices as `single` does; `truefalse` marks the right one; `numeric` shows the learner's text beside the accepted value with its tolerance and unit as `value ± tolerance` ("−2 ± 0.01"), `value ± 1%` for a relative tolerance, the value alone when the tolerance is 0, several `values` joined with "or"; `short` shows the first `accept` entry (none when it has only `patterns`; owner's point 5); each blank and each graded field gets its own mark (correct or wrong) and, when wrong, the first accepted answer or the value with its tolerance. `scale` and ungraded fields show only the learner's answer. The words are in both catalogs.
+- **Still refused** with 2a's exit 2: `ordering`, `matching`, `essay`, `code`.
+
+### Tasks
+
+1. **2a's fixes first, one commit:** `scriptJson` escapes `<`, U+2028 and U+2029 as the six characters `<`, ` `, ` ` (write them as `"\u003c"` in the source), with a test that a title, a prompt and a choice holding `</script>` build a page whose data block parses back to the same text; add `test-results/` to `.gitignore` and remove it from git. Read section 4's "Seeds" bullet and make `planFor` follow it: with no seed given, use the quiz's short version, so `ordering` and `matching` always get an `optionOrder` and choices and questions shuffle only when asked; reject a seed that is not 1 to 8 letters or digits. Update the plan tests and any golden files this moves (report the count). The page's plan, made at build, then carries the short version as its seed.
+2. **`src/build`:** page data for the seven types, the blank cutting, the key blob for every type (`keyOf` strips what the page shows: prompts, choice text, labels, explanations, as now).
+3. **`src/page`:** the shared card, the seven components, the comma warning, the review display above, the new strings in `en` and `vi`.
+4. **Tests in vitest:** for each type, the page data holds no part of its key (search the built page's text for every accepted text, number as written and blank answer of a fixture, and check the data block against the union's exact keys); blanks found in the heading, the body and fenced code, and skipped in inline code, with the count check; the comma warning's rule (en and vi, `numeric`, blank, field); a `vi` quiz's `2,5` scores right through the page's grader.
+5. **Playwright:** a fixture with every 2b type plus one `single`, answered with right, wrong, partly right (`multi`, `blanks`, `fields`) and empty answers, submitted and exported: `quiz grade` on the file gives the same status and points for every question, and the same total, as the page shows. `examples/exam` built, answered in part, the same comparison. A `vi` fixture: `2,5` right, no comma warning; the `en` fixture shows it. Add axe-core (`@axe-core/playwright` and `axe-core`, pinned) and run it on the fixture page after Start and after Submit; it must report no violations.
+6. **Golden files:** `test/golden/build/` gets one page with every 2b type (with `--built-at`); `other-type` now uses a quiz with `ordering` (still exit 2).
+
+### Done when
+
+- Every task above has its tests; `npm run check` passes, Playwright and axe included; `examples/exam` builds.
+- Report: the runtime's gzipped size, test counts, every gap, and what the review display looks like for each type (one line each; screenshots are not needed until 2d).

@@ -75,7 +75,7 @@ A path is printed relative to the working directory when it lies under it, else 
 |---|---|---|
 | `quiz.md` plus `assets/` | fullmark Markdown (`quiz guide`) | the author or an agent |
 | `quiz.html` | one self-contained offline page | `build`, `library share` |
-| `*-results-*.json` | `results-v2` (serialised Attempt) | the page (**Export**), `serve`, `library take` |
+| `*-results-*.json` | `results-v2` (serialised Attempt); the page names it `<quiz id>-results-YYYYMMDD-HHMMSS.json`, local time | the page (**Export**), `serve`, `library take` |
 | `*-report.md`, `*-report.json` | `report-v2` (the JSON; TECHNICAL_DESIGN.md, section 6) | `grade`, `library grade` |
 | `*-grades.json` | `grades-v2`: the grader's identity, and per question the rubric mode with scores or bands per criterion and notes | template from `grade --json`, filled in by an agent or through `grade --web` |
 | `review.json` | `review-v1`: keep, fix or drop per question | `review` |
@@ -160,7 +160,7 @@ Checks the quiz (under the profile, as `check` does), then writes one self-conta
 | `--print` | Write a static printable paper instead of the interactive page (TECHNICAL_DESIGN.md, section 8). Default output: `FILE` with `-print.html`. Print it, or save it as PDF from the browser |
 | `--answers` | With `--print`: `none` (default, an exam paper), `key` (an answer key on a new page after the paper) or `inline` (answers and explanations under each question) |
 | `--answer-sheet` | With `--print`: after the header, a grid of boxes, one per single-choice and true/false question, where the student writes the letter; the key then lists those answers in the same grid. Other question types are answered in place |
-| `--seed S` | With `--print`: shuffle questions and options reproducibly, so different seeds give different versions of the same exam, each with a matching key |
+| `--seed S` | With `--print`: shuffle questions and options reproducibly, so different seeds give different versions of the same exam, each with a matching key. `S` is 1 to 8 letters or digits (else exit 2) and is printed as the paper's code, "Mã đề" or "Paper code" (TECHNICAL_DESIGN.md, Printable paper) |
 | `--built-at ISO` | Pin the build time, so a build is byte-identical across runs. Default: now |
 | `--ui-lang en\|vi` | Language of the interface for this build, overriding the quiz's `ui_lang`. The questions are not translated, and grading still follows the quiz's `lang` |
 | `--watch` | Rebuild whenever `FILE` or its `assets/` change. Keeps the last good page when a save has errors. Runs until Ctrl+C |

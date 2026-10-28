@@ -51,6 +51,7 @@ One file per step (`STEP1.md`, `STEP2.md` and so on), written when the step star
 | [library-query.md](design/proposals/library-query.md) | Filters on `library list` |
 | [markdown-export.md](design/proposals/markdown-export.md) | Plain Markdown export for Word and Typst |
 | [multi-quiz-bundle.md](design/proposals/multi-quiz-bundle.md) | Several quizzes in one HTML file |
+| [rapid-response.md](design/proposals/rapid-response.md) | One question at a time that moves on when answered, for drills |
 | [reference-sheet.md](design/proposals/reference-sheet.md) | Reference sheets: formulas, constants, unit conversions |
 | [self-host.md](design/proposals/self-host.md) | A library server for a homelab |
 | [shelves.md](design/proposals/shelves.md) | Several shelves and commands to manage them |
