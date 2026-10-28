@@ -3,7 +3,16 @@
   "root": true,
   "files": {
     "ignoreUnknown": true,
-    "includes": ["src/**", "test/**", "*.json", "*.ts", "!test/fixtures", "!test/data", "!package-lock.json"]
+    "includes": [
+      "src/**",
+      "test/**",
+      "*.json",
+      "*.ts",
+      "!test/fixtures",
+      "!test/data",
+      "!test/golden",
+      "!package-lock.json"
+    ]
   },
   "formatter": {
     "enabled": true,

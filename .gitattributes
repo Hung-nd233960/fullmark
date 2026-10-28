@@ -1,1 +1,4 @@
 * text=auto eol=lf
+
+# golden files are compared byte for byte: no line-ending conversion, so a CRLF input stays CRLF
+test/golden/** -text

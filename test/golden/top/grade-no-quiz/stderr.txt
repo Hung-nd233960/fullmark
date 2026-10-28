@@ -1,0 +1,1 @@
+error: required option '--quiz <file>' not specified

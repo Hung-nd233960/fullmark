@@ -1,0 +1,12 @@
+Usage: quiz ids [options] <files...>
+
+give every question without an id a random one, and change nothing else
+
+Arguments:
+  files       quiz .md files (globs are expanded)
+
+Options:
+  --dry-run   list the ids it would add, and write nothing
+  --json      print one JSON object per file on stdout
+  --plain     no progress line, even in a terminal
+  -h, --help  help for the command

@@ -1,0 +1,19 @@
+Usage: quiz grade [options] <results...>
+
+re-grade attempts and write a report: score, wrong answers, and the essays laid
+out for a grader
+
+Arguments:
+  results             results files (globs are expanded)
+
+Options:
+  --quiz <file>       the quiz the attempts were taken on: it holds the answer
+                      key and the rubrics
+  -o, --output <out>  the report file; with several results files, a folder
+  --grades <file>     fold a filled-in grades file into the report (one results
+                      file only)
+  --json              write *-report.json and a *-grades.json template instead
+                      of Markdown, and print JSON
+  --web               grade by hand in a form (not available yet)
+  --name <name>       with --web: the human grader's name (not available yet)
+  -h, --help          help for the command

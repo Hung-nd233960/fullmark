@@ -1,0 +1,18 @@
+Usage: quiz check [options] <files...>
+
+check quizzes under a profile: syntax errors, quality warnings, the brief beside
+the quiz
+
+Arguments:
+  files                   quiz .md files (globs are expanded)
+
+Options:
+  --profile <name>        the check profile; overrides the quiz's profile:
+  --config <toml>         use this config file instead of the nearest
+                          fullmark.toml
+  --strict                warnings count as errors
+  --review <review.json>  also fail until every flagged question changed (not
+                          available yet: it arrives with quiz review)
+  --json                  print one JSON object per file on stdout
+  --plain                 no colours and no progress line, even in a terminal
+  -h, --help              help for the command

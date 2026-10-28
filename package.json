@@ -19,6 +19,7 @@
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
     "lint": "biome check",
+    "golden:update": "node scripts/golden-update.mjs",
     "check": "npm run typecheck && npm run lint && npm run test"
   },
   "devDependencies": {

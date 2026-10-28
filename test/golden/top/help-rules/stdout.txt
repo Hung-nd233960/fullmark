@@ -1,0 +1,17 @@
+Usage: quiz rules [options] [rule]
+
+the rule catalogue: what a profile checks and why a quiz was held to a rule
+
+Arguments:
+  rule              a rule id, such as choice.correct-longest or
+                    custom.two-essays
+
+Options:
+  --profile <name>  show the rules under this profile (default: default, or the
+                    quiz's with --for)
+  --for <file>      resolve the config and the profile as check FILE would, and
+                    show where each value came from
+  --config <toml>   use this config file instead of the nearest fullmark.toml
+  --json            print the rules as one JSON object on stdout
+  --plain           no colours, even in a terminal
+  -h, --help        help for the command

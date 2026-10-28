@@ -1,0 +1,30 @@
+import { describe, expect, it } from "vitest";
+import { findCases, readExpected, runCase, view, writeExpected } from "./runner";
+
+// `npm run golden:update` sets this and rewrites the expected files; a plain run only compares.
+const UPDATE = process.env.FULLMARK_GOLDEN_UPDATE === "1";
+
+describe("golden files", () => {
+  const cases = findCases();
+
+  it("has cases", () => {
+    expect(cases.length).toBeGreaterThan(0);
+  });
+
+  for (const c of cases) {
+    it.concurrent(
+      c.name,
+      async () => {
+        const [first, second] = await Promise.all([runCase(c), runCase(c)]);
+        // determinism: the same bytes from a second run in a fresh folder
+        expect(view(second), "two runs of the same case differ").toEqual(view(first));
+        if (UPDATE) {
+          writeExpected(c, first);
+          return;
+        }
+        expect(view(first)).toEqual(view(readExpected(c)));
+      },
+      60_000,
+    );
+  }
+});
