@@ -125,10 +125,19 @@ export function buildProgram(outcome: Outcome = { exit: EXIT.done }, io: Io = te
     .option("--json", "write *-report.json and a *-grades.json template instead of Markdown, and print JSON")
     .option("--web", "grade by hand in a form (not available yet)")
     .option("--name <name>", "with --web: the human grader's name (not available yet)")
+    .option("--plain", "no progress line, even in a terminal")
     .action(
       async (
         results: string[],
-        options: { quiz: string; output?: string; grades?: string; json?: boolean; web?: boolean; name?: string },
+        options: {
+          quiz: string;
+          output?: string;
+          grades?: string;
+          json?: boolean;
+          web?: boolean;
+          name?: string;
+          plain?: boolean;
+        },
       ) => {
         const opts: GradeOptions = {
           quiz: options.quiz,
@@ -137,6 +146,7 @@ export function buildProgram(outcome: Outcome = { exit: EXIT.done }, io: Io = te
           json: Boolean(options.json),
           web: Boolean(options.web),
           name: options.name ?? null,
+          plain: Boolean(options.plain) || noColor(),
         };
         outcome.exit = await (await import("./grade")).runGrade(results, opts, io);
       },

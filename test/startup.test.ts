@@ -44,7 +44,14 @@ afterAll(() => {
 
 function median(args: string[]): number {
   const times: number[] = [];
-  const env = { ...process.env, NO_COLOR: "1", HOME: dir, USERPROFILE: dir, APPDATA: dir, XDG_CONFIG_HOME: dir };
+  const env: Record<string, string | undefined> = {
+    ...process.env,
+    NO_COLOR: "1",
+    HOME: dir,
+    USERPROFILE: dir,
+    APPDATA: dir,
+    XDG_CONFIG_HOME: dir,
+  };
   delete env.FULLMARK_CONFIG;
   for (let i = 0; i < RUNS; i++) {
     const start = process.hrtime.bigint();

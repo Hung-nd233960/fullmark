@@ -20,6 +20,7 @@ export type GradeOptions = {
   json: boolean;
   web: boolean;
   name: string | null;
+  plain: boolean;
 };
 
 type FileResult =
@@ -208,6 +209,8 @@ export async function runGrade(patterns: readonly string[], opts: GradeOptions, 
   let exit: ExitCode = EXIT.done;
   let ok = 0;
   let failed = 0;
+  const progress = !opts.json && !opts.plain && io.tty && inputs.files.length > 1;
+  let n = 0;
   // one after another, in the order given (COMMANDS.md, "Several files"): an unusable input is a failure in its place
   for (const item of inputs.items) {
     if ("error" in item) {
@@ -217,6 +220,8 @@ export async function runGrade(patterns: readonly string[], opts: GradeOptions, 
       continue;
     }
     const file = item.file;
+    n++;
+    if (progress) io.errRaw(`\r[${n}/${inputs.files.length}] ${file}`);
     const result = await gradeOne(
       file,
       loaded.quiz,
@@ -227,6 +232,7 @@ export async function runGrade(patterns: readonly string[], opts: GradeOptions, 
       several,
       io,
     );
+    if (progress) io.errRaw("\r\u001b[K");
     emit(result);
     if (result.status === "written") ok++;
     else {

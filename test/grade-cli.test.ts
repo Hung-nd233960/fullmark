@@ -38,7 +38,15 @@ const QUIZ = [
   "",
 ].join("\n");
 
-const OPTS: GradeOptions = { quiz: "quiz.md", output: null, grades: null, json: false, web: false, name: null };
+const OPTS: GradeOptions = {
+  quiz: "quiz.md",
+  output: null,
+  grades: null,
+  json: false,
+  web: false,
+  name: null,
+  plain: false,
+};
 
 /** A results file for the quiz in `dir`, with the hash the quiz has there. */
 function results(
