@@ -134,12 +134,12 @@ test("ordering by keyboard: Enter on a button moves the item, the focus stays, t
       const el = document.activeElement as HTMLElement | null;
       return `${el?.closest("li")?.getAttribute("data-source")}:${el?.getAttribute("data-dir")}`;
     });
-  expect(await focused()).toBe(`${before[0]}:down`);
+  await expect.poll(focused).toBe(`${before[0]}:down`);
   await expect(list.locator('[role="status"]')).toHaveText("Moved to position 2 of 3");
   await page.keyboard.press("Enter");
   // now last: its down button is disabled, so the focus moves to its up button
   expect(await sourcesOf(list)).toEqual([before[1], before[2], before[0]]);
-  expect(await focused()).toBe(`${before[0]}:up`);
+  await expect.poll(focused).toBe(`${before[0]}:up`);
   await expect(list.locator('[role="status"]')).toHaveText("Moved to position 3 of 3");
   await expect(list.locator('[data-dir="down"]').first()).toHaveAccessibleName(/^Move down: zq-/);
   // the move is stored: after Submit the question is answered
