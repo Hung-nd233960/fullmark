@@ -16,7 +16,7 @@
   ],
   "scripts": {
     "build": "tsup",
-    "test": "vitest run",
+    "test": "vitest run --exclude test/startup.test.ts && vitest run test/startup.test.ts",
     "typecheck": "tsc --noEmit",
     "lint": "biome check",
     "golden:update": "node scripts/golden-update.mjs",

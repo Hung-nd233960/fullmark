@@ -6,9 +6,10 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 /**
  * The startup budget (TECHNICAL_DESIGN.md, section 7): `quiz --version` and `quiz check` on a small quiz each take under
- * 150 ms. Each is run 7 times through the built bundle and the median is judged. The test files run side by side, so a
- * busy machine can spoil one round of 7: a median over the limit is measured again, up to three rounds, and the best
- * round counts. The medians are printed so that a run shows how much room is left.
+ * 150 ms. Each is run 7 times through the built bundle and the median is judged. `npm test` runs this file on its own,
+ * after the others: timing is meaningless while 30 test files and the golden cases spawn processes beside it. A median
+ * over the limit is still measured again (up to three rounds, the best counts), so one slow moment does not fail the
+ * run. The medians are printed with --silent=false, to show how much room is left.
  */
 const LIMIT_MS = 150;
 const RUNS = 7;
