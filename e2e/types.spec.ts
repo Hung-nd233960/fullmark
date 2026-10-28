@@ -233,7 +233,8 @@ test("examples/exam, answered in part, grades the same", async ({ page }) => {
   const blanks = card(page, "sd-blanks").locator("input.fm-blank");
   await blanks.nth(0).fill("sd");
   await blanks.nth(1).fill("mean");
-  await card(page, "ci-a").getByRole("radio").nth(0).check();
+  // the bonus bank draws one of ci-a and ci-b with the seed drawn at Start
+  await page.locator('article[data-qid="ci-a"], article[data-qid="ci-b"]').getByRole("radio").nth(0).check();
   await page.getByRole("button", { name: "Submit" }).click();
   await expectGradeMatches(page, exam.dir, "exam.md");
   await noViolations(page);
