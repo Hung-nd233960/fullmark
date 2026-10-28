@@ -1,6 +1,6 @@
 # Proposal: reference sheets (formulas, constants, unit conversions)
 
-**Status: proposal, not in v1 scope.** Its one seam is in the quiz syntax, which is still open ([TODO.md](../TODO.md)): if `QUIZ_SYNTAX.md` reserves the `reference` key and the quiz hash covers the files it names, this can come later without changing the format.
+**Status: adopted in v1 on 2026-10-28, renamed `materials`.** The design docs now hold it: the `materials` key and its rules in QUIZ_SYNTAX.md (sections 2 and 8a), the sidebar and the printed page in TECHNICAL_DESIGN.md (section 8). Changed from this proposal: the key is `materials`, not `reference`; the sheets sit in a docked sidebar beside the question map (opened by one **Questions & materials** button, `M` for the Materials tab) instead of a drawer opened with `R`; the print flag is `--materials none`; sheets stay inside the quiz folder like assets, so a shared sheet means quizzes in one folder; the rules are `materials.missing`, `materials.question` and `materials.empty`. Quiz-level only; per-section sheets stay open below. The rest of this file is kept as the record of the proposal.
 
 ## The idea
 

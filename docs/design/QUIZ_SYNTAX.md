@@ -57,8 +57,9 @@ Unknown keys are errors.
 | `look` | `free` \| `locked` | `free` | S |
 | `tags` | list, describing the whole quiz | none | S |
 | `generated_by` | the exact model id that wrote this version, one line | none | C |
+| `materials` | a list of Markdown files, relative paths inside the quiz folder: sheets (formula tables, identities, constants) the learner can open at any time, also printed after the paper | none | C |
 
-`reference` is reserved ([section 10](#10-reserved)).
+**Materials.** A sheet is ordinary Markdown, with maths, tables and images, and holds no questions; its first heading is its name in the page. It is rendered at build, in the order listed, and the quiz hash covers it like an asset, so editing a sheet makes a new version. Sheets follow the asset rules (inside the quiz folder, no URLs) and the Markdown rules of [section 8](#8-markdown-inside-a-quiz). A sheet can give away an answer; the author decides what it holds. How the page and the paper show them: TECHNICAL_DESIGN.md, section 8.
 
 ## 3. Sections
 
@@ -417,6 +418,8 @@ Every rule below is a **fixed rule**: an error that no profile can change or ign
 | `markdown.raw-html` | any HTML tag or comment |
 | `asset.missing`, `asset.outside`, `asset.type`, `asset.remote` | a missing file, a path outside the quiz folder, an unsupported format, a URL. Checked in that order of precedence: remote, outside, missing, type |
 | `asset.alt` | an image without alt text |
+| `materials.missing` | a `materials` file that does not exist (a path outside the folder or a URL is `asset.outside` or `asset.remote`) |
+| `materials.question` | question syntax in a sheet: a `##` heading, a `{type=…}` attribute, a choice list with `[x]` or `[ ]`, or an `answer` block (it would never be scored) |
 | `theme.unknown`, `theme.unknown-font` | a theme or font fullmark does not have |
 | `section.id-duplicate` | two sections with the same id |
 | `section.pick` | `pick` below 1 or above the section's question count |
@@ -466,10 +469,7 @@ A skeleton fails `check` by design, with one error per empty field, which is the
 
 | Name | For | v1 behaviour |
 |---|---|---|
-| `reference` in the front matter | reference sheets ([proposals/reference-sheet.md](proposals/reference-sheet.md)) | error `syntax.reserved`: "`reference` is reserved for a later version" |
 | `::: passage` layout | side-by-side reading layout | renders in place |
-
-The quiz hash will cover the files `reference` names, as it covers assets.
 
 ## 11. Changes from 0.10.2
 
@@ -489,7 +489,7 @@ The quiz hash will cover the files `reference` names, as it covers assets.
 | a field's `points` was a weight | absolute points that add up to the question's, or none and an equal split | no hidden scaling, the same rule as an additive rubric |
 | — | section `id`, slugged from the title | `--section` and links |
 | `Source:` as a note in the explanation | `source="..."` on the heading | custom checks can `require` it |
-| `sample_answer`, `show_sample` (essay); `reference`, `show_reference` (code) | `sample_answer` for both, always shown after Submit | one name for the model answer, and no switch: present means shown, like an explanation; `reference` is kept for reference sheets |
+| `sample_answer`, `show_sample` (essay); `reference`, `show_reference` (code) | `sample_answer` for both, always shown after Submit | one name for the model answer, and no switch: present means shown, like an explanation; `reference` would read as the reference sheets, which are `materials` |
 | `scoring: points \| band`, rubric as a list of strings | rubric modes, criterion ids, presets | TECHNICAL_DESIGN.md, section 6 |
 | A comma decimal is rejected | accepted as a decimal comma when `lang: vi` | Vietnamese writes `2,5` |
 | HTML comments shown as text | `markdown.raw-html` error | no raw HTML, said once |

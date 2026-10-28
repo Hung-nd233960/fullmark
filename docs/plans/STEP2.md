@@ -15,7 +15,7 @@ New in step 2: **a slice is sized to fit one Sonnet session** (about the work of
 | Slice | State | Commits |
 |---|---|---|
 | 2a foundation | done, reviewed, gaps decided | `ef9bac7`..`963a180` |
-| 2b the simple types | brief written | |
+| 2b the simple types | done by Sonnet, **review not started** | `868cf82`, `97a6f6e`, `47aca74` |
 
 Step 1 is done (see [STEP1.md](STEP1.md)): `check`, `rules`, `grade` and `ids`, 1309 tests.
 
@@ -37,11 +37,38 @@ Step 1 is done (see [STEP1.md](STEP1.md)): `check`, `rules`, `grade` and `ids`, 
 6. **Mã đề:** `build --print --seed S` prints `S` (1 to 8 letters or digits) as the paper's code, "Mã đề" or "Paper code", in the header, the footer, the key, and a box on the answer sheet. Slice 2k.
 7. **Default seed:** without a seed, the seed is the quiz's short version (the first 4 hex characters of `quizHash`). `ordering` and `matching` are always scrambled, so they are never shown in the right order; questions and choices stay in source order unless asked. Lands in 2b's task 1, before 2c brings `ordering`.
 
+**2b's report (Sonnet, 2026-10-28), not yet reviewed.** `npm run check` passes: 43 files, 1356 vitest tests, 2 startup tests, 5 Playwright tests; axe clean; the runtime is 26.6 KB gzipped. Commits: `868cf82` (2a's fixes: `scriptJson` escapes, `test-results/` ignored, the default seed), `97a6f6e` (the seven types with tests and goldens), `47aca74` (Playwright and axe for them; the blanks prompt owned by its body). The gaps Sonnet reported, for the review to judge:
+
+1. `PlanRequest` gained an optional `quizHash`.
+2. A bad seed throws `PlanError`; the CLI's exit 2 for it is not wired.
+3. A bank draw still needs an explicit seed.
+4. A `numeric` flag on fields, and `data-numeric` on blanks.
+5. `PageQuiz` gained `lang`.
+6. Blanks are cut on markdown-it tokens; `scanBlanks` returns `at`.
+7. "Your answer" and "Correct answer" text badges, on `single` too.
+8. `data-earned` and `data-points` on results.
+9. New catalog strings (`answerLabel` unused).
+10. `rel_tolerance` shown as "± 1%"; `tolerance: 1%` is a parse error.
+11. The `vi` export was not run through `quiz grade`.
+12. Files read beyond the brief's list.
+
+**Materials and the sidebar, decided by the owner on 2026-10-28** on the Design canvas (the boards "Interactive: one sidebar…", "Sidebar A, tabs…", "Sidebar B, stacked…", "Focus mode…", "Phone…", "Results after Submit…", "Replay…" and "Printable paper: materials page…"), and written into the design docs (TECHNICAL_DESIGN.md section 8, rows "Top bar and status line", "Sidebar", "Question map", "Materials", "Focus mode", "Results", and "Printable paper"; section 5's rule table; QUIZ_SYNTAX.md sections 2, 8a, 10 and 11; COMMANDS.md `build --materials` and `--focus`; [proposals/reference-sheet.md](../design/proposals/reference-sheet.md) marked adopted):
+
+1. **Materials are in v1, quiz-level only:** `materials:` in the front matter (the reserved `reference` is dropped), a list of Markdown sheets inside the quiz folder, rendered at build, covered by the quiz hash. Rules `materials.missing` and `materials.question` (errors), `materials.empty` (warning). Available on the start screen, while answering, in review and in replay; opening one is not recorded. Printed on a page after the last question and before the key; `--materials none` leaves it out. The guide warns that a sheet can give answers away.
+2. **The side panel is retired.** A top bar with a status line (time, the part's time, the current question, progress with its bar, flags; after Submit the submitted time, what was taken and the time used). "Chrome docks to the edges, content floats as cards."
+3. **One docked sidebar**, flush right, opened by one button, "Questions & materials" (or "Questions" without materials), at the last tab; `Q`, `M`, `Esc`. **Hybrid:** stacked while answering (the map over the materials, 40% wide), tabs after Submit and in replay (results map | materials). On a phone it takes the screen.
+4. **The question map while answering** is a 35/65 master and detail: parts listed with completion rings (a filled disc with a cut-out tick when done) and a flag dot in the corner; the chosen part's counts and grid on the right.
+5. **Focus mode** is fullscreen with the sidebar closed, the clock in the status line. "Hide panel", `P` and the collapsed bar are gone.
+
+Open, to settle in the materials slice's brief: with `reference` no longer reserved, `syntax.reserved` has nothing left to raise (`::: passage` layout renders in place). Recommendation: retire the rule, so `reference:` is `syntax.unknown-key` like any other unknown key.
+
 Also raised on 2026-10-28 and kept outside v1: [proposals/rapid-response.md](../design/proposals/rapid-response.md) (one question at a time, keyboard answering).
 
 ### Next steps, in order
 
-1. Commit (the review, the decisions, the brief), then delegate 2b and review it.
+1. **Review 2b** in a fresh session: read the three commits' diffs and the goldens, judge the 12 gaps above, bring each to the owner with a recommendation, and write the decisions into the design docs.
+2. Write 2c's brief from the review's decisions, then delegate it.
+3. Then 2c2 (materials in the parser and `check`), whose brief settles `syntax.reserved`.
 
 ## Goal
 
@@ -68,14 +95,15 @@ Step 1's rules hold ([STEP1.md](STEP1.md), "Rules for every slice"): the design 
 | **2a** | Foundation: the page build, the Attempt reducer, `single` only, Submit and Export, `build FILE`, determinism, the CSP, the runtime budget, the two-quiz seam, Playwright |
 | **2b** | `multi`, `truefalse`, `short`, `numeric`, `blanks`, `fields`, `scale` |
 | **2c** | `ordering`, `matching`, `essay`, `code`; maths (KaTeX) and code highlighting (Shiki) in question text |
+| **2c2** | Materials in the core: the `materials` key, reading and hashing the sheets, `materials.missing`, `materials.question`, `materials.empty`, the IR field the page and print read; `reference` no longer reserved |
 | **2d** | Start screen and part picker, sections and `pick`, shuffling with a seed drawn at Start, the timer, autosave and resume, storage blocked; Playwright adds Firefox here, for its isolated `file://` storage (foundation 2) and one full answer-submit-export run |
 | **2e** | Results card (asterisks, goal line), review filter, Retry missed, `feedback: instant` |
-| **2f** | Question map and flags, the collapsible panel, Focus mode |
+| **2f** | The top bar and its status line, the docked sidebar (one button, `Q`/`M`/`Esc`, stacked while answering, tabs after Submit, full screen on a phone), the question map with rings and flags, the materials in the sidebar, Focus mode |
 | **2g** | Themes: five token sets, the light/dark toggle, `look: locked`, the contrast test |
 | **2h** | Fonts: four fonts, `--fonts`, the Vietnamese glyph test, screenshot baselines |
 | **2i** | `build` across the CLI: several files, `--build-file`, `-o`, `--strict`, `--open`, `--json`, `build.size`, `--ui-lang` and the `vi` chrome scan, `--acknowledgements` and the page's licence comment, the 300-question budget, golden files |
 | **2j** | `replay` |
-| **2k** | The printable paper: `--print`, `--answers`, `--answer-sheet`, `--seed` and the mã đề |
+| **2k** | The printable paper: `--print`, `--answers`, `--answer-sheet`, `--seed` and the mã đề, the materials page and `--materials none` |
 
 Later briefs stay outlines until the slice before is reviewed.
 

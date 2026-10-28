@@ -141,7 +141,7 @@ Exit: `0`, `2` unknown rule or profile, or malformed config.
 
 ```text
 quiz build FILE... [-o OUT] [--profile P] [--config TOML] [--strict] [--open]
-                [--print [--answers none|key|inline] [--answer-sheet] [--seed S]]
+                [--print [--answers none|key|inline] [--answer-sheet] [--seed S] [--materials none]]
                 [--built-at ISO] [--ui-lang en|vi]
                 [--watch [--serve] [--port N]]
                 [--json]
@@ -161,6 +161,7 @@ Checks the quiz (under the profile, as `check` does), then writes one self-conta
 | `--answers` | With `--print`: `none` (default, an exam paper), `key` (an answer key on a new page after the paper) or `inline` (answers and explanations under each question) |
 | `--answer-sheet` | With `--print`: after the header, a grid of boxes, one per single-choice and true/false question, where the student writes the letter; the key then lists those answers in the same grid. Other question types are answered in place |
 | `--seed S` | With `--print`: shuffle questions and options reproducibly, so different seeds give different versions of the same exam, each with a matching key. `S` is 1 to 8 letters or digits (else exit 2) and is printed as the paper's code, "Mã đề" or "Paper code" (TECHNICAL_DESIGN.md, Printable paper) |
+| `--materials none` | With `--print`: leave out the materials page that otherwise follows the last question when the quiz has `materials` (TECHNICAL_DESIGN.md, Printable paper). `none` is the only value |
 | `--built-at ISO` | Pin the build time, so a build is byte-identical across runs. Default: now |
 | `--ui-lang en\|vi` | Language of the interface for this build, overriding the quiz's `ui_lang`. The questions are not translated, and grading still follows the quiz's `lang` |
 | `--watch` | Rebuild whenever `FILE` or its `assets/` change. Keeps the last good page when a save has errors. Runs until Ctrl+C |
@@ -193,7 +194,7 @@ seed = 7
 lang = "en"                           # overrides the top level
 ```
 
-- **Keys are `build` flag names**, top level as defaults, each `[[build]]` entry overriding them: `out`, `profile`, `config`, `strict`, `fonts`, `ui-lang`, `built-at`, `print`, `answers`, `seed`. `files` is required in each entry. A flag on the command line beats both.
+- **Keys are `build` flag names**, top level as defaults, each `[[build]]` entry overriding them: `out`, `profile`, `config`, `strict`, `fonts`, `ui-lang`, `built-at`, `print`, `answers`, `seed`, `materials`. `files` is required in each entry. A flag on the command line beats both.
 - **Not allowed:** `attempt`, `grades`, `watch`, `serve`, `open`, `port`: they are about one run, not about what to build. These and unknown keys exit 2 with `file:line`, as a malformed config does.
 - **`library register --build-file`** reads the same file and registers its `files`.
 - `--watch` with a build file also watches the build file.
@@ -215,7 +216,7 @@ Serves the page on 127.0.0.1. When the learner presses **Submit** (or **Finish**
 | `--out RESULTS` | Results file. Default: `<quiz-id>-results-<time>.json` next to the source |
 | `--timeout SECONDS` | Default `1800`. `0` waits forever. Exits 2 on timeout |
 | `--open` | Open the page in the browser |
-| `--focus` | Tick **Focus mode** on the start screen, so pressing Start enters fullscreen with the panel collapsed (TECHNICAL_DESIGN.md, section 8). A page cannot go fullscreen without a click |
+| `--focus` | Tick **Focus mode** on the start screen, so pressing Start enters fullscreen with the sidebar closed (TECHNICAL_DESIGN.md, section 8). A page cannot go fullscreen without a click |
 | `--section S` | Serve only this section. Results record `plan.source: "section"` |
 | `--autosave PROGRESS` | Keep the attempt in progress in this file, so it resumes after the server or the browser closes. Deleted on submit |
 | `--json` | Two JSON lines. As soon as the server is up: `{"status": "listening", "url", "port", "pid"}`. At the end: `{"status": "submitted" \| "timeout", "results", "score"}`. A caller running `serve` in the background reads the URL from the first line |
