@@ -47,7 +47,7 @@ Step 1's rules hold ([STEP1.md](STEP1.md), "Rules for every slice"): the design 
 | **2a** | Foundation: the page build, the Attempt reducer, `single` only, Submit and Export, `build FILE`, determinism, the CSP, the runtime budget, the two-quiz seam, Playwright |
 | **2b** | `multi`, `truefalse`, `short`, `numeric`, `blanks`, `fields`, `scale` |
 | **2c** | `ordering`, `matching`, `essay`, `code`; maths (KaTeX) and code highlighting (Shiki) in question text |
-| **2d** | Start screen and part picker, sections and `pick`, the timer, autosave and resume, storage blocked |
+| **2d** | Start screen and part picker, sections and `pick`, the timer, autosave and resume, storage blocked; Playwright adds Firefox here, for its isolated `file://` storage (foundation 2) and one full answer-submit-export run |
 | **2e** | Results card (asterisks, goal line), review filter, Retry missed |
 | **2f** | Question map and flags, the collapsible panel, Focus mode |
 | **2g** | Themes: five token sets, the light/dark toggle, `look: locked`, the contrast test |
