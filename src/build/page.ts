@@ -43,7 +43,12 @@ const unwrap = (html: string): string => {
 };
 
 /** The quiz IR with everything a page shows removed: the key, as the grader needs it (foundation 5). */
-function keyOf(quiz: Quiz, explanations: Record<string, string>, samples: Record<string, string>): KeyBlob {
+function keyOf(
+  quiz: Quiz,
+  explanations: Record<string, string>,
+  samples: Record<string, string>,
+  dataOrder: Record<string, number[]>,
+): KeyBlob {
   const sections: Section[] = quiz.sections.map((s) => ({
     ...s,
     intro: "",
@@ -67,7 +72,7 @@ function keyOf(quiz: Quiz, explanations: Record<string, string>, samples: Record
       return bare;
     }),
   }));
-  return { quiz: { ...quiz, file: "", sections }, explanations, samples };
+  return { quiz: { ...quiz, file: "", sections }, explanations, samples, dataOrder };
 }
 
 type Md = ReturnType<typeof createRenderer>;
@@ -196,7 +201,11 @@ function pageQuestion(
   }
 }
 
-/** `plan` is for tests: it replaces the plan the quiz would be given. */
+/**
+ * The page data of one quiz. It holds no plan: the page draws one at Start (`planFor`, from the key blob). `plan` only
+ * decides the order in which `ordering` items and `matching` right-hand items sit in the data, so that the data never
+ * lists them in the right order; tests replace it. Without it, the plan is the one the quiz's short version gives.
+ */
 export function pageQuizOf(
   { quiz, hash, assets, sheets }: BuildQuiz,
   plan?: ReturnType<typeof planFor>,
@@ -221,11 +230,17 @@ export function pageQuizOf(
   plan ??= planFor(quiz, { source: "full", quizHash: hash });
   const explanations: Record<string, string> = {};
   const samples: Record<string, string> = {};
+  const dataOrder: Record<string, number[]> = {};
   const sections: PageSection[] = quiz.sections.map((s) => ({
     id: s.id,
     title: s.title,
     introHtml: s.intro.trim() === "" ? "" : md.block(s.intro),
+    ...(s.pick !== null ? { pick: s.pick } : {}),
+    ...(s.time !== null ? { time: s.time } : {}),
     questions: s.questions.map((q) => {
+      if ((q.type === "ordering" || q.type === "matching") && plan.optionOrder?.[q.id]) {
+        dataOrder[q.id] = plan.optionOrder[q.id] as number[];
+      }
       if (q.explanation) explanations[q.id] = md.block(q.explanation.text);
       const sample = sampleHtml(q, md);
       if (sample !== null) samples[q.id] = sample;
@@ -241,12 +256,15 @@ export function pageQuizOf(
     id: quiz.frontMatter.id,
     hash,
     title: quiz.frontMatter.title,
-    description: quiz.frontMatter.description,
+    descriptionHtml: quiz.frontMatter.description === null ? null : md.block(quiz.frontMatter.description),
+    ...(quiz.frontMatter.timeLimit !== null ? { timeLimit: quiz.frontMatter.timeLimit } : {}),
+    ...(quiz.frontMatter.timeLimit !== null && quiz.frontMatter.onTimeout === "warn"
+      ? { timeoutWarns: true as const }
+      : {}),
     uiLang: quiz.frontMatter.uiLang,
     lang: quiz.frontMatter.lang,
     sections,
-    plan,
-    key: encodeKey(keyOf(quiz, explanations, samples), hash),
+    key: encodeKey(keyOf(quiz, explanations, samples, dataOrder), hash),
     // only when there is something: a quiz without sheets or maths keeps the data it had
     ...(materials.length > 0 ? { materials } : {}),
     ...(hasMath ? { hasMath: true as const } : {}),

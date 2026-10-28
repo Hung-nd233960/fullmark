@@ -1,4 +1,3 @@
-import type { Plan } from "../core/attempt";
 import type { Quiz } from "../core/ir";
 import { decodeKey } from "../core/keyblob";
 
@@ -45,20 +44,32 @@ export type PageQuestion = PageBase &
     | { type: "code"; language: string; starter: string | null; rubric: PageCriterion[] | null }
   );
 
-export type PageSection = { id: string; title: string | null; introHtml: string; questions: PageQuestion[] };
+/** `pick`: a bank, each attempt draws this many; `time`: the suggested seconds. Both are absent when the section has none. */
+export type PageSection = {
+  id: string;
+  title: string | null;
+  introHtml: string;
+  questions: PageQuestion[];
+  pick?: number;
+  time?: number;
+};
 
 export type PageQuiz = {
   /** the quiz's id (front matter `id`, else the file name): it scopes element ids and storage */
   id: string;
   hash: string;
   title: string;
-  description: string | null;
+  /** the description as HTML (maths included), null when there is none */
+  descriptionHtml: string | null;
+  /** seconds; absent when the quiz is untimed */
+  timeLimit?: number;
+  /** `on_timeout: warn`: the page says time is up and goes on; absent for the default, `submit` */
+  timeoutWarns?: true;
   /** the interface language of the page chrome */
   uiLang: "en" | "vi";
   /** the language the quiz is written in: a numeric box warns about a decimal comma only for `en` */
   lang: "en" | "vi";
   sections: PageSection[];
-  plan: Plan;
   /** the answer key blob (`core/keyblob`) */
   key: string;
   /** the materials sheets in the order listed, as HTML; absent when the quiz has none */
@@ -69,9 +80,18 @@ export type PageQuiz = {
 
 export type PageData = { version: 1; quizzes: PageQuiz[] };
 
-/** What the blob holds: the quiz IR without its presentation text, and each explanation as HTML. */
-/** `samples`: each essay's and code question's `sample_answer`, as HTML. */
-export type KeyBlob = { quiz: Quiz; explanations: Record<string, string>; samples: Record<string, string> };
+/**
+ * What the blob holds: the quiz IR without its presentation text (the page plans an attempt from it at Start), and
+ * each explanation as HTML. `samples`: each essay's and code question's `sample_answer`, as HTML. `dataOrder`: for each
+ * `ordering` and `matching` question, the source index of each entry in the page data, which holds them scrambled (the
+ * data never lists them in the right order).
+ */
+export type KeyBlob = {
+  quiz: Quiz;
+  explanations: Record<string, string>;
+  samples: Record<string, string>;
+  dataOrder: Record<string, number[]>;
+};
 
 /** The quiz the grader runs on: the blob, decoded. Same IR the CLI grades, so the same score. */
 export function openKey(page: PageQuiz): KeyBlob {

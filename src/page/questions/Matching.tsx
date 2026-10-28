@@ -1,23 +1,22 @@
 import { readAnswer } from "../../core/attempt/answers";
 import type { PageQuestion } from "../data";
-import { type Ctx, Html } from "./shared";
+import { type Ctx, Html, shownEntries } from "./shared";
 
 /**
  * `matching`: a dropdown per left item. The right-hand items come in the order the page shows them
- * (`plan.optionOrder`); the stored value is the right-hand item's source index.
+ * (`plan.optionOrder`, mapped to the data through the key); the stored value is the right-hand item's source index.
  */
 export function Matching({ q, c }: { q: Extract<PageQuestion, { type: "matching" }>; c: Ctx }) {
   const { t } = c;
-  const planned = c.quiz.plan.optionOrder?.[q.id];
-  if (!planned || planned.length !== q.rights.length) throw new Error(`question ${q.id}: the plan has no order`);
-  const shown = planned;
+  const entries = shownEntries(c, q.id, q.rights);
+  const shown = entries.map((e) => e.source);
   const given = readAnswer("matching", c.answer)?.pairs ?? [];
   const pairAt = (i: number): number | null => given[i] ?? null;
   const change = (i: number, value: string) => {
     const next = q.lefts.map((_, j) => (j === i ? (value === "" ? null : Number(value)) : pairAt(j)));
     c.set(next.every((x) => x === null) ? null : { pairs: next });
   };
-  const rightOf = (source: number) => q.rights[shown.indexOf(source)] ?? { html: "", label: "" };
+  const rightOf = (source: number) => entries.find((e) => e.source === source)?.entry ?? { html: "", label: "" };
   return (
     <div class="fm-matching">
       {q.lefts.map((left, i) => {

@@ -110,6 +110,35 @@ export const vi = {
     wordsMax: (n: number, max: number) => `${n} / tối đa ${max} từ`,
     wordsRange: (n: number, min: number, max: number) => `${n} từ, từ ${min} đến ${max}`,
     overMaximum: "vượt quá giới hạn",
+    wholeQuiz: "Toàn bộ bài",
+    recommended: "Nên chọn",
+    choosePart: "Bạn muốn làm phần nào?",
+    partQuestions: (pick: number | null, n: number) => (pick === null ? `${n} câu hỏi` : `${pick} trên ${n} câu hỏi`),
+    suggestedTime: (time: string) => `gợi ý ${time}`,
+    timeLimitLine: (time: string) => `Thời gian làm bài: ${time}`,
+    duration: (seconds: number) => {
+      if (seconds < 1) return "0 giây";
+      const h = Math.floor(seconds / 3600);
+      const m = Math.floor((seconds % 3600) / 60);
+      const s = seconds % 60;
+      return [h > 0 ? `${h} giờ` : "", m > 0 ? `${m} phút` : "", s > 0 && h === 0 ? `${s} giây` : ""]
+        .filter((part) => part !== "")
+        .join(" ");
+    },
+    continue: "Tiếp tục",
+    startOver: "Làm lại từ đầu",
+    startOverQuestion: "Làm lại từ đầu?",
+    startOverBody: "Các câu trả lời bạn đã nhập sẽ bị xóa.",
+    cancel: "Hủy",
+    progressSoFar: (answered: number, total: number, used: string) =>
+      `đã trả lời ${answered} trên ${total} · đã dùng ${used}`,
+    newAttempt: "Làm lượt mới",
+    timeLeft: (clock: string) => `Còn lại ${clock}`,
+    timeSoFar: (clock: string) => `Thời gian ${clock}`,
+    timeUp: "Đã hết giờ",
+    timeLeftSaid: (minutes: number) => `Còn ${minutes} phút`,
+    timedOutNote: "Đã hết giờ nên bài của bạn được nộp.",
+    storageBlocked: "Trình duyệt này không lưu tiến độ của bạn. Hãy xuất kết quả trước khi đóng trang.",
     rubric: "Tiêu chí chấm",
     sampleAnswer: "Bài mẫu",
     explanation: "Giải thích",

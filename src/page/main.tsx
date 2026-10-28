@@ -11,8 +11,12 @@ const dataElement = document.getElementById("fm-data");
 const root = document.getElementById("fm-root");
 if (dataElement && root) {
   const data = JSON.parse(dataElement.textContent ?? "") as PageData;
-  const store = createStore(data);
+  // `localStorage` may throw on access (a blocked or sandboxed page): the store wraps every use
+  const store = createStore(data, { storage: () => window.localStorage });
   hydrate(<App store={store} />, root);
+  // after hydration, so the first render is the one the build made: then a saved attempt is restored over it
+  store.restore();
+  store.run();
   (window as unknown as { fullmark: unknown }).fullmark = { events: store.events };
   store.events.emit("ready", { quizIds: [...store.quizzes.keys()] });
 }

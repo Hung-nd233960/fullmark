@@ -10,6 +10,7 @@ import { quizHash } from "../../src/core/hash";
 import { en } from "../../src/core/i18n";
 import type { Quiz } from "../../src/core/ir";
 import { parse } from "../../src/core/parse";
+import { planFor } from "../../src/core/plan";
 import { App } from "../../src/page/App";
 import type { PageData, PageQuestion } from "../../src/page/data";
 import { openKey } from "../../src/page/data";
@@ -212,7 +213,7 @@ describe("ordering and matching in the page data", () => {
   const labels = (items: { label: string }[]) => items.map((i) => i.label);
 
   it("lists the ordering items in the shown order, which is not the source order", () => {
-    const order = page.plan.optionOrder?.o1 as number[];
+    const order = openKey(page).dataOrder.o1 as number[];
     expect(order).toHaveLength(3);
     expect(order).not.toEqual([0, 1, 2]);
     const source = ["zq-parse", "zq-check", "zq-render"];
@@ -223,7 +224,7 @@ describe("ordering and matching in the page data", () => {
   it("lists the left items in source order and the right-hand items, distractors included, in the shown order", () => {
     const g1 = get("g1", "matching");
     expect(g1.lefts.join(" ")).toMatch(/zq-lint.*zq-test.*zq-bundle/s);
-    const order = page.plan.optionOrder?.g1 as number[];
+    const order = openKey(page).dataOrder.g1 as number[];
     expect(order).toHaveLength(4);
     expect(order).not.toEqual([0, 1, 2, 3]);
     const source = ["finds style problems", "runs the checks", "packs the files", "zq-unused distractor"];
@@ -253,7 +254,7 @@ describe("ordering and matching in the page data", () => {
 describe("a plan without an order for ordering or matching", () => {
   it("is a build error, never the source order", () => {
     for (const id of ["o1", "g1"]) {
-      const plan = structuredClone(pageQuizOf(types).plan);
+      const plan = structuredClone(planFor(types.quiz, { source: "full", quizHash: types.hash }));
       delete plan.optionOrder?.[id];
       expect(() => pageQuizOf(types, plan)).toThrow(`question ${id}: the plan has no order`);
     }
@@ -282,7 +283,7 @@ describe("what the page stores and shows for the four types", () => {
   it("stores nothing for an ordering that was not moved, and a full order after a move", () => {
     const r = start();
     expect(r.stored().o1 ?? null).toBeNull();
-    const shown = r.page.plan.optionOrder?.o1 as number[];
+    const shown = r.store.quizzes.get("types")?.attempt.value.plan.optionOrder?.o1 as number[];
     const html = articleOf(r.html(), "o1");
     expect(sources(html)).toEqual(shown);
     // the first item's up button and the last item's down button are disabled

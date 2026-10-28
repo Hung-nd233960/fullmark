@@ -109,6 +109,35 @@ export const en = {
     wordsMax: (n: number, max: number) => `${n} / ${max} words maximum`,
     wordsRange: (n: number, min: number, max: number) => `${n} words, ${min} to ${max}`,
     overMaximum: "over the maximum",
+    wholeQuiz: "The whole quiz",
+    recommended: "Recommended",
+    choosePart: "What do you want to take?",
+    partQuestions: (pick: number | null, n: number) =>
+      pick === null ? (n === 1 ? "1 question" : `${n} questions`) : `${pick} of ${n} questions`,
+    suggestedTime: (time: string) => `suggested ${time}`,
+    timeLimitLine: (time: string) => `Time limit: ${time}`,
+    duration: (seconds: number) => {
+      if (seconds < 1) return "0 s";
+      const h = Math.floor(seconds / 3600);
+      const m = Math.floor((seconds % 3600) / 60);
+      const s = seconds % 60;
+      return [h > 0 ? `${h} h` : "", m > 0 ? `${m} min` : "", s > 0 && h === 0 ? `${s} s` : ""]
+        .filter((part) => part !== "")
+        .join(" ");
+    },
+    continue: "Continue",
+    startOver: "Start over",
+    startOverQuestion: "Start over?",
+    startOverBody: "This discards the answers you have given so far.",
+    cancel: "Cancel",
+    progressSoFar: (answered: number, total: number, used: string) => `${answered} of ${total} answered · ${used} used`,
+    newAttempt: "New attempt",
+    timeLeft: (clock: string) => `Time left ${clock}`,
+    timeSoFar: (clock: string) => `Time ${clock}`,
+    timeUp: "Time is up",
+    timeLeftSaid: (minutes: number) => (minutes === 1 ? "1 minute left" : `${minutes} minutes left`),
+    timedOutNote: "Time ran out, so your answers were submitted.",
+    storageBlocked: "This browser is not saving your progress. Export before you close the page.",
     rubric: "Rubric",
     sampleAnswer: "Sample answer",
     explanation: "Explanation",

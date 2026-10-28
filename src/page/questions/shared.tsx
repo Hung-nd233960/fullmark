@@ -16,6 +16,12 @@ export type Ctx = {
   name: string;
   answer: Answer | null;
   submitted: boolean;
+  /** false on the start screen's hidden copy of the questions: no plan has been drawn yet */
+  started: boolean;
+  /** `plan.optionOrder` for this question: source indices in the order the page shows them */
+  order: readonly number[] | undefined;
+  /** the source index of each entry of the question's data (an `ordering` or `matching` question's items) */
+  dataOrder: readonly number[] | undefined;
   /** from `grade`, after Submit */
   result: GradedQuestion | undefined;
   /** the question as the grader has it (with its key), after Submit */
@@ -24,6 +30,21 @@ export type Ctx = {
   sample: string | undefined;
   set(answer: Answer | null): void;
 };
+
+/**
+ * The entries of an `ordering` or `matching` question, each with its source index, in the order the page shows them. The
+ * data holds them scrambled and never in the right order; the plan (`order`) names what to show, and `dataOrder` (from
+ * the key blob) says which data entry has which source index. Before Start no plan exists, so the entries come as the
+ * data has them, which nobody can answer. A started attempt without either order is a bug, not a fallback.
+ */
+export function shownEntries<T>(c: Ctx, id: string, entries: readonly T[]): { source: number; entry: T }[] {
+  if (!c.started) return entries.map((entry, i) => ({ source: i, entry }));
+  const { order, dataOrder } = c;
+  if (!order || order.length !== entries.length || !dataOrder || dataOrder.length !== entries.length) {
+    throw new Error(`question ${id}: the plan has no order`);
+  }
+  return order.map((source) => ({ source, entry: entries[dataOrder.indexOf(source)] as T }));
+}
 
 export function Html({
   html,

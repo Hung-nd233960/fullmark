@@ -31,7 +31,8 @@ export function ChoiceList({ q, c, multi }: Props) {
 
   return (
     <ul class="fm-choices">
-      {q.choices.map((choice, i) => {
+      {(c.order && c.order.length === q.choices.length ? c.order : q.choices.map((_, i) => i)).map((i) => {
+        const choice = q.choices[i] as (typeof q.choices)[number];
         const isPicked = picked.has(i);
         const isRight = c.submitted && keyed?.choices[i]?.correct === true;
         const id = `${c.name}/c${i}`;

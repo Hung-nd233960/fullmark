@@ -27,6 +27,110 @@
     border-radius: var(--radius);
   }
 
+  .fm-start-facts {
+    margin: 0 0 12px;
+    color: var(--muted);
+  }
+
+  .fm-parts {
+    margin: 0 0 16px;
+    padding: 0;
+    border: 0;
+  }
+
+  .fm-parts legend {
+    margin-bottom: 8px;
+    padding: 0;
+    font-weight: 600;
+  }
+
+  .fm-part {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    padding: 8px 10px;
+    border-radius: var(--radius);
+    cursor: pointer;
+  }
+
+  .fm-part:has(input:checked) {
+    background: var(--bg);
+  }
+
+  .fm-part-whole {
+    border: 1px solid var(--border);
+  }
+
+  .fm-part-text {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px 8px;
+  }
+
+  .fm-part-meta {
+    flex-basis: 100%;
+    color: var(--muted);
+    font-size: 0.9rem;
+  }
+
+  .fm-part-list {
+    max-height: 15.5rem;
+    margin-top: 6px;
+    overflow-y: auto;
+  }
+
+  .fm-resume-line {
+    margin: 0 0 12px;
+  }
+
+  .fm-resume,
+  .fm-dialog-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .fm-dialog {
+    max-width: 24rem;
+    padding: 20px;
+    color: var(--text);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+  }
+
+  .fm-dialog::backdrop {
+    background: rgb(0 0 0 / 45%);
+  }
+
+  .fm-dialog h2 {
+    margin: 0 0 8px;
+    font-size: 1.2rem;
+  }
+
+  .fm-timer-bar {
+    margin: var(--gap) 0;
+  }
+
+  .fm-timer {
+    margin: 0;
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+  }
+
+  .fm-notice {
+    margin: 0 0 12px;
+    padding: 8px 12px;
+    color: var(--warn);
+    border-left: 3px solid var(--warn);
+  }
+
+  .fm-section-time {
+    color: var(--muted);
+    font-size: 0.9rem;
+    font-weight: 400;
+  }
+
   .fm-section h2 {
     margin: 32px 0 8px;
     font-size: 1.2rem;

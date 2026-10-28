@@ -1,16 +1,9 @@
 import { useEffect, useRef, useState } from "preact/hooks";
 import { readAnswer } from "../../core/attempt/answers";
 import type { PageQuestion } from "../data";
-import { type Ctx, Html } from "./shared";
+import { type Ctx, Html, shownEntries } from "./shared";
 
 type Dir = "up" | "down";
-
-/** The order the page first shows: `plan.optionOrder` (source indices in display order). */
-export const shownOrder = (c: Ctx, q: { id: string; items: unknown[] }): number[] => {
-  const planned = c.quiz.plan.optionOrder?.[q.id];
-  if (!planned || planned.length !== q.items.length) throw new Error(`question ${q.id}: the plan has no order`);
-  return planned;
-};
 
 /**
  * `ordering`: a list with ↑ and ↓ buttons. Nothing is stored until the first move (the page never starts in the right
@@ -18,13 +11,13 @@ export const shownOrder = (c: Ctx, q: { id: string; items: unknown[] }): number[
  */
 export function Ordering({ q, c }: { q: Extract<PageQuestion, { type: "ordering" }>; c: Ctx }) {
   const { t } = c;
-  const start = shownOrder(c, q);
+  const shown = shownEntries(c, q.id, q.items);
+  const start = shown.map((e) => e.source);
   const given = readAnswer("ordering", c.answer)?.order;
   // never moved: after Submit no item is marked, each shows only where it belongs
   const untouched = c.submitted && given === undefined;
   const order = given && given.length === q.items.length ? given : start;
-  // the item at source index s was sent to the page at the place `start` holds s
-  const itemOf = (s: number) => q.items[start.indexOf(s)] ?? { html: "", label: "" };
+  const itemOf = (s: number) => shown.find((e) => e.source === s)?.entry ?? { html: "", label: "" };
   const [said, setSaid] = useState("");
   const focus = useRef<{ source: number; dir: Dir } | null>(null);
   const list = useRef<HTMLOListElement>(null);
