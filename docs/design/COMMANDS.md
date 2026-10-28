@@ -135,7 +135,7 @@ Exit: `0`, `2` unknown rule or profile, or malformed config.
 
 ```text
 quiz build FILE... [-o OUT] [--profile P] [--config TOML] [--strict] [--open]
-                [--print [--answers none|key|inline] [--seed S]]
+                [--print [--answers none|key|inline] [--answer-sheet] [--seed S]]
                 [--built-at ISO] [--ui-lang en|vi]
                 [--watch [--serve] [--port N]]
                 [--json]
@@ -153,6 +153,7 @@ Checks the quiz (under the profile, as `check` does), then writes one self-conta
 | `--open` | Open the page after building |
 | `--print` | Write a static printable paper instead of the interactive page (TECHNICAL_DESIGN.md, section 8). Default output: `FILE` with `-print.html`. Print it, or save it as PDF from the browser |
 | `--answers` | With `--print`: `none` (default, an exam paper), `key` (an answer key on a new page after the paper) or `inline` (answers and explanations under each question) |
+| `--answer-sheet` | With `--print`: after the header, a grid of boxes, one per single-choice and true/false question, where the student writes the letter; the key then lists those answers in the same grid. Other question types are answered in place |
 | `--seed S` | With `--print`: shuffle questions and options reproducibly, so different seeds give different versions of the same exam, each with a matching key |
 | `--built-at ISO` | Pin the build time, so a build is byte-identical across runs. Default: now |
 | `--ui-lang en\|vi` | Language of the interface for this build, overriding the quiz's `ui_lang`. The questions are not translated, and grading still follows the quiz's `lang` |
