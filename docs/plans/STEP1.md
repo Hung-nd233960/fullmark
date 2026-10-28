@@ -21,7 +21,7 @@ The owner's working rules: state what, why and what done means before a big job 
 | 1b parser and `quiz ids` | done, reviewed | `0789b52`..`b49918f` |
 | 1c rules, config, `check`, `rules` | done, reviewed, gaps decided | `8a632b5`..`201d9fb` |
 | 1d grader and `grade` | done, reviewed, gaps decided; follow-up fixes done | `402bb97`..`9c350a3`, `869db1d`..`49dba98` |
-| 1e contract tests | delegated to Sonnet; its work so far is uncommitted in the tree, not reviewed | |
+| 1e contract tests | delegated to Sonnet; committed as it went, not reviewed | `62aeaf4` and the commits around it |
 
 `npm run check` after 1d: 37 test files, 1010 passed, 0 todo. Branch `1.0` is not on GitHub; nothing has been pushed.
 
@@ -29,7 +29,7 @@ The owner's working rules: state what, why and what done means before a big job 
 
 ### Next steps, in order
 
-1. 1e was delegated to Sonnet on 2026-10-28 and the session ended while it was still running. Its work so far (`.gitattributes`, `biome.json`, `package.json`, `scripts/`, `test/golden/`, plus whatever it committed) is in the tree, unreviewed. Check `git log` and `git status`, then finish or re-delegate what is missing from "Slice 1e" below. Review it: read the golden files themselves, since they become the contract; bring its gaps (and its path-printing proposal) to the owner.
+1. 1e was delegated to Sonnet on 2026-10-28 and the session ended while it was still running. Its work so far is committed, unreviewed. Check `git log` and `git status`, then finish or re-delegate what is missing from "Slice 1e" below. Review it: read the golden files themselves, since they become the contract; bring its gaps (and its path-printing proposal) to the owner.
 2. With 1e reviewed, step 1 is done. Step 2 (`build`, the page runtime, themes, `replay`) gets its own plan file, `docs/plans/STEP2.md`, cut into slices the same way.
 
 ### Design work in parallel (themes and pages)
