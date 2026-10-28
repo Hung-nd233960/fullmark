@@ -1,5 +1,6 @@
 import type { Level } from "../issue";
 import { BRIEF_RULES } from "../rules/brief";
+import { BUILD_RULES } from "../rules/build";
 import { QUALITY_RULES } from "../rules/quality";
 import type { ProfileDef, RuleSetting } from "./types";
 
@@ -25,7 +26,7 @@ function builtin(
   };
 }
 
-const quality = [...QUALITY_RULES, ...BRIEF_RULES];
+const quality = [...QUALITY_RULES, ...BRIEF_RULES, ...BUILD_RULES];
 
 /**
  * The built-in profiles (TECHNICAL_DESIGN.md, section 5). `draft` makes every quality rule that is on an `info`;

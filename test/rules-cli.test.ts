@@ -185,3 +185,37 @@ describe("quiz rules --for FILE", () => {
     expect(runRules(null, opts({ for: "nope.md" }), capture(dir).io)).toBe(2);
   });
 });
+
+describe("build.size", () => {
+  it("is registered with its options, and says that build checks it", () => {
+    const c = capture(tree({}));
+    expect(runRules("build.size", opts({ json: true }), c.io)).toBe(0);
+    const [row] = rowsOf(c.out);
+    expect(row).toMatchObject({ id: "build.size", kind: "quality", level: "warning" });
+    expect(row?.options).toEqual({ "warn-mb": 20, "max-mb": 100 });
+    expect(row?.description).toContain("`build`");
+  });
+
+  it("can be set by a profile, and check accepts the config", () => {
+    const dir = tree({
+      "fullmark.toml": '[profiles.big]\nextends = "default"\nrules."build.size" = { level = "error", warn-mb = 5 }\n',
+      ".git/HEAD": "",
+      "q.md": quiz(),
+    });
+    const c = capture(dir);
+    expect(runRules("build.size", opts({ json: true, profile: "big" }), c.io)).toBe(0);
+    expect(rowsOf(c.out)[0]).toMatchObject({ level: "error", options: { "warn-mb": 5, "max-mb": 100 } });
+  });
+
+  it("is made an error by the exam profile and softened by draft, like any quality rule on in default", () => {
+    for (const [profile, level] of [
+      ["exam", "error"],
+      ["draft", "info"],
+      ["survey", "warning"],
+    ] as const) {
+      const c = capture(tree({}));
+      runRules("build.size", opts({ json: true, profile }), c.io);
+      expect(rowsOf(c.out)[0]?.level, profile).toBe(level);
+    }
+  });
+});
