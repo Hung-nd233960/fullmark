@@ -16,7 +16,7 @@ New in step 2: **a slice is sized to fit one Sonnet session** (about the work of
 |---|---|---|
 | 2a foundation | done, reviewed, gaps decided | `ef9bac7`..`963a180` |
 | 2b the simple types | done, reviewed, gaps decided | `868cf82`, `97a6f6e`, `47aca74` |
-| 2c2 materials in the core | brief written, runs **before 2c** | |
+| 2c2 materials in the core | done, reviewed, gaps decided | `94341aa`..`9797716` |
 
 Step 1 is done (see [STEP1.md](STEP1.md)): `check`, `rules`, `grade` and `ids`, 1309 tests.
 
@@ -81,8 +81,8 @@ Also raised on 2026-10-28 and kept outside v1: [proposals/rapid-response.md](../
 ### Next steps, in order
 
 1. Done: 2b reviewed and decided (above).
-2. **Delegate 2c2** (brief below): 2b's fixes, then materials in the core.
-3. Review 2c2, then write 2c's brief (`ordering`, `matching`, `essay`, `code`, KaTeX, Shiki) with 2c2's decisions and the two 2c items from point 2 above.
+2. Done: 2c2. Reviewed on 2026-10-28: `npm run check` passes (45 files, 1419 vitest tests, 2 startup tests, 5 Playwright tests; the startup test missed its 150 ms budget once in Sonnet's run, at 156 ms, and passed on re-run and in review). Tried by hand: a blank in a table cell, `\[[` as text, a blank in alt text, case mismatches for a sheet and a sheet's image, a second `#`, a sheet with no heading, a `- [x]` in a sheet. **Decided by the owner:** sheets allow `##` to `######` (2c2 made `####` and deeper `syntax.heading-level`: fix in 2c); no `:::` containers in a sheet (as built); an empty sheet is `materials.heading` (as built); loading problems stay at the `materials:` line; the key blob may carry the sheet paths; `blanksInLinkText` makes its markdown-it once (2c); Shiki and blanks tested in 2c. Written into QUIZ_SYNTAX.md section 2.
+3. **Next:** write 2c's brief (`ordering`, `matching`, `essay`, `code`, KaTeX, Shiki, in questions and in sheets). Its first tasks: sheet headings `##` to `######`; `blanksInLinkText` with one markdown-it; the `vi` export through `quiz grade` in Playwright; a blank inside Shiki-highlighted code. A brief that changes what `check` prints lists `src/cli/check.ts` and `src/core/rules/check.ts`.
 
 ## Goal
 
