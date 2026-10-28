@@ -591,7 +591,7 @@ One key, `theme:`, with six values.
 | `auto` (default) | `light` or `dark`, following the device, with a toggle | everyday practice |
 | `light` | today's muted light: soft surfaces, grey-ish accent | |
 | `dark` | today's muted dark | |
-| `oled` | pure black `#000` background; text off-white (about `#e6e6e6`, since pure white on black glares); cards set apart by thin borders, not lighter surfaces | dark rooms, OLED screens |
+| `oled` | pure black `#000` page; near-black cards (about `#0f0f11`) with thin borders, which also limits the smearing OLED screens show when pure black scrolls; text off-white (about `#e0e0e0`, since pure white on black glares); status and accent colours softened (lower saturation, a little lighter), since saturated colours glow on black | dark rooms, OLED screens |
 | `white` | pure white background, near-black text, plain grey borders, no shadows, one restrained accent | computer-delivered exams, in the style of the IELTS computer test |
 | `paper` | warm off-white background (about `#f6f1e7`), dark warm-grey ink, low-saturation accent | long reading, a printed-paper feel |
 
