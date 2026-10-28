@@ -29,6 +29,7 @@ describe("front matter", () => {
       look: "free",
       tags: [],
       generatedBy: null,
+      keyLines: { title: 2 },
     });
   });
 

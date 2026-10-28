@@ -52,6 +52,7 @@ export function defaultFrontMatter(file: string): FrontMatter {
     look: "free",
     tags: [],
     generatedBy: null,
+    keyLines: {},
   };
 }
 
@@ -92,6 +93,7 @@ export function parseFrontMatter(o: Outline, file: string, r: Reporter): FrontMa
       r.error("syntax.unknown-key", entry.line, u.message, u.fix);
     } else {
       seen.set(entry.key, entry);
+      fm.keyLines[entry.key] = entry.line;
     }
   }
 

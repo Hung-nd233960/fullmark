@@ -35,6 +35,7 @@ describe("every rule has a fixture", () => {
     "brief.content-kinds",
     "brief.past-exams",
     "brief.generated-by",
+    "brief.mode",
     "brief.invalid",
   ]);
   const qualityFixtures = new Set(QUALITY_RULES.map((r) => r.id));

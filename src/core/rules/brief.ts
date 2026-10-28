@@ -147,6 +147,45 @@ export const BRIEF_RULES: QualityRule[] = [
     },
   }),
   rule({
+    id: "brief.mode",
+    level: "warning",
+    summary: "the quiz's feedback, time limit or look does not fit the brief's mode",
+    why: "The brief's mode says how the learner will sit the quiz: each-question wants instant feedback, timed-exam a time limit and a locked look.",
+    example: `${BRIEF_EXAMPLE} mode: timed-exam, with no time_limit and look: free in the front matter`,
+    fix: "set the front matter keys the mode expects, or change mode in brief.yaml if the user agreed",
+    run(quiz, ctx) {
+      const brief = ctx.brief;
+      if (!brief) return [];
+      const fm = quiz.frontMatter;
+      const at = (key: string) => fm.keyLines[key] ?? 1;
+      const out: Finding[] = [];
+      if (brief.mode === "each-question" && fm.feedback !== "instant") {
+        out.push({
+          line: at("feedback"),
+          message: "the brief's mode is each-question, which expects `feedback: instant`",
+          fix: "set feedback: instant, or change mode in brief.yaml if the user agreed",
+        });
+      }
+      if (brief.mode === "timed-exam") {
+        if (fm.timeLimit === null) {
+          out.push({
+            line: at("time_limit"),
+            message: "the brief's mode is timed-exam, which expects a `time_limit`",
+            fix: "set time_limit (for example 45m), or change mode in brief.yaml if the user agreed",
+          });
+        }
+        if (fm.look !== "locked") {
+          out.push({
+            line: at("look"),
+            message: "the brief's mode is timed-exam, which expects `look: locked`",
+            fix: "set look: locked, or change mode in brief.yaml if the user agreed",
+          });
+        }
+      }
+      return out;
+    },
+  }),
+  rule({
     id: "brief.generated-by",
     level: "warning",
     summary: "a quiz written from a brief does not say which model wrote it",

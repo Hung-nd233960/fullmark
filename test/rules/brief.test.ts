@@ -30,6 +30,7 @@ describe("brief rules", () => {
     ["brief.content-kinds", "content-kinds"],
     ["brief.past-exams", "past-exams"],
     ["brief.generated-by", "generated-by"],
+    ["brief.mode", "mode"],
   ] as const) {
     it(`${rule}: found in its fixture, absent from the clean one`, () => {
       expect(run(rule, dir).length).toBeGreaterThan(0);
@@ -41,6 +42,29 @@ describe("brief rules", () => {
     const [finding] = run("brief.count", "count");
     expect(finding?.message).toBe("the brief asks for 10 questions (within 20%: 8 to 12), but the quiz has 3");
     expect(run("brief.count", "count", { tolerance: 0.8 })).toEqual([]);
+  });
+
+  it("brief.mode: one finding per mismatch, on the line of the key (line 1 when it is missing)", () => {
+    const timed = run("brief.mode", "mode");
+    expect(timed.map((f) => f.line)).toEqual([1, 1]);
+    expect(timed.map((f) => f.message)).toEqual([
+      "the brief's mode is timed-exam, which expects a `time_limit`",
+      "the brief's mode is timed-exam, which expects `look: locked`",
+    ]);
+    const quizOf = (front: string) =>
+      parse(`---\n${front}\n---\n\n## Q? {type=single id=q}\n\n- [x] a\n- [ ] b\n`, "q.md").quiz as Quiz;
+    const brief = (mode: string) => readBrief(briefYaml({ mode: mode as never }), "brief.yaml").brief;
+    const rule = BRIEF_RULES.find((r) => r.id === "brief.mode");
+    if (!rule) throw new Error("brief.mode");
+    const lines = (front: string, mode: string) =>
+      rule.run(quizOf(front), { brief: brief(mode), contentFiles: null }, {}).map((f) => f.line);
+    // the key is written but wrong: the finding is on its line
+    expect(lines("title: T\nfeedback: end", "each-question")).toEqual([3]);
+    expect(lines("title: T\nfeedback: instant", "each-question")).toEqual([]);
+    expect(lines("title: T\ntime_limit: 30m\nlook: free", "timed-exam")).toEqual([4]);
+    expect(lines("title: T\nlook: locked", "timed-exam")).toEqual([1]);
+    // at-the-end holds no expectation
+    expect(lines("title: T", "at-the-end")).toEqual([]);
   });
 
   it("every brief rule does nothing without a brief", () => {
