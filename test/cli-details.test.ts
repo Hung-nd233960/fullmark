@@ -53,8 +53,8 @@ describe("the report's words for the attempt's source and the goal", () => {
   it("words the goal as the results card does, never as passed or failed", () => {
     expect(en.report.goalLine(60, true, false)).toBe("Goal 60%: reached");
     expect(en.report.goalLine(60, false, false)).toBe("Goal 60%: not reached yet");
-    expect(en.report.goalLine(60, true, true)).toBe("Goal 60%*: reached");
+    expect(en.report.goalLine(60, true, true)).toBe("Goal 60%: reached*");
     expect(vi.report.goalLine(60, true, false)).toBe("Mục tiêu 60%: đã đạt");
-    expect(vi.report.goalLine(60, false, true)).toBe("Mục tiêu 60%*: chưa đạt");
+    expect(vi.report.goalLine(60, false, true)).toBe("Mục tiêu 60%: chưa đạt*");
   });
 });

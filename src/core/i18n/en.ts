@@ -27,7 +27,7 @@ export const en = {
     scoreLine: (earned: string, points: string, percent: string) => `${earned} of ${points} points (${percent}%)`,
     pendingLine: (points: string) => `${points} points are waiting for a grader and are not in the score`,
     goalLine: (mark: number, reached: boolean, pending: boolean) =>
-      `Goal ${mark}%${pending ? "*" : ""}: ${reached ? "reached" : "not reached yet"}`,
+      `Goal ${mark}%: ${reached ? "reached" : "not reached yet"}${pending ? "*" : ""}`,
     sections: "By section",
     tags: "By tag",
     name: "Name",

@@ -28,7 +28,7 @@ export const vi = {
     scoreLine: (earned: string, points: string, percent: string) => `${earned} trên ${points} điểm (${percent}%)`,
     pendingLine: (points: string) => `${points} điểm đang chờ chấm và chưa nằm trong điểm số`,
     goalLine: (mark: number, reached: boolean, pending: boolean) =>
-      `Mục tiêu ${mark}%${pending ? "*" : ""}: ${reached ? "đã đạt" : "chưa đạt"}`,
+      `Mục tiêu ${mark}%: ${reached ? "đã đạt" : "chưa đạt"}${pending ? "*" : ""}`,
     sections: "Theo phần",
     tags: "Theo chủ đề",
     name: "Tên",
