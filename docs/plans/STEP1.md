@@ -50,7 +50,7 @@ The mockups are a Design canvas: <https://claude.ai/artifact/HPX2k7wM7ENHVQLc3zz
 
 **Focus mode** was decided on 2026-10-28 and is written into TECHNICAL_DESIGN.md section 8 (rows "Collapsible panel" and "Focus mode") and the `--focus` rows of COMMANDS.md. The canvas has it: the interactive quiz board has Hide/Show panel and Focus mode, plus the boards "Focus mode" (dark, fullscreen) and "Start screen: Focus mode ticked".
 
-Next design work: the **Review page**, meaning the results screen after Submit (score, right and wrong answers, explanations, review wrong only, Retry missed), which is also the page `replay` opens, with its banner. Not `quiz review`.
+The **results screen** (after Submit, and replay) was decided on 2026-10-28 and is in section 8 (rows "Results", "Review filter", "Retry missed", "Replay"). Canvas boards: "Results after Submit" (light, interactive filter, essay waiting), "Results: Missed filter" (dark), "Replay" (paper, essay graded). The owner has not commented on the boards yet.
 
 ### Loose ends outside this plan
 
