@@ -97,6 +97,9 @@ const MARK_OPEN = String.fromCharCode(0xe000);
 const MARK_CLOSE = String.fromCharCode(0xe001);
 const MARKER = new RegExp(`${MARK_OPEN}([0-9]+)${MARK_CLOSE}`, "g");
 
+/** made once: building a markdown-it costs more than reading a line with it */
+let linkMarkdown: ReturnType<typeof createMarkdown> | undefined;
+
 /**
  * The indices of the scanned blanks that sit inside a link's text or an image's alt text. Each blank is swapped for a
  * marker, the text is read as inline Markdown, and a marker found under a link or in an image's alt text is a hit.
@@ -112,7 +115,7 @@ export function blanksInLinkText(text: string, scan: BlankScan): number[] {
   const note = (s: string) => {
     for (const m of s.matchAll(MARKER)) hits.add(Number(m[1]));
   };
-  const tokens = createMarkdown().parseInline(marked, {});
+  const tokens = (linkMarkdown ??= createMarkdown()).parseInline(marked, {});
   let depth = 0;
   for (const child of tokens[0]?.children ?? []) {
     if (child.type === "link_open") depth++;

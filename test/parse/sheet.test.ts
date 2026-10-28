@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { parseSheet } from "../../src/core/parse/sheet";
 
@@ -41,9 +43,10 @@ describe("parseSheet", () => {
       expect(rules("# One\n\nBody.\n\n# Two\n\nMore.\n")).toEqual(["materials.heading@5"]);
     });
 
-    it("lets ## and ### follow, and refuses deeper headings", () => {
-      expect(rules("# One\n\n## Two\n\n### Three\n\nBody.\n")).toEqual([]);
-      expect(rules("# One\n\n#### Four\n\nBody.\n")).toEqual(["syntax.heading-level@3"]);
+    it("lets ## to ###### follow", () => {
+      expect(rules("# One\n\n## Two\n\n### Three\n\n#### Four\n\n###### Six\n\nBody.\n")).toEqual([]);
+      const fixture = readFileSync(join(import.meta.dirname, "../fixtures/valid/materials/deep.md"), "utf8");
+      expect(rules(fixture)).toEqual([]);
     });
 
     it("takes an underlined heading for text", () => {

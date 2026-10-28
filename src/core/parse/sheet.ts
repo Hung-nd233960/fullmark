@@ -22,7 +22,7 @@ export type ParsedSheet = {
 /**
  * Parses a materials sheet: ordinary Markdown with one `#` heading, its name. Pure: the loader reads the file.
  * It raises `materials.heading`, `materials.empty` (a warning) and the Markdown rules of a
- * quiz (raw HTML, alt text, containers, heading levels below `###`). `materials.question` is raised for question syntax.
+ * quiz (raw HTML, alt text, containers, a second `#`). `materials.question` is raised for question syntax.
  */
 export function parseSheet(text: string, path: string): ParsedSheet {
   const r = new Reporter(path);
@@ -78,13 +78,6 @@ export function parseSheet(text: string, path: string): ParsedSheet {
         u.start,
         "a sheet has one # heading, its name",
         "use ## for a part of the sheet, or put the part in another sheet",
-      );
-    } else if (u.kind === "heading" && u.level > 3) {
-      r.error(
-        "syntax.heading-level",
-        u.start,
-        "only #, ## and ### headings are allowed in a sheet",
-        "use bold text for a label inside a part",
       );
     }
   }
