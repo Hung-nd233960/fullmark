@@ -1,0 +1,1 @@
+{"status":"error","file":"invalid/single-none-checked.md","message":"the quiz has errors, so it cannot grade anything; run `quiz check` on it"}

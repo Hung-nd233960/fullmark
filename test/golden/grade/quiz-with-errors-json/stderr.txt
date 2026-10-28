@@ -1,0 +1,2 @@
+invalid/single-none-checked.md: the quiz has errors, so it cannot grade anything; run `quiz check` on it
+  5: choice.correct-count: a single-answer question needs exactly one [x], not 0

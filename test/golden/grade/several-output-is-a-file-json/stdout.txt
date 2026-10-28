@@ -1,0 +1,1 @@
+{"status":"error","message":"-o names a folder when there are several results files, but report.md is a file"}

@@ -7,7 +7,7 @@ Arguments:
   files                   quiz .md files (globs are expanded)
 
 Options:
-  --profile <name>        the check profile; overrides the quiz's profile:
+  --profile <name>        the check profile; overrides the quiz's profile
   --config <toml>         use this config file instead of the nearest
                           fullmark.toml
   --strict                warnings count as errors

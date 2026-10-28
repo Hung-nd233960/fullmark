@@ -16,4 +16,4 @@ Commands:
   grade [options] <results...>  re-grade attempts and write a report: score,
                                 wrong answers, and the essays laid out for a
                                 grader
-  help [command]                display help for command
+  help [command]                help for a command

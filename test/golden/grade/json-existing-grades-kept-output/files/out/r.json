@@ -1,0 +1,304 @@
+{
+  "format": "fullmark-report",
+  "version": 2,
+  "quiz": {
+    "title": "Cardiac physiology: a medical-science quiz",
+    "id": "quiz",
+    "hash": "b3c0c6258b651d76c759696cf9cb6c4c04f5aadab2f7c9c701f06805f0a18e29",
+    "kind": "quiz",
+    "lang": "en"
+  },
+  "attempt": {
+    "phase": "submitted",
+    "source": "full",
+    "questions": 10,
+    "started": "2026-10-23T16:02:00",
+    "submitted": "2026-10-23T16:30:00",
+    "time_used": 1680,
+    "timed_out": false
+  },
+  "score": {
+    "earned": 10.47,
+    "points": 16,
+    "percent": 65.44,
+    "pending": 4,
+    "pass": {
+      "mark": 60,
+      "passed": true
+    }
+  },
+  "sections": [
+    {
+      "id": "structure-and-conduction",
+      "title": "Structure and conduction",
+      "earned": 4.8,
+      "points": 8,
+      "percent": 60,
+      "pending": 0,
+      "questions": 4
+    },
+    {
+      "id": "haemodynamics",
+      "title": "Haemodynamics",
+      "earned": 5.67,
+      "points": 8,
+      "percent": 70.88,
+      "pending": 0,
+      "questions": 5
+    },
+    {
+      "id": "written-answer",
+      "title": "Written answer",
+      "earned": 0,
+      "points": 0,
+      "percent": null,
+      "pending": 4,
+      "questions": 1
+    }
+  ],
+  "tags": [
+    {
+      "id": "anatomy",
+      "title": null,
+      "earned": 1,
+      "points": 1,
+      "percent": 100,
+      "pending": 0,
+      "questions": 1
+    },
+    {
+      "id": "conduction",
+      "title": null,
+      "earned": 3.8,
+      "points": 7,
+      "percent": 54.29,
+      "pending": 0,
+      "questions": 3
+    },
+    {
+      "id": "ecg",
+      "title": null,
+      "earned": 1,
+      "points": 4,
+      "percent": 25,
+      "pending": 0,
+      "questions": 2
+    },
+    {
+      "id": "haemodynamics",
+      "title": null,
+      "earned": 5.67,
+      "points": 7,
+      "percent": 81,
+      "pending": 4,
+      "questions": 5
+    }
+  ],
+  "questions": [
+    {
+      "id": "sa-node",
+      "section": "structure-and-conduction",
+      "type": "single",
+      "tags": [
+        "conduction"
+      ],
+      "points": 1,
+      "earned": 1,
+      "status": "correct",
+      "prompt": "Which structure is the normal pacemaker of the heart?",
+      "answer": "The sinoatrial (SA) node",
+      "key": "The sinoatrial (SA) node",
+      "explanation": "The SA node depolarises fastest (about 60 to 100 times a minute), so it sets the rhythm. The AV node, bundle of His and Purkinje fibres can pace the heart only if the nodes above them fail, and then at slower rates.",
+      "words": null
+    },
+    {
+      "id": "pathway",
+      "section": "structure-and-conduction",
+      "type": "ordering",
+      "tags": [
+        "conduction"
+      ],
+      "points": 3,
+      "earned": 1.8,
+      "status": "partial",
+      "prompt": "Put the path of an electrical impulse through the heart in order.",
+      "answer": "1. Sinoatrial node 2. Atrioventricular node 3. Bundle of His 4. Purkinje fibres 5. Left and right bundle branches",
+      "key": "1. Sinoatrial node 2. Atrioventricular node 3. Bundle of His 4. Left and right bundle branches 5. Purkinje fibres",
+      "explanation": "The impulse spreads across the atria, is delayed in the AV node so the ventricles fill, and then travels down the septum and out to the ventricular muscle.",
+      "words": null
+    },
+    {
+      "id": "ecg-match",
+      "section": "structure-and-conduction",
+      "type": "matching",
+      "tags": [
+        "conduction",
+        "ecg"
+      ],
+      "points": 3,
+      "earned": 1,
+      "status": "partial",
+      "prompt": "Match each ECG wave to the heart event it records.",
+      "answer": "P wave - Atrial depolarisation; QRS complex - Ventricular repolarisation; T wave - Ventricular depolarisation",
+      "key": "P wave - Atrial depolarisation; QRS complex - Ventricular depolarisation; T wave - Ventricular repolarisation",
+      "explanation": "Atrial repolarisation happens during the QRS complex and is hidden by it, which is why it has no wave of its own and works as the distractor.",
+      "words": null
+    },
+    {
+      "id": "mitral",
+      "section": "structure-and-conduction",
+      "type": "blanks",
+      "tags": [
+        "anatomy"
+      ],
+      "points": 1,
+      "earned": 1,
+      "status": "correct",
+      "prompt": "The valve between the left atrium and the left ventricle is the [[mitral|bicuspid]] valve.",
+      "answer": "1: Bicuspid",
+      "key": "1: mitral / bicuspid",
+      "explanation": "It has two cusps, hence \"bicuspid\". The tricuspid valve sits on the right side.",
+      "words": null
+    },
+    {
+      "id": "co",
+      "section": "haemodynamics",
+      "type": "numeric",
+      "tags": [
+        "haemodynamics"
+      ],
+      "points": 2,
+      "earned": 2,
+      "status": "correct",
+      "prompt": "A resting heart rate is 72 beats per minute and the stroke volume is 70 mL. What is the cardiac output?",
+      "answer": "5.04",
+      "key": "5.04 L/min",
+      "explanation": "$72 \\times 70 = 5040$ mL/min, which is 5.04 L/min. A common slip is leaving the answer in mL/min.",
+      "words": null
+    },
+    {
+      "id": "hr",
+      "section": "haemodynamics",
+      "type": "numeric",
+      "tags": [
+        "ecg"
+      ],
+      "points": 1,
+      "earned": 0,
+      "status": "incorrect",
+      "prompt": "On an ECG the R-R interval is 0.8 s. What is the heart rate?",
+      "answer": "80",
+      "key": "75 beats/min",
+      "explanation": "$60 / 0.8 = 75$ beats per minute. The interval is the time for one beat, so divide 60 s by it.",
+      "words": null
+    },
+    {
+      "id": "sv",
+      "section": "haemodynamics",
+      "type": "multi",
+      "tags": [
+        "haemodynamics"
+      ],
+      "points": 2,
+      "earned": 0.67,
+      "status": "partial",
+      "prompt": "Which of these increase stroke volume?",
+      "answer": "Greater venous return (preload); Stronger myocardial contractility; Vagal stimulation of the SA node",
+      "key": "Greater venous return (preload); Stronger myocardial contractility; Lower arterial resistance (afterload)",
+      "explanation": "More filling stretches the muscle and it ejects more (Frank-Starling), more contractility ejects more, and lower afterload is easier to eject against. Higher afterload lowers stroke volume, and vagal tone mainly slows the rate rather than changing stroke volume directly.",
+      "words": null
+    },
+    {
+      "id": "map-true",
+      "section": "haemodynamics",
+      "type": "truefalse",
+      "tags": [
+        "haemodynamics"
+      ],
+      "points": 1,
+      "earned": 1,
+      "status": "correct",
+      "prompt": "Mean arterial pressure is roughly the diastolic pressure plus one third of the pulse pressure.",
+      "answer": "true",
+      "key": "true",
+      "explanation": "The heart spends about two thirds of each cycle in diastole, so the mean pressure sits closer to the diastolic value. MAP = DBP + (SBP - DBP) / 3.",
+      "words": null
+    },
+    {
+      "id": "bp-fields",
+      "section": "haemodynamics",
+      "type": "fields",
+      "tags": [
+        "haemodynamics"
+      ],
+      "points": 2,
+      "earned": 2,
+      "status": "correct",
+      "prompt": "A patient has a blood pressure of 120/80 mmHg. Work out the pressures.",
+      "answer": "Pulse pressure (mmHg): 40; Mean arterial pressure (mmHg, one decimal place): 93.3",
+      "key": "Pulse pressure (mmHg): 40; Mean arterial pressure (mmHg, one decimal place): 93.3",
+      "explanation": "Pulse pressure is 120 - 80 = 40 mmHg. MAP is 80 + 40 / 3 = 93.3 mmHg.",
+      "words": null
+    },
+    {
+      "id": "frank-starling",
+      "section": "written-answer",
+      "type": "essay",
+      "tags": [
+        "haemodynamics"
+      ],
+      "points": 4,
+      "earned": null,
+      "status": "pending",
+      "prompt": "Explain the Frank-Starling mechanism and why it matters.",
+      "answer": "Greater filling of the ventricle before contraction stretches the muscle fibres, so the force of contraction rises and the stroke volume is larger for the same heart rate. This is why the left and right sides of the heart stay balanced when venous return changes.",
+      "key": null,
+      "explanation": null,
+      "words": 45
+    }
+  ],
+  "wrong": [
+    "pathway",
+    "ecg-match",
+    "hr",
+    "sv"
+  ],
+  "open": [
+    {
+      "id": "frank-starling",
+      "type": "essay",
+      "points": 4,
+      "prompt": "Explain the Frank-Starling mechanism and why it matters.",
+      "answer": "Greater filling of the ventricle before contraction stretches the muscle fibres, so the force of contraction rises and the stroke volume is larger for the same heart rate. This is why the left and right sides of the heart stay balanced when venous return changes.",
+      "words": 45,
+      "language": null,
+      "rubric": {
+        "mode": "holistic",
+        "step": null,
+        "criteria": [
+          {
+            "id": "states-that-greater-end-diastolic-filling-stretches-the-fibres-and-increases-the-force-of-contraction",
+            "text": "States that greater end-diastolic filling stretches the fibres and increases the force of contraction"
+          },
+          {
+            "id": "links-this-to-a-larger-stroke-volume-for-the-same-heart-rate",
+            "text": "Links this to a larger stroke volume for the same heart rate"
+          },
+          {
+            "id": "gives-a-clinical-or-physiological-consequence-for-example-balancing-left-and-right-output-or-the-effect-of-reduced-venous-return",
+            "text": "Gives a clinical or physiological consequence, for example balancing left and right output or the effect of reduced venous return"
+          },
+          {
+            "id": "uses-correct-terms-such-as-preload-end-diastolic-volume-and-stroke-volume",
+            "text": "Uses correct terms such as preload, end-diastolic volume and stroke volume"
+          }
+        ]
+      },
+      "sample_answer": null,
+      "pending": true,
+      "grade": null
+    }
+  ],
+  "grades": null,
+  "unknown": []
+}

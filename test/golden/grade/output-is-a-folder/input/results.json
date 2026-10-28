@@ -1,0 +1,80 @@
+{
+  "format": "fullmark-results",
+  "version": 2,
+  "quizHash": "b3c0c6258b651d76c759696cf9cb6c4c04f5aadab2f7c9c701f06805f0a18e29",
+  "plan": {
+    "source": "full",
+    "questions": [
+      "sa-node",
+      "pathway",
+      "ecg-match",
+      "mitral",
+      "co",
+      "hr",
+      "sv",
+      "map-true",
+      "bp-fields",
+      "frank-starling"
+    ]
+  },
+  "state": {
+    "answers": {
+      "sa-node": {
+        "choice": 1
+      },
+      "pathway": {
+        "order": [
+          0,
+          1,
+          2,
+          4,
+          3
+        ]
+      },
+      "ecg-match": {
+        "pairs": [
+          0,
+          2,
+          1
+        ]
+      },
+      "mitral": {
+        "blanks": [
+          "Bicuspid"
+        ]
+      },
+      "co": {
+        "raw": "5.04"
+      },
+      "hr": {
+        "raw": "80"
+      },
+      "sv": {
+        "choices": [
+          0,
+          1,
+          4
+        ]
+      },
+      "map-true": {
+        "value": true
+      },
+      "bp-fields": {
+        "fields": [
+          "40",
+          "93.3"
+        ]
+      },
+      "frank-starling": {
+        "text": "Greater filling of the ventricle before contraction stretches the muscle fibres, so the force of contraction rises and the stroke volume is larger for the same heart rate. This is why the left and right sides of the heart stay balanced when venous return changes."
+      }
+    },
+    "startedAt": "2026-10-23T16:02:00",
+    "submittedAt": "2026-10-23T16:30:00",
+    "timeUsed": 1680,
+    "sectionTime": {},
+    "flagged": [],
+    "timedOut": false
+  },
+  "phase": "submitted"
+}
