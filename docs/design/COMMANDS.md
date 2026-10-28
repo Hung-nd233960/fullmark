@@ -98,13 +98,13 @@ Validates a quiz under one profile. Reports every issue with a level, a rule id,
 | Argument or option | Meaning |
 |---|---|
 | `FILE...` | The quiz `.md` files. Several: see [Several files](#several-files) |
-| `--profile P` | Check under this profile. Default: the quiz's `profile:`, then the brief's, then `[check] profile`, then `default` |
+| `--profile P` | Check under this profile. Default: the quiz's `profile:` (`survey` for a `kind: survey` quiz that names none), then the brief's, then `[check] profile`, then `default` |
 | `--config TOML` | This config file instead of the nearest `fullmark.toml` |
 | `--strict` | Warnings count as errors (sets `fail-on = "warning"` for this run) |
 | `--review REVIEW` | Also fail until every question flagged *fix* or *drop* in this `review.json` has changed or gone. One quiz only |
 | `--json` | `{"status", "profile", "config": [paths], "errors", "warnings", "issues": [{"rule", "level", "file", "line", "message", "fix"}], "ignored": [{"rule", "line", "because"}]}` |
 
-Exit: `0` no errors, `1` errors (or warnings with `--strict` or `fail-on = "warning"`), or an unknown profile named in the quiz; `2` file not found, malformed config, or unknown `--profile`.
+Exit: `0` no errors, `1` errors (or warnings with `--strict` or `fail-on = "warning"`), or an unknown profile named in the quiz (`profile.unknown`); `2` file not found, malformed config (with `file:line`), or unknown `--profile` (a plain message naming the known profiles).
 
 ### quiz rules
 
@@ -125,7 +125,7 @@ The rule catalogue. Use it to see what a profile checks and why a quiz was held 
 | `RULE` | A rule id, such as `choice.correct-longest` or `custom.two-essays` |
 | `--profile P` | Show the rules under this profile. Default: `default`, or the quiz's with `--for` |
 | `--for FILE` | Resolve config and profile as `check FILE` would |
-| `--json` | `{"profile", "chain", "config", "rules": [{"id", "kind", "level", "options", "origin", "description"}]}` |
+| `--json` | `{"profile", "chain", "config", "rules": [{"id", "kind", "level", "options", "origin", "description"}]}`. `kind` is `fixed`, `quality` or `custom` |
 
 Exit: `0`, `2` unknown rule or profile, or malformed config.
 
@@ -280,6 +280,18 @@ Writes `DIR/brief.yaml` and an empty `DIR/content/` for a quiz an agent will wri
 | `--json` | `{"status", "brief", "defaults_applied", "warnings"}`, or `{"status": "needs_input", "missing": [...], "how"}` |
 
 Exit: `0` written, `2` usage error, timeout, form cancelled, or `--tui` without a terminal; `3` purpose or scope missing and no form asked for (nothing written).
+
+**The file.** `brief.yaml` holds every key below, always. `quiz brief` fills the defaults when it writes, so a reader never fills any: `check` treats a missing key like an unknown one, as `brief.invalid` (a warning), and then does not hold the quiz against the brief.
+
+| Key | From | Value |
+|---|---|---|
+| `purpose`, `scope` | `--purpose`, `--scope` | as the options |
+| `content` | `--kinds`, `--kinds-other`, `--elsewhere` | a mapping with exactly `kinds` (a list), `kinds_other` and `elsewhere` (text, empty when not given) |
+| `count`, `minutes`, `mix`, `difficulty`, `mode`, `language`, `request` | the option of the same name | as the options; `mix` is a list |
+| `weak_topics` | `--weak-topics` | `true` or `false` |
+| `focus_tags` | earlier results, when `weak_topics` is true | a list of tags, empty otherwise |
+| `profile` | `--profile` | the profile name, resolved from the purpose when not given |
+| `decided_by` | | for each key above, who chose it: `user`, `default` or `agent` |
 
 ### quiz grade
 

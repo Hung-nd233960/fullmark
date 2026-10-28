@@ -409,6 +409,7 @@ Every rule below is a **fixed rule**: an error that no profile can change or ign
 | `quiz.empty` | a quiz with no questions |
 | `syntax.unknown-key` | an unknown front-matter key, attribute or `answer` key |
 | `syntax.value` | a value outside its allowed set or range (`feedback: sometimes`, `points=0`, `time_limit: soon`) |
+| `profile.unknown` | a `profile:` that is neither built in nor in the config |
 | `syntax.attributes` | a `{…}` block that does not parse, or a name given twice |
 | `syntax.heading-level` | a `###` or deeper heading |
 | `syntax.container` | an unknown, unclosed, nested or stray `:::` container, one in the wrong place (`passage` outside a section intro), or a second passage in a section |
@@ -444,7 +445,7 @@ Every rule below is a **fixed rule**: an error that no profile can change or ign
 | `code.language` | a `code` question without `language` |
 | `rubric.*` | the rubric rules of TECHNICAL_DESIGN.md, section 6 |
 | `survey.forbidden` | in a survey: `pass_mark`, `pick`, `feedback: instant`, `partial` or `graded=` (an `[x]` is `question.ungraded-key`) |
-| `ignore.invalid` | `check-ignore` without `because`, or naming a fixed rule |
+| `ignore.invalid` | `check-ignore` without `because`, `because` without `check-ignore`, or naming a fixed or unknown rule |
 
 One quality rule belongs here because the syntax raises it: `question.points-ignored` (warning) for `points=` on an ungraded question.
 

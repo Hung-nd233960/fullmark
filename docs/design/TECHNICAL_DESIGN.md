@@ -118,7 +118,7 @@ type Issue = { rule: string; level: Level; file: string; line: number; message: 
 
 ### Rule catalogue (v1)
 
-Quality rules carried over from 0.x, now with ids and options. Their defaults start from 0.x's thresholds and may be tuned.
+Quality rules carried over from 0.x, now with ids and options. Their defaults start from 0.x's thresholds and may be tuned. The dotted ids are the codes: there are no numeric codes (like `E501`), and a test pins every id so none changes by accident. Numeric aliases could be added later.
 
 | Rule | Default | Options (default) |
 |---|---|---|
@@ -131,8 +131,10 @@ Quality rules carried over from 0.x, now with ids and options. Their defaults st
 | `code.unknown-language` | warning | |
 | `brief.count` | warning | `tolerance` (0.2) |
 | `brief.mix`, `brief.content-kinds`, `brief.past-exams` | warning | |
+| `brief.mode` | warning | (`each-question` expects `feedback: instant`; `timed-exam` expects a `time_limit` and `look: locked`) |
+| `brief.invalid` | warning | (a `brief.yaml` that does not parse, or has an unknown or missing key; the quiz is then not held against it) |
 | `brief.generated-by` | warning | (a quiz written from a brief by an agent must set `generated_by` in its front matter, naming the agent and model; a hand-written quiz leaves it out) |
-| `build.size` | warning | `warn-mb` (20), `max-mb` (100, always an error above it) |
+| `build.size` | warning | `warn-mb` (20), `max-mb` (100, always an error above it). Registered from step 1 so profiles can set it; checked from step 2 |
 
 New quality rules, off in `default` so behaviour does not change, and used by the stricter built-in profiles:
 
@@ -149,9 +151,9 @@ A profile is a named set of rule levels, options and custom checks. It can exten
 | Built-in profile | For | Differences from `default` |
 |---|---|---|
 | `default` | everything | none |
-| `draft` | writing in progress | every quality rule is `info`, so only fixed rules fail |
-| `exam` | mock exams | quality warnings become errors; `explanation.short` needs 8 words; `answers.position-skew` max share 0.4; `explanation.missing` and `question.untagged` are errors; `brief.count` tolerance 0.1; inline ignores are not allowed |
-| `survey` | questionnaires | rules about answer keys and explanations are off. Picked automatically for `kind: survey` |
+| `draft` | writing in progress | every quality rule that is on in `default` is `info`, so only fixed rules fail |
+| `exam` | mock exams | every quality rule that is on in `default` is an error; `explanation.missing` and `question.untagged` are errors (`quiz.no-time-limit` stays off); `explanation.short` needs 8 words; `answers.position-skew` max share 0.4; `brief.count` tolerance 0.1; inline ignores are not allowed |
+| `survey` | questionnaires | `choice.correct-longest`, `choice.in-stem`, `explanation.short`, `explanation.missing` and `answers.position-skew` are off. Picked automatically for `kind: survey` |
 
 `brief` maps its purpose to a profile and writes it into `brief.yaml`: `self-study` and `classmates` give `default`, `exam-prep` gives `exam`, `survey` gives `survey`.
 
@@ -206,13 +208,15 @@ These are declarative, from a fixed vocabulary, so they stay deterministic, safe
 
 1. Built-in rule defaults.
 2. The user config (`config.toml`): `[profiles.*]` there are personal profiles, available everywhere.
-3. The nearest `fullmark.toml`, looking up from the quiz and stopping at a git root or the library root. It overrides profiles of the same name from step 2. Files are not merged beyond these two layers.
+3. The nearest `fullmark.toml`, looking up from the quiz and stopping at a git root or the library root. A profile here replaces a personal profile of the same name from step 2. Files are not merged beyond these two layers.
 
-The profile is chosen in this order, first match wins: `--profile` on the command line, then `profile:` in the quiz's front matter, then `profile` in `brief.yaml`, then `[check] profile`, then `default`. An unknown profile in front matter is a check error. An unknown one on the command line, or a malformed config, exits 2 with `file:line`.
+A profile in either file named like a built-in (`[profiles.exam]`), with no `extends` of its own, overlays the built-in: its rule settings and checks are applied on top, and the rest of the built-in stays. `[check]` is read from `fullmark.toml` only; in `config.toml` it is ignored.
+
+The profile is chosen in this order, first match wins: `--profile` on the command line, then `profile:` in the quiz's front matter (a `kind: survey` quiz that names none gets `survey` at this step), then `profile` in `brief.yaml`, then `[check] profile`, then `default`. An unknown profile in front matter is the fixed rule `profile.unknown`. An unknown one on the command line exits 2 with a plain message naming the known profiles; a malformed config exits 2 with `file:line`.
 
 ### Ignoring one finding
 
-A question can carry `{check-ignore="choice.correct-longest" because="the long answer is the point"}`. The reason is required. Every ignore is reported as `info` (`config.ignored`), so nothing is silently hidden, and profiles with `allow-ignore = false` (such as `exam`) turn ignores into errors. Fixed rules cannot be ignored.
+A question can carry `{check-ignore="choice.correct-longest" because="the long answer is the point"}`. The reason is required. Every ignore is reported as `info` (`config.ignored`), so nothing is silently hidden, and profiles with `allow-ignore = false` (such as `exam`) turn ignores into errors. Fixed rules cannot be ignored. An ignore without `because`, a `because` without `check-ignore`, and an ignore naming a fixed or unknown rule are all `ignore.invalid`.
 
 ### Rules for agents
 

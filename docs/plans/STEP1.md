@@ -1,6 +1,6 @@
 # Step 1: the core
 
-## Handoff (2026-10-27): start here
+## Handoff (2026-10-28): start here
 
 A new session picks up from this section alone; it needs no earlier chat.
 
@@ -19,30 +19,28 @@ The owner's working rules: state what, why and what done means before a big job 
 |---|---|---|
 | 1a scaffold and test data | done, reviewed | `764bd07`..`4e1b0cf` |
 | 1b parser and `quiz ids` | done, reviewed | `0789b52`..`b49918f` |
-| 1c rules, config, `check`, `rules` | done, reviewed; its gaps await the owner (below) | `8a632b5`..`201d9fb` |
+| 1c rules, config, `check`, `rules` | done, reviewed; its gaps decided (below) | `8a632b5`..`201d9fb` |
 | 1d grader and `grade` | next: brief not written yet | |
 | 1e contract tests | after 1d | |
 
 `npm run check` after 1c: 30 test files, 603 passed, 166 todo (the 160 0.x grading cases and the 6 `rubric.*` fixtures, both for 1d). Branch `1.0` is not on GitHub; nothing has been pushed.
 
-### Waiting for the owner: slice 1c's gaps
+### Slice 1c's gaps: decided 2026-10-28, written into the design docs
 
-Proposed on 2026-10-27, **not yet approved**. Ask the owner first; write in only what they accept.
+The owner accepted all six, with one change to the first, and confirmed that rules get no numeric codes. What the code still has to catch up on (slice 1d's first tasks):
 
-1. **`brief.yaml` format:** adopt the strict `BriefSchema` in `src/core/ir.ts` into COMMANDS.md under `quiz brief` (keys: `purpose`, `scope`, `content {kinds, kinds_other, elsewhere}`, `count`, `minutes`, `mix`, `difficulty`, `mode`, `weak_topics`, `focus_tags`, `language`, `request`, `profile`, `decided_by`).
-2. **`brief.mode`:** a new quality warning, since COMMANDS.md says `check` compares the brief's mode: `each-question` expects `feedback: instant`; `timed-exam` expects a `time_limit` and `look: locked`.
-3. **`profile.unknown`:** a fixed rule for an unknown profile named in the quiz's front matter (now reported as `syntax.value`). Also reword COMMANDS.md: an unknown `--profile` exits 2 with a plain message (there is no `file:line`).
-4. **`because` without `check-ignore`:** `ignore.invalid` instead of being ignored silently.
-5. **`build.size`:** register it now (no check until step 2), so a profile that sets it is not an unknown-rule error.
-6. **Write into TECHNICAL_DESIGN.md section 5** what 1c chose: a `fullmark.toml` profile named like a built-in overlays it, and a project profile replaces a personal one of the same name; `[check]` is read from `fullmark.toml` only; the survey auto-profile counts at the front-matter step; the exact rule lists of `draft`, `exam` and `survey` (from `src/core/config/`); an ignore naming an unknown rule is `ignore.invalid`; `rules --json` lists custom checks as `kind: "custom"`.
+1. **`brief.yaml` has no defaults when read** (COMMANDS.md, `quiz brief`, "The file"). `quiz brief` writes every key; `readBrief` must require every key, and a missing one is `brief.invalid` like an unknown one. `BriefSchema` in `src/core/ir.ts` loses its `.default(...)`s (keep them where `quiz brief` fills values, in step 2), an empty `brief.yaml` is `brief.invalid`, and `profile` is a string, not nullable.
+2. **`brief.mode`** quality warning (TECHNICAL_DESIGN.md, section 5, the catalogue).
+3. **`profile.unknown`** fixed rule for an unknown front-matter profile, instead of `syntax.value`; an unknown `--profile` exits 2 with a plain message naming the known profiles.
+4. **`because` without `check-ignore`** is `ignore.invalid`.
+5. **`build.size`** registered, with no check until step 2.
 
-Also raised and answered: rules get **no numeric codes** (like `E501`); the dotted ids are the codes, a test pins them, and codes could be added later as aliases. Opus recommended this; the owner did not object before the session ended.
+Item 6 (what 1c chose for profiles, `[check]`, the survey default, the built-in rule lists, unknown-rule ignores, `kind: "custom"`) only needed writing down; the code already does it.
 
 ### Next steps, in order
 
-1. Get the owner's yes or changes on the six items above; write them into the design docs; commit.
-2. Write the **slice 1d brief** below the 1c brief. First tasks: items 2 to 5 above. Then: Plan and Attempt (TECHNICAL_DESIGN.md section 4); the `results-v2` format, including each type's answer shape (start from the `response` shapes in `test/data/grading_cases.json`); the one grader (reuse `src/core/number.ts` for numeric answers, `lang` decides the decimal comma); rubric modes, presets and the `rubric.*` rules plus `rubric.missing`, `rubric.thin` and `rubric.points-in-text` (TECHNICAL_DESIGN.md section 6); `grades-v2`; Markdown and JSON reports, whose headings follow `ui_lang` through the message catalogs in `src/core/i18n/`; `quiz grade` as in COMMANDS.md. Done when the 160 grading cases pass (rewritten to 1.0 shapes), the 6 `rubric.*` fixtures pass, and the rubric golden cases cover the IELTS rounding edges.
-3. Delegate 1d to Sonnet; review; then 1e (contract tests, golden files, the startup budget), which closes step 1.
+1. Write the **slice 1d brief** below the 1c brief. First tasks: items 1 to 5 above. Then: Plan and Attempt (TECHNICAL_DESIGN.md section 4); the `results-v2` format, including each type's answer shape (start from the `response` shapes in `test/data/grading_cases.json`); the one grader (reuse `src/core/number.ts` for numeric answers, `lang` decides the decimal comma); rubric modes, presets and the `rubric.*` rules plus `rubric.missing`, `rubric.thin` and `rubric.points-in-text` (TECHNICAL_DESIGN.md section 6); `grades-v2`; Markdown and JSON reports, whose headings follow `ui_lang` through the message catalogs in `src/core/i18n/`; `quiz grade` as in COMMANDS.md. Done when the 160 grading cases pass (rewritten to 1.0 shapes), the 6 `rubric.*` fixtures pass, and the rubric golden cases cover the IELTS rounding edges.
+2. Delegate 1d to Sonnet; review; then 1e (contract tests, golden files, the startup budget), which closes step 1.
 
 ### Loose ends outside this plan
 
