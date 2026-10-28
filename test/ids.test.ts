@@ -3,7 +3,7 @@ import { mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSyn
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { type Io, randomId, runIds } from "../src/cli/ids";
+import { type Io, randomId, runIds, seededIds } from "../src/cli/ids";
 import { applyIds, planIds } from "../src/core/ids";
 import { parse } from "../src/core/parse";
 
@@ -96,6 +96,40 @@ describe("randomId", () => {
       expect(used.has(id)).toBe(false);
       used.add(id);
     }
+  });
+});
+
+describe("seededIds (FULLMARK_TEST_SEED, test-only)", () => {
+  it("gives the same ids for the same seed, other ids for another, all of the id format and unused", () => {
+    const run = (seed: string) => {
+      const next = seededIds(seed);
+      const used = new Set<string>(["q-aaaaaa"]);
+      return Array.from({ length: 50 }, () => {
+        const id = next(used);
+        expect(id).toMatch(/^q-[a-z0-9]{6}$/);
+        expect(used.has(id)).toBe(false);
+        used.add(id);
+        return id;
+      });
+    };
+    expect(run("one")).toEqual(run("one"));
+    expect(run("one")).not.toEqual(run("two"));
+  });
+
+  it("is what the CLI uses when the variable is set, and only then", () => {
+    const text = ["---", "title: T", "---", "", "## Q {type=single}", "", "- [x] a", "- [ ] b", ""].join("\n");
+    const ids = (seed?: string) => {
+      const d = mkdtempSync(join(tmpdir(), "fullmark-seed-"));
+      writeFileSync(join(d, "q.md"), text);
+      const env = { ...process.env, ...(seed ? { FULLMARK_TEST_SEED: seed } : {}) };
+      if (!seed) delete env.FULLMARK_TEST_SEED;
+      const r = spawnSync(process.execPath, [cli, "ids", "q.md", "--json"], { cwd: d, env, encoding: "utf8" });
+      rmSync(d, { recursive: true, force: true });
+      return r.stdout;
+    };
+    expect(ids("s")).toBe(ids("s"));
+    expect(ids("s")).not.toBe(ids("t"));
+    expect(ids()).not.toBe(ids());
   });
 });
 
