@@ -17,7 +17,13 @@ describe("golden files", () => {
       async () => {
         const [first, second] = await Promise.all([runCase(c), runCase(c)]);
         // determinism: the same bytes from a second run in a fresh folder
-        expect(view(second), "two runs of the same case differ").toEqual(view(first));
+        const a = JSON.stringify(view(first));
+        const b = JSON.stringify(view(second));
+        if (a !== b) {
+          let at = 0;
+          while (a[at] === b[at]) at++;
+          expect.fail(`two runs of the same case differ at ${at}: ${a.slice(at - 80, at + 80)} / ${b.slice(at - 80, at + 80)}`);
+        }
         if (UPDATE) {
           writeExpected(c, first);
           return;

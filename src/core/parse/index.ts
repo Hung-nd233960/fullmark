@@ -1,7 +1,7 @@
 import type { AssetRef, FrontMatter, Question, Quiz, Section } from "../ir";
 import type { Issue } from "../issue";
 import { parseFrontMatter } from "./front-matter";
-import { mathIssues } from "./math";
+import { mathIssues, stringMathIssues } from "./math";
 import { outline, type Unit } from "./outline";
 import { parseQuestion, type Region } from "./question";
 import { Reporter } from "./report";
@@ -32,7 +32,14 @@ export function parse(text: string, file: string, options: ParseOptions = {}): P
   const o = outline(text);
   const r = new Reporter(file);
   const fm = parseFrontMatter(o, file, r);
-  if (options.parseTex) mathIssues(o.maths, 1, options.parseTex, r);
+  if (options.parseTex) {
+    mathIssues(o.maths, 1, options.parseTex, r);
+    // the start screen renders the description with maths, so it is checked like the rest, at its key's line
+    if (fm.description !== null) {
+      const at = o.lines.findIndex((l, i) => i < o.bodyStart && /^description\s*:/.test(l));
+      stringMathIssues(fm.description, at + 1, options.parseTex, r);
+    }
+  }
 
   for (const h of o.rawHtml) {
     r.error(

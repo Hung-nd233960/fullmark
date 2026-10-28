@@ -119,3 +119,14 @@ describe("math.syntax in the strings of an answer block", () => {
     expect(loaded).toBe(0);
   });
 });
+
+describe("math.syntax in the description", () => {
+  const parseTex = lazyParseTex();
+  it("is checked at the line of description:, since the start screen renders it with maths", () => {
+    const text =
+      "---\ntitle: T\ndescription: Area is $\badmacro$ here\n---\n\n## Q {type=single id=q}\n\nText\n\n- [x] a\n- [ ] b\n";
+    const issues = parse(text, "q.md", { parseTex }).issues.filter((i) => i.rule === "math.syntax");
+    expect(issues.map((i) => i.line)).toEqual([3]);
+    expect(parse(text.replace("\badmacro", "x^2"), "q.md", { parseTex }).issues).toEqual([]);
+  });
+});
