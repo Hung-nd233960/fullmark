@@ -18,6 +18,7 @@ New in step 2: **a slice is sized to fit one Sonnet session** (about the work of
 | 2b the simple types | done, reviewed, gaps decided | `868cf82`, `97a6f6e`, `47aca74` |
 | 2c2 materials in the core | done, reviewed, gaps decided | `94341aa`..`9797716` |
 | 2c ordering, matching, essay, code | done, reviewed, gaps decided | `06ab9f3`..`92af933` |
+| 2c3 maths and code highlighting | done, reviewed, gaps decided | `12daca7`..`2809ed6` |
 
 Step 1 is done (see [STEP1.md](STEP1.md)): `check`, `rules`, `grade` and `ids`, 1309 tests.
 
@@ -89,7 +90,12 @@ Also raised on 2026-10-28 and kept outside v1: [proposals/rapid-response.md](../
    - **H.** `pageQuestion` falls back to source order when the plan has no `optionOrder` for an `ordering` or `matching` question, which would show the answer: make it a build error instead (it cannot happen today).
    - **Code reset.** Clearing a `code` box leaves it empty; while it is empty and the question has a `starter`, a "Reset to starter" button under the box puts the starter back (a new string in `en` and `vi`; a Playwright test: clear, reset, the answer is `null` again).
 5. **Bad TeX** (owner, 2026-10-28): a maths span KaTeX cannot parse is a new fixed `check` error, `math.syntax`, so `build` never meets it. Written into QUIZ_SYNTAX.md section 8a by 2c3.
-6. **Next: delegate 2c3** (brief below) in a fresh session, then review it.
+6. Done: 2c3. Reviewed on 2026-10-29: `npm run check` passes (47 files, 1460 vitest tests, 2 startup tests, 12 Playwright tests, axe clean); the runtime is 28.6 KB gzipped; KaTeX 0.19.1 and Shiki 4.5.0, external to the CLI bundle; a page with maths is about 360 KB larger (the fonts). The startup test is at its edge: `quiz check` took 138 to 158 ms in review, and 158 ms on the commit before 2c3, so it was not 2c3. Sonnet's choices kept: KaTeX through `createRequire` (check is synchronous); KaTeX's inline styles turned into classes and Shiki's colours into `fm-tk-*` classes, since the CSP blocks `style` attributes; `materials` and `hasMath` only when present; `math.syntax` with KaTeX's short message and the position; axe's `label` and `select-name` skipped in the maths tests (axe cannot read MathML; Chrome names the control from it); dark `--fm-code-` values left to 2g. **Decided by the owner** (written into TECHNICAL_DESIGN.md foundation 3 "No `style` attributes", section 7's startup row, section 8's font bullet and the row "Answering ordering, matching, essay, code"; QUIZ_SYNTAX.md 8a `math.syntax`), the first tasks of 2d unless marked:
+   - **Compile cache.** The CLI calls `module.enableCompileCache()` at start (Node's cache in the system temp folder), for margin on the startup budget (about 18 ms measured by hand).
+   - **`math.syntax` in `answer` strings.** The strings of an `answer` block that the page renders (field and scale labels, rubric criteria, `sample_answer`) are checked too; today a broken span there falls back to its source silently.
+   - **One line for an untouched `ordering`.** Drop the extra "No answer" line under the list; the result line's "Not answered" says it.
+   - **KaTeX fonts by use** (slice 2i): embed only the font files the page's rendered maths uses.
+7. **Next: write the 2d brief** (with the first three items above), commit it, and delegate it.
 
 ## Goal
 
@@ -123,7 +129,7 @@ Step 1's rules hold ([STEP1.md](STEP1.md), "Rules for every slice"): the design 
 | **2f** | The top bar and its status line, the docked sidebar (one button, `Q`/`M`/`Esc`, stacked while answering, tabs after Submit, full screen on a phone), the question map with rings and flags, the materials in the sidebar, Focus mode |
 | **2g** | Themes: five token sets, the light/dark toggle, `look: locked`, the contrast test |
 | **2h** | Fonts: four fonts, `--fonts`, the Vietnamese glyph test, screenshot baselines |
-| **2i** | `build` across the CLI: several files, `--build-file`, `-o`, `--strict`, `--open`, `--json`, `build.size`, `--ui-lang` and the `vi` chrome scan, `--acknowledgements` and the page's licence comment, the 300-question budget, golden files |
+| **2i** | `build` across the CLI: several files, `--build-file`, `-o`, `--strict`, `--open`, `--json`, `build.size`, `--ui-lang` and the `vi` chrome scan, `--acknowledgements` and the page's licence comment, the 300-question budget, golden files; KaTeX fonts embedded by use |
 | **2j** | `replay` |
 | **2c4** | Dragging for `ordering` (own pointer-event code, mouse and touch, on top of the buttons; no library); decides whether `matching` gets dragging too. After 2f |
 | **2k** | The printable paper: `--print`, `--answers`, `--answer-sheet`, `--seed` and the mã đề, the materials page and `--materials none` |

@@ -441,7 +441,7 @@ Every rule below is a **fixed rule**: an error that no profile can change or ign
 | `short.key` | a graded `short` with neither `accept` nor `patterns` |
 | `short.regex` | a pattern that is not valid in JavaScript's `u` mode, in `short` or in a field |
 | `blanks.none`, `blanks.outside`, `blanks.in-math`, `blanks.syntax` | a `blanks` question without blanks, `[[…]]` in another type, inside maths, or malformed or inside link text or an image's alt text |
-| `math.syntax` | maths between `$` signs (inline or display, in a question or a materials sheet) that KaTeX cannot parse; the message is KaTeX's own |
+| `math.syntax` | maths between `$` signs (inline or display, in a question, in the strings of an `answer` block that the page renders such as field and scale labels, rubric criteria and `sample_answer`, or in a materials sheet) that KaTeX cannot parse; the message is KaTeX's own |
 | `fields.empty`, `fields.key`, `fields.points` | no fields, or a graded question with no graded field; a field with both numeric and text keys; points that are mixed or do not add up |
 | `ordering.items` | fewer than two items, or duplicates |
 | `matching.pairs` | fewer than two pairs, a bullet without `::`, an empty right-hand side (`a ::`), or a right-hand item used twice |
