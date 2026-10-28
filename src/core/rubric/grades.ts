@@ -1,5 +1,5 @@
 import { z } from "zod";
-import type { Attempt, Results } from "../attempt";
+import type { Attempt } from "../attempt";
 import { canonicalHash } from "../canonical";
 import { type Graded, grade, type ManualScores } from "../grade";
 import type { Question, Quiz } from "../ir";

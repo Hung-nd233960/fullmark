@@ -72,7 +72,10 @@ export function overallBand(
   const band = origin + steps * unit;
   const low = scaled(scale.min, d);
   const high = scaled(scale.max, d);
-  return unscaled(band < low ? low : band > high ? high : band, d);
+  let clamped = band;
+  if (clamped < low) clamped = low;
+  if (clamped > high) clamped = high;
+  return unscaled(clamped, d);
 }
 
 /** `points × band / scale.max`, to two decimals, halves up (TECHNICAL_DESIGN.md, section 6). */

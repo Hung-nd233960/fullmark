@@ -50,6 +50,7 @@ const resultsJson = { format: "fullmark-results", version: 2, ...attempt, extra:
 const graded = grade(quiz, attempt);
 const GRADER = { kind: "ai", name: "Claude", model: "claude-opus-5-5" };
 
+// biome-ignore lint/suspicious/noExplicitAny: a test edits the template freely
 type Json = Record<string, any>;
 const template = (): Json => structuredClone(gradesTemplate(quiz, graded, resultsJson)) as Json;
 
