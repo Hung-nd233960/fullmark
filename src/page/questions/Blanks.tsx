@@ -72,7 +72,11 @@ export function Blanks({ q, c }: { q: BlanksQuestion; c: Ctx }) {
             const accepted = !blank
               ? null
               : blank.kind === "numeric"
-                ? acceptedNumber(t, { ...blank, values: [blank.value], raw: [blank.raw], relTolerance: null })
+                ? acceptedNumber(
+                    t,
+                    { ...blank, values: [blank.value], raw: [blank.raw], relTolerance: null },
+                    c.quiz.uiLang,
+                  )
                 : (blank.answers[0] ?? null);
             return (
               <li key={i} data-result={hit === true ? "correct" : "wrong"}>

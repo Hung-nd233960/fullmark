@@ -108,11 +108,10 @@ describe("the results card", () => {
     expect(html).toContain("Goal 60% · ↗ not reached yet</p>");
   });
 
-  it("says time used against the limit with a bar, and the submitted time", () => {
+  it("says time used against the limit with a bar", () => {
     const html = takeScored().html();
     expect(html).toMatch(/\d+:\d\d \/ 30:00/);
     expect(html).toContain("<progress");
-    expect(html).toMatch(/Submitted \d\d:\d\d/);
   });
 
   it("shows time used alone, with no bar, when the quiz is untimed", () => {

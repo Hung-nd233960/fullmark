@@ -105,7 +105,6 @@ test("the results card, the filter and Retry missed all agree with quiz grade", 
   await expect(page.locator('[data-cell="time"]')).toContainText("/ 30:00");
   await expect(page.locator(".fm-goal")).toBeVisible();
   await expect(page.locator(".fm-part-row")).toHaveCount(2);
-  await expect(page.locator(".fm-submitted-at")).toContainText("Submitted");
   const report = await graded(page, results.dir, "results.md");
   expect(report.attempt.source).toBe("full");
   await expectCardMatches(page, report);

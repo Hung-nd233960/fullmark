@@ -18,7 +18,11 @@ export function Fields({ q, c }: { q: Extract<PageQuestion, { type: "fields" }>;
         const hit = c.submitted ? (c.result?.results?.[i] ?? null) : null;
         const key = keyed?.fields[i]?.key ?? null;
         const accepted =
-          key === null ? null : key.kind === "numeric" ? acceptedNumber(t, key) : (key.accept[0] ?? null);
+          key === null
+            ? null
+            : key.kind === "numeric"
+              ? acceptedNumber(t, key, c.quiz.uiLang)
+              : (key.accept[0] ?? null);
         return (
           <div key={i} class="fm-field" data-result={hit === null ? undefined : hit ? "correct" : "wrong"}>
             <label for={id}>

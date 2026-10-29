@@ -25,7 +25,7 @@ export function Numeric({ q, c }: { q: Extract<PageQuestion, { type: "numeric" }
         {q.unit !== "" ? <span class="fm-unit">{q.unit}</span> : null}
       </div>
       {!c.submitted && wantsPoint(c.quiz, raw) ? <CommaWarning t={t} /> : null}
-      {c.submitted ? <Shown t={t} given={raw} correct={key ? acceptedNumber(t, key) : null} /> : null}
+      {c.submitted ? <Shown t={t} given={raw} correct={key ? acceptedNumber(t, key, c.quiz.uiLang) : null} /> : null}
     </div>
   );
 }

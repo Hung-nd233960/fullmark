@@ -603,8 +603,14 @@
     display: none;
   }
 
-  .fm-flag {
+  .fm-question-end {
+    display: flex;
+    gap: 12px;
+    align-items: center;
     margin-left: auto;
+  }
+
+  .fm-flag {
     padding: 2px 8px;
     font: inherit;
     color: var(--muted);
@@ -620,7 +626,6 @@
   }
 
   .fm-flag-mark {
-    margin-left: auto;
     color: var(--warn);
   }
 

@@ -32,8 +32,14 @@ export function countsOf(questions: readonly GradedQuestion[]): Counts {
   return counts;
 }
 
-/** A number as the card prints it: at most two decimals, no trailing zeros. */
-export const num = (n: number): string => String(Math.round(n * 100) / 100);
+/**
+ * A number as the interface prints it: at most two decimals, no trailing zeros, and a decimal comma when `lang` is `vi`
+ * (TECHNICAL_DESIGN.md, section 9, "Vietnamese pitfalls", item 2). Never `toLocaleString`: it depends on the browser.
+ */
+export const num = (n: number, lang: "en" | "vi" = "en"): string => {
+  const text = String(Math.round(n * 100) / 100);
+  return lang === "vi" ? text.replace(".", ",") : text;
+};
 
 /** Whole percent of `earned` in `points`, or null when nothing was scored. */
 export const percentOf = (earned: number, points: number): number | null =>

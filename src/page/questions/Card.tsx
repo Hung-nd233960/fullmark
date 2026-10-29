@@ -2,6 +2,7 @@ import type { FunctionComponent } from "preact";
 import type { Answer } from "../../core/attempt";
 import type { PageQuestion } from "../data";
 import type { Action } from "../reducer";
+import { num } from "../results";
 import type { QuizState } from "../store";
 import { Blanks, BlanksPrompt } from "./Blanks";
 import { ChoiceList } from "./ChoiceList";
@@ -113,22 +114,26 @@ export function QuestionCard({
     >
       <header class="fm-question-head">
         <span class="fm-question-number">{t.questionLabel(number)}</span>
-        {question.graded ? <span class="fm-question-points">{t.pointsLabel(String(question.points))}</span> : null}
-        {attempt.phase === "answering" ? (
-          <button
-            type="button"
-            class="fm-flag"
-            data-action="flag"
-            aria-pressed={flagged}
-            onClick={() => api.flag(question.id)}
-          >
-            <span aria-hidden="true">{flagged ? "⚑" : "⚐"}</span> {t.flagForReview}
-          </button>
-        ) : flagged ? (
-          <span class="fm-flag-mark" data-flag-mark>
-            <span aria-hidden="true">⚑</span> {t.flaggedMark}
-          </span>
-        ) : null}
+        <span class="fm-question-end">
+          {question.graded ? (
+            <span class="fm-question-points">{t.pointsLabel(num(question.points, quiz.uiLang))}</span>
+          ) : null}
+          {attempt.phase === "answering" ? (
+            <button
+              type="button"
+              class="fm-flag"
+              data-action="flag"
+              aria-pressed={flagged}
+              onClick={() => api.flag(question.id)}
+            >
+              <span aria-hidden="true">{flagged ? "⚑" : "⚐"}</span> {t.flagForReview}
+            </button>
+          ) : flagged ? (
+            <span class="fm-flag-mark" data-flag-mark>
+              <span aria-hidden="true">⚑</span> {t.flaggedMark}
+            </span>
+          ) : null}
+        </span>
       </header>
       {/* a blanks prompt holds the boxes, so it has its own component, in the same slot */}
       {question.type === "blanks" ? (
@@ -154,7 +159,7 @@ export function QuestionCard({
           {t.check}
         </button>
       ) : null}
-      {revealed && result ? <ResultLine t={t} result={result} quizId={quiz.id} /> : null}
+      {revealed && result ? <ResultLine t={t} result={result} quizId={quiz.id} lang={quiz.uiLang} /> : null}
       {revealed && key?.explanations[question.id] ? (
         <div class="fm-explanation">
           <strong>{t.explanation}</strong>

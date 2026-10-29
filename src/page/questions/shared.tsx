@@ -3,6 +3,7 @@ import type { GradedQuestion } from "../../core/grade";
 import { en, type Messages, vi } from "../../core/i18n";
 import type { Question } from "../../core/ir";
 import type { PageQuiz } from "../data";
+import { num } from "../results";
 
 export type PageMessages = Messages["page"];
 
@@ -71,8 +72,18 @@ const ICONS: Record<GradedQuestion["status"], string> = {
   ungraded: "•",
 };
 
-export function ResultLine({ t, result, quizId }: { t: PageMessages; result: GradedQuestion; quizId: string }) {
-  const points = result.points > 0 ? ` · ${t.scoreLine(String(result.earned ?? 0), String(result.points))}` : "";
+export function ResultLine({
+  t,
+  result,
+  quizId,
+  lang,
+}: {
+  t: PageMessages;
+  result: GradedQuestion;
+  quizId: string;
+  lang: "en" | "vi";
+}) {
+  const points = result.points > 0 ? ` · ${t.scoreLine(num(result.earned ?? 0, lang), num(result.points, lang))}` : "";
   return (
     <p
       class="fm-result"
@@ -123,17 +134,23 @@ export function acceptedNumber(
     relTolerance: number | null;
     unit?: string;
   },
+  lang: "en" | "vi",
 ): string {
   const parts = key.values.map((v, i) => {
-    const base = (key.raw[i] ?? String(v)).trim().replace(/^-/, "−");
-    if (key.relTolerance !== null) return key.relTolerance > 0 ? `${base} ± ${pct(key.relTolerance)}%` : base;
-    return key.tolerance > 0 ? `${base} ± ${key.tolerance}` : base;
+    const shown = (key.raw[i] ?? String(v)).trim().replace(/^-/, "−");
+    // the key's own text (`2.5`) follows the interface language like every other number
+    const base = lang === "vi" && /^[−+]?\d+\.\d+$/.test(shown) ? shown.replace(".", ",") : shown;
+    if (key.relTolerance !== null) return key.relTolerance > 0 ? `${base} ± ${pct(key.relTolerance, lang)}%` : base;
+    return key.tolerance > 0 ? `${base} ± ${num(key.tolerance, lang)}` : base;
   });
   const unit = key.unit ? ` ${key.unit}` : "";
   return `${parts.join(` ${t.or} `)}${unit}`;
 }
 
-const pct = (fraction: number): string => String(Math.round(fraction * 1e6) / 1e4);
+const pct = (fraction: number, lang: "en" | "vi"): string => {
+  const text = String(Math.round(fraction * 1e6) / 1e4);
+  return lang === "vi" ? text.replace(".", ",") : text;
+};
 
 /** The `Your answer` / `Correct answer` pair under a text-like question after Submit. */
 export function Shown({ t, given, correct }: { t: PageMessages; given: string; correct: string | null }) {

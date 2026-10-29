@@ -29,14 +29,24 @@ function SplitBar({ counts, label }: { counts: Counts; label: string }) {
 }
 
 /** "23.5 / 33", with the points still waiting after a plus and an asterisk. */
-function Points({ earned, points, pending }: { earned: number; points: number; pending: number }) {
+function Points({
+  earned,
+  points,
+  pending,
+  lang,
+}: {
+  earned: number;
+  points: number;
+  pending: number;
+  lang: "en" | "vi";
+}) {
   return pending > 0 ? (
     <i>
-      {num(earned)} / {num(points)} + {num(pending)}*
+      {num(earned, lang)} / {num(points, lang)} + {num(pending, lang)}*
     </i>
   ) : (
     <>
-      {num(earned)} / {num(points)}
+      {num(earned, lang)} / {num(points, lang)}
     </>
   );
 }
@@ -46,9 +56,6 @@ function Percent({ earned, points, pending }: { earned: number; points: number; 
   if (percent === null) return null;
   return pending > 0 ? <i>{percent}%*</i> : <>{percent}%</>;
 }
-
-/** The submitted time as `HH:MM`, from the zoneless local stamp the page wrote. */
-const timeOfDay = (stamp: string | null): string | null => (stamp === null ? null : stamp.slice(11, 16));
 
 /**
  * The results card (TECHNICAL_DESIGN.md, section 8, "Results"). Every number is core's `grade`; nothing is recomputed
@@ -78,14 +85,12 @@ export function ResultsCard({
   const used = attempt.state.timeUsed;
   const missed = missedIds(graded).length;
   const mark = graded.pass.mark;
-  const submittedAt = timeOfDay(attempt.state.submittedAt);
   const id = page.id;
   const hasScore = total.points > 0;
   const own = (section: string): GradedQuestion[] => graded.questions.filter((q) => q.section === section);
 
   return (
-    <section class="fm-results" data-results aria-labelledby={`${id}/results`}>
-      <h2 id={`${id}/results`}>{t.results}</h2>
+    <section class="fm-results" data-results>
       <p
         class="fm-total"
         data-earned={total.earned}
@@ -102,7 +107,7 @@ export function ResultsCard({
         <div>
           <dt>{t.pointsCell}</dt>
           <dd data-cell="points">
-            <Points earned={total.earned} points={total.points} pending={total.pending} />
+            <Points earned={total.earned} points={total.points} pending={total.pending} lang={page.uiLang} />
           </dd>
         </div>
         <div>
@@ -118,11 +123,10 @@ export function ResultsCard({
       {mark !== null && graded.pass.passed !== null ? (
         <p class="fm-goal" data-goal={graded.pass.passed ? "reached" : "not-yet"}>
           {graded.pass.passed
-            ? t.goalReached(num(mark), total.pending > 0)
-            : t.goalNotYet(num(mark), total.pending > 0)}
+            ? t.goalReached(num(mark, page.uiLang), total.pending > 0)
+            : t.goalNotYet(num(mark, page.uiLang), total.pending > 0)}
         </p>
       ) : null}
-      {submittedAt !== null ? <p class="fm-submitted-at">{t.submittedAt(submittedAt)}</p> : null}
       {waiting > 0 ? (
         <p class="fm-pending-note" data-pending-note={waiting}>
           {t.pendingNote(waiting)}
@@ -139,7 +143,7 @@ export function ResultsCard({
                 <SplitBar counts={counts} label={label} />
                 <span class="fm-part-counts">{label}</span>
                 <span class="fm-part-points">
-                  <Points earned={s.earned} points={s.points} pending={s.pending} />
+                  <Points earned={s.earned} points={s.points} pending={s.pending} lang={page.uiLang} />
                 </span>
                 <span class="fm-part-percent">
                   <Percent earned={s.earned} points={s.points} pending={s.pending} />

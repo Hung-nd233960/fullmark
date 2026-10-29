@@ -2,6 +2,7 @@ import { useRef, useState } from "preact/hooks";
 import { readAnswer } from "../../core/attempt/answers";
 import { countWords } from "../../core/grade/normalise";
 import type { PageCriterion, PageQuestion } from "../data";
+import { num } from "../results";
 import { type Ctx, Html } from "./shared";
 
 /** The model answer, under the learner's own, after Submit (HTML from the key blob, like an explanation). */
@@ -66,7 +67,7 @@ function Rubric({ rubric, c }: { rubric: PageCriterion[]; c: Ctx }) {
           <li key={i}>
             <Html html={criterion.html} tag="span" />
             {criterion.points !== null ? (
-              <span class="fm-rubric-points">{` (${c.t.pointsLabel(String(criterion.points))})`}</span>
+              <span class="fm-rubric-points">{` (${c.t.pointsLabel(num(criterion.points, c.quiz.uiLang))})`}</span>
             ) : null}
           </li>
         ))}
