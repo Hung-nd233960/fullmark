@@ -7,6 +7,7 @@ import { en, type Messages, vi } from "../core/i18n";
 import type { Question, Quiz, Rubric, Section } from "../core/ir";
 import { encodeKey, toBase64 } from "../core/keyblob";
 import { planFor } from "../core/plan";
+import { themeCss } from "../core/themes";
 import { App } from "../page/App";
 import type { KeyBlob, PageCriterion, PageData, PageItem, PageQuestion, PageQuiz, PageSection } from "../page/data";
 import { createStore } from "../page/store";
@@ -292,7 +293,11 @@ export function buildPage(quizzes: readonly BuildQuiz[], options: PageOptions): 
   const data: PageData = {
     version: 1,
     quizzes: quizzes.map((q) => pageQuizOf(q, undefined, { math: maths?.render, highlight: options.highlight })),
+    theme: (quizzes[0] as BuildQuiz).quiz.frontMatter.theme,
+    look: (quizzes[0] as BuildQuiz).quiz.frontMatter.look,
   };
+  // the token CSS comes from the theme registry, with the quiz's theme as the plain `:root` rule; the rest is the page's
+  const css = themeCss((quizzes[0] as BuildQuiz).quiz.frontMatter.theme) + options.css;
   const tree = renderToString(h(App, { store: createStore(data) }));
   const first = data.quizzes[0] as PageQuiz;
   // KaTeX's styles and fonts, once, and only for a page that has maths
@@ -300,7 +305,7 @@ export function buildPage(quizzes: readonly BuildQuiz[], options: PageOptions): 
   const csp = [
     "default-src 'none'",
     `script-src ${sha256Source(options.runtime)}`,
-    `style-src ${[options.css, ...(mathCss === null ? [] : [mathCss])].map(sha256Source).join(" ")}`,
+    `style-src ${[css, ...(mathCss === null ? [] : [mathCss])].map(sha256Source).join(" ")}`,
     "img-src data:",
     "media-src data:",
     "font-src data:",
@@ -316,7 +321,7 @@ export function buildPage(quizzes: readonly BuildQuiz[], options: PageOptions): 
     `<meta http-equiv="Content-Security-Policy" content="${escapeAttr(csp)}">`,
     `<meta name="generator" content="${escapeAttr(`fullmark ${options.version}; built ${options.builtAt}`)}">`,
     `<title>${escapeAttr(first.title)}</title>`,
-    `<style>${options.css}</style>`,
+    `<style>${css}</style>`,
     ...(mathCss === null ? [] : [`<style id="fm-katex">${mathCss}</style>`]),
     "</head>",
     "<body>",

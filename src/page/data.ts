@@ -1,5 +1,6 @@
 import type { Quiz } from "../core/ir";
 import { decodeKey } from "../core/keyblob";
+import type { Choice } from "../core/themes";
 
 /**
  * What the page needs of a quiz (TECHNICAL_DESIGN.md, section 7, "Seams for later features": a page holds a list of
@@ -83,7 +84,15 @@ export type PageQuiz = {
 };
 
 /** `focus`: tick the start screen's Focus mode box (step 3's `--focus`; `build` never sets it) */
-export type PageData = { version: 1; quizzes: PageQuiz[]; focus?: true };
+export type PageData = {
+  version: 1;
+  quizzes: PageQuiz[];
+  focus?: true;
+  /** the quiz's recommended `theme` (the first quiz's, on a page of several): the page opens in it (absent: `auto`) */
+  theme?: Choice;
+  /** `free`: the Appearance menu; `locked`: no menu, and a stored look is ignored (absent: `free`) */
+  look?: "free" | "locked";
+};
 
 /**
  * What the blob holds: the quiz IR without its presentation text (the page plans an attempt from it at Start), and

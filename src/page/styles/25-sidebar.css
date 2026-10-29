@@ -27,7 +27,7 @@
     height: calc(100vh - var(--dock-h, 7rem));
     overflow: hidden;
     background: var(--card);
-    border-left: 1px solid var(--line);
+    border-left: 1px solid var(--card-line);
   }
 
   .fm-side-head {

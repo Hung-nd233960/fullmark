@@ -4,8 +4,8 @@
     margin: 20px 0;
     padding: 20px 26px;
     background: var(--card);
-    border: 1px solid var(--line);
-    border-radius: 12px;
+    border: 1px solid var(--card-line);
+    border-radius: var(--card-radius);
     box-shadow: var(--shadow);
   }
 
