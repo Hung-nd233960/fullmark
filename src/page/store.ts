@@ -558,9 +558,12 @@ export function createStore(data: PageData, deps: Deps = {}): Store {
       onNarrow();
       narrow?.addEventListener("change", onNarrow);
       const onFullscreen = (): void => {
+        const was = screen.fullscreen.value;
         screen.fullscreen.value = document.fullscreenElement !== null;
-        // entering Focus mode closes the sidebars; nothing is stored, so leaving finds them closed
-        if (screen.fullscreen.value) for (const state of quizzes.values()) state.sidebar.value = false;
+        // entering Focus mode closes the sidebars; nothing is stored, so leaving finds them closed. Only the change
+        // from windowed to full does it: a repeated event (Firefox sends one when the window has finished resizing)
+        // must not close a sidebar the learner has just opened
+        if (screen.fullscreen.value && !was) for (const state of quizzes.values()) state.sidebar.value = false;
       };
       document.addEventListener("fullscreenchange", onFullscreen);
       const timer = setInterval(() => store.tick(), 1000);

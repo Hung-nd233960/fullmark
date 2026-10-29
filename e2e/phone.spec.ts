@@ -25,6 +25,19 @@ const bar = (page: Page) => page.locator(".fm-topbar");
 const toggle = (page: Page) => page.locator("[data-action=sidebar]");
 const back = (page: Page) => page.locator("[data-action=close-sidebar]");
 const chip = (page: Page, name: string) => page.getByRole("tab", { name, exact: true });
+/** the top bar is one row (title, then the buttons, all on one line), with the long title cut short */
+const oneRow = async (page: Page): Promise<void> => {
+  const boxes = await bar(page)
+    .locator("h1, button")
+    .evaluateAll((els) => els.map((e) => ({ y: e.getBoundingClientRect().y, h: e.getBoundingClientRect().height })));
+  const first = boxes[0] as { y: number; h: number };
+  for (const b of boxes.slice(1)) expect(Math.abs(b.y + b.h / 2 - (first.y + first.h / 2))).toBeLessThan(40);
+  const bounds = (await bar(page).boundingBox()) as { height: number };
+  expect(bounds.height).toBeLessThan(76);
+  const title = bar(page).locator("h1");
+  expect(await title.evaluate((e) => getComputedStyle(e).textOverflow)).toBe("ellipsis");
+  expect(await title.evaluate((e) => e.getBoundingClientRect().right)).toBeLessThanOrEqual(390);
+};
 const press = async (page: Page, target: Locator): Promise<void> => {
   if (await page.evaluate(() => "ontouchstart" in window)) await target.tap();
   else await target.click();
@@ -61,7 +74,9 @@ test("the compact bar: the title over one muted line that follows the answers, S
     .evaluateAll((els) => els.map((e) => e.getAttribute("aria-label") ?? e.textContent));
   expect(names[0]).toBe("Questions & materials");
   expect(names.at(-1)).toBe("Submit");
-  await expect(toggle(page)).toContainText("Materials");
+  await expect(toggle(page)).toHaveText("");
+  await expect(toggle(page)).toHaveAttribute("title", /./);
+  await oneRow(page);
   expect(await shortButtons(page)).toEqual([]);
   expect(await noSideways(page)).toBe(true);
   await noViolations(page);
@@ -76,8 +91,8 @@ test("a quiz without materials: the button says Questions, the sidebar has the h
   page,
 }) => {
   await begin(page, plain.url);
-  await expect(toggle(page)).toHaveText("Questions");
-  await expect(toggle(page)).not.toHaveAttribute("aria-label", /./);
+  await expect(toggle(page)).toHaveText("");
+  await expect(toggle(page)).toHaveAttribute("aria-label", "Questions");
   await press(page, toggle(page));
   await expect(side(page).getByRole("heading", { name: "Questions" })).toBeVisible();
   await expect(side(page).getByRole("tab")).toHaveCount(0);
@@ -185,6 +200,12 @@ test("after Submit: the results map, Back to the results, the tabs and the filte
   await noViolations(page);
   await press(page, back(page));
   await expect(page.locator(".fm-filter")).toBeVisible();
+  const rows = await page
+    .locator(".fm-filter-button")
+    .evaluateAll((els) => els.map((e) => ({ y: e.getBoundingClientRect().y, w: e.getBoundingClientRect().width })));
+  expect(new Set(rows.map((r) => Math.round(r.y))).size).toBe(1);
+  expect(Math.max(...rows.map((r) => r.w)) - Math.min(...rows.map((r) => r.w))).toBeLessThan(3);
+  expect(rows.reduce((sum, r) => sum + r.w, 0)).toBeGreaterThan(390 - 32 - 12);
   await press(page, page.locator('[data-filter="missed"]'));
   expect(await shortButtons(page)).toEqual([]);
   expect(await noSideways(page)).toBe(true);

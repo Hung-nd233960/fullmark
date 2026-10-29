@@ -40,16 +40,16 @@ export function SidebarButton({ t, state, store }: { t: PageMessages; state: Qui
   return (
     <button
       type="button"
-      class="fm-button fm-side-button"
+      class={phone ? "fm-button fm-icon-button fm-side-button" : "fm-button fm-side-button"}
       data-action="sidebar"
       aria-expanded={open}
       aria-keyshortcuts={materials ? "Q M" : "Q"}
-      aria-label={phone && materials ? full : undefined}
+      aria-label={phone ? full : undefined}
       title={materials ? t.sidebarTitleMaterials : t.sidebarTitle}
       onClick={() => store.sidebar(state.page.id)}
     >
       <Icon name={phone && materials ? "book" : "panel"} size={18} />
-      {phone ? (materials ? t.materialsLabel : t.sidebarLabel) : full}
+      {phone ? null : full}
     </button>
   );
 }

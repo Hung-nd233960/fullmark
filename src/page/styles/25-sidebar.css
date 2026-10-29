@@ -605,8 +605,9 @@
   /* the phone, below 760px (Materials on a phone board): the compact top bar and the sidebar as a screen of its own */
   @media (max-width: 759px) {
     .fm-dock .fm-topbar {
-      flex-wrap: wrap;
-      gap: 6px 10px;
+      flex-wrap: nowrap;
+      gap: 10px;
+      align-items: center;
       padding: 10px 16px;
     }
 
@@ -614,21 +615,27 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    /* the title keeps a line of its own when the buttons leave it under 9rem: they drop under it, to the right */
+    /* one row: the title (ellipsized) and its compact line take what the buttons leave */
     .fm-phone-title {
       display: flex;
-      flex: 1 1 9rem;
+      flex: 1 1 0;
       flex-direction: column;
       min-width: 0;
     }
 
     .fm-phone-title .fm-title {
       flex: none;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
       font-size: 1em;
       line-height: 1.55;
     }
 
     .fm-phone-line {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
       font-size: 0.8em;
       font-variant-numeric: tabular-nums;
       color: var(--muted);
@@ -651,12 +658,20 @@
       padding: 0;
     }
 
-    .fm-dock .fm-filter {
+    .fm-quiz .fm-dock .fm-filter {
       padding: 10px 16px;
     }
 
     .fm-dock .fm-filter-group {
-      flex-wrap: wrap;
+      flex: 1 1 auto;
+      flex-wrap: nowrap;
+    }
+
+    .fm-dock .fm-filter-button {
+      flex: 1 1 0;
+      justify-content: center;
+      min-width: 0;
+      padding: 0 6px;
     }
 
     .fm-main[data-covered] {

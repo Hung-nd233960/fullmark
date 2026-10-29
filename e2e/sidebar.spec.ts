@@ -123,16 +123,34 @@ test("the questions keep their reading width when it is closed and share the roo
   expect(closed.x + closed.width / 2).toBeCloseTo(640, 0);
 });
 
+/** The window has stopped resizing (the viewport is the same on two reads 150 ms apart). */
+const settled = async (page: Page): Promise<void> => {
+  let last = "";
+  await expect
+    .poll(async () => {
+      const now = await page.evaluate(() => `${innerWidth}x${innerHeight}`);
+      const same = now === last;
+      last = now;
+      return same;
+    }, { intervals: [150] })
+    .toBe(true);
+};
+
 test("Focus mode closes the sidebar, the button opens it in full screen, leaving keeps it closed", async ({ page }) => {
   await start(page);
+  const focus = page.locator("[data-action=focus-mode]");
   await expect(side(page)).toBeVisible();
   await page.keyboard.press("f");
-  await expect.poll(() => page.evaluate(() => document.fullscreenElement !== null)).toBe(true);
+  // wait for the page to have seen the change (its button is pressed), not just for the browser's flag: Firefox sets
+  // the flag first and resizes the window and sends `fullscreenchange` after, and a click before that lands wrong
+  await expect(focus).toHaveAttribute("aria-pressed", "true");
   await expect(side(page)).toHaveCount(0);
+  await settled(page);
   await page.locator("[data-action=sidebar]").click();
   await expect(side(page)).toBeVisible();
+  await settled(page);
   await page.keyboard.press("f");
-  await expect.poll(() => page.evaluate(() => document.fullscreenElement !== null)).toBe(false);
+  await expect(focus).toHaveAttribute("aria-pressed", "false");
   await expect(side(page)).toBeVisible(); // opened in full screen, so still as the learner left it
 });
 

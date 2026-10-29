@@ -81,7 +81,7 @@ describe("the phone's top bar and sidebar", () => {
   it("names the sidebar button Questions, or Materials with the full name for a quiz with them", () => {
     const { store, html } = run("time_limit: 30m");
     store.screen.phone.value = true;
-    expect(html()).toMatch(/data-action="sidebar"[^>]*>(<svg.*?<\/svg>)?Questions</);
+    expect(html()).toMatch(/data-action="sidebar"[^>]*aria-label="Questions"[^>]*><svg[^>]*>.*?<\/svg><\/button>/);
     expect(sideForm({ materials: [{ name: "x", html: "" }] } as never, "answering", true)).toBe("tabs");
     expect(sideForm({ materials: [{ name: "x", html: "" }] } as never, "answering", false)).toBe("stacked");
   });
