@@ -114,12 +114,12 @@ export function localStamp(d: Date): string {
   return `${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}-${pad(d.getHours())}${pad(d.getMinutes())}${pad(d.getSeconds())}`;
 }
 
-/** `12:34`, or `1:02:03` from an hour on. */
+/** `04:10` (minutes padded), or `1:02:03` from an hour on. */
 export function clockText(seconds: number): string {
   const s = Math.max(0, Math.floor(seconds));
   const h = Math.floor(s / 3600);
   const m = Math.floor((s % 3600) / 60);
-  return `${h > 0 ? `${h}:${pad(m)}` : String(m)}:${pad(s % 60)}`;
+  return `${h > 0 ? `${h}:` : ""}${pad(m)}:${pad(s % 60)}`;
 }
 
 /** The clock of one attempt: what is counted, and where it goes. */

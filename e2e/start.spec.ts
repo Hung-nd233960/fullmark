@@ -173,10 +173,10 @@ test("a timed quiz runs on the clock, submits itself with timedOut, and grades t
   await page.goto(timed.url);
   await page.clock.pauseAt(new Date("2026-10-29T10:00:10"));
   await page.getByRole("button", { name: "Start" }).click();
-  await expect(page.locator("[data-timer]")).toHaveText("Time left 1:30");
+  await expect(page.locator("[data-timer]")).toHaveText("Time left 01:30");
   await right(page, "t1");
   await page.clock.runFor(31_000);
-  await expect(page.locator("[data-timer]")).toHaveText("Time left 0:59");
+  await expect(page.locator("[data-timer]")).toHaveText("Time left 00:59");
   // 5 minutes was never announced (the quiz is shorter); 1 minute is, once
   await expect(page.locator('[role="status"]').filter({ hasText: "minute" })).toHaveText("1 minute left");
   await page.clock.runFor(50_000);
@@ -222,7 +222,7 @@ test("an untimed quiz counts only the time the page is visible", async ({ page }
   await page.clock.pauseAt(new Date("2026-10-29T10:00:10"));
   await page.getByRole("button", { name: "Start" }).click();
   await page.clock.runFor(10_000);
-  await expect(page.locator("[data-timer]")).toHaveText("Time 0:10");
+  await expect(page.locator("[data-timer]")).toHaveText("Time 00:10");
   const visibility = (state: "hidden" | "visible") =>
     page.evaluate((s) => {
       Object.defineProperty(document, "visibilityState", { value: s, configurable: true });
@@ -232,7 +232,7 @@ test("an untimed quiz counts only the time the page is visible", async ({ page }
   await page.clock.runFor(60_000);
   await visibility("visible");
   await page.clock.runFor(5_000);
-  await expect(page.locator("[data-timer]")).toHaveText("Time 0:15");
+  await expect(page.locator("[data-timer]")).toHaveText("Time 00:15");
   await page.getByRole("button", { name: "Submit" }).click();
   const { file } = await exported(page, parts.dir);
   expect(file.state.timeUsed).toBe(15);

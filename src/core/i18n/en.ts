@@ -135,7 +135,6 @@ export const en = {
     timeSoFar: (clock: string) => `Time ${clock}`,
     timeUp: "Time is up",
     timeLeftSaid: (minutes: number) => (minutes === 1 ? "1 minute left" : `${minutes} minutes left`),
-    results: "Results",
     pointsCell: "Points",
     timeUsedCell: "Time used",
     submittedOn: (day: number, month: string, time: string) => `Submitted ${day} ${month}, ${time}`,

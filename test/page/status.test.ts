@@ -70,7 +70,7 @@ describe("the status line while answering", () => {
     expect(texts(input()).filter((x) => x.startsWith("part"))).toEqual([]);
     expect(texts(input())).toContain("question: Question 4 of 5");
     store.focus(id, "c1");
-    expect(texts(input())).toContain("part: Part 3 of 3, Plain: 5:00 left");
+    expect(texts(input())).toContain("part: Part 3 of 3, Plain: 05:00 left");
   });
 
   it("counts a part's time down from the section's time, and says when it has passed", () => {
@@ -78,14 +78,14 @@ describe("the status line while answering", () => {
     store.tick(new Date(2026, 9, 26, 14, 4, 10).getTime());
     expect(state().elapsed.value).toBe(250);
     expect(texts(input())).toContain("time: Time left 25:50");
-    expect(texts(input())).toContain("part: Part 1 of 3, Definitions: 5:50 left");
+    expect(texts(input())).toContain("part: Part 1 of 3, Definitions: 05:50 left");
     store.tick(new Date(2026, 9, 26, 14, 11, 0).getTime());
     expect(texts(input())).toContain("part: Part 1 of 3, Definitions: suggested time passed");
   });
 
   it("shows elapsed time when the quiz is untimed", () => {
     const { input } = run("");
-    expect(texts(input())[0]).toBe("time: Time 0:00");
+    expect(texts(input())[0]).toBe("time: Time 00:00");
   });
 
   it("reports progress with its bar and percentage", () => {
@@ -130,7 +130,7 @@ describe("the status line after Submit", () => {
     expect(texts(input())).toEqual([
       "submitted: Đã nộp 26 thg 10, 14:00",
       "taken: Toàn bộ bài · 5 câu hỏi",
-      "used: Thời gian đã dùng 0:30",
+      "used: Thời gian đã dùng 00:30",
     ]);
   });
 
@@ -148,10 +148,10 @@ describe("the status line after Submit", () => {
     const { store, id, input } = run();
     store.submit(id);
     store.retry(id, "r");
-    expect(texts(input())).toEqual(["time: Time 0:00", "question: Question 1 of 5", "progress: 0 of 5 answered"]);
+    expect(texts(input())).toEqual(["time: Time 00:00", "question: Question 1 of 5", "progress: 0 of 5 answered"]);
     store.submit(id);
     expect(texts(input())[1]).toBe("taken: Retry · 5 questions");
-    expect(texts(input())[2]).toBe("used: Time used 0:00");
+    expect(texts(input())[2]).toBe("used: Time used 00:00");
   });
 });
 
@@ -223,5 +223,16 @@ describe("Focus mode", () => {
   it("ticks the start screen's box from PageData.focus", () => {
     expect(fresh(true).screen.wanted.value).toBe(true);
     expect(fresh().screen.wanted.value).toBe(false);
+  });
+});
+
+describe("clockText", () => {
+  it("pads the minutes, and shows hours only from an hour on", async () => {
+    const { clockText } = await import("../../src/page/store");
+    expect(clockText(0)).toBe("00:00");
+    expect(clockText(250)).toBe("04:10");
+    expect(clockText(1122)).toBe("18:42");
+    expect(clockText(3723)).toBe("1:02:03");
+    expect(clockText(-5)).toBe("00:00");
   });
 });
