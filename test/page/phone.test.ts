@@ -75,7 +75,8 @@ describe("the phone's top bar and sidebar", () => {
     expect(html()).not.toContain("data-compact");
     store.screen.phone.value = true;
     expect(html()).not.toContain('class="fm-status"');
-    expect(html()).toContain("30:00 left");
+    expect(html().replaceAll(/<[^>]+>/g, "")).toContain("30:00 left");
+    expect(html()).toContain("<b>30:00</b>");
   });
 
   it("names the sidebar button Questions, or Materials with the full name for a quiz with them", () => {

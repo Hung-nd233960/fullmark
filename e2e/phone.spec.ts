@@ -25,18 +25,26 @@ const bar = (page: Page) => page.locator(".fm-topbar");
 const toggle = (page: Page) => page.locator("[data-action=sidebar]");
 const back = (page: Page) => page.locator("[data-action=close-sidebar]");
 const chip = (page: Page, name: string) => page.getByRole("tab", { name, exact: true });
-/** the top bar is one row (title, then the buttons, all on one line), with the long title cut short */
+/** the phone bar has no title: the compact line and the buttons share one row, and the line is whole (wrapped, never cut) */
 const oneRow = async (page: Page): Promise<void> => {
+  // the heading stays for screen readers (and axe) but is not drawn
+  await expect(bar(page).locator("h1.fm-title")).toHaveCount(0);
+  await expect(bar(page).locator("h1")).toHaveClass("fm-sr");
   const boxes = await bar(page)
-    .locator("h1, button")
+    .locator("[data-compact], button")
     .evaluateAll((els) => els.map((e) => ({ y: e.getBoundingClientRect().y, h: e.getBoundingClientRect().height })));
   const first = boxes[0] as { y: number; h: number };
   for (const b of boxes.slice(1)) expect(Math.abs(b.y + b.h / 2 - (first.y + first.h / 2))).toBeLessThan(40);
-  const bounds = (await bar(page).boundingBox()) as { height: number };
-  expect(bounds.height).toBeLessThan(76);
-  const title = bar(page).locator("h1");
-  expect(await title.evaluate((e) => getComputedStyle(e).textOverflow)).toBe("ellipsis");
-  expect(await title.evaluate((e) => e.getBoundingClientRect().right)).toBeLessThanOrEqual(390);
+  const line = bar(page).locator("[data-compact]");
+  expect(await line.evaluate((e) => getComputedStyle(e).textOverflow)).not.toBe("ellipsis");
+  expect(await line.evaluate((e) => e.scrollWidth <= e.clientWidth + 1)).toBe(true);
+  expect(await line.evaluate((e) => e.getBoundingClientRect().right)).toBeLessThanOrEqual(390);
+  const size = await line.evaluate((e) => Number.parseFloat(getComputedStyle(e).fontSize));
+  const base = await page.evaluate(() => Number.parseFloat(getComputedStyle(document.body).fontSize));
+  expect(size).toBeCloseTo(base * 0.9, 1);
+  expect(await line.locator("b").first().evaluate((e) => getComputedStyle(e).color)).not.toBe(
+    await line.evaluate((e) => getComputedStyle(e).color),
+  );
 };
 const press = async (page: Page, target: Locator): Promise<void> => {
   if (await page.evaluate(() => "ontouchstart" in window)) await target.tap();
@@ -62,7 +70,7 @@ const shortButtons = (page: Page) =>
       .map((b) => `${b.className} ${(b.textContent ?? "").trim().slice(0, 20)} ${b.getBoundingClientRect().height}`),
   );
 
-test("the compact bar: the title over one muted line that follows the answers, Submit in the bar", async ({ page }) => {
+test("the compact bar: no title, the muted line with bold numbers that follows the answers, Submit in the bar", async ({ page }) => {
   const seen = watch(page);
   await begin(page);
   await expect(page.locator(".fm-status")).toHaveCount(0);

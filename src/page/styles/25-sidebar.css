@@ -615,30 +615,18 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    /* one row: the title (ellipsized) and its compact line take what the buttons leave */
-    .fm-phone-title {
-      display: flex;
-      flex: 1 1 0;
-      flex-direction: column;
-      min-width: 0;
-    }
-
-    .fm-phone-title .fm-title {
-      flex: none;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      font-size: 1em;
-      line-height: 1.55;
-    }
-
+    /* the compact line takes the title's place: wraps rather than being cut; the numbers are bold in --text as in the status line */
     .fm-phone-line {
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      font-size: 0.8em;
+      flex: 1 1 0;
+      min-width: 0;
+      font-size: 0.9em;
       font-variant-numeric: tabular-nums;
+      line-height: 1.4;
       color: var(--muted);
+    }
+
+    .fm-phone-line b {
+      color: var(--text);
     }
 
     .fm-dock .fm-topbar-actions {

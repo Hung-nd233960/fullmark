@@ -141,18 +141,25 @@ export function statusFor({
  * Submit when it was handed in. The part, the current question and the flags are left out.
  */
 export function compactLine(input: StatusInput): string {
+  return compactParts(input)
+    .map((p) => p.text)
+    .join(" · ");
+}
+
+/** The compact line's parts, each with the kind of status segment it came from (the phone bar bolds the numbers). */
+export function compactParts(input: StatusInput): { kind: string; text: string }[] {
   const t = pageText(input.page);
   const limit = limitOf(input.page, input.attempt);
-  const parts: string[] = [];
+  const parts: { kind: string; text: string }[] = [];
   for (const segment of statusFor(input)) {
     if (segment.kind === "time") {
       const left = limit === undefined ? null : limit - input.elapsed;
-      parts.push(left !== null && left > 0 ? t.timeLeftCompact(clockText(left)) : segment.text);
+      parts.push({ kind: "time", text: left !== null && left > 0 ? t.timeLeftCompact(clockText(left)) : segment.text });
     } else if (segment.kind === "progress" || segment.kind === "submitted") {
-      parts.push(segment.text);
+      parts.push({ kind: segment.kind, text: segment.text });
     } else if (segment.kind === "clock" && input.fullscreenClock !== null) {
-      parts.push(t.focusClockCompact(input.fullscreenClock));
+      parts.push({ kind: "clock", text: t.focusClockCompact(input.fullscreenClock) });
     }
   }
-  return parts.join(" · ");
+  return parts;
 }
