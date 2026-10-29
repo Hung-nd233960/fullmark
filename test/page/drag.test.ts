@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { edgeScroll, landingIndex, moveItem } from "../../src/page/questions/drag";
+import { edgeScroll, landingIndex, liveNumbers, moveItem } from "../../src/page/questions/drag";
 
 const rows = (heights: number[], gap = 6) => {
   let top = 100;
@@ -47,5 +47,29 @@ describe("edgeScroll", () => {
     expect(edgeScroll(10, 800)).toBeLessThan(0);
     expect(edgeScroll(790, 800)).toBeGreaterThan(0);
     expect(edgeScroll(-20, 800)).toBe(-18);
+  });
+});
+
+describe("liveNumbers", () => {
+  it("is 1..n without a lift", () => {
+    expect(liveNumbers(4, null, null)).toEqual([1, 2, 3, 4]);
+  });
+  it("counts the staying rows around the slot and gives the lifted one the slot's number", () => {
+    // item at 0 lifted over slot 2: rows 1,2 move up, the lifted one will be third
+    expect(liveNumbers(4, 0, 2)).toEqual([3, 1, 2, 4]);
+    // item at 3 lifted to the front
+    expect(liveNumbers(4, 3, 0)).toEqual([2, 3, 4, 1]);
+    // lifted but not moved
+    expect(liveNumbers(4, 1, 1)).toEqual([1, 2, 3, 4]);
+  });
+  it("matches the order moveItem gives", () => {
+    const order = [10, 11, 12, 13, 14];
+    for (let from = 0; from < 5; from++) {
+      for (let to = 0; to < 5; to++) {
+        const landed = moveItem(order, from, to);
+        const numbers = liveNumbers(5, from, to);
+        order.forEach((item, i) => expect(numbers[i]).toBe(landed.indexOf(item) + 1));
+      }
+    }
   });
 });

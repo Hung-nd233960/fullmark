@@ -215,7 +215,6 @@
     margin: 12px 0 0;
     padding: 0;
     list-style: none;
-    counter-reset: fm-order;
   }
 
   .fm-order-item {
@@ -226,7 +225,6 @@
     min-height: 44px;
     padding: 0 12px;
     margin-top: 6px;
-    counter-increment: fm-order;
     background: var(--surface);
     border: 1px solid var(--line);
     border-radius: 8px;
@@ -266,11 +264,6 @@
     background: var(--card);
     border: 2px solid var(--accent);
     box-shadow: var(--shadow);
-    counter-increment: none;
-  }
-
-  .fm-order-item[data-lifted]::before {
-    content: none;
   }
 
   .fm-order-slot {
@@ -285,7 +278,7 @@
     flex: none;
     min-width: 1.6em;
     color: var(--muted);
-    content: counter(fm-order) ".";
+    content: attr(data-n) ".";
   }
 
   .fm-order-text {
@@ -309,8 +302,9 @@
   }
 
   .fm-move:disabled {
+    color: var(--muted);
     cursor: default;
-    opacity: 0.45;
+    opacity: 1;
   }
 
   .fm-order-mark {

@@ -27,3 +27,23 @@ export function edgeScroll(y: number, viewport: number, zone = 64, max = 18): nu
   if (y > viewport - zone) return Math.ceil((max * (Math.min(y, viewport) - (viewport - zone))) / zone);
   return 0;
 }
+
+/**
+ * The number each row of `order` shows while the item at `from` is lifted over the slot `to` (an index among the
+ * others): the staying rows count around the slot, the lifted one shows the slot's number. Without a lift, 1, 2, 3...
+ */
+export function liveNumbers(length: number, from: number | null, to: number | null): number[] {
+  const own = Array.from({ length }, (_, i) => i + 1);
+  if (from === null || to === null) return own;
+  const result: number[] = [];
+  let seen = 0;
+  for (let i = 0; i < length; i++) {
+    if (i === from) {
+      result.push(to + 1);
+      continue;
+    }
+    result.push(seen < to ? seen + 1 : seen + 2);
+    seen++;
+  }
+  return result;
+}

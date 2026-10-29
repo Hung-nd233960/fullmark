@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "preact/hooks";
 import { readAnswer } from "../../core/attempt/answers";
 import type { PageQuestion } from "../data";
 import { Icon } from "../icons";
-import { edgeScroll, landingIndex, moveItem } from "./drag";
+import { edgeScroll, landingIndex, liveNumbers, moveItem } from "./drag";
 import { type Ctx, Html, shownEntries } from "./shared";
 
 type Dir = "up" | "down";
@@ -149,6 +149,7 @@ export function Ordering({ q, c }: { q: Extract<PageQuestion, { type: "ordering"
   // while dragging, the slot goes before the staying item the lifted one will land in front of (or at the end)
   const staying = drag === null ? order : order.filter((s) => s !== drag.source);
   const slotBefore = drag === null ? null : (staying[drag.to] ?? null);
+  const numbers = liveNumbers(order.length, drag === null ? null : order.indexOf(drag.source), drag?.to ?? null);
   const slot = <li key="slot" class="fm-order-slot" aria-hidden="true" />;
 
   return (
@@ -168,6 +169,7 @@ export function Ordering({ q, c }: { q: Extract<PageQuestion, { type: "ordering"
               class="fm-order-item"
               data-source={source}
               data-lifted={drag?.source === source ? "true" : undefined}
+              data-n={numbers[position]}
               data-result={hit === null ? undefined : hit ? "correct" : "wrong"}
             >
               {!c.submitted ? (
