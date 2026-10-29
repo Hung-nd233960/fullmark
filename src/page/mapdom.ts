@@ -48,10 +48,17 @@ export const focusSidebarButton = (): void => {
 export function focusMap(): void {
   if (typeof document === "undefined") return;
   const target =
+    document.querySelector<HTMLElement>("[data-part-tab][aria-selected=true]") ??
     document.querySelector<HTMLElement>("[data-part-head][data-current-part]") ??
     document.querySelector<HTMLElement>(".fm-side [data-cell][aria-current]") ??
     document.querySelector<HTMLElement>(".fm-side [data-cell]");
   target?.focus();
+}
+
+/** After `M`: the focus goes to the chosen sheet's chip. */
+export function focusChip(): void {
+  if (typeof document === "undefined") return;
+  document.querySelector<HTMLElement>(".fm-side [data-sheet-tab][aria-selected=true]")?.focus();
 }
 
 /** Whether the focus is inside a sidebar. */

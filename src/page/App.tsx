@@ -2,6 +2,8 @@ import type { ComponentChildren } from "preact";
 import { useEffect, useRef } from "preact/hooks";
 import type { PageQuestion, PageQuiz, PageSection } from "./data";
 import { Icon, type IconName } from "./icons";
+import { MaterialsButton, MaterialsPanel } from "./Materials";
+import { sideForm } from "./map";
 import { type Api, QuestionCard } from "./questions/Card";
 import { Html, messagesFor, type PageMessages } from "./questions/shared";
 import { ResultsCard } from "./ResultsCard";
@@ -460,6 +462,10 @@ function QuizView({ state, api, store }: { state: QuizState; api: Api; store: St
   const attempt = state.attempt.value;
   const graded = state.graded.value;
   const started = attempt.phase !== "start";
+  const form = sideForm(page, attempt.phase);
+  const wide =
+    started && state.sidebar.value && (form === "stacked" || (form === "tabs" && state.side.value === "materials"));
+  const materials = page.materials !== undefined && page.materials.length > 0;
   let number = 0;
   const missed = graded ? new Set(missedIds(graded)) : new Set<string>();
   const flaggedIds = new Set(attempt.state.flagged.filter((id) => attempt.plan.questions.includes(id)));
@@ -476,7 +482,11 @@ function QuizView({ state, api, store }: { state: QuizState; api: Api; store: St
           ) : null}
         </Dock>
       ) : null}
-      <div class="fm-body" data-side={started && state.sidebar.value ? "open" : "closed"}>
+      <div
+        class="fm-body"
+        data-side={started && state.sidebar.value ? "open" : "closed"}
+        data-wide={wide ? "true" : undefined}
+      >
         <div class="fm-main">
           {attempt.phase === "start" ? <Resume t={t} state={state} store={store} /> : null}
           {!started ? (
@@ -501,7 +511,8 @@ function QuizView({ state, api, store }: { state: QuizState; api: Api; store: St
                   >
                     {t.start}
                   </button>
-                  <span class="fm-clock-note">{t.clockStarts}</span>
+                  {materials ? <MaterialsButton t={t} state={state} /> : null}
+                  <span class="fm-clock-note">{materials ? t.clockStartsMaterials : t.clockStarts}</span>
                 </div>
               ) : null}
             </>
@@ -564,6 +575,7 @@ function QuizView({ state, api, store }: { state: QuizState; api: Api; store: St
           </div>
         </div>
         {started && state.sidebar.value ? <Sidebar t={t} state={state} store={store} /> : null}
+        {attempt.phase === "start" && materials && state.shelf.value ? <MaterialsPanel t={t} state={state} /> : null}
       </div>
     </section>
   );

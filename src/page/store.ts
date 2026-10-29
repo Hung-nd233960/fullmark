@@ -44,6 +44,14 @@ export type QuizState = {
   sidebar: Signal<boolean>;
   /** the parts the learner opened or closed in the map, by section id; a part not here is open when it holds the current question. Not stored. */
   mapOpen: Signal<Record<string, boolean>>;
+  /** the part chosen in the stacked sidebar's tab list; null follows the part that holds the current question. Not stored. */
+  miniPart: Signal<string | null>;
+  /** the tab the sidebar opens at after Submit (a quiz with materials); not stored */
+  side: Signal<"questions" | "materials">;
+  /** the sheet shown in every place that shows sheets, by index; for the page's life, never in the attempt */
+  sheet: Signal<number>;
+  /** the start screen's Materials panel is open */
+  shelf: Signal<boolean>;
 };
 
 /** The browser's screen, for Focus mode: set once the page is running, never at build */
@@ -194,6 +202,10 @@ export function createStore(data: PageData, deps: Deps = {}): Store {
       sectionSeconds: signal({}),
       sidebar: signal(false),
       mapOpen: signal({}),
+      miniPart: signal(null),
+      side: signal("questions"),
+      sheet: signal(0),
+      shelf: signal(false),
     });
   }
   const need = (quizId: string): QuizState => {
@@ -380,6 +392,7 @@ export function createStore(data: PageData, deps: Deps = {}): Store {
     start(quizId, options = {}) {
       const state = need(quizId);
       if (state.attempt.value.phase !== "start") return;
+      state.shelf.value = false;
       const o = options instanceof Date ? { now: options } : options;
       const at = o.now?.getTime() ?? now();
       const key = keyOf(state);

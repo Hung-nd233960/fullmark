@@ -301,6 +301,307 @@
     border: 1px solid var(--line);
   }
 
+  /* with materials: the sidebar is 40% (docs/mockup: Quiz board `sideStyle`) */
+  .fm-body[data-side="open"][data-wide] {
+    grid-template-columns: minmax(0, 1fr) 40%;
+  }
+
+  /* the stacked form while answering: the compact map, then the sheets (Quiz board `stackedOpen`) */
+  .fm-side-stack {
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    gap: 10px;
+    max-height: 60%;
+    padding: 6px 10px 14px 18px;
+    overflow-y: auto;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .fm-side-stack-head {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .fm-side-stack .fm-side-title {
+    min-height: 0;
+  }
+
+  .fm-side-stack .fm-legend {
+    gap: 4px 14px;
+    padding: 0;
+    border-top: 0;
+  }
+
+  .fm-split {
+    display: grid;
+    grid-template-columns: minmax(0, 35fr) minmax(0, 65fr);
+    gap: 14px;
+    margin-right: 8px;
+  }
+
+  .fm-part-tabs {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding-right: 14px;
+    border-right: 1px solid var(--line-strong);
+  }
+
+  .fm-part-tab {
+    position: relative;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    min-height: 48px;
+    padding: 6px 16px 6px 8px;
+    font: inherit;
+    font-size: 0.85em;
+    color: var(--text);
+    text-align: left;
+    cursor: pointer;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+  }
+
+  .fm-part-tab[aria-selected="true"] {
+    background: var(--surface);
+    border: 2px solid var(--accent);
+  }
+
+  .fm-ring {
+    flex: none;
+  }
+
+  .fm-part-tab-text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  .fm-part-tab-label {
+    font-weight: 700;
+  }
+
+  .fm-part-tab-name {
+    overflow: hidden;
+    font-size: 0.9em;
+    color: var(--muted);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .fm-part-tab-flag {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 9px;
+    height: 9px;
+    background: var(--flag);
+    border-radius: 50%;
+  }
+
+  .fm-part-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+  }
+
+  .fm-part-panel-head {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .fm-part-panel-title {
+    font-size: 0.85em;
+    font-weight: 700;
+  }
+
+  .fm-part-panel-stats {
+    font-size: 0.8em;
+    font-variant-numeric: tabular-nums;
+    color: var(--muted);
+  }
+
+  .fm-grid-mini {
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+    max-height: 176px;
+    overflow-y: auto;
+  }
+
+  .fm-grid-mini .fm-cell {
+    height: 32px;
+    font-size: 0.75em;
+  }
+
+  .fm-side-materials {
+    margin: 0;
+    padding: 14px 18px 0;
+    font-size: 1em;
+    font-weight: 700;
+  }
+
+  /* the tabs after Submit (Results board `tabQ`) */
+  .fm-side-tabs {
+    display: flex;
+    flex: 1;
+    gap: 20px;
+  }
+
+  .fm-side-tab {
+    min-height: 48px;
+    padding: 0 2px;
+    margin-bottom: -1px;
+    font: inherit;
+    font-weight: 500;
+    color: var(--muted);
+    cursor: pointer;
+    background: none;
+    border: 0;
+    border-bottom: 3px solid transparent;
+  }
+
+  .fm-side-tab[aria-selected="true"] {
+    font-weight: 700;
+    color: var(--text);
+    border-bottom-color: var(--accent);
+  }
+
+  /* the sheets: chips over the open sheet (Quiz board `sheetTabs`, `showSheets`) */
+  .fm-chips {
+    display: flex;
+    flex: none;
+    flex-wrap: wrap;
+    gap: 0 8px;
+    padding: 0 18px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .fm-chip {
+    min-height: 36px;
+    padding: 0 12px;
+    margin: 10px 0;
+    font: inherit;
+    font-size: 0.85em;
+    font-weight: 500;
+    color: var(--muted);
+    cursor: pointer;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+  }
+
+  .fm-chip[aria-selected="true"] {
+    font-weight: 700;
+    color: var(--text);
+    background: var(--surface);
+    border-color: var(--accent);
+  }
+
+  .fm-sheet-panel {
+    flex: 1;
+    min-height: 0;
+    padding: 18px 22px 28px;
+    overflow-y: auto;
+  }
+
+  .fm-sheet {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    min-width: 0;
+  }
+
+  .fm-sheet > * {
+    margin: 0;
+  }
+
+  .fm-sheet h1,
+  .fm-sheet h2,
+  .fm-sheet h3,
+  .fm-sheet h4 {
+    font-size: 1.05em;
+    font-weight: 700;
+  }
+
+  .fm-sheet ul,
+  .fm-sheet ol {
+    padding-left: 20px;
+  }
+
+  .fm-sheet li + li {
+    margin-top: 6px;
+  }
+
+  /* Quiz board `mTable`, `mTh`, `mTd`; a table wider than the panel scrolls in its own box */
+  .fm-sheet table {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+    font-size: 0.92em;
+    border-spacing: 0;
+    border-collapse: separate;
+    border-top: 1px solid var(--line-strong);
+    border-left: 1px solid var(--line);
+  }
+
+  .fm-sheet th {
+    padding: 6px 10px;
+    font-weight: 700;
+    text-align: left;
+    background: var(--surface);
+    border-right: 1px solid var(--line);
+    border-bottom: 1px solid var(--line-strong);
+  }
+
+  .fm-sheet td {
+    padding: 6px 10px;
+    vertical-align: top;
+    border-right: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+
+  /* the start screen's Materials panel (Start board `suppBtn` and its `<aside>`) */
+  .fm-shelf {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    width: min(380px, 100%);
+    background: var(--card);
+    border-left: 2px solid var(--line-strong);
+    box-shadow: -8px 0 24px rgb(0 0 0 / 18%);
+  }
+
+  .fm-shelf-head {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .fm-shelf-title {
+    margin: 0;
+    font-size: 1.1em;
+    font-weight: 700;
+  }
+
+  .fm-shelf-close {
+    padding: 0 12px;
+  }
+
+  .fm-materials-button {
+    padding: 0 14px;
+  }
   /* below 760px an open sidebar covers the questions (2f3 replaces this with the phone's own screen) */
   @media (max-width: 759px) {
     .fm-body[data-side="open"] {

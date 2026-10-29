@@ -45,6 +45,12 @@ const PATHS = {
       <path d="M15 4v16" />
     </>
   ),
+  book: (
+    <>
+      <path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z" />
+      <path d="M4 21V5M9 7h6" />
+    </>
+  ),
   dot: <circle cx="12" cy="12" r="2.5" fill="currentColor" />,
 } satisfies Record<string, ComponentChildren>;
 

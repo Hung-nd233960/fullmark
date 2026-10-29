@@ -1,4 +1,6 @@
-import { focusInSidebar, focusMap, focusSidebarButton } from "./mapdom";
+import { focusMaterialsButton } from "./Materials";
+import { hasMaterials, sideForm } from "./map";
+import { focusChip, focusInSidebar, focusMap, focusSidebarButton } from "./mapdom";
 import type { Store } from "./store";
 
 /** What a key handler needs to know of the element that has the focus. */
@@ -27,18 +29,46 @@ type KeyLike = {
 };
 
 /**
- * The page's one key handler. `F` toggles Focus mode; `Q` opens the sidebar (the focus goes to its map) or closes it;
- * `Esc` closes it and returns the focus to its button. 2f3 adds `M`. A key never acts while the focus is in a text
- * field, a `select` or a `contenteditable`, nor with a modifier held.
+ * The page's one key handler. `F` toggles Focus mode; `Q` opens the sidebar at Questions (the focus goes to its map) or
+ * closes it; `M` does the same at Materials (the focus goes to the chosen chip) and does nothing on a quiz without
+ * materials; while answering the sidebar is stacked, so `Q` opens or closes it and `M` moves the focus to the chips.
+ * `Esc` closes the sidebar, or the start screen's Materials panel, and returns the focus to its button. A key never
+ * acts while the focus is in a text field, a `select` or a `contenteditable`, nor with a modifier held.
  */
 export function keyHandler(store: Store): (event: KeyLike) => void {
   return (event) => {
     if (event.ctrlKey || event.metaKey || event.altKey) return;
     if (typingIn(event.target)) return;
-    if (event.key === "q" || event.key === "Q" || event.key === "Escape") {
+    if (event.key === "Escape" && !event.defaultPrevented) {
+      const shelf = [...store.quizzes.values()].find((s) => s.shelf.value);
+      if (shelf !== undefined) {
+        shelf.shelf.value = false;
+        focusMaterialsButton();
+        return;
+      }
+    }
+    const isM = event.key === "m" || event.key === "M";
+    if (event.key === "q" || event.key === "Q" || isM || event.key === "Escape") {
       const quiz = store.sidebarTarget();
       if (quiz === null) return;
-      const open = store.quizzes.get(quiz)?.sidebar.value === true;
+      const state = store.quizzes.get(quiz);
+      if (state === undefined) return;
+      const open = state.sidebar.value;
+      if (isM) {
+        if (!hasMaterials(state.page)) return;
+        event.preventDefault();
+        const tabs = sideForm(state.page, state.attempt.value.phase) === "tabs";
+        if (open && tabs && state.side.value === "materials") {
+          const inside = focusInSidebar();
+          store.sidebar(quiz, false);
+          if (inside) focusSidebarButton();
+          return;
+        }
+        if (tabs) state.side.value = "materials";
+        if (!open) store.sidebar(quiz, true);
+        setTimeout(focusChip, 0);
+        return;
+      }
       if (event.key === "Escape") {
         // a modal dialog or a drag in progress has its own Esc
         if (
@@ -52,6 +82,13 @@ export function keyHandler(store: Store): (event: KeyLike) => void {
         return;
       }
       event.preventDefault();
+      const tabs = sideForm(state.page, state.attempt.value.phase) === "tabs";
+      if (open && tabs && state.side.value === "materials") {
+        state.side.value = "questions";
+        setTimeout(focusMap, 0);
+        return;
+      }
+      if (tabs) state.side.value = "questions";
       if (open) {
         const inside = focusInSidebar();
         store.sidebar(quiz, false);

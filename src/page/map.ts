@@ -67,3 +67,31 @@ export function resultsMap(page: PageQuiz, attempt: Attempt, graded: Graded): Pa
 export function partOpen(part: Part<Cell>, chosen: Record<string, boolean>): boolean {
   return chosen[part.id] ?? part.cells.some((c) => c.current);
 }
+
+/** Whether a quiz has materials sheets. */
+export const hasMaterials = (page: PageQuiz): boolean => (page.materials?.length ?? 0) > 0;
+
+/**
+ * How the sidebar is laid out: `stacked` (the map over the sheets, 40%) while answering and `tabs` (Questions and
+ * Materials) after Submit, for a quiz with materials; `plain` (the map alone) otherwise.
+ */
+export function sideForm(page: PageQuiz, phase: Attempt["phase"]): "plain" | "stacked" | "tabs" {
+  if (!hasMaterials(page)) return "plain";
+  return phase === "submitted" ? "tabs" : "stacked";
+}
+
+/** The circumference of a part's completion ring (radius 10). */
+export const RING = 2 * Math.PI * 10;
+
+/** A part's ring: the arc `stroke-dasharray` for the share answered, and whether every question is answered. */
+export function ringOf(answered: number, total: number): { dash: string; done: boolean } {
+  return { dash: `${(RING * answered) / Math.max(1, total)} ${RING}`, done: total > 0 && answered >= total };
+}
+
+/** The part the stacked sidebar shows: the one chosen, else the one holding the current question, else the first. */
+export function chosenPart<C extends { current: boolean }>(
+  parts: Part<C>[],
+  chosen: string | null,
+): Part<C> | undefined {
+  return parts.find((p) => p.id === chosen) ?? parts.find((p) => p.cells.some((c) => c.current)) ?? parts[0];
+}
