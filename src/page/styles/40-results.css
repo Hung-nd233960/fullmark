@@ -1,0 +1,316 @@
+/* The results card and the review filter (docs/mockup, Results board). */
+@layer components {
+  .fm-results {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin: 20px 0;
+    padding: 22px 26px;
+    background: var(--card);
+    border: 2px solid var(--line-strong);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+  }
+
+  .fm-results-top {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 22px 28px;
+    align-items: flex-start;
+  }
+
+  .fm-score {
+    display: flex;
+    flex: 0 1 300px;
+    flex-direction: column;
+    gap: 6px;
+    min-width: min(300px, 100%);
+  }
+
+  .fm-label,
+  .fm-total-label,
+  .fm-facts dt {
+    font-size: 0.72em;
+    font-weight: 700;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .fm-total {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin: 0;
+  }
+
+  .fm-percent {
+    font-size: 2.6em;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.1;
+  }
+
+  .fm-total[data-pending]:not([data-pending="0"]) .fm-percent {
+    font-style: italic;
+  }
+
+  .fm-facts {
+    display: flex;
+    flex-direction: column;
+    margin: 8px 0 0;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+  }
+
+  .fm-fact {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 16px;
+    align-items: baseline;
+    justify-content: space-between;
+    padding: 10px 14px;
+  }
+
+  .fm-fact + .fm-fact {
+    border-top: 1px solid var(--line);
+  }
+
+  .fm-facts dd {
+    margin: 0;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* the bar sits under both the label and the time: the dd gives its children to the row */
+  .fm-fact-time dd {
+    display: contents;
+  }
+
+  .fm-timebar {
+    flex: 1 0 100%;
+    height: 4px;
+    overflow: hidden;
+    background: var(--sunken);
+    border: 0;
+    border-radius: 2px;
+    appearance: none;
+  }
+
+  .fm-timebar::-webkit-progress-bar {
+    background: var(--sunken);
+  }
+
+  .fm-timebar::-webkit-progress-value {
+    background: var(--muted);
+  }
+
+  .fm-timebar::-moz-progress-bar {
+    background: var(--muted);
+  }
+
+  .fm-goal {
+    align-self: flex-start;
+    margin: 6px 0 0;
+    padding: 3px 12px;
+    font-size: 0.9em;
+    font-weight: 700;
+    border: 1px solid var(--warn);
+    border-radius: 999px;
+  }
+
+  .fm-goal[data-goal="reached"] {
+    color: var(--ok);
+    background: var(--ok-wash);
+    border-color: var(--ok);
+  }
+
+  .fm-goal[data-goal="not-yet"] {
+    color: var(--warn);
+    background: var(--card);
+  }
+
+  .fm-total[data-pending]:not([data-pending="0"]) ~ .fm-goal {
+    font-style: italic;
+  }
+
+  .fm-by-part {
+    display: flex;
+    flex: 1 1 24rem;
+    flex-direction: column;
+    gap: 10px;
+    min-width: 0;
+    padding-left: 28px;
+    border-left: 1px solid var(--line);
+  }
+
+  .fm-part-rows {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .fm-part-row {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 140px 110px 3.2em;
+    gap: 12px;
+    align-items: center;
+    font-size: 0.92em;
+  }
+
+  .fm-part-title {
+    font-weight: 600;
+  }
+
+  .fm-part-counts {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+
+  .fm-part-points {
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .fm-part-percent {
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+  }
+
+  .fm-bar {
+    display: block;
+    width: 100%;
+    height: 10px;
+    border-radius: 4px;
+  }
+
+  .fm-seg {
+    stroke: var(--card);
+    stroke-width: 2px;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .fm-seg-none {
+    fill: var(--line);
+  }
+
+  .fm-seg-correct {
+    fill: color-mix(in srgb, var(--ok) 55%, var(--card));
+  }
+
+  .fm-seg-partial {
+    fill: color-mix(in srgb, var(--warn) 55%, var(--card));
+  }
+
+  .fm-seg-incorrect {
+    fill: color-mix(in srgb, var(--bad) 55%, var(--card));
+  }
+
+  .fm-seg-unanswered {
+    fill: color-mix(in srgb, var(--line-strong) 55%, var(--card));
+  }
+
+  .fm-seg-pending {
+    fill: color-mix(in srgb, var(--info) 55%, var(--card));
+  }
+
+  .fm-pending-note {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    margin: 0;
+    padding: 10px 14px;
+    font-size: 0.9em;
+    color: var(--text);
+    background: var(--info-wash);
+    border: 1px solid var(--info);
+    border-radius: 8px;
+  }
+
+  .fm-pending-note .fm-svg {
+    flex: none;
+    margin-top: 3px;
+    color: var(--info);
+  }
+
+  .fm-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+  }
+
+  .fm-nothing-missed {
+    margin: 0;
+    font-weight: 700;
+    color: var(--ok);
+  }
+
+  /* the review filter: a segmented control, in a band of its own under the top bar */
+  .fm-dock .fm-filter {
+    padding: 10px 28px;
+    background: var(--surface);
+    border-top: 1px solid var(--line);
+  }
+
+  .fm-filter {
+    display: flex;
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+
+  .fm-filter-group {
+    display: flex;
+    overflow: hidden;
+    border: 2px solid var(--line-strong);
+    border-radius: 8px;
+  }
+
+  .fm-filter-button {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    height: 40px;
+    padding: 0 16px;
+    font: inherit;
+    font-weight: 700;
+    color: var(--text);
+    cursor: pointer;
+    background: var(--card);
+    border: 0;
+  }
+
+  .fm-filter-button + .fm-filter-button {
+    border-left: 2px solid var(--line-strong);
+  }
+
+  .fm-filter-button[aria-pressed="true"] {
+    color: var(--on-accent);
+    background: var(--accent);
+  }
+
+  .fm-filter-count {
+    padding: 0 7px;
+    font-size: 0.8em;
+    font-variant-numeric: tabular-nums;
+    color: var(--text);
+    background: var(--sunken);
+    border-radius: 999px;
+  }
+
+  .fm-filter-button[aria-pressed="true"] .fm-filter-count {
+    background: var(--card);
+  }
+}

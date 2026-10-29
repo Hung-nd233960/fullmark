@@ -136,6 +136,7 @@ export const vi = {
     timeSoFar: (clock: string) => `Thời gian ${clock}`,
     timeUp: "Đã hết giờ",
     timeLeftSaid: (minutes: number) => `Còn ${minutes} phút`,
+    byPart: "Theo phần",
     pointsCell: "Điểm",
     timeUsedCell: "Thời gian đã dùng",
     submittedOn: (day: number, month: string, time: string) => `Đã nộp ${day} ${month}, ${time}`,

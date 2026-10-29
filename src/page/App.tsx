@@ -297,21 +297,23 @@ function Filter({ t, state, missed, flagged }: { t: PageMessages; state: QuizSta
   return (
     <fieldset class="fm-filter">
       <legend class="fm-sr">{t.filterLabel}</legend>
-      {options.map((o) => (
-        <button
-          key={o.id}
-          type="button"
-          class="fm-filter-button"
-          data-filter={o.id}
-          aria-pressed={chosen === o.id}
-          title={o.title}
-          onClick={() => {
-            state.filter.value = o.id;
-          }}
-        >
-          {o.label} <span class="fm-filter-count">{o.count}</span>
-        </button>
-      ))}
+      <div class="fm-filter-group">
+        {options.map((o) => (
+          <button
+            key={o.id}
+            type="button"
+            class="fm-filter-button"
+            data-filter={o.id}
+            aria-pressed={chosen === o.id}
+            title={o.title}
+            onClick={() => {
+              state.filter.value = o.id;
+            }}
+          >
+            {o.label} <span class="fm-filter-count">{o.count}</span>
+          </button>
+        ))}
+      </div>
     </fieldset>
   );
 }

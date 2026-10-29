@@ -45,6 +45,7 @@ test("after Submit (Results board)", async ({ page }) => {
   await answer(page);
   await page.locator(".fm-topbar").getByRole("button", { name: "Submit" }).click();
   await expect(page.locator(".fm-results")).toBeVisible();
+  await page.evaluate(() => window.scrollTo(0, 0));
   await page.screenshot({ path: out("3-results") });
   await page.locator('[data-filter="missed"]').click();
   await page.screenshot({ path: out("4-missed-filter") });

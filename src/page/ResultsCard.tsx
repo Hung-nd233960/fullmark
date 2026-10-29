@@ -1,6 +1,7 @@
 import { useRef } from "preact/hooks";
 import type { Graded, GradedQuestion } from "../core/grade";
 import type { PageQuiz } from "./data";
+import { Icon } from "./icons";
 import { messagesFor, type PageMessages } from "./questions/shared";
 import { type Counts, countsOf, limitOf, missedIds, num, percentOf } from "./results";
 import { clockText, type QuizState } from "./store";
@@ -91,67 +92,75 @@ export function ResultsCard({
 
   return (
     <section class="fm-results" data-results>
-      <p
-        class="fm-total"
-        data-earned={total.earned}
-        data-points={total.points}
-        data-pending={total.pending}
-        data-percent={percentOf(total.earned, total.points) ?? undefined}
-      >
-        <span class="fm-percent">
-          <Percent earned={total.earned} points={total.points} pending={total.pending} />
-        </span>
-        <span class="fm-total-label">{t.yourScore}</span>
-      </p>
-      <dl class="fm-facts">
-        <div>
-          <dt>{t.pointsCell}</dt>
-          <dd data-cell="points">
-            <Points earned={total.earned} points={total.points} pending={total.pending} lang={page.uiLang} />
-          </dd>
+      <div class="fm-results-top">
+        <div class="fm-score">
+          <p
+            class="fm-total"
+            data-earned={total.earned}
+            data-points={total.points}
+            data-pending={total.pending}
+            data-percent={percentOf(total.earned, total.points) ?? undefined}
+          >
+            <span class="fm-total-label">{t.yourScore}</span>
+            <span class="fm-percent">
+              <Percent earned={total.earned} points={total.points} pending={total.pending} />
+            </span>
+          </p>
+          <dl class="fm-facts">
+            <div class="fm-fact">
+              <dt>{t.pointsCell}</dt>
+              <dd data-cell="points">
+                <Points earned={total.earned} points={total.points} pending={total.pending} lang={page.uiLang} />
+              </dd>
+            </div>
+            <div class="fm-fact fm-fact-time">
+              <dt>{t.timeUsedCell}</dt>
+              <dd data-cell="time">
+                {limit === undefined ? clockText(used) : `${clockText(used)} / ${clockText(limit)}`}
+                {limit !== undefined ? (
+                  <progress class="fm-timebar" aria-label={t.timeUsedCell} max={limit} value={Math.min(used, limit)} />
+                ) : null}
+              </dd>
+            </div>
+          </dl>
+          {mark !== null && graded.pass.passed !== null ? (
+            <p class="fm-goal" data-goal={graded.pass.passed ? "reached" : "not-yet"}>
+              {graded.pass.passed
+                ? t.goalReached(num(mark, page.uiLang), total.pending > 0)
+                : t.goalNotYet(num(mark, page.uiLang), total.pending > 0)}
+            </p>
+          ) : null}
         </div>
-        <div>
-          <dt>{t.timeUsedCell}</dt>
-          <dd data-cell="time">
-            {limit === undefined ? clockText(used) : `${clockText(used)} / ${clockText(limit)}`}
-            {limit !== undefined ? (
-              <progress class="fm-timebar" aria-label={t.timeUsedCell} max={limit} value={Math.min(used, limit)} />
-            ) : null}
-          </dd>
-        </div>
-      </dl>
-      {mark !== null && graded.pass.passed !== null ? (
-        <p class="fm-goal" data-goal={graded.pass.passed ? "reached" : "not-yet"}>
-          {graded.pass.passed
-            ? t.goalReached(num(mark, page.uiLang), total.pending > 0)
-            : t.goalNotYet(num(mark, page.uiLang), total.pending > 0)}
-        </p>
-      ) : null}
+        {graded.sections.length > 1 ? (
+          <div class="fm-by-part">
+            <span class="fm-label">{t.byPart}</span>
+            <ul class="fm-part-rows">
+              {graded.sections.map((s) => {
+                const counts = countsOf(own(s.id));
+                const label = t.countsLabel(counts);
+                return (
+                  <li key={s.id} class="fm-part-row" data-part={s.id} data-earned={s.earned} data-points={s.points}>
+                    <span class="fm-part-title">{s.title ?? t.untitledPart}</span>
+                    <SplitBar counts={counts} label={label} />
+                    <span class="fm-part-counts">{label}</span>
+                    <span class="fm-part-points">
+                      <Points earned={s.earned} points={s.points} pending={s.pending} lang={page.uiLang} />
+                    </span>
+                    <span class="fm-part-percent">
+                      <Percent earned={s.earned} points={s.points} pending={s.pending} />
+                    </span>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        ) : null}
+      </div>
       {waiting > 0 ? (
         <p class="fm-pending-note" data-pending-note={waiting}>
+          <Icon name="clock" size={18} />
           {t.pendingNote(waiting)}
         </p>
-      ) : null}
-      {graded.sections.length > 1 ? (
-        <ul class="fm-part-rows">
-          {graded.sections.map((s) => {
-            const counts = countsOf(own(s.id));
-            const label = t.countsLabel(counts);
-            return (
-              <li key={s.id} class="fm-part-row" data-part={s.id} data-earned={s.earned} data-points={s.points}>
-                <span class="fm-part-title">{s.title ?? t.untitledPart}</span>
-                <SplitBar counts={counts} label={label} />
-                <span class="fm-part-counts">{label}</span>
-                <span class="fm-part-points">
-                  <Points earned={s.earned} points={s.points} pending={s.pending} lang={page.uiLang} />
-                </span>
-                <span class="fm-part-percent">
-                  <Percent earned={s.earned} points={s.points} pending={s.pending} />
-                </span>
-              </li>
-            );
-          })}
-        </ul>
       ) : null}
       <div class="fm-actions">
         {missed > 0 ? (
@@ -162,6 +171,7 @@ export function ResultsCard({
             title={t.retryMissedHint}
             onClick={() => dialog.current?.showModal()}
           >
+            <Icon name="retry" size={18} />
             {t.retryMissed(missed)}
           </button>
         ) : hasScore ? (
@@ -170,6 +180,7 @@ export function ResultsCard({
           </p>
         ) : null}
         <button type="button" class="fm-button" data-action="export" title={t.exportHint} onClick={onDownload}>
+          <Icon name="download" size={18} />
           {t.download}
         </button>
         <button type="button" class="fm-button" data-action="new-attempt" onClick={onNew}>
