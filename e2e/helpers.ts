@@ -47,7 +47,7 @@ export async function expectGradeMatches(
   page: Page,
   dir: string,
   quizFile: string,
-  exportLabel = "Export results",
+  exportLabel = "Download results",
 ): Promise<Shown> {
   const onPage = await shown(page);
   const download = page.waitForEvent("download");

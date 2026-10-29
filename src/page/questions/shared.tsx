@@ -61,6 +61,16 @@ export function Html({
   return <Tag id={id} class={className} dangerouslySetInnerHTML={{ __html: html }} />;
 }
 
+/** The icon of each state, so that the word and the points are never the only sign besides colour. */
+const ICONS: Record<GradedQuestion["status"], string> = {
+  correct: "✓",
+  partial: "◐",
+  incorrect: "✗",
+  unanswered: "–",
+  pending: "…",
+  ungraded: "•",
+};
+
 export function ResultLine({ t, result, quizId }: { t: PageMessages; result: GradedQuestion; quizId: string }) {
   const points = result.points > 0 ? ` · ${t.scoreLine(String(result.earned ?? 0), String(result.points))}` : "";
   return (
@@ -72,6 +82,9 @@ export function ResultLine({ t, result, quizId }: { t: PageMessages; result: Gra
       data-earned={result.earned ?? 0}
       data-points={result.points}
     >
+      <span class="fm-icon" aria-hidden="true">
+        {ICONS[result.status]}
+      </span>{" "}
       <strong>{t.status[result.status]}</strong>
       {points}
     </p>

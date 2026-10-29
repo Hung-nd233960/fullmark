@@ -61,6 +61,8 @@ export type PageQuiz = {
   title: string;
   /** the description as HTML (maths included), null when there is none */
   descriptionHtml: string | null;
+  /** `feedback: instant` (absent for the default, `end`): each auto-graded question has a Check button */
+  feedback?: "instant";
   /** seconds; absent when the quiz is untimed */
   timeLimit?: number;
   /** the interface language of the page chrome */

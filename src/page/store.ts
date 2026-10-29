@@ -1,12 +1,13 @@
 import { type Signal, signal } from "@preact/signals";
 import type { Attempt, Plan } from "../core/attempt";
 import { resultsOf } from "../core/attempt/serialise";
-import { type Graded, grade } from "../core/grade";
+import { type Graded, type GradedQuestion, grade } from "../core/grade";
 import { en, vi } from "../core/i18n";
 import { planFor } from "../core/plan";
 import { type KeyBlob, openKey, type PageData, type PageQuiz } from "./data";
 import { createEvents, type Events } from "./events";
 import { type Action, newAttempt, reduce } from "./reducer";
+import { limitOf, missedIds } from "./results";
 import { attemptKey, quizPrefix, readSaved, type Saver, saverOver, saveText } from "./saved";
 import { drawSeed } from "./seed";
 
@@ -31,6 +32,10 @@ export type QuizState = {
   elapsed: Signal<number>;
   /** what a polite live region says: "5 minutes left" */
   said: Signal<string>;
+  /** `feedback: instant`: the result of each checked question, by id */
+  checks: Signal<Record<string, GradedQuestion>>;
+  /** the review filter under the results card; not stored */
+  filter: Signal<"all" | "missed" | "flagged">;
 };
 
 export type StartOptions = { part?: string | null; seed?: string; now?: Date };
@@ -43,6 +48,10 @@ export type Store = {
   /** Start: draws a seed and the plan (the whole quiz, or the one `part`). A `Date` stands for `{ now }`. */
   start(quizId: string, options?: StartOptions | Date): void;
   submit(quizId: string, now?: Date): void;
+  /** Check one answered question (`feedback: instant`): its result shows and its answer locks */
+  check(quizId: string, questionId: string): void;
+  /** Retry missed: a new attempt of this plan's missed questions, with a fresh seed, replacing the saved one */
+  retry(quizId: string, seed?: string): void;
   /** the learner is on this question: its section gets the time that follows */
   focus(quizId: string, questionId: string): void;
   /** reads what was saved: a submitted attempt shows its results, one in progress is offered as Continue */
@@ -138,6 +147,8 @@ export function createStore(data: PageData, deps: Deps = {}): Store {
       blocked: signal(false),
       elapsed: signal(0),
       said: signal(""),
+      checks: signal({}),
+      filter: signal("all"),
     });
   }
   const need = (quizId: string): QuizState => {
@@ -162,9 +173,27 @@ export function createStore(data: PageData, deps: Deps = {}): Store {
     state.graded.value = grade(key.quiz, attempt);
   };
 
+  /** The result of each checked question, graded alone by core's `grade` on the attempt cut down to that question. */
+  const gradeChecks = (state: QuizState): void => {
+    const attempt = state.attempt.value;
+    const ids = attempt.state.checked;
+    if (ids.length === 0) {
+      state.checks.value = {};
+      return;
+    }
+    const key = keyOf(state);
+    const found: Record<string, GradedQuestion> = {};
+    for (const id of ids) {
+      const one = grade(key.quiz, { ...attempt, plan: { ...attempt.plan, questions: [id] } });
+      const result = one.questions[0];
+      if (result) found[id] = result;
+    }
+    state.checks.value = found;
+  };
+
   /** Moves a clock to `at` (ms) and returns the seconds it gained. */
   const advance = (state: QuizState, run: Run, at: number): number => {
-    const limit = state.page.timeLimit;
+    const limit = limitOf(state.page, state.attempt.value);
     let target: number;
     if (limit !== undefined) {
       target = Math.max(0, Math.floor((at - run.startMs) / 1000));
@@ -189,7 +218,7 @@ export function createStore(data: PageData, deps: Deps = {}): Store {
   const finish = (state: QuizState, at: number, timedOut: boolean): void => {
     const id = state.page.id;
     const run = runs.get(id);
-    const limit = state.page.timeLimit;
+    const limit = limitOf(state.page, state.attempt.value);
     if (run) {
       advance(state, run, at);
     }
@@ -209,7 +238,7 @@ export function createStore(data: PageData, deps: Deps = {}): Store {
 
   const beginRun = (state: QuizState, startMs: number, at: number): void => {
     const attempt = state.attempt.value;
-    const limit = state.page.timeLimit;
+    const limit = limitOf(state.page, state.attempt.value);
     const first = attempt.plan.questions[0];
     const section = (first !== undefined ? sectionOf.get(state.page.id)?.get(first) : undefined) ?? "";
     // a timed clock is the wall clock: the time since Start counts, whether or not the page was open
@@ -239,7 +268,7 @@ export function createStore(data: PageData, deps: Deps = {}): Store {
     const before = run.counted;
     advance(state, run, at);
     state.elapsed.value = run.counted;
-    const limit = state.page.timeLimit;
+    const limit = limitOf(state.page, state.attempt.value);
     if (limit !== undefined) {
       const remaining = limit - run.counted;
       if (remaining <= 0) {
@@ -257,6 +286,23 @@ export function createStore(data: PageData, deps: Deps = {}): Store {
     if (Math.floor(run.counted / SAVE_EVERY) > Math.floor(before / SAVE_EVERY)) record(state, run);
   };
 
+  /** Back to an attempt that has not started: the saved one is removed, and the plan is a stand-in again. */
+  const resetState = (state: QuizState): void => {
+    saver?.remove(attemptKey(state.page));
+    const ids = state.page.sections.flatMap((s) => s.questions.map((q) => q.id));
+    runs.delete(state.page.id);
+    state.attempt.value = newAttempt(state.page.hash, { source: "full", questions: ids });
+    state.graded.value = null;
+    state.key.value = null;
+    state.startedAt = null;
+    state.part.value = null;
+    state.resume.value = null;
+    state.elapsed.value = 0;
+    state.said.value = "";
+    state.checks.value = {};
+    state.filter.value = "all";
+  };
+
   const store: Store = {
     events,
     quizzes,
@@ -272,6 +318,7 @@ export function createStore(data: PageData, deps: Deps = {}): Store {
         if (run && section !== undefined) run.section = section;
       }
       if (action.type === "submit") grading(state, after);
+      if (action.type === "check") gradeChecks(state);
       save(state);
       events.emit("progress", { quizId, attempt: after });
       if (action.type === "submit") events.emit("submit", { quizId, attempt: after });
@@ -292,6 +339,36 @@ export function createStore(data: PageData, deps: Deps = {}): Store {
               quizHash: state.page.hash,
             })
           : planFor(key.quiz, { source: "section", section: part, seed, quizHash: state.page.hash });
+      state.startedAt = at;
+      store.dispatch(quizId, { type: "start", at: localIso(new Date(at)), plan });
+      beginRun(state, at, at);
+    },
+    check(quizId, questionId) {
+      const state = need(quizId);
+      store.dispatch(quizId, { type: "check", question: questionId });
+      const result = state.checks.value[questionId];
+      if (result === undefined) return;
+      const t = (state.page.uiLang === "vi" ? vi : en).page;
+      const number = state.attempt.value.plan.questions.indexOf(questionId) + 1;
+      state.said.value = t.checkedSaid(number, t.status[result.status]);
+    },
+    retry(quizId, seed) {
+      const state = need(quizId);
+      const before = state.attempt.value;
+      const graded = state.graded.value;
+      if (before.phase !== "submitted" || graded === null) return;
+      const missed = missedIds(graded);
+      if (missed.length === 0) return;
+      const at = now();
+      const plan = planFor(keyOf(state).quiz, {
+        source: "retry",
+        questions: missed,
+        seed: seed ?? drawSeed(bytes),
+        quizHash: state.page.hash,
+      });
+      // the one saved attempt is replaced: the retry is saved from its first answer on, like any attempt
+      resetState(state);
+      keyOf(state);
       state.startedAt = at;
       store.dispatch(quizId, { type: "start", at: localIso(new Date(at)), plan });
       beginRun(state, at, at);
@@ -323,7 +400,7 @@ export function createStore(data: PageData, deps: Deps = {}): Store {
           continue;
         }
         const { attempt, startMs } = saved;
-        const limit = page.timeLimit;
+        const limit = limitOf(page, attempt);
         if (attempt.phase === "submitted") {
           state.attempt.value = attempt;
           state.startedAt = startMs;
@@ -354,6 +431,7 @@ export function createStore(data: PageData, deps: Deps = {}): Store {
       state.resume.value = null;
       state.attempt.value = resume.attempt;
       keyOf(state);
+      gradeChecks(state);
       beginRun(state, resume.startMs ?? at, at);
       store.tick(at);
     },
@@ -363,18 +441,7 @@ export function createStore(data: PageData, deps: Deps = {}): Store {
       state.resume.value = null;
     },
     newAttempt(quizId) {
-      const state = need(quizId);
-      saver?.remove(attemptKey(state.page));
-      const ids = state.page.sections.flatMap((s) => s.questions.map((q) => q.id));
-      runs.delete(quizId);
-      state.attempt.value = newAttempt(state.page.hash, { source: "full", questions: ids });
-      state.graded.value = null;
-      state.key.value = null;
-      state.startedAt = null;
-      state.part.value = null;
-      state.resume.value = null;
-      state.elapsed.value = 0;
-      state.said.value = "";
+      resetState(need(quizId));
     },
     tick(at = now()) {
       for (const state of quizzes.values()) tickOne(state, at);

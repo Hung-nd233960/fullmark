@@ -2,6 +2,8 @@ import { useRef } from "preact/hooks";
 import type { PageQuestion, PageSection } from "./data";
 import { type Api, QuestionCard } from "./questions/Card";
 import { Html, messagesFor, type PageMessages } from "./questions/shared";
+import { ResultsCard } from "./ResultsCard";
+import { limitOf, missedIds } from "./results";
 import { clockText, download, exportFor, type QuizState, type Store } from "./store";
 
 /** The questions of the plan, in its order, with the section each belongs to; a section's run of questions is one group. */
@@ -136,7 +138,7 @@ function Resume({ t, state, store }: { t: PageMessages; state: QuizState; store:
 
 /** The timer line above the questions, and the live region for "5 minutes left" (the visible text is not live). */
 function Timer({ t, state }: { t: PageMessages; state: QuizState }) {
-  const limit = state.page.timeLimit;
+  const limit = limitOf(state.page, state.attempt.value);
   const elapsed = state.elapsed.value;
   const text =
     limit === undefined
@@ -156,6 +158,37 @@ function Timer({ t, state }: { t: PageMessages; state: QuizState }) {
   );
 }
 
+/** All · Missed · Flagged, under the results card. The choice is not stored. */
+function Filter({ t, state, missed, flagged }: { t: PageMessages; state: QuizState; missed: number; flagged: number }) {
+  const all = state.attempt.value.plan.questions.length;
+  const chosen = state.filter.value;
+  const options = [
+    { id: "all", label: t.filterAll, count: all, title: undefined },
+    { id: "missed", label: t.filterMissed, count: missed, title: t.missedHint },
+    { id: "flagged", label: t.filterFlagged, count: flagged, title: undefined },
+  ] as const;
+  return (
+    <fieldset class="fm-filter">
+      <legend class="fm-sr">{t.filterLabel}</legend>
+      {options.map((o) => (
+        <button
+          key={o.id}
+          type="button"
+          class="fm-filter-button"
+          data-filter={o.id}
+          aria-pressed={chosen === o.id}
+          title={o.title}
+          onClick={() => {
+            state.filter.value = o.id;
+          }}
+        >
+          {o.label} <span class="fm-filter-count">{o.count}</span>
+        </button>
+      ))}
+    </fieldset>
+  );
+}
+
 function QuizView({ state, api, store }: { state: QuizState; api: Api; store: Store }) {
   const { page } = state;
   const t = messagesFor(page);
@@ -164,6 +197,11 @@ function QuizView({ state, api, store }: { state: QuizState; api: Api; store: St
   const started = attempt.phase !== "start";
   const count = page.sections.reduce((n, s) => n + (s.pick ?? s.questions.length), 0);
   let number = 0;
+  const missed = graded ? new Set(missedIds(graded)) : new Set<string>();
+  const flaggedIds = new Set(attempt.state.flagged.filter((id) => attempt.plan.questions.includes(id)));
+  const filter = attempt.phase === "submitted" ? state.filter.value : "all";
+  const shown = (id: string): boolean =>
+    filter === "all" || (filter === "missed" ? missed.has(id) : flaggedIds.has(id));
 
   return (
     <section class="fm-quiz" id={page.id} data-phase={attempt.phase} data-quiz={page.id}>
@@ -191,11 +229,35 @@ function QuizView({ state, api, store }: { state: QuizState; api: Api; store: St
           <Notice t={t} state={state} />
         </>
       ) : null}
+      {attempt.phase === "submitted" ? (
+        <>
+          {attempt.state.timedOut ? (
+            <p class="fm-notice" role="status" data-notice="timed-out">
+              {t.timedOutNote}
+            </p>
+          ) : null}
+          {graded ? (
+            <ResultsCard
+              page={page}
+              state={state}
+              graded={graded}
+              onDownload={() => {
+                const file = exportFor(state, new Date());
+                download(file.name, file.text);
+              }}
+              onNew={() => store.newAttempt(page.id)}
+              onRetry={() => store.retry(page.id)}
+            />
+          ) : null}
+          <Filter t={t} state={state} missed={missed.size} flagged={flaggedIds.size} />
+        </>
+      ) : null}
       <div class="fm-questions" hidden={!started}>
         {groupsOf(state).map(({ section, questions }) => (
           <section
             class="fm-section"
             key={section.id}
+            hidden={!questions.some((q) => shown(q.id))}
             id={section.title !== null ? `${page.id}/${section.id}` : undefined}
           >
             {section.title !== null ? (
@@ -209,7 +271,16 @@ function QuizView({ state, api, store }: { state: QuizState; api: Api; store: St
             {section.introHtml !== "" ? <Html html={section.introHtml} class="fm-intro" /> : null}
             {questions.map((question) => {
               number += 1;
-              return <QuestionCard key={question.id} state={state} api={api} question={question} number={number} />;
+              return (
+                <QuestionCard
+                  key={question.id}
+                  state={state}
+                  api={api}
+                  question={question}
+                  number={number}
+                  hidden={!shown(question.id)}
+                />
+              );
             })}
           </section>
         ))}
@@ -218,35 +289,6 @@ function QuizView({ state, api, store }: { state: QuizState; api: Api; store: St
         <div class="fm-actions">
           <button type="button" class="fm-button fm-primary" data-action="submit" onClick={() => api.submit()}>
             {t.submit}
-          </button>
-        </div>
-      ) : null}
-      {attempt.phase === "submitted" ? (
-        <div class="fm-actions">
-          {attempt.state.timedOut ? (
-            <p class="fm-notice" role="status" data-notice="timed-out">
-              {t.timedOutNote}
-            </p>
-          ) : null}
-          {graded ? (
-            <p class="fm-total" data-earned={graded.total.earned} data-points={graded.total.points}>
-              <strong>{t.yourScore}:</strong> {t.scoreLine(String(graded.total.earned), String(graded.total.points))}
-            </p>
-          ) : null}
-          <button
-            type="button"
-            class="fm-button"
-            data-action="export"
-            title={t.exportHint}
-            onClick={() => {
-              const file = exportFor(state, new Date());
-              download(file.name, file.text);
-            }}
-          >
-            {t.export}
-          </button>
-          <button type="button" class="fm-button" data-action="new-attempt" onClick={() => store.newAttempt(page.id)}>
-            {t.newAttempt}
           </button>
         </div>
       ) : null}
@@ -263,6 +305,8 @@ export function App({ store }: { store: Store }) {
           dispatch: (action) => store.dispatch(id, action),
           start: () => store.start(id, { part: state.part.value }),
           submit: () => store.submit(id),
+          flag: (questionId) => store.dispatch(id, { type: "flag", question: questionId }),
+          check: (questionId) => store.check(id, questionId),
           focus: (questionId) => store.focus(id, questionId),
         };
         return <QuizView key={id} state={state} api={api} store={store} />;

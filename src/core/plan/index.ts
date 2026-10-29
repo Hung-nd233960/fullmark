@@ -9,6 +9,8 @@ export type PlanRequest = (
   | { source: "full"; seed?: string }
   | { source: "bank"; seed?: string }
   | { source: "section"; section: string; seed?: string }
+  /** the questions to retry, in the order the page showed them; the page decides which are missed, not core */
+  | { source: "retry"; questions: readonly string[]; seed?: string }
 ) & {
   /** the quiz hash: without a `seed`, its first 4 characters (the short version) are the seed (section 4, Seeds) */
   quizHash: string;
@@ -40,6 +42,21 @@ function shuffledNotSource(count: number, next: () => number): number[] {
 }
 
 /**
+ * The sections of a retry: the quiz's own, cut down to the named questions, which stay in the order given (shuffled
+ * afterwards when the quiz shuffles its questions, by the seed). A question the quiz does not have is an error.
+ */
+function retrySections(quiz: Quiz, ids: readonly string[]): Quiz["sections"] {
+  const byId = new Map(quiz.sections.flatMap((s) => s.questions.map((q) => [q.id, q] as const)));
+  const unknown = ids.filter((id) => !byId.has(id));
+  if (unknown.length > 0) throw new PlanError(`unknown questions to retry: ${unknown.join(", ")}`);
+  const questions = ids.map((id) => byId.get(id) as Question);
+  const first = quiz.sections[0];
+  if (first === undefined) throw new PlanError("the quiz has no questions");
+  // one section holds them all, in the given order: shuffling inside it is the same as shuffling the whole list
+  return [{ ...first, id: "", title: null, pick: null, questions }];
+}
+
+/**
  * Which questions an attempt gets, and in which order (TECHNICAL_DESIGN.md, section 4).
  *
  * - `full`: every question, banks included whole.
@@ -58,6 +75,7 @@ export function planFor(quiz: Quiz, request: PlanRequest): Plan {
   }
   const seed = request.seed ?? request.quizHash.slice(0, 4);
   let sections = quiz.sections;
+  if (request.source === "retry") sections = retrySections(quiz, request.questions);
   if (request.source === "section") {
     const found = sections.find((s) => s.id === request.section && s.title !== null);
     if (!found) {
@@ -68,6 +86,7 @@ export function planFor(quiz: Quiz, request: PlanRequest): Plan {
     }
     sections = [found];
   }
+  // a retry draws nothing: its questions are the ones the page named
   const draw = request.source === "bank" || (request.source === "section" && request.seed !== undefined);
 
   const questions: Question[] = [];

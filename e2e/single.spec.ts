@@ -86,7 +86,7 @@ test("answers, submits and exports a score that quiz grade reproduces", async ({
   await expect(page.getByText("Seven has no divisors except one")).toBeVisible();
 
   const download = page.waitForEvent("download");
-  await page.getByRole("button", { name: "Export results" }).click();
+  await page.getByRole("button", { name: "Download results" }).click();
   const file = await download;
   expect(file.suggestedFilename()).toMatch(/^singles-results-\d{8}-\d{6}\.json$/);
   const resultsPath = join(dir, file.suggestedFilename());
@@ -112,5 +112,5 @@ test("answers, submits and exports a score that quiz grade reproduces", async ({
 test("Submit and Export are not on the page before their phase", async ({ page }) => {
   await page.goto(pageUrl);
   await expect(page.getByRole("button", { name: "Submit" })).toHaveCount(0);
-  await expect(page.getByRole("button", { name: "Export results" })).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "Download results" })).toHaveCount(0);
 });

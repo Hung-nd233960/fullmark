@@ -17,7 +17,7 @@ const right = (page: Page, id: string) => page.getByLabel(`right ${id}`).check()
 /** Saves the export and returns the parsed file. */
 async function exported(page: Page, dir: string): Promise<{ name: string; file: Record<string, any> }> {
   const download = page.waitForEvent("download");
-  await page.getByRole("button", { name: "Export results" }).click();
+  await page.getByRole("button", { name: "Download results" }).click();
   const file = await download;
   const path = join(dir, file.suggestedFilename());
   await file.saveAs(path);
@@ -139,7 +139,7 @@ test("a submitted attempt reopens on its results until New attempt", async ({ pa
   ).toEqual(statuses);
   expect(await idsOn(page)).toEqual(ids);
   await expect(page.getByRole("button", { name: "Continue" })).toHaveCount(0);
-  await expect(page.getByRole("button", { name: "Export results" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Download results" })).toBeVisible();
   await noViolations(page);
 
   await page.getByRole("button", { name: "New attempt" }).click();

@@ -48,7 +48,16 @@ describe("results-v2", () => {
       expect(read.ok, key).toBe(false);
       if (!read.ok) expect(read.message, key).toContain(key);
     }
-    for (const key of ["answers", "startedAt", "submittedAt", "timeUsed", "sectionTime", "flagged", "checked", "timedOut"]) {
+    for (const key of [
+      "answers",
+      "startedAt",
+      "submittedAt",
+      "timeUsed",
+      "sectionTime",
+      "flagged",
+      "checked",
+      "timedOut",
+    ]) {
       const file = JSON.parse(text(attempt())) as { state: Record<string, unknown> };
       delete file.state[key];
       const read = parseResults(JSON.stringify(file));

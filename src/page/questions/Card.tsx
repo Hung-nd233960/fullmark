@@ -38,6 +38,10 @@ export type Api = {
   /** Start, with the part chosen on the start screen */
   start(): void;
   submit(): void;
+  /** flag the question for review, or take the flag off */
+  flag(questionId: string): void;
+  /** `feedback: instant`: check the question */
+  check(questionId: string): void;
   /** the learner is on this question (the time that follows is counted to its section) */
   focus(questionId: string): void;
 };
@@ -48,26 +52,44 @@ export function QuestionCard({
   api,
   question,
   number,
+  hidden = false,
 }: {
   state: QuizState;
   api: Api;
   question: PageQuestion;
   number: number;
+  /** the review filter hides the card; the DOM order never changes */
+  hidden?: boolean;
 }) {
   const quiz = state.page;
   const t = messagesFor(quiz);
   const attempt = state.attempt.value;
   const submitted = attempt.phase === "submitted";
-  // the key is read for results only: it is decoded at Start (to plan the attempt) but nothing of it shows before Submit
-  const key = submitted ? state.key.value : null;
-  const result = state.graded.value?.questions.find((q) => q.id === question.id);
+  const checked = attempt.state.checked.includes(question.id);
+  // the key is read for results only: it is decoded at Start (to plan the attempt) but nothing of it shows before
+  // Submit, except for a question the learner has checked (`feedback: instant`)
+  const revealed = submitted || checked;
+  const key = revealed ? state.key.value : null;
+  const result = submitted
+    ? state.graded.value?.questions.find((q) => q.id === question.id)
+    : state.checks.value[question.id];
+  const flagged = attempt.state.flagged.includes(question.id);
+  const answered = attempt.state.answers[question.id] != null;
+  // essays, code and questions that carry no score are graded after Submit
+  const checkable =
+    quiz.feedback === "instant" &&
+    attempt.phase === "answering" &&
+    !checked &&
+    question.graded &&
+    question.type !== "essay" &&
+    question.type !== "code";
   const name = `${quiz.id}/${question.id}`;
   const c: Ctx = {
     t,
     quiz,
     name,
     answer: attempt.state.answers[question.id] ?? null,
-    submitted,
+    submitted: revealed,
     started: attempt.phase !== "start",
     order: attempt.plan.optionOrder?.[question.id],
     dataOrder: state.key.value?.dataOrder[question.id],
@@ -81,13 +103,32 @@ export function QuestionCard({
     <article
       class="fm-question"
       id={name}
+      hidden={hidden}
       data-type={question.type}
       data-qid={question.id}
+      data-status={revealed ? result?.status : undefined}
+      data-flagged={flagged ? "true" : undefined}
+      data-checked={checked ? "true" : undefined}
       onFocusIn={() => api.focus(question.id)}
     >
       <header class="fm-question-head">
         <span class="fm-question-number">{t.questionLabel(number)}</span>
         {question.graded ? <span class="fm-question-points">{t.pointsLabel(String(question.points))}</span> : null}
+        {attempt.phase === "answering" ? (
+          <button
+            type="button"
+            class="fm-flag"
+            data-action="flag"
+            aria-pressed={flagged}
+            onClick={() => api.flag(question.id)}
+          >
+            <span aria-hidden="true">{flagged ? "⚑" : "⚐"}</span> {t.flagForReview}
+          </button>
+        ) : flagged ? (
+          <span class="fm-flag-mark" data-flag-mark>
+            <span aria-hidden="true">⚑</span> {t.flaggedMark}
+          </span>
+        ) : null}
       </header>
       {/* a blanks prompt holds the boxes, so it has its own component, in the same slot */}
       {question.type === "blanks" ? (
@@ -102,8 +143,19 @@ export function QuestionCard({
         </details>
       ) : null}
       <Content q={question} c={c} />
-      {submitted && result ? <ResultLine t={t} result={result} quizId={quiz.id} /> : null}
-      {submitted && key?.explanations[question.id] ? (
+      {checkable ? (
+        <button
+          type="button"
+          class="fm-button fm-check"
+          data-action="check"
+          disabled={!answered}
+          onClick={() => api.check(question.id)}
+        >
+          {t.check}
+        </button>
+      ) : null}
+      {revealed && result ? <ResultLine t={t} result={result} quizId={quiz.id} /> : null}
+      {revealed && key?.explanations[question.id] ? (
         <div class="fm-explanation">
           <strong>{t.explanation}</strong>
           <Html html={key.explanations[question.id] ?? ""} />
