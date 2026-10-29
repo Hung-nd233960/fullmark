@@ -5,13 +5,13 @@ import { join, resolve } from "node:path";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 /**
- * The startup budget (TECHNICAL_DESIGN.md, section 7): `quiz --version` and `quiz check` on a small quiz each take under
- * 150 ms. Each is run 7 times through the built bundle and the median is judged. `npm test` runs this file on its own,
- * after the others: timing is meaningless while 30 test files and the golden cases spawn processes beside it. A median
- * over the limit is measured once more (the best of the two counts), so one slow moment does not fail the
- * run. The medians are printed with --silent=false, to show how much room is left.
+ * The startup budget (TECHNICAL_DESIGN.md, section 7): fullmark's own share of `quiz --version` and `quiz check` on a
+ * small quiz is under 60 ms. The share is the median of the CLI's time minus the median of a bare `node -e ""`, both
+ * timed in this run the same number of times, so a slow moment of the laptop moves both. `npm test` runs this file on
+ * its own, after the others. A share over the limit is measured once more (the best of the two counts). All three
+ * numbers are printed with --silent=false.
  */
-const LIMIT_MS = 150;
+const LIMIT_MS = 60;
 const RUNS = 7;
 const ROUNDS = 2;
 const cli = resolve(import.meta.dirname, "..", "dist", "cli.js");
@@ -43,7 +43,7 @@ afterAll(() => {
   rmSync(dir, { recursive: true, force: true });
 });
 
-function median(args: string[]): number {
+function median(args: string[], quiz: boolean): number {
   const times: number[] = [];
   const env: Record<string, string | undefined> = {
     ...process.env,
@@ -56,31 +56,35 @@ function median(args: string[]): number {
   delete env.FULLMARK_CONFIG;
   for (let i = 0; i < RUNS; i++) {
     const start = process.hrtime.bigint();
-    const r = spawnSync(process.execPath, [cli, ...args], { cwd: dir, env, stdio: "ignore" });
+    const r = spawnSync(process.execPath, args, { cwd: dir, env, stdio: "ignore" });
     times.push(Number(process.hrtime.bigint() - start) / 1e6);
-    expect(r.status).toBe(0);
+    if (quiz) expect(r.status).toBe(0);
   }
   times.sort((a, b) => a - b);
   return times[Math.floor(RUNS / 2)] ?? Number.NaN;
 }
 
-function best(label: string, args: string[]): number {
+/** The median of the CLI's time minus the median of bare Node's, measured together so the two see the same load. */
+function share(label: string, args: string[]): number {
   const rounds: number[] = [];
   for (let round = 0; round < ROUNDS; round++) {
-    rounds.push(median(args));
-    if ((rounds.at(-1) ?? Number.POSITIVE_INFINITY) <= LIMIT_MS) break;
+    const bare = median(["-e", ""], false);
+    const cliTime = median([cli, ...args], true);
+    rounds.push(cliTime - bare);
+    console.log(
+      `startup: ${label}: CLI ${cliTime.toFixed(0)} ms, bare Node ${bare.toFixed(0)} ms, share ${(cliTime - bare).toFixed(0)} ms (limit ${LIMIT_MS} ms)`,
+    );
+    if ((rounds.at(-1) ?? Number.POSITIVE_INFINITY) < LIMIT_MS) break;
   }
-  const result = Math.min(...rounds);
-  console.log(`startup: ${label} median of ${RUNS} runs: ${result.toFixed(0)} ms (limit ${LIMIT_MS} ms)`);
-  return result;
+  return Math.min(...rounds);
 }
 
 describe("startup budget", () => {
-  it("quiz --version is under 150 ms", () => {
-    expect(best("quiz --version", ["--version"])).toBeLessThan(LIMIT_MS);
+  it("quiz --version costs under 60 ms beyond bare Node", () => {
+    expect(share("quiz --version", ["--version"])).toBeLessThan(LIMIT_MS);
   }, 60_000);
 
-  it("quiz check on a small quiz is under 150 ms", () => {
-    expect(best("quiz check", ["check", "quiz.md"])).toBeLessThan(LIMIT_MS);
+  it("quiz check on a small quiz costs under 60 ms beyond bare Node", () => {
+    expect(share("quiz check", ["check", "quiz.md"])).toBeLessThan(LIMIT_MS);
   }, 60_000);
 });

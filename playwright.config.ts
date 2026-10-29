@@ -11,6 +11,7 @@ export default defineConfig({
   reporter: [["list"]],
   projects: [
     { name: "chromium", use: { browserName: "chromium" } },
-    { name: "firefox", use: { browserName: "firefox" } },
+    // axe is slow in Firefox under parallel load: it gets 60 s a test; no retries
+    { name: "firefox", timeout: 60_000, use: { browserName: "firefox" } },
   ],
 });
