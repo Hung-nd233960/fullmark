@@ -269,6 +269,10 @@
     counter-increment: none;
   }
 
+  .fm-order-item[data-lifted]::before {
+    content: none;
+  }
+
   .fm-order-slot {
     box-sizing: border-box;
     height: var(--drag-h);
