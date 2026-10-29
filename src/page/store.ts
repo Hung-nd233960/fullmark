@@ -96,7 +96,7 @@ export type Look = {
   shown: ReadonlySignal<ThemeName>;
   /** reads the stored choice (once; `restore` and the page's first step both call it) */
   load(): void;
-  /** the learner picks a theme (a choice equal to the quiz's still counts as a pick); null resets to the quiz's */
+  /** the learner picks a theme (the quiz's own, like null, drops the stored choice); null resets to the quiz's */
   pick(choice: Choice | null): void;
 };
 
@@ -233,6 +233,7 @@ export function createStore(data: PageData, deps: Deps = {}): Store {
       },
       pick(choice) {
         if (locked) return;
+        if (choice === quiz) choice = null;
         chosen.value = choice;
         if (saver === null) return;
         const { theme: _gone, ...rest } = readLook(saver.get(lookKey(first)));

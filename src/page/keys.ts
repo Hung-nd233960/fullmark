@@ -1,3 +1,4 @@
+import { focusLookButton } from "./Appearance";
 import { focusMaterialsButton } from "./Materials";
 import { hasMaterials, sideForm } from "./map";
 import { focusChip, focusInSidebar, focusMap, focusSidebarButton } from "./mapdom";
@@ -46,6 +47,11 @@ export function keyHandler(store: Store): (event: KeyLike) => void {
         focusMaterialsButton();
         return;
       }
+    }
+    if (event.key === "Escape" && !event.defaultPrevented && store.look.menu.value) {
+      store.look.menu.value = false;
+      focusLookButton();
+      return;
     }
     const isM = event.key === "m" || event.key === "M";
     if (event.key === "q" || event.key === "Q" || isM || event.key === "Escape") {

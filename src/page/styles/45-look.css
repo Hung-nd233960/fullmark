@@ -1,0 +1,78 @@
+/* The Appearance button and its menu strip (docs/mockup, Quiz board: `hdrBtnIcon`, `pill`, the strip under the header). */
+@layer components {
+  .fm-look-button {
+    width: 44px;
+    padding: 0;
+  }
+
+  .fm-look-button[aria-expanded="true"] {
+    background: var(--surface);
+    border-color: var(--accent);
+  }
+
+  .fm-look-menu {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 28px;
+    align-items: center;
+    padding: 12px 28px;
+    font-size: 0.85em;
+    background: var(--surface);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .fm-look-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .fm-look-label {
+    font-weight: 600;
+    color: var(--muted);
+  }
+
+  .fm-pill {
+    min-height: 36px;
+    padding: 0 12px;
+    font: inherit;
+    font-weight: 400;
+    color: var(--text);
+    cursor: pointer;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+  }
+
+  .fm-pill[aria-pressed="true"] {
+    font-weight: 700;
+    color: var(--on-accent);
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+
+  .fm-look-reset {
+    min-height: 36px;
+    margin-left: auto;
+    padding: 0 14px;
+    font: inherit;
+    font-weight: 600;
+    color: var(--text);
+    cursor: pointer;
+    background: var(--card);
+    border: 1px solid var(--line-strong);
+    border-radius: 8px;
+  }
+
+  @media (max-width: 759px) {
+    .fm-look-menu {
+      padding: 12px 16px;
+    }
+
+    .fm-pill,
+    .fm-look-reset {
+      min-height: 44px;
+    }
+  }
+}

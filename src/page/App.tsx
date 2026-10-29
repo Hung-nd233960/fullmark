@@ -1,5 +1,6 @@
 import type { ComponentChildren } from "preact";
 import { useEffect, useRef } from "preact/hooks";
+import { AppearanceButton, AppearanceMenu } from "./Appearance";
 import type { PageQuestion, PageQuiz, PageSection } from "./data";
 import { Icon, type IconName } from "./icons";
 import { MaterialsButton, MaterialsPanel } from "./Materials";
@@ -432,6 +433,7 @@ function Dock({
         <div class="fm-topbar-actions">
           <SidebarButton t={t} state={state} store={store} />
           <FocusButton t={t} store={store} />
+          {store.look.locked ? null : <AppearanceButton t={t} store={store} />}
           {answering ? (
             <button type="button" class="fm-button fm-primary" data-action="submit" onClick={() => api.submit()}>
               {t.submit}
@@ -444,6 +446,7 @@ function Dock({
         {state.said.value}
       </p>
       {children}
+      {store.look.locked ? null : <AppearanceMenu t={t} store={store} />}
     </div>
   );
 }

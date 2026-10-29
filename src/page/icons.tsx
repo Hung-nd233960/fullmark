@@ -19,6 +19,12 @@ const PATHS = {
   ),
   retry: <path d="M3 12a9 9 0 1 0 3-6.7M3 4v5h5" />,
   download: <path d="M12 4v11m-5-4l5 5 5-5M5 20h14" />,
+  appearance: (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 3a9 9 0 0 0 0 18z" fill="currentColor" />
+    </>
+  ),
   half: (
     <>
       <circle cx="12" cy="12" r="9" />
