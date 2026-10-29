@@ -1,5 +1,5 @@
 import { execFileSync } from "node:child_process";
-import { copyFileSync, cpSync, mkdtempSync, readFileSync } from "node:fs";
+import { copyFileSync, cpSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import AxeBuilder from "@axe-core/playwright";
@@ -20,6 +20,16 @@ export function buildIn(source: string, name: string): { dir: string; url: strin
   const dir = mkdtempSync(join(tmpdir(), "fm-e2e-"));
   execFileSync(process.execPath, ["-e", `require("fs").mkdirSync(${JSON.stringify(join(dir, ".git"))})`]);
   copyFileSync(join(root, source), join(dir, name));
+  run(dir, "build", name, "--built-at", "2026-10-28T10:00:00+07:00");
+  return { dir, url: `file:///${join(dir, name.replace(/\.md$/, ".html")).replaceAll("\\", "/")}` };
+}
+
+/** Like `buildIn`, for a fixture with lines added to its front matter (`theme: paper`, `look: locked`). */
+export function buildWith(source: string, name: string, extra: string[]): { dir: string; url: string } {
+  const text = readFileSync(join(root, source), "utf8").replace(/^---\n/, `---\n${extra.join("\n")}\n`);
+  const dir = mkdtempSync(join(tmpdir(), "fm-e2e-"));
+  execFileSync(process.execPath, ["-e", `require("fs").mkdirSync(${JSON.stringify(join(dir, ".git"))})`]);
+  writeFileSync(join(dir, name), text);
   run(dir, "build", name, "--built-at", "2026-10-28T10:00:00+07:00");
   return { dir, url: `file:///${join(dir, name.replace(/\.md$/, ".html")).replaceAll("\\", "/")}` };
 }
