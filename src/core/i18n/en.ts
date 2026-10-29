@@ -199,7 +199,6 @@ export const en = {
       ]
         .filter((part) => part !== "")
         .join(" · "),
-    untitledPart: "Other questions",
     retryMissed: (n: number) => `Retry missed (${n})`,
     retryMissedHint: "A new attempt of the questions you missed, with no time limit.",
     retryAction: "Retry missed",

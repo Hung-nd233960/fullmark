@@ -188,8 +188,11 @@ function ResultsMap({
             );
           })}
       <ul class="fm-legend fm-legend-results">
-        {LEGEND.map((s) => (
-          <li key={s}>
+        {(parts.some((p) => p.cells.some((c) => c.state === "ungraded"))
+          ? [...LEGEND, "ungraded" as const]
+          : LEGEND
+        ).map((s) => (
+          <li key={s} class={s === "pending" ? "fm-legend-wide" : undefined}>
             <span class="fm-swatch fm-swatch-result" data-state={s} aria-hidden="true">
               {GLYPH[s]}
             </span>

@@ -135,12 +135,12 @@ export function ResultsCard({
           <div class="fm-by-part">
             <span class="fm-label">{t.byPart}</span>
             <ul class="fm-part-rows">
-              {graded.sections.map((s) => {
+              {graded.sections.map((s, index) => {
                 const counts = countsOf(own(s.id));
                 const label = t.countsLabel(counts);
                 return (
                   <li key={s.id} class="fm-part-row" data-part={s.id} data-earned={s.earned} data-points={s.points}>
-                    <span class="fm-part-title">{s.title ?? t.untitledPart}</span>
+                    <span class="fm-part-title">{s.title ?? t.mapPart(index + 1, null)}</span>
                     <SplitBar counts={counts} label={label} />
                     <span class="fm-part-counts">{label}</span>
                     <span class="fm-part-points">

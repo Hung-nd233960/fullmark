@@ -233,7 +233,6 @@ export const vi = {
       ]
         .filter((part) => part !== "")
         .join(" · "),
-    untitledPart: "Các câu khác",
     retryMissed: (n: number) => `Làm lại câu sai (${n})`,
     retryMissedHint: "Một lượt mới gồm các câu bạn chưa đúng, không giới hạn thời gian.",
     retryAction: "Làm lại câu sai",
