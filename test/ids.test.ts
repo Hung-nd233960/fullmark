@@ -130,7 +130,7 @@ describe("seededIds (FULLMARK_TEST_SEED, test-only)", () => {
     expect(ids("s")).toBe(ids("s"));
     expect(ids("s")).not.toBe(ids("t"));
     expect(ids()).not.toBe(ids());
-  });
+  }, 60_000); // six CLI runs: slow under the full suite's load
 });
 
 // -- the command ---------------------------------------------------------------------------------------------
