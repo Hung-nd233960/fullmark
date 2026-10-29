@@ -1,0 +1,199 @@
+{
+  "v": 3,
+  "attachments": {},
+  "boards": {
+    "Dark.dc.html": {
+      "h": 940,
+      "title": "dark + sans (Be Vietnam Pro), free",
+      "w": 1280,
+      "x": 2720,
+      "y": 1760
+    },
+    "Focus.dc.html": {
+      "h": 940,
+      "title": "Focus mode: dark + sans, full screen, sidebar closed, the clock in the status line",
+      "w": 1280,
+      "x": 0,
+      "y": 5240
+    },
+    "Light.dc.html": {
+      "h": 940,
+      "title": "light + system, free",
+      "w": 1280,
+      "x": 1360,
+      "y": 1760
+    },
+    "Main.dc.html": {
+      "h": 1629,
+      "title": "Tokens and fonts",
+      "w": 1464,
+      "x": 0,
+      "y": 0
+    },
+    "Materials.dc.html": {
+      "h": 940,
+      "title": "Sidebar A, tabs: the layout after Submit, where the map needs room for results and the filter",
+      "w": 1280,
+      "x": 0,
+      "y": 9523
+    },
+    "MaterialsFocus.dc.html": {
+      "h": 940,
+      "title": "Focus mode with the sidebar open: dark + sans, stacked",
+      "w": 1280,
+      "x": 1360,
+      "y": 9523
+    },
+    "MaterialsPhone.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "title": "Phone: the sidebar takes the screen, with a way back",
+      "w": 390,
+      "x": 3594,
+      "y": 9523
+    },
+    "MaterialsStacked.dc.html": {
+      "h": 940,
+      "title": "Sidebar B, stacked: the layout while answering; part tabs and one grid over the materials",
+      "w": 1280,
+      "x": 683,
+      "y": 10583
+    },
+    "Oled.dc.html": {
+      "h": 940,
+      "title": "oled + readable (Lexend), free",
+      "w": 1280,
+      "x": 0,
+      "y": 2820
+    },
+    "Paper.dc.html": {
+      "h": 940,
+      "title": "paper + serif (Source Serif 4), locked (exam template)",
+      "w": 1280,
+      "x": 2720,
+      "y": 2820
+    },
+    "PrintKey.dc.html": {
+      "h": 1123,
+      "title": "Printable paper: answer key page (--answers key)",
+      "w": 794,
+      "x": 874,
+      "y": 8280
+    },
+    "PrintMaterials.dc.html": {
+      "h": 1123,
+      "title": "Printable paper: materials page, after the last question and before the key",
+      "w": 794,
+      "x": 2720,
+      "y": 9523
+    },
+    "PrintPaper.dc.html": {
+      "h": 1123,
+      "title": "Printable paper (build --print --answer-sheet): A4 page 1, black ink only",
+      "w": 794,
+      "x": 0,
+      "y": 8280
+    },
+    "Quiz.dc.html": {
+      "h": 940,
+      "is_interactive": true,
+      "title": "Interactive: one sidebar (Questions | Materials), the status line, Focus mode, Appearance",
+      "w": 1280,
+      "x": 0,
+      "y": 1760
+    },
+    "Results.dc.html": {
+      "h": 1560,
+      "is_interactive": true,
+      "title": "Results after Submit, interactive: light, the sidebar in its tabs form (results map | materials), essay waiting (try All",
+      "w": 1280,
+      "x": 0,
+      "y": 6600
+    },
+    "ResultsMissed.dc.html": {
+      "h": 1560,
+      "title": "Results: dark + sans, Missed filter on, sidebar closed (reading width)",
+      "w": 1280,
+      "x": 1360,
+      "y": 6600
+    },
+    "ResultsReplay.dc.html": {
+      "h": 1560,
+      "title": "Replay: paper + serif, banner, essay graded by the agent, results map open",
+      "w": 1280,
+      "x": 2720,
+      "y": 6600
+    },
+    "Start.dc.html": {
+      "h": 1240,
+      "is_interactive": true,
+      "title": "Start screen, interactive: pick what to take",
+      "w": 1280,
+      "x": 0,
+      "y": 3880
+    },
+    "StartFocus.dc.html": {
+      "h": 1240,
+      "title": "Start screen: Focus mode ticked (as with --focus)",
+      "w": 1280,
+      "x": 1360,
+      "y": 5240
+    },
+    "StartOled.dc.html": {
+      "h": 1240,
+      "title": "Start screen: oled + system, free",
+      "w": 1280,
+      "x": 2720,
+      "y": 3880
+    },
+    "StartPaper.dc.html": {
+      "h": 1240,
+      "title": "Start screen: paper + serif, locked, no unfinished attempt",
+      "w": 1280,
+      "x": 1360,
+      "y": 3880
+    },
+    "White.dc.html": {
+      "h": 940,
+      "title": "white + system, locked (IELTS template), no materials: the button is just Questions",
+      "w": 1280,
+      "x": 1360,
+      "y": 2820
+    }
+  },
+  "createdOnFiles": {
+    "at": "2026-10-28T11:30:00+07:00",
+    "v": 1
+  },
+  "designSystems": [],
+  "launch": {
+    "view": "canvas"
+  },
+  "notes": {},
+  "order": [
+    "Main.dc.html",
+    "Quiz.dc.html",
+    "Light.dc.html",
+    "Dark.dc.html",
+    "Oled.dc.html",
+    "White.dc.html",
+    "Paper.dc.html",
+    "Start.dc.html",
+    "StartPaper.dc.html",
+    "StartOled.dc.html",
+    "Focus.dc.html",
+    "StartFocus.dc.html",
+    "Results.dc.html",
+    "ResultsMissed.dc.html",
+    "ResultsReplay.dc.html",
+    "PrintPaper.dc.html",
+    "PrintKey.dc.html",
+    "Materials.dc.html",
+    "MaterialsFocus.dc.html",
+    "MaterialsPhone.dc.html",
+    "PrintMaterials.dc.html",
+    "MaterialsStacked.dc.html"
+  ],
+  "pages": [],
+  "title": "fullmark themes"
+}

@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>fullmark tokens and fonts</title>
+    <script src="./support.js"></script>
+  </head>
+  <body>
+    <x-dc>
+      <helmet>
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,600;0,700;1,400&amp;family=Lexend:wght@400;600;700&amp;family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&amp;display=swap"
+        />
+        <style>
+          body {
+            margin: 0;
+          }
+          a {
+            color: #46608a;
+          }
+          a:hover {
+            color: #2a2b31;
+          }
+        </style>
+      </helmet>
+      <div
+        style="
+          width: 1440px;
+          min-height: 1240px;
+          box-sizing: border-box;
+          padding: 56px 64px;
+          background: #f7f7f5;
+          color: #2a2b31;
+          font-family:
+            &quot;Segoe UI&quot;,
+            system-ui,
+            -apple-system,
+            Roboto,
+            sans-serif;
+          display: flex;
+          flex-direction: column;
+          gap: 40px;
+        "
+      >
+        <div style="display: flex; flex-direction: column; gap: 6px">
+          <div
+            style="
+              font-size: 14px;
+              font-weight: 600;
+              letter-spacing: 0.08em;
+              text-transform: uppercase;
+              color: #55554f;
+            "
+          >
+            fullmark 1.0 · page design
+          </div>
+          <h1 style="margin: 0; font-size: 40px; line-height: 1.15; font-weight: 700">
+            Five themes, four fonts
+          </h1>
+          <p style="margin: 0; max-width: 820px; font-size: 17px; line-height: 1.6; color: #55554f">
+            The 17 semantic tokens of each theme. Every text colour shown passes WCAG AA (4.5:1) on
+            all four surfaces of its theme; borders (line-strong) pass 3:1 on cards.
+          </p>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 16px">
+          <sc-for list="{{themes}}" as="th" hint-placeholder-count="5">
+            <div style="{{th.frame}}">
+              <div style="display: flex; flex-direction: column; gap: 2px">
+                <div style="font-size: 20px; font-weight: 700">{{th.name}}</div>
+                <div style="font-size: 13px; line-height: 1.45; color: {{th.muted}}">
+                  {{th.forText}}
+                </div>
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 6px">
+                <sc-for list="{{th.swatches}}" as="sw" hint-placeholder-count="17">
+                  <div style="display: flex; align-items: center; gap: 10px; font-size: 12.5px">
+                    <span style="{{sw.chip}}"></span>
+                    <span style="flex: 1">{{sw.token}}</span>
+                    <span style="font-family: Consolas, Menlo, monospace; color: {{th.muted}}"
+                      >{{sw.hex}}</span
+                    >
+                  </div>
+                </sc-for>
+              </div>
+              <div style="{{th.sample}}">
+                <div style="font-weight: 600">Câu 19 · 1 điểm</div>
+                <div
+                  style="
+                    display: flex;
+                    gap: 12px;
+                    flex-wrap: wrap;
+                    font-size: 13px;
+                    font-weight: 600;
+                  "
+                >
+                  <span style="color: {{th.ok}}">✓ Đúng</span>
+                  <span style="color: {{th.bad}}">✗ Sai</span>
+                  <span style="color: {{th.warn}}">Sắp hết giờ</span>
+                  <span style="color: {{th.flag}}">Đã đánh dấu</span>
+                </div>
+                <span style="{{th.button}}">Nộp bài</span>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 16px">
+          <h2 style="margin: 0; font-size: 24px; font-weight: 700">Fonts</h2>
+          <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px">
+            <sc-for list="{{fonts}}" as="f" hint-placeholder-count="4">
+              <div
+                style="
+                  background: #ffffff;
+                  border: 1px solid #d6d4cd;
+                  border-radius: 12px;
+                  padding: 22px;
+                  display: flex;
+                  flex-direction: column;
+                  gap: 12px;
+                "
+              >
+                <div
+                  style="
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: baseline;
+                    gap: 8px;
+                  "
+                >
+                  <span style="font-size: 18px; font-weight: 700">{{f.key}}</span>
+                  <span style="font-size: 12.5px; color: #55554f">{{f.size}}</span>
+                </div>
+                <div style="font-size: 13px; color: #55554f">{{f.family}}</div>
+                <div lang="vi" style="font-family: {{f.stack}}; font-size: 30px; line-height: 1.3">
+                  Ăă Ââ Đđ Êê Ôô Ơơ Ưư
+                </div>
+                <div lang="vi" style="font-family: {{f.stack}}; font-size: 22px; line-height: 1.5">
+                  ắ ằ ẳ ẵ ặ · ố ồ ổ ỗ ộ · ứ ừ ử ữ ự
+                </div>
+                <div lang="vi" style="font-family: {{f.stack}}; font-size: 16px; line-height: 1.6">
+                  Biến đổi Fourier của một xung chữ nhật là hàm sinc; phổ của nó trải rộng khi xung
+                  hẹp lại.
+                </div>
+                <div style="font-family: {{f.stack}}; font-size: 16px; line-height: 1.6">
+                  <b>Bold</b> · <i>Italic</i> · 0123456789 · 2,5 ≠ 25
+                </div>
+              </div>
+            </sc-for>
+          </div>
+          <div style="font-size: 14px; color: #55554f">
+            Code always uses the system monospace stack:
+            <span
+              style="
+                font-family: &quot;Cascadia Code&quot;, Consolas, Menlo, monospace;
+                color: #2a2b31;
+              "
+              >return 1 / math.sqrt(1 + w**2) # biên độ</span
+            >
+          </div>
+        </div>
+      </div>
+    </x-dc>
+    <script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1240}}'>
+      class Component extends DCLogic {
+        renderVals() {
+          var T = {
+            light: { forText: "auto's light half: today's muted light", bg: "#eceae5", surface: "#f4f3ef", card: "#fcfcfa", sunken: "#e4e2dc", line: "#d6d4cd", lineStrong: "#8c8b83", text: "#2a2b31", muted: "#55554f", accent: "#46608a", onAccent: "#fcfcfa", ok: "#3d6946", bad: "#963f3e", warn: "#725b1c", info: "#365b84", flag: "#b42a6f", hint: "#3b6884", orange: "#82521f", border: false },
+            dark: { forText: "auto's dark half: today's muted dark", bg: "#1b1d22", surface: "#262a31", card: "#2c3038", sunken: "#15171b", line: "#464c57", lineStrong: "#7b8394", text: "#d9dce2", muted: "#a9afba", accent: "#8fa8d4", onAccent: "#15171b", ok: "#92b99a", bad: "#d08a88", warn: "#cfb277", info: "#8fb0d6", flag: "#f27db5", hint: "#8dbad6", orange: "#d2a373", border: false },
+            oled: { forText: "dark rooms, OLED screens: a pure black page, near-black bordered cards, soft colours", bg: "#000000", surface: "#0e0e10", card: "#0f0f11", sunken: "#18181b", line: "#303238", lineStrong: "#73767e", text: "#e0e0e0", muted: "#a3a5aa", accent: "#9fb2d4", onAccent: "#000000", ok: "#9cc2a5", bad: "#d9a09d", warn: "#d3bf91", info: "#a0b8d6", flag: "#e3a3c2", hint: "#9fc0d4", orange: "#d8b08a", border: true },
+            white: { forText: "computer-delivered exams, IELTS-style: no shadows, one accent", bg: "#ffffff", surface: "#ffffff", card: "#ffffff", sunken: "#f2f2f2", line: "#c9c9c9", lineStrong: "#767676", text: "#1a1a1a", muted: "#575757", accent: "#1f4f8f", onAccent: "#ffffff", ok: "#2f6f3a", bad: "#b02a26", warn: "#7f5d00", info: "#1f5f9e", flag: "#c2246c", hint: "#24678c", orange: "#9c520f", border: true },
+            paper: { forText: "long reading, a printed-paper feel: warm, low saturation", bg: "#f6f1e7", surface: "#efe8da", card: "#fbf8f1", sunken: "#ebe3d3", line: "#dcd2bf", lineStrong: "#8b806c", text: "#37302a", muted: "#665b4e", accent: "#4c6b65", onAccent: "#fbf8f1", ok: "#426a44", bad: "#97463b", warn: "#755a17", info: "#426283", flag: "#a92f69", hint: "#3e687c", orange: "#85521f", border: false }
+          };
+          var tokens = [["bg", "bg"], ["surface", "surface"], ["card", "card"], ["sunken", "sunken"], ["line", "line"], ["line-strong", "lineStrong"], ["text", "text"], ["muted", "muted"], ["accent", "accent"], ["on-accent", "onAccent"], ["ok", "ok"], ["bad", "bad"], ["warn", "warn"], ["info", "info"], ["flag", "flag"], ["hint", "hint"], ["orange", "orange"]];
+          var themes = Object.keys(T).map(function (name) {
+            var t = T[name];
+            return {
+              name: name,
+              forText: t.forText,
+              muted: t.muted, ok: t.ok, bad: t.bad, warn: t.warn, flag: t.flag,
+              frame: "background: " + t.bg + "; color: " + t.text + "; border: 1px solid " + (name === "white" || name === "oled" ? t.line : "transparent") + "; border-radius: 14px; padding: 20px; display: flex; flex-direction: column; gap: 16px",
+              sample: "background: " + t.card + "; border: 1px solid " + t.line + "; border-radius: 10px; padding: 14px; display: flex; flex-direction: column; gap: 10px; font-size: 14px",
+              button: "align-self: flex-start; background: " + t.accent + "; color: " + t.onAccent + "; border-radius: 8px; padding: 6px 14px; font-weight: 600; font-size: 13px",
+              swatches: tokens.map(function (k) {
+                return { token: k[0], hex: t[k[1]], chip: "width: 22px; height: 22px; border-radius: 6px; flex-shrink: 0; background: " + t[k[1]] + "; border: 1px solid " + t.lineStrong };
+              })
+            };
+          });
+          var fonts = [
+            { key: "system", family: "Segoe UI · SF Pro · Roboto (the OS stack)", size: "0 KB", stack: "'Segoe UI', system-ui, -apple-system, Roboto, sans-serif" },
+            { key: "sans", family: "Be Vietnam Pro", size: "100–200 KB", stack: "'Be Vietnam Pro', 'Segoe UI', sans-serif" },
+            { key: "serif", family: "Source Serif 4", size: "100–200 KB", stack: "'Source Serif 4', Georgia, serif" },
+            { key: "readable", family: "Lexend", size: "100–200 KB", stack: "'Lexend', 'Segoe UI', sans-serif" }
+          ];
+          return { themes: themes, fonts: fonts };
+        }
+      }
+    </script>
+  </body>
+</html>

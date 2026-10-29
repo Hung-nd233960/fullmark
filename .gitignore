@@ -12,3 +12,7 @@ node_modules/
 
 test-results/
 playwright-report/
+
+# the canvas exports; the boards and images under docs/mockup/ are committed
+docs/mockup/*.zip
+docs/mockup/*.pdf

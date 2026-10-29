@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Materials on a phone</title>
+    <script src="./support.js"></script>
+  </head>
+  <body>
+    <x-dc>
+      <helmet>
+        <style>
+          body {
+            margin: 0;
+          }
+        </style>
+      </helmet>
+      <div style="{{rootStyle}}">
+        <header
+          style="display: flex; align-items: center; gap: 10px; padding: 10px 16px; background: {{t.card}}; border-bottom: 1px solid {{t.line}}"
+        >
+          <div style="flex: 1; min-width: 0; display: flex; flex-direction: column">
+            <span
+              style="
+                font-weight: 700;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+              "
+              >Signals and Systems: midterm practice</span
+            >
+            <span style="font-size: 0.8em; color: {{t.muted}}; font-variant-numeric: tabular-nums"
+              >18:42 left · 19 of 32 answered</span
+            >
+          </div>
+          <button
+            onClick="{{toggle}}"
+            aria-expanded="{{expanded}}"
+            aria-keyshortcuts="M"
+            style="{{matBtn}}"
+          >
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"></path>
+              <path d="M4 21V5M9 7h6"></path>
+            </svg>
+            Materials
+          </button>
+        </header>
+
+        <sc-if value="{{showMaterials}}" hint-placeholder-val="{{ true }}">
+          <section
+            aria-label="Materials"
+            style="flex: 1; min-height: 0; display: flex; flex-direction: column; background: {{t.card}}"
+          >
+            <div style="display: flex; align-items: center; gap: 8px; padding: 8px 12px 0">
+              <button onClick="{{toggle}}" style="{{backBtn}}">
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M15 5l-7 7 7 7"></path>
+                </svg>
+                Back to question 20
+              </button>
+            </div>
+            <div role="tablist" aria-label="Sidebar" style="display: flex; gap: 20px; padding: 0 16px; border-bottom: 1px solid {{t.line}}">
+              <button role="tab" aria-selected="false" style="{{sideTab}}">Questions</button>
+              <button role="tab" aria-selected="true" style="{{sideTabOn}}">Materials</button>
+            </div>
+            <div
+              role="tablist"
+              aria-label="Sheets"
+              style="display: flex; gap: 8px; padding: 0 16px; overflow-x: auto"
+            >
+              <sc-for list="{{tabs}}" as="tb" hint-placeholder-count="3">
+                <button
+                  role="tab"
+                  aria-selected="{{tb.selected}}"
+                  onClick="{{tb.pick}}"
+                  style="{{tb.style}}"
+                >
+                  {{tb.label}}
+                </button>
+              </sc-for>
+            </div>
+            <div
+              role="tabpanel"
+              style="
+                flex: 1;
+                overflow-y: auto;
+                padding: 16px;
+                display: flex;
+                flex-direction: column;
+                gap: 12px;
+              "
+            >
+              <h2 style="margin: 0; font-size: 1.05em; font-weight: 700">
+                Fourier transform properties
+              </h2>
+              <div style="overflow-x: auto; border-radius: 4px">
+                <table style="{{table}}">
+                  <thead>
+                    <tr>
+                      <th style="{{th}}; width: 108px">Property</th>
+                      <th style="{{th}}; width: 120px">x(t)</th>
+                      <th style="{{th}}; width: 150px">X(ω)</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td style="{{td}}">Linearity</td>
+                      <td style="{{math}}">a·x(t) + b·y(t)</td>
+                      <td style="{{math}}">a·X(ω) + b·Y(ω)</td>
+                    </tr>
+                    <tr>
+                      <td style="{{td}}">Time shift</td>
+                      <td style="{{math}}">x(t − t₀)</td>
+                      <td style="{{math}}">e<sup>−jωt₀</sup>·X(ω)</td>
+                    </tr>
+                    <tr>
+                      <td style="{{td}}">Frequency shift</td>
+                      <td style="{{math}}">e<sup>jω₀t</sup>·x(t)</td>
+                      <td style="{{math}}">X(ω − ω₀)</td>
+                    </tr>
+                    <tr>
+                      <td style="{{td}}">Scaling</td>
+                      <td style="{{math}}">x(at)</td>
+                      <td style="{{math}}">(1/|a|)·X(ω/a)</td>
+                    </tr>
+                    <tr>
+                      <td style="{{td}}">Convolution</td>
+                      <td style="{{math}}">x(t) ∗ y(t)</td>
+                      <td style="{{math}}">X(ω)·Y(ω)</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <p style="margin: 0; font-size: 0.9em; color: {{t.muted}}">
+                A wide table scrolls sideways in its box.
+              </p>
+              <p style="margin: 0">
+                <span style="{{mathInline}}">sinc(x) = sin(πx) / (πx)</span>, so sinc(0) = 1.
+              </p>
+            </div>
+          </section>
+        </sc-if>
+
+        <sc-if value="{{showQuestion}}" hint-placeholder-val="{{ false }}">
+          <main style="flex: 1; padding: 16px; display: flex; flex-direction: column; gap: 12px">
+            <section
+              style="background: {{t.card}}; border: 1px solid {{t.line}}; border-radius: 12px; padding: 16px"
+            >
+              <div style="font-size: 0.8em; color: {{t.muted}}">Question 20 · 2 points</div>
+              <p style="margin: 6px 0 12px; font-weight: 600">
+                What is the fundamental period, in seconds, of x(t) = sin(5πt)?
+              </p>
+              <label
+                for="p20"
+                style="display: block; font-size: 0.9em; font-weight: 600; margin-bottom: 6px"
+                >Your answer</label
+              >
+              <input
+                id="p20"
+                style="font: inherit; width: 100%; min-height: 44px; box-sizing: border-box; padding: 0 12px; border-radius: 8px; border: 1px solid {{t.lineStrong}}; background: {{t.sunken}}; color: {{t.text}}"
+              />
+            </section>
+          </main>
+        </sc-if>
+      </div>
+    </x-dc>
+    <script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+      class Component extends DCLogic {
+        renderVals() {
+          var self = this;
+          var s = this.state || {};
+          var t = { bg: "#eceae5", surface: "#f4f3ef", card: "#fcfcfa", sunken: "#e4e2dc", line: "#d6d4cd", lineStrong: "#8c8b83", text: "#2a2b31", muted: "#55554f", accent: "#46608a" };
+          // Too narrow to split: Materials take the screen in place of the question, with a way back.
+          var open = s.open === undefined ? true : s.open;
+          var sheet = s.sheet || 0;
+          var line = "1px solid " + t.line;
+          return {
+            t: t,
+            showMaterials: open,
+            showQuestion: !open,
+            expanded: open ? "true" : "false",
+            toggle: function () { self.setState({ open: !open }); },
+            tabs: ["Fourier properties", "Trig identities", "Units and constants"].map(function (label, i) {
+              var on = i === sheet;
+              return { label: label, selected: on ? "true" : "false", pick: function () { self.setState({ sheet: i }); }, style: "font: inherit; font-size: 0.9em; white-space: nowrap; font-weight: " + (on ? 700 : 500) + "; min-height: 36px; padding: 0 12px; margin: 10px 0 0; border-radius: 999px; cursor: pointer; border: 1px solid " + (on ? t.accent : t.line) + "; background: " + (on ? t.surface : t.card) + "; color: " + (on ? t.text : t.muted) };
+            }),
+            rootStyle: "width: 390px; height: 844px; box-sizing: border-box; display: flex; flex-direction: column; overflow: hidden; background: " + t.bg + "; color: " + t.text + "; font-family: 'Segoe UI', system-ui, -apple-system, Roboto, sans-serif; font-size: 16px; line-height: 1.55",
+            matBtn: "font: inherit; font-weight: 700; display: flex; align-items: center; gap: 6px; flex-shrink: 0; height: 44px; padding: 0 12px; border-radius: 8px; cursor: pointer; border: 2px solid " + (open ? t.accent : t.lineStrong) + "; background: " + (open ? t.surface : t.card) + "; color: " + t.text,
+            sideTab: "font: inherit; font-weight: 500; min-height: 48px; padding: 0 2px; margin-bottom: -1px; cursor: pointer; background: none; border: none; border-bottom: 3px solid transparent; color: " + t.muted,
+            sideTabOn: "font: inherit; font-weight: 700; min-height: 48px; padding: 0 2px; margin-bottom: -1px; cursor: pointer; background: none; border: none; border-bottom: 3px solid " + t.accent + "; color: " + t.text,
+            backBtn: "font: inherit; font-weight: 600; display: flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 8px; border: none; background: none; cursor: pointer; color: " + t.accent,
+            table: "width: 378px; table-layout: fixed; border-collapse: separate; border-spacing: 0; font-size: 0.88em; border-top: 1px solid " + t.lineStrong + "; border-left: " + line,
+            th: "text-align: left; font-weight: 700; padding: 6px 8px; background: " + t.surface + "; border-right: " + line + "; border-bottom: 1px solid " + t.lineStrong,
+            td: "padding: 6px 8px; vertical-align: top; border-right: " + line + "; border-bottom: " + line,
+            math: "padding: 6px 8px; vertical-align: top; font-family: 'Cambria Math', 'Source Serif 4', Georgia, serif; border-right: " + line + "; border-bottom: " + line,
+            mathInline: "font-family: 'Cambria Math', 'Source Serif 4', Georgia, serif"
+          };
+        }
+      }
+    </script>
+  </body>
+</html>

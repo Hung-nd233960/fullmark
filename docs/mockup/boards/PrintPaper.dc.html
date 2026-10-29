@@ -1,0 +1,438 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>fullmark printable paper</title>
+    <script src="./support.js"></script>
+  </head>
+  <body>
+    <x-dc>
+      <helmet>
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&amp;family=Be+Vietnam+Pro:wght@400;600;700&amp;display=swap"
+        />
+        <style>
+          body {
+            margin: 0;
+          }
+        </style>
+      </helmet>
+      <div style="{{rootStyle}}">
+        <sc-if value="{{isPaper}}" hint-placeholder-val="{{ true }}">
+          <div style="display: flex; flex-direction: column; gap: 14px">
+            <table style="{{table}}">
+              <tbody>
+                <tr>
+                  <td rowspan="2" style="{{cell}}; width: 58%">
+                    <div style="font-size: 15pt; font-weight: 700; line-height: 1.25">
+                      Signals and Systems: midterm practice
+                    </div>
+                    <div style="margin-top: 4px">
+                      Time allowed: 45 minutes · Total: 37 points · Version A
+                    </div>
+                    <div style="font-size: 9.5pt">Materials on page 4</div>
+                  </td>
+                  <td style="{{cell}}">Name:</td>
+                </tr>
+                <tr>
+                  <td style="{{cell}}">
+                    Class: <span style="display: inline-block; width: 70px"></span>Date:
+                  </td>
+                </tr>
+                <tr>
+                  <td style="{{cell}}">Student ID:</td>
+                  <td style="{{cell}}">Signature:</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <table style="{{table}}">
+              <thead>
+                <tr>
+                  <th style="{{th}}; text-align: left">For the marker</th>
+                  <th style="{{th}}">Part I</th>
+                  <th style="{{th}}">Part II</th>
+                  <th style="{{th}}">Part III</th>
+                  <th style="{{th}}">Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="{{cell}}">Maximum</td>
+                  <td style="{{num}}">12</td>
+                  <td style="{{num}}">13</td>
+                  <td style="{{num}}">12</td>
+                  <td style="{{num}}; font-weight: 700">37</td>
+                </tr>
+                <tr>
+                  <td style="{{cell}}; height: 30px">Score</td>
+                  <td style="{{num}}">&#160;</td>
+                  <td style="{{num}}">&#160;</td>
+                  <td style="{{num}}">&#160;</td>
+                  <td style="{{num}}">&#160;</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div>
+              <div style="{{heading}}">Answer sheet</div>
+              <div style="font-size: 9.5pt; margin: 2px 0 6px">
+                Write the letter of your answer (A, B, C or D; T or F) in the box under each
+                question number.
+              </div>
+              <div style="{{grid}}">
+                <sc-for list="{{sheetCells}}" as="c" hint-placeholder-count="40">
+                  <div style="{{c.style}}">{{c.text}}</div>
+                </sc-for>
+              </div>
+            </div>
+
+            <div style="{{rule}}"></div>
+
+            <div style="{{heading}}">
+              Part I. Signals <span style="font-weight: 400">(12 points)</span>
+            </div>
+
+            <div style="{{q}}">
+              <div style="{{qHead}}">
+                <span><b>Question 1.</b> Which signal is periodic?</span><span>(1 point)</span>
+              </div>
+              <div
+                style="
+                  display: grid;
+                  grid-template-columns: 1fr 1fr;
+                  gap: 2px 24px;
+                  padding-left: 22px;
+                "
+              >
+                <span>A. x(t) = e<sup>−t</sup></span>
+                <span>B. x(t) = cos(4πt)</span>
+                <span>C. x(t) = t·u(t)</span>
+                <span>D. x(t) = δ(t − 1)</span>
+              </div>
+            </div>
+
+            <div style="{{q}}">
+              <div style="{{qHead}}">
+                <span><b>Question 2.</b> True or false: an even signal satisfies x(t) = x(−t).</span
+                ><span>(1 point)</span>
+              </div>
+              <div style="padding-left: 22px">T. True &#160;&#160;&#160;&#160; F. False</div>
+            </div>
+
+            <div style="{{q}}">
+              <div style="{{qHead}}">
+                <span
+                  ><b>Question 3.</b> What is the fundamental period, in seconds, of x(t) =
+                  sin(5πt)?</span
+                ><span>(1 point)</span>
+              </div>
+              <div style="padding-left: 22px; display: flex; align-items: center; gap: 10px">
+                Answer:
+                <span
+                  style="display: inline-block; width: 120px; height: 26px; border: 1px solid #000"
+                ></span>
+              </div>
+            </div>
+
+            <div style="{{q}}">
+              <div style="{{qHead}}">
+                <span><b>Question 4.</b> Fill in the blank.</span><span>(1 point)</span>
+              </div>
+              <div style="padding-left: 22px">
+                A system whose output depends only on present and past inputs is called
+                <span
+                  style="display: inline-block; width: 150px; border-bottom: 1px solid #000"
+                ></span
+                >.
+              </div>
+            </div>
+
+            <div style="{{q}}">
+              <div style="{{qHead}}">
+                <span><b>Question 5.</b> Match each signal with its Fourier transform.</span
+                ><span>(2 points)</span>
+              </div>
+              <table style="{{table}}; margin-left: 22px; width: calc(100% - 22px)">
+                <tbody>
+                  <tr>
+                    <td style="{{cell}}">1. rect(t)</td>
+                    <td style="{{cell}}">a. 2π·δ(ω)</td>
+                  </tr>
+                  <tr>
+                    <td style="{{cell}}">2. 1</td>
+                    <td style="{{cell}}">b. 1</td>
+                  </tr>
+                  <tr>
+                    <td style="{{cell}}">3. δ(t)</td>
+                    <td style="{{cell}}">c. sinc(ω / 2π)</td>
+                  </tr>
+                </tbody>
+              </table>
+              <div style="padding-left: 22px; margin-top: 6px">
+                1 → ____ &#160;&#160; 2 → ____ &#160;&#160; 3 → ____
+              </div>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{isKey}}" hint-placeholder-val="{{ false }}">
+          <div style="display: flex; flex-direction: column; gap: 14px">
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                align-items: baseline;
+                border-bottom: 2px solid #000;
+                padding-bottom: 6px;
+              "
+            >
+              <span style="font-size: 15pt; font-weight: 700">Answer key</span>
+              <span>Signals and Systems: midterm practice · Version A</span>
+            </div>
+
+            <div style="{{heading}}">Answer sheet questions</div>
+            <div style="{{grid}}">
+              <sc-for list="{{keyCells}}" as="c" hint-placeholder-count="40">
+                <div style="{{c.style}}">{{c.text}}</div>
+              </sc-for>
+            </div>
+
+            <div style="{{heading}}">Other questions</div>
+            <table style="{{table}}">
+              <thead>
+                <tr>
+                  <th style="{{th}}; width: 44px">No.</th>
+                  <th style="{{th}}; text-align: left">Answer</th>
+                  <th style="{{th}}; width: 60px">Points</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="{{num}}">3</td>
+                  <td style="{{cell}}">0.4 (± 0.001)</td>
+                  <td style="{{num}}">1</td>
+                </tr>
+                <tr>
+                  <td style="{{num}}">4</td>
+                  <td style="{{cell}}">causal</td>
+                  <td style="{{num}}">1</td>
+                </tr>
+                <tr>
+                  <td style="{{num}}">5</td>
+                  <td style="{{cell}}">
+                    1 → c, 2 → a, 3 → b (partial: 1 point for each pair, up to 2)
+                  </td>
+                  <td style="{{num}}">2</td>
+                </tr>
+                <tr>
+                  <td style="{{num}}">21</td>
+                  <td style="{{cell}}">0.371 (± 0.001)</td>
+                  <td style="{{num}}">1</td>
+                </tr>
+                <tr>
+                  <td style="{{num}}">31</td>
+                  <td style="{{cell}}">aliasing; chồng phổ</td>
+                  <td style="{{num}}">1</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div style="{{heading}}">
+              Question 32. Essay rubric <span style="font-weight: 400">(4 points)</span>
+            </div>
+            <table style="{{table}}">
+              <thead>
+                <tr>
+                  <th style="{{th}}; text-align: left">Criterion</th>
+                  <th style="{{th}}; text-align: left">Full marks when the answer…</th>
+                  <th style="{{th}}; width: 60px">Points</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="{{cell}}">Nyquist condition</td>
+                  <td style="{{cell}}">states fs ≥ 2·fmax</td>
+                  <td style="{{num}}">1</td>
+                </tr>
+                <tr>
+                  <td style="{{cell}}">Spectral overlap</td>
+                  <td style="{{cell}}">
+                    explains that spectral copies overlap and fold about fs/2
+                  </td>
+                  <td style="{{num}}">2</td>
+                </tr>
+                <tr>
+                  <td style="{{cell}}">Example</td>
+                  <td style="{{cell}}">gives a correct worked example</td>
+                  <td style="{{num}}">1</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{isMaterials}}" hint-placeholder-val="{{ false }}">
+          <div style="display: flex; flex-direction: column; gap: 14px">
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                align-items: baseline;
+                border-bottom: 2px solid #000;
+                padding-bottom: 6px;
+              "
+            >
+              <span style="font-size: 15pt; font-weight: 700">Materials</span>
+              <span>Signals and Systems: midterm practice · Version A</span>
+            </div>
+            <div style="font-size: 9.5pt">You may detach this page. It holds no questions.</div>
+
+            <div style="{{heading}}">Fourier transform properties</div>
+            <table style="{{table}}">
+              <thead>
+                <tr>
+                  <th style="{{th}}; text-align: left; width: 30%">Property</th>
+                  <th style="{{th}}; text-align: left">x(t)</th>
+                  <th style="{{th}}; text-align: left">X(ω)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="{{cell}}">Linearity</td>
+                  <td style="{{cell}}">a·x(t) + b·y(t)</td>
+                  <td style="{{cell}}">a·X(ω) + b·Y(ω)</td>
+                </tr>
+                <tr>
+                  <td style="{{cell}}">Time shift</td>
+                  <td style="{{cell}}">x(t − t₀)</td>
+                  <td style="{{cell}}">e<sup>−jωt₀</sup>·X(ω)</td>
+                </tr>
+                <tr>
+                  <td style="{{cell}}">Frequency shift</td>
+                  <td style="{{cell}}">e<sup>jω₀t</sup>·x(t)</td>
+                  <td style="{{cell}}">X(ω − ω₀)</td>
+                </tr>
+                <tr>
+                  <td style="{{cell}}">Scaling</td>
+                  <td style="{{cell}}">x(at)</td>
+                  <td style="{{cell}}">(1/|a|)·X(ω/a)</td>
+                </tr>
+                <tr>
+                  <td style="{{cell}}">Convolution</td>
+                  <td style="{{cell}}">x(t) ∗ y(t)</td>
+                  <td style="{{cell}}">X(ω)·Y(ω)</td>
+                </tr>
+                <tr>
+                  <td style="{{cell}}">Multiplication</td>
+                  <td style="{{cell}}">x(t)·y(t)</td>
+                  <td style="{{cell}}">(1/2π)·X(ω) ∗ Y(ω)</td>
+                </tr>
+              </tbody>
+            </table>
+            <div>
+              Parseval: ∫ |x(t)|² dt = (1/2π) ∫ |X(ω)|² dω. &#160; sinc(x) = sin(πx) / (πx), so
+              sinc(0) = 1.
+            </div>
+
+            <div style="{{heading}}">Trigonometric identities</div>
+            <div
+              style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px 24px"
+            >
+              <span>e<sup>jθ</sup> = cos θ + j·sin θ</span>
+              <span>cos θ = (e<sup>jθ</sup> + e<sup>−jθ</sup>) / 2</span>
+              <span>sin θ = (e<sup>jθ</sup> − e<sup>−jθ</sup>) / 2j</span>
+              <span>cos a·cos b = ½[cos(a − b) + cos(a + b)]</span>
+              <span>sin² θ = (1 − cos 2θ) / 2</span>
+            </div>
+
+            <div style="{{heading}}">Units and constants</div>
+            <table style="{{table}}">
+              <thead>
+                <tr>
+                  <th style="{{th}}; text-align: left">Quantity</th>
+                  <th style="{{th}}; text-align: left">Value</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="{{cell}}">Angular and ordinary frequency</td>
+                  <td style="{{cell}}">ω = 2πf</td>
+                </tr>
+                <tr>
+                  <td style="{{cell}}">Gain in decibels</td>
+                  <td style="{{cell}}">20·log₁₀ |H|</td>
+                </tr>
+                <tr>
+                  <td style="{{cell}}">−3 dB as a ratio</td>
+                  <td style="{{cell}}">1/√2 ≈ 0.7071</td>
+                </tr>
+                <tr>
+                  <td style="{{cell}}">π</td>
+                  <td style="{{cell}}">3.14159…</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </sc-if>
+
+        <div style="{{footer}}">
+          <span>Signals and Systems: midterm practice · Version A</span>
+          <span>{{pageLabel}}</span>
+        </div>
+      </div>
+    </x-dc>
+    <script
+      type="text/x-dc"
+      data-dc-script
+      data-props='{"page":{"editor":"enum","options":["paper","materials","key"],"default":"paper"},"font":{"editor":"enum","options":["serif","sans"],"default":"serif"},"$preview":{"width":794,"height":1123}}'
+    >
+      class Component extends DCLogic {
+        renderVals() {
+          // Print is black ink on white whatever the theme: lines and tables only, no fills or colour.
+          var INK = "#000";
+          var font = (this.props.font || "serif") === "sans" ? "'Be Vietnam Pro', 'Segoe UI', sans-serif" : "'Source Serif 4', Georgia, serif";
+          var page = this.props.page || "paper";
+          var line = "1px solid " + INK;
+          // Answer-sheet questions: single choice and true/false only, in question order.
+          var sheet = [1, 2, 6, 7, 8, 9, 11, 12, 13, 14, 16, 17, 19, 22, 23, 25, 26, 28, 29, 30];
+          var key = { 1: "B", 2: "T", 6: "C", 7: "A", 8: "F", 9: "D", 11: "B", 12: "A", 13: "C", 14: "T", 16: "D", 17: "B", 19: "A", 22: "C", 23: "F", 25: "B", 26: "D", 28: "A", 29: "C", 30: "T" };
+          // The grids are divs, not tables: a loop inside <tbody> is moved out of the table by the browser.
+          // The grid draws the top and left edges, each cell its right and bottom edge.
+          var numCell = "border-right: " + line + "; border-bottom: " + line + "; padding: 2px 0; text-align: center; font-size: 9.5pt; font-weight: 700";
+          var boxCell = "border-right: " + line + "; border-bottom: " + line + "; height: 28px; display: flex; align-items: center; justify-content: center; font-weight: 700";
+          function cells(fill) {
+            var out = [];
+            [sheet.slice(0, 10), sheet.slice(10, 20)].forEach(function (nums) {
+              nums.forEach(function (n) { out.push({ text: String(n), style: numCell }); });
+              nums.forEach(function (n) { out.push({ text: fill(n), style: boxCell }); });
+            });
+            return out;
+          }
+          return {
+            isPaper: page === "paper",
+            isKey: page === "key",
+            isMaterials: page === "materials",
+            sheetCells: cells(function () { return " "; }),
+            keyCells: cells(function (n) { return key[n]; }),
+            grid: "display: grid; grid-template-columns: repeat(10, 1fr); border-top: " + line + "; border-left: " + line,
+            // Materials follow the last question on a new page, before the key, so the key can be removed alone.
+            pageLabel: page === "paper" ? "Page 1 / 5" : page === "materials" ? "Page 4 / 5" : "Page 5 / 5",
+            rootStyle: "width: 794px; height: 1123px; box-sizing: border-box; padding: 56px 60px 48px; position: relative; display: flex; flex-direction: column; background: #fff; color: " + INK + "; font-family: " + font + "; font-size: 11pt; line-height: 1.45; overflow: hidden",
+            // Separate borders, one side each: collapsed outer borders sit half outside the table and get clipped.
+            table: "width: 100%; box-sizing: border-box; table-layout: fixed; border-collapse: separate; border-spacing: 0; border-top: " + line + "; border-left: " + line,
+            cell: "border-right: " + line + "; border-bottom: " + line + "; padding: 5px 8px; vertical-align: top",
+            num: "border-right: " + line + "; border-bottom: " + line + "; padding: 5px 8px; text-align: center; font-variant-numeric: tabular-nums",
+            th: "border-right: " + line + "; border-bottom: 2px solid " + INK + "; padding: 5px 8px; font-weight: 700; text-align: center",
+            heading: "font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; font-size: 10.5pt",
+            rule: "border-top: 2px solid " + INK,
+            q: "display: flex; flex-direction: column; gap: 4px",
+            qHead: "display: flex; justify-content: space-between; gap: 16px",
+            footer: "position: absolute; left: 60px; right: 60px; bottom: 24px; display: flex; justify-content: space-between; border-top: " + line + "; padding-top: 4px; font-size: 9pt"
+          };
+        }
+      }
+    </script>
+  </body>
+</html>

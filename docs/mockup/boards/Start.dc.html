@@ -1,0 +1,392 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>fullmark start screen</title>
+    <script src="./support.js"></script>
+  </head>
+  <body>
+    <x-dc>
+      <helmet>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,600;0,700;1,400&amp;family=Lexend:wght@400;600;700&amp;family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&amp;display=swap">
+        <style>
+          body {
+            margin: 0;
+          }
+          a {
+            color: #46608a;
+          }
+          a:hover {
+            color: #2a2b31;
+          }
+        </style>
+      </helmet>
+      <div style="{{rootStyle}}">
+        <header style="display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 12px 28px; border-bottom: 1px solid {{t.line}}; background: {{t.card}}">
+          <span style="font-size: 0.85em; color: {{t.muted}}">Practice quiz · version <code style="{{inlineCode}}">a3f9</code></span>
+          <div style="display: flex; gap: 10px; align-items: center">
+            <div style="display: flex; box-sizing: border-box; height: 44px; border: 2px solid {{t.lineStrong}}; border-radius: 8px; overflow: hidden">
+              <button onClick="{{smaller}}" aria-label="Smaller text" style="{{ghostBtn}}">
+                A−
+              </button>
+              <button onClick="{{larger}}" aria-label="Larger text" style="{{ghostBtnLeft}}">
+                A+
+              </button>
+            </div>
+            <sc-if value="{{free}}" hint-placeholder-val="{{ true }}">
+              <button onClick="{{toggleMenu}}" style="{{appearanceBtn}}">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <circle cx="12" cy="12" r="9"></circle>
+                  <path d="M12 3a9 9 0 0 0 0 18z" fill="currentColor"></path>
+                </svg>
+                Appearance
+              </button>
+            </sc-if>
+          </div>
+        </header>
+
+        <sc-if value="{{menuShown}}" hint-placeholder-val="{{ false }}">
+          <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px 28px; padding: 12px 28px; background: {{t.surface}}; border-bottom: 1px solid {{t.line}}; font-size: 0.85em">
+            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap">
+              <span style="color: {{t.muted}}; font-weight: 600">Theme</span>
+              <sc-for list="{{themePills}}" as="p" hint-placeholder-count="5">
+                <button onClick="{{p.pick}}" aria-pressed="{{p.pressed}}" style="{{p.style}}">
+                  {{p.label}}
+                </button>
+              </sc-for>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap">
+              <span style="color: {{t.muted}}; font-weight: 600">Font</span>
+              <sc-for list="{{fontPills}}" as="p" hint-placeholder-count="4">
+                <button onClick="{{p.pick}}" aria-pressed="{{p.pressed}}" style="{{p.style}}">
+                  {{p.label}}
+                </button>
+              </sc-for>
+            </div>
+            <button onClick="{{reset}}" style="font: inherit; font-weight: 600; background: {{t.card}}; border: 1px solid {{t.lineStrong}}; border-radius: 8px; padding: 0 14px; color: {{t.text}}; cursor: pointer; min-height: 36px; margin-left: auto">
+              Reset to the quiz's look
+            </button>
+          </div>
+        </sc-if>
+
+        <div style="
+            flex: 1;
+            min-height: 0;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            padding: 36px 28px;
+          ">
+          <div style="width: 100%; max-width: 780px; display: flex; flex-direction: column; gap: 24px">
+            <sc-if value="{{showResume}}" hint-placeholder-val="{{ true }}">
+              <div style="{{resumeStyle}}">
+                <div style="display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 240px">
+                  <span style="font-weight: 700">You have an unfinished attempt</span>
+                  <span style="font-size: 0.9em; color: {{t.muted}}">Started 26 Oct · 13 of 32 answered · 21:18 left on the clock</span>
+                </div>
+                <div style="display: flex; gap: 10px">
+                  <button style="{{secondaryBtn}}">Start over</button>
+                  <button style="{{primaryBtn}}">Resume</button>
+                </div>
+              </div>
+            </sc-if>
+
+            <div style="display: flex; flex-direction: column; gap: 10px">
+              <h1 style="margin: 0; font-size: 2em; line-height: 1.2; font-weight: 700">
+                {{quizTitle}}
+              </h1>
+              <p style="margin: 0; color: {{t.text}}; font-size: 1.1em; max-width: 64ch">
+                {{quizDescription}}
+              </p>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px">
+              <sc-for list="{{facts}}" as="f" hint-placeholder-count="4">
+                <div style="{{f.style}}">
+                  <span style="display: flex; align-items: center; gap: 6px; font-size: 0.72em; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: {{t.muted}}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <path d="{{f.icon}}"></path></svg>{{f.label}}</span>
+                  <span style="font-size: 1.45em; font-weight: 700; font-variant-numeric: tabular-nums">{{f.value}}</span>
+                </div>
+              </sc-for>
+            </div>
+
+            <fieldset style="
+                border: none;
+                margin: 0;
+                padding: 0;
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+              ">
+              <legend style="padding: 0; margin-bottom: 8px; font-weight: 700; font-size: 1.05em">
+                What to take
+              </legend>
+              <label style="{{whole.style}}">
+                <input type="radio" name="what" checked="{{whole.checked}}" onChange="{{whole.pick}}" style="width: 20px; height: 20px; margin: 0; accent-color: {{t.accent}}">
+                <span style="flex: 1; display: flex; flex-direction: column">
+                  <span style="display: flex; align-items: center; gap: 10px; font-weight: 700">
+                    The whole quiz
+                    <span style="{{recommendBadge}}">Recommended</span>
+                  </span>
+                  <span style="font-size: 0.85em; color: {{t.muted}}">{{whole.detail}}</span>
+                </span>
+                <span style="font-size: 0.95em; font-weight: 700; font-variant-numeric: tabular-nums">{{whole.time}}</span>
+              </label>
+              <div style="display: flex; justify-content: space-between; align-items: baseline; margin-top: 6px; font-size: 0.85em; color: {{t.muted}}">
+                <span>Or one part</span>
+                <sc-if value="{{manyParts}}" hint-placeholder-val="{{ true }}"><span>{{partsCount}} parts · scroll for more</span></sc-if>
+              </div>
+              <div style="position: relative">
+                <div style="{{partListStyle}}">
+                  <sc-for list="{{parts}}" as="o" hint-placeholder-count="5">
+                    <label style="{{o.style}}">
+                      <input type="radio" name="what" checked="{{o.checked}}" onChange="{{o.pick}}" style="width: 20px; height: 20px; margin: 0; accent-color: {{t.accent}}">
+                      <span style="flex: 1; display: flex; flex-direction: column; min-width: 0">
+                        <span style="font-weight: 600">{{o.title}}</span>
+                        <span style="font-size: 0.85em; color: {{t.muted}}">{{o.detail}}</span>
+                      </span>
+                      <span style="font-size: 0.85em; font-variant-numeric: tabular-nums; color: {{t.muted}}">{{o.time}}</span>
+                    </label>
+                  </sc-for>
+                </div>
+                <sc-if value="{{manyParts}}" hint-placeholder-val="{{ true }}">
+                  <div aria-hidden="true" style="{{fadeStyle}}"></div>
+                </sc-if>
+              </div>
+            </fieldset>
+
+            <section aria-labelledby="rules-h" style="display: flex; flex-direction: column; gap: 10px">
+              <h2 id="rules-h" style="margin: 0; font-weight: 700; font-size: 1.05em">
+                Rules for this attempt
+              </h2>
+              <div style="{{rulesBox}}">
+                <div style="{{ruleCell}}">
+                  <span style="display: flex; align-items: center; gap: 8px; font-weight: 700; color: {{t.info}}">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <path d="M4 5h16v11H8l-4 4z"></path>
+                    </svg>
+                    Feedback at the end
+                  </span>
+                  <span>Answers and explanations appear after you submit.</span>
+                </div>
+                <div style="{{ruleCellSplit}}">
+                  <span style="display: flex; align-items: center; gap: 8px; font-weight: 700; color: {{t.info}}">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <circle cx="12" cy="13" r="8"></circle>
+                      <path d="M12 9v4l2.5 2.5M9 2h6"></path>
+                    </svg>
+                    When time runs out
+                  </span>
+                  <span>Your answers are submitted as they are.</span>
+                </div>
+                <div style="{{ruleCellSplit}}">
+                  <span style="display: flex; align-items: center; gap: 8px; font-weight: 700; color: {{t.info}}">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <path d="M5 4h11l3 3v13H5z"></path>
+                      <path d="M8 4v5h7V4M8 20v-6h8v6"></path>
+                    </svg>
+                    Saved as you go
+                  </span>
+                  <span>In this browser, so you can close the page and come back.</span>
+                </div>
+              </div>
+            </section>
+
+            <label style="{{focusRow}}">
+              <input type="checkbox" checked="{{focusOn}}" onChange="{{toggleFocus}}" style="width: 20px; height: 20px; margin: 0; accent-color: {{t.accent}}">
+              <span style="display: flex; flex-direction: column">
+                <span style="font-weight: 700">Focus mode</span>
+                <span style="font-size: 0.85em; color: {{t.muted}}">Full screen with the panel hidden; the time stays in the top bar. Press F to
+                  switch it, Esc to leave full screen.</span>
+              </span>
+            </label>
+
+            <div style="display: flex; align-items: center; gap: 16px; flex-wrap: wrap">
+              <button style="{{startBtn}}">{{startLabel}}</button>
+              <button onClick="{{toggleSupp}}" aria-expanded="{{suppExpanded}}" style="{{suppBtn}}">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"></path>
+                  <path d="M4 21V5M9 7h6"></path>
+                </svg>
+                Supplementary materials
+              </button>
+              <span style="font-size: 0.85em; color: {{t.muted}}">The clock starts when you press Start. Materials can be opened first.</span>
+            </div>
+          </div>
+        </div>
+
+        <sc-if value="{{suppOpen}}" hint-placeholder-val="{{ true }}">
+          <aside aria-label="Supplementary materials" style="position: absolute; top: 0; right: 0; bottom: 0; width: 380px; box-sizing: border-box; z-index: 10; display: flex; flex-direction: column; background: {{t.card}}; border-left: 2px solid {{t.lineStrong}}; box-shadow: -8px 0 24px rgba(0,0,0,0.18)">
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 20px; border-bottom: 1px solid {{t.line}}">
+              <h2 style="margin: 0; font-size: 1.1em; font-weight: 700">Supplementary materials</h2>
+              <button onClick="{{toggleSupp}}" aria-label="Close supplementary materials" style="{{suppBtn}}; padding: 0 12px">
+                Close
+              </button>
+            </div>
+            <div style="
+                flex: 1;
+                overflow-y: auto;
+                padding: 16px 20px;
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+              ">
+              <p style="margin: 0 0 4px; font-size: 0.9em; color: {{t.muted}}">
+                Reference files for this quiz. Opening one does not pause the clock.
+              </p>
+              <sc-for list="{{suppItems}}" as="m" hint-placeholder-count="4">
+                <button style="{{suppRow}}">
+                  <span style="
+                      flex: 1;
+                      display: flex;
+                      flex-direction: column;
+                      text-align: left;
+                      min-width: 0;
+                    ">
+                    <span style="font-weight: 700">{{m.title}}</span>
+                    <span style="font-size: 0.85em; color: {{t.muted}}">{{m.kind}}</span>
+                  </span>
+                  <span style="font-weight: 700; color: {{t.accent}}">Open</span>
+                </button>
+              </sc-for>
+            </div>
+          </aside>
+        </sc-if>
+      </div>
+    </x-dc>
+    <script
+      type="text/x-dc"
+      data-dc-script
+      data-props='{"theme":{"editor":"enum","options":["light","dark","oled","white","paper"],"default":"light"},"font":{"editor":"enum","options":["system","sans","serif","readable"],"default":"system"},"locked":{"editor":"enum","options":["no","yes"],"default":"no"},"resume":{"editor":"boolean","default":true},"parts":{"editor":"enum","options":["8","3"],"default":"8"},"focus":{"editor":"enum","options":["no","yes"],"default":"no"},"$preview":{"width":1280,"height":1240}}'
+    >
+      class Component extends DCLogic {
+        renderVals() {
+          var self = this;
+          var s = this.state || {};
+          var T = {
+            light: { bg: "#eceae5", surface: "#f4f3ef", card: "#fcfcfa", sunken: "#e4e2dc", line: "#d6d4cd", lineStrong: "#8c8b83", text: "#2a2b31", muted: "#55554f", accent: "#46608a", onAccent: "#fcfcfa", info: "#365b84", ok: "#3d6946", hint: "#3b6884", orange: "#82521f", infoWash: "#e2e8f0", shadow: "0 1px 2px rgba(40,38,30,0.06), 0 2px 8px rgba(40,38,30,0.04)" },
+            dark: { bg: "#1b1d22", surface: "#262a31", card: "#2c3038", sunken: "#15171b", line: "#464c57", lineStrong: "#7b8394", text: "#d9dce2", muted: "#a9afba", accent: "#8fa8d4", onAccent: "#15171b", info: "#8fb0d6", ok: "#92b99a", hint: "#8dbad6", orange: "#d2a373", infoWash: "#243042", shadow: "0 1px 3px rgba(0,0,0,0.35)" },
+            oled: { bg: "#000000", surface: "#0e0e10", card: "#0f0f11", sunken: "#18181b", line: "#303238", lineStrong: "#73767e", text: "#e0e0e0", muted: "#a3a5aa", accent: "#9fb2d4", onAccent: "#000000", info: "#a0b8d6", ok: "#9cc2a5", hint: "#9fc0d4", orange: "#d8b08a", infoWash: "#111a26", shadow: "none" },
+            white: { bg: "#ffffff", surface: "#ffffff", card: "#ffffff", sunken: "#f2f2f2", line: "#c9c9c9", lineStrong: "#767676", text: "#1a1a1a", muted: "#575757", accent: "#1f4f8f", onAccent: "#ffffff", info: "#1f5f9e", ok: "#2f6f3a", hint: "#24678c", orange: "#9c520f", infoWash: "#eaf1fa", shadow: "none" },
+            paper: { bg: "#f6f1e7", surface: "#efe8da", card: "#fbf8f1", sunken: "#ebe3d3", line: "#dcd2bf", lineStrong: "#8b806c", text: "#37302a", muted: "#665b4e", accent: "#4c6b65", onAccent: "#fbf8f1", info: "#426283", ok: "#426a44", hint: "#3e687c", orange: "#85521f", infoWash: "#e4e6e4", shadow: "0 1px 2px rgba(70,55,30,0.07)" }
+          };
+          var F = {
+            system: "'Segoe UI', system-ui, -apple-system, Roboto, 'Noto Sans', sans-serif",
+            sans: "'Be Vietnam Pro', 'Segoe UI', sans-serif",
+            serif: "'Source Serif 4', Georgia, serif",
+            readable: "'Lexend', 'Segoe UI', sans-serif"
+          };
+          var MONO = "'Cascadia Code', Consolas, Menlo, monospace";
+          var quizTheme = this.props.theme || "light";
+          var quizFont = this.props.font || "system";
+          var free = (this.props.locked || "no") !== "yes";
+          var themeName = (free && s.theme) || quizTheme;
+          var fontName = (free && s.font) || quizFont;
+          var t = T[themeName] || T.light;
+          var size = s.size || 17;
+          var edged = themeName === "oled" || themeName === "white";
+          var radius = themeName === "white" ? 4 : 10;
+          var border = edged ? t.lineStrong : t.line;
+
+          var pill = function (on) {
+            return "font: inherit; min-height: 36px; padding: 0 12px; border-radius: 999px; cursor: pointer; border: 1px solid " + (on ? t.accent : t.line) + "; background: " + (on ? t.accent : t.card) + "; color: " + (on ? t.onAccent : t.text) + "; font-weight: " + (on ? 700 : 400);
+          };
+          var themePills = ["light", "dark", "oled", "white", "paper"].map(function (k) {
+            var on = k === themeName;
+            return { label: k + (k === quizTheme ? " ·" : ""), pressed: on ? "true" : "false", style: pill(on), pick: function () { self.setState({ theme: k }); } };
+          });
+          var fontPills = ["system", "sans", "serif", "readable"].map(function (k) {
+            var on = k === fontName;
+            return { label: k, pressed: on ? "true" : "false", style: pill(on) + "; font-family: " + F[k], pick: function () { self.setState({ font: k }); } };
+          });
+
+          var picked = s.what || "all";
+          var long = (this.props.parts || "8") === "8";
+          var partData = long
+            ? [["Signals", 10, 10, 15], ["LTI systems", 10, 10, 15], ["Convolution", 8, 10, 15], ["Fourier series", 8, 10, 15], ["Fourier transform", 12, 16, 25], ["Laplace transform", 10, 12, 20], ["Sampling", 8, 12, 15], ["z-transform", 10, 12, 20]]
+            : [["Signals", 12, 12, 20], ["Fourier transform", 12, 16, 25], ["Sampling", 8, 12, 15]];
+          var totalQ = 0, totalP = 0, totalM = 0;
+          partData.forEach(function (p) { totalQ += p[1]; totalP += p[2]; totalM += p[3]; });
+          var rowStyle = function (on) {
+            return "display: flex; align-items: center; gap: 14px; box-sizing: border-box; height: 4.2em; flex-shrink: 0; padding: 0 16px; border-radius: " + radius + "px; cursor: pointer; background: " + (on ? t.infoWash : t.card) + "; border: " + (on ? "2px solid " + t.accent : "1px solid " + border);
+          };
+          var parts = partData.map(function (p, i) {
+            var id = "s" + (i + 1);
+            var on = id === picked;
+            return {
+              title: "Part " + (i + 1) + " · " + p[0], detail: p[1] + " questions · " + p[2] + " points", time: "suggested " + p[3] + " min", checked: on,
+              pick: function () { self.setState({ what: id }); },
+              style: rowStyle(on)
+            };
+          });
+          var wholeOn = picked === "all";
+          var whole = {
+            checked: wholeOn,
+            detail: partData.length + " parts · " + totalQ + " questions · " + totalP + " points",
+            time: totalM + " min",
+            pick: function () { self.setState({ what: "all" }); },
+            style: rowStyle(wholeOn) + "; height: 4.6em; border: 2px solid " + (wholeOn ? t.accent : t.lineStrong) + "; box-shadow: " + t.shadow
+          };
+          var pickedTitle = wholeOn ? "Start the whole quiz" : "Start part " + picked.slice(1);
+          var manyParts = partData.length > 5;
+          // --focus only sets this box's default; pressing Start is the gesture that enters fullscreen.
+          var focusOn = s.focus !== undefined ? s.focus : this.props.focus === "yes";
+
+          return {
+            t: t,
+            free: free,
+            menuShown: free && !!s.menu,
+            showResume: this.props.resume !== false,
+            themePills: themePills,
+            fontPills: fontPills,
+            whole: whole,
+            parts: parts,
+            manyParts: manyParts,
+            partsCount: partData.length,
+            quizTitle: long ? "Signals and Systems: final review" : "Signals and Systems: midterm practice",
+            quizDescription: long
+              ? "The whole course in eight parts, from signals to the z-transform. Take it in one sitting, or one part at a time."
+              : "Lectures 3 to 7: signals, the Fourier transform and sampling. Written to match the format of the midterm, with an explanation after every question.",
+            startLabel: pickedTitle,
+            focusOn: focusOn,
+            focusRow: "display: flex; align-items: center; gap: 14px; padding: 12px 16px; border-radius: " + radius + "px; cursor: pointer; background: " + (focusOn ? t.infoWash : t.card) + "; border: " + (focusOn ? "2px solid " + t.accent : "1px solid " + border),
+            toggleFocus: function () { self.setState({ focus: !focusOn }); },
+            facts: [
+              // Neutral cards: colour means a status elsewhere, so the tiles are told apart by a muted icon.
+              { label: "Questions", value: String(totalQ), icon: "M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01" },
+              { label: "Points", value: String(totalP), icon: "M12 3l2.8 5.7 6.2.9-4.5 4.4 1 6.2L12 17.3 6.5 20.2l1-6.2L3 9.6l6.2-.9z" },
+              { label: "Time limit", value: totalM + " min", icon: "M12 21a8 8 0 1 0 0-16 8 8 0 0 0 0 16zM12 9v4l2.5 2.5M9 2h6" },
+              { label: "Pass mark", value: "60%", icon: "M5 21V4h11l-2 4 2 4H5" }
+            ].map(function (f) { return { label: f.label, value: f.value, icon: f.icon, style: "display: flex; flex-direction: column; gap: 2px; padding: 12px 16px; border-radius: " + radius + "px; background: " + t.card + "; border: 1px solid " + border + "; box-shadow: " + t.shadow }; }),
+            recommendBadge: "font-size: 0.72em; font-weight: 700; letter-spacing: 0.04em; padding: 1px 8px; border-radius: 999px; background: " + t.accent + "; color: " + t.onAccent,
+            partListStyle: "display: flex; flex-direction: column; gap: 0.5em; max-height: 23em; overflow-y: auto; scroll-behavior: smooth; overscroll-behavior: contain; padding-right: " + (manyParts ? 6 : 0) + "px",
+            fadeStyle: "position: absolute; left: 0; right: 12px; bottom: 0; height: 3em; pointer-events: none; background: linear-gradient(to bottom, transparent, " + t.bg + ")",
+            rootStyle: "position: relative; width: 1280px; height: 1240px; box-sizing: border-box; display: flex; flex-direction: column; overflow: hidden; background: " + t.bg + "; color: " + t.text + "; font-family: " + F[fontName] + "; font-size: " + size + "px; line-height: 1.6",
+            rulesBox: "display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); background: " + t.infoWash + "; border: 2px solid " + t.info + "; border-radius: " + radius + "px; font-size: 0.92em",
+            ruleCell: "display: flex; flex-direction: column; gap: 6px; padding: 16px 20px",
+            ruleCellSplit: "display: flex; flex-direction: column; gap: 6px; padding: 16px 20px; border-left: 1px solid " + t.info,
+            factStyle: "display: flex; flex-direction: column; gap: 2px; padding: 12px 16px; border-radius: " + radius + "px; background: " + t.card + "; border: 1px solid " + border + "; box-shadow: " + t.shadow,
+            resumeStyle: "display: flex; align-items: center; gap: 16px; flex-wrap: wrap; padding: 14px 18px; border-radius: " + radius + "px; background: " + t.infoWash + "; border: 2px solid " + t.info,
+            inlineCode: "font-family: " + MONO + "; font-size: 0.95em; background: " + t.sunken + "; padding: 1px 6px; border-radius: 4px; color: " + t.text,
+            primaryBtn: "font: inherit; font-weight: 700; min-height: 44px; padding: 0 20px; border-radius: 8px; cursor: pointer; border: 1px solid " + t.accent + "; background: " + t.accent + "; color: " + t.onAccent,
+            secondaryBtn: "font: inherit; font-weight: 600; min-height: 44px; padding: 0 18px; border-radius: 8px; cursor: pointer; border: 1px solid " + border + "; background: " + t.card + "; color: " + t.text,
+            startBtn: "font: inherit; font-size: 1.1em; font-weight: 700; min-height: 52px; padding: 0 32px; border-radius: 10px; cursor: pointer; border: 1px solid " + t.accent + "; background: " + t.accent + "; color: " + t.onAccent,
+            ghostBtn: "font: inherit; font-size: 1em; font-weight: 700; min-width: 44px; min-height: 0; height: 100%; border: none; background: " + t.card + "; color: " + t.text + "; cursor: pointer",
+            ghostBtnLeft: "font: inherit; font-size: 1em; font-weight: 700; min-width: 44px; min-height: 0; height: 100%; border: none; border-left: 2px solid " + t.lineStrong + "; background: " + t.card + "; color: " + t.text + "; cursor: pointer",
+            appearanceBtn: "font: inherit; font-size: 1em; font-weight: 700; display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 14px; border-radius: 8px; cursor: pointer; border: 2px solid " + t.lineStrong + "; background: " + (s.menu ? t.surface : t.card) + "; color: " + t.text,
+            suppBtn: "font: inherit; font-size: 1em; font-weight: 700; display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 14px; border-radius: 8px; cursor: pointer; border: 2px solid " + t.lineStrong + "; background: " + t.card + "; color: " + t.text,
+            suppOpen: !!s.supp,
+            suppExpanded: s.supp ? "true" : "false",
+            suppItems: [{ title: "Formula sheet", kind: "PDF · [FILE]" }, { title: "Lecture notes", kind: "PDF · [FILE]" }, { title: "Fourier transform table", kind: "PDF · [FILE]" }, { title: "Worked examples", kind: "Link · [URL]" }],
+            suppRow: "font: inherit; display: flex; align-items: center; gap: 12px; min-height: 56px; padding: 6px 14px; border-radius: 8px; cursor: pointer; border: 1px solid " + t.lineStrong + "; background: " + t.surface + "; color: " + t.text,
+            toggleSupp: function () { self.setState({ supp: !s.supp }); },
+            toggleMenu: function () { self.setState({ menu: !s.menu }); },
+            smaller: function () { self.setState({ size: Math.max(14, size - 1) }); },
+            larger: function () { self.setState({ size: Math.min(22, size + 1) }); },
+            reset: function () { self.setState({ theme: null, font: null }); }
+          };
+        }
+      }
+    </script>
+  </body>
+</html>

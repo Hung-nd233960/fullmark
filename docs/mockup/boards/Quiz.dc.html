@@ -1,0 +1,666 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>fullmark quiz page</title>
+    <script src="./support.js"></script>
+  </head>
+  <body>
+    <x-dc>
+      <helmet>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,600;0,700;1,400&amp;family=Lexend:wght@400;600;700&amp;family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&amp;display=swap">
+        <style>
+          body {
+            margin: 0;
+          }
+          a {
+            color: #46608a;
+          }
+          a:hover {
+            color: #2a2b31;
+          }
+        </style>
+      </helmet>
+      <div style="{{rootStyle}}">
+        <header style="display: flex; flex-direction: column; background: {{t.card}}; border-bottom: 1px solid {{t.line}}">
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 12px 28px 8px">
+            <div style="min-width: 0; font-weight: 700; font-size: 1.1em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">
+              Signals and Systems: midterm practice
+            </div>
+            <div style="display: flex; gap: 8px; align-items: center; flex-shrink: 0">
+              <button onClick="{{toggleSide}}" aria-expanded="{{sideExpanded}}" aria-keyshortcuts="{{sideKeys}}" title="{{sideTitle}}" style="{{sideBtn}}">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <rect x="3" y="4" width="18" height="16" rx="2"></rect>
+                  <path d="M15 4v16"></path>
+                </svg>
+                {{sideLabel}}
+              </button>
+              <button onClick="{{toggleFocus}}" aria-pressed="{{focusPressed}}" aria-keyshortcuts="F" title="Full screen with the sidebar closed (F)" style="{{hdrBtn}}">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"></path>
+                </svg>
+                {{focusLabel}}
+              </button>
+              <div style="display: flex; flex-shrink: 0; box-sizing: border-box; height: 44px; border: 2px solid {{t.lineStrong}}; border-radius: 8px; overflow: hidden">
+                <button onClick="{{smaller}}" aria-label="Smaller text" style="{{ghostBtn}}">A−</button>
+                <button onClick="{{larger}}" aria-label="Larger text" style="{{ghostBtnLeft}}">A+</button>
+              </div>
+              <sc-if value="{{free}}" hint-placeholder-val="{{ true }}">
+                <button onClick="{{toggleMenu}}" aria-label="Appearance" aria-expanded="{{menuExpanded}}" title="Appearance" style="{{hdrBtnIcon}}">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <circle cx="12" cy="12" r="9"></circle>
+                    <path d="M12 3a9 9 0 0 0 0 18z" fill="currentColor"></path>
+                  </svg>
+                </button>
+              </sc-if>
+              <button style="font: inherit; font-weight: 700; flex-shrink: 0; box-sizing: border-box; height: 44px; white-space: nowrap; padding: 0 22px; border-radius: 8px; border: 2px solid {{t.accent}}; background: {{t.accent}}; color: {{t.onAccent}}; cursor: pointer">
+                Submit
+              </button>
+            </div>
+          </div>
+          <div style="display: flex; align-items: center; padding: 0 28px 10px; font-size: 0.85em; color: {{t.muted}}; font-variant-numeric: tabular-nums; white-space: nowrap">
+            <span style="{{seg}}"><b style="color: {{t.text}}">18:42</b> left</span>
+            <span style="{{segSep}}">Part 2 of 3, Fourier transform: <b style="color: {{t.warn}}">04:10</b> left</span>
+            <span style="{{segSep}}">Question <b style="color: {{t.text}}">20</b> of 32</span>
+            <span style="{{segSep}}; display: inline-flex; align-items: center; gap: 8px">19 of 32 answered
+                <span role="progressbar" aria-label="Answered" aria-valuemin="0" aria-valuemax="32" aria-valuenow="19" style="width: 72px; height: 6px; border-radius: 3px; background: {{t.sunken}}; border: 1px solid {{t.line}}; overflow: hidden"><span style="display: block; width: 59%; height: 100%; background: {{t.accent}}"></span></span><b style="color: {{t.text}}">59%</b></span>
+            <span style="{{segSep}}">2 flagged</span>
+            <sc-if value="{{focus}}" hint-placeholder-val="{{ false }}">
+              <span style="{{segSep}}">Clock <b style="color: {{t.text}}">14:05</b> · Esc leaves full screen</span>
+            </sc-if>
+          </div>
+        </header>
+
+        <sc-if value="{{menuShown}}" hint-placeholder-val="{{ false }}">
+          <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px 28px; padding: 12px 28px; background: {{t.surface}}; border-bottom: 1px solid {{t.line}}; font-size: 0.85em">
+            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap">
+              <span style="color: {{t.muted}}; font-weight: 600">Theme</span>
+              <sc-for list="{{themePills}}" as="p" hint-placeholder-count="6">
+                <button onClick="{{p.pick}}" aria-pressed="{{p.pressed}}" style="{{p.style}}">
+                  {{p.label}}
+                </button>
+              </sc-for>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap">
+              <span style="color: {{t.muted}}; font-weight: 600">Font</span>
+              <sc-for list="{{fontPills}}" as="p" hint-placeholder-count="4">
+                <button onClick="{{p.pick}}" aria-pressed="{{p.pressed}}" style="{{p.style}}">
+                  {{p.label}}
+                </button>
+              </sc-for>
+            </div>
+            <button onClick="{{reset}}" style="font: inherit; font-weight: 600; background: {{t.card}}; border: 1px solid {{t.lineStrong}}; border-radius: 8px; padding: 0 14px; color: {{t.text}}; cursor: pointer; min-height: 36px; margin-left: auto">
+              Reset to the quiz's look
+            </button>
+          </div>
+        </sc-if>
+
+        <div style="flex: 1; display: flex; min-height: 0">
+          <main style="{{mainStyle}}">
+            <section style="{{cardStyle}}">
+              <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; font-size: 0.8em; color: {{t.muted}}">
+                <span>Question 19 · 1 point · <span style="color: {{t.hint}}">#fourier</span></span>
+                <span style="display: flex; align-items: center; gap: 6px; color: {{t.bad}}; font-weight: 700">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true">
+                    <path d="M6 6l12 12M18 6L6 18"></path>
+                  </svg>
+                  Incorrect · 0 / 1
+                </span>
+              </div>
+              <p lang="vi" style="margin: 8px 0 14px; font-size: 1.1em; font-weight: 600">
+                Biến đổi Fourier của một xung chữ nhật có dạng hàm nào?
+              </p>
+              <div style="display: flex; flex-direction: column; gap: 8px">
+                <sc-for list="{{choices}}" as="c" hint-placeholder-count="4">
+                  <div style="{{c.style}}">
+                    <span style="{{c.badge}}">{{c.letter}}</span>
+                    <span lang="vi" style="{{c.textStyle}}">{{c.text}}</span>
+                    <sc-if value="{{c.right}}" hint-placeholder-val="{{ false }}">
+                      <span style="display: flex; align-items: center; gap: 6px; color: {{t.ok}}; font-weight: 700; font-size: 0.85em">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                          <path d="M5 12.5l4.5 4.5L19 7"></path>
+                        </svg>
+                        Correct answer
+                      </span>
+                    </sc-if>
+                    <sc-if value="{{c.wrong}}" hint-placeholder-val="{{ false }}">
+                      <span style="display: flex; align-items: center; gap: 6px; color: {{t.bad}}; font-weight: 700; font-size: 0.85em">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true">
+                          <path d="M6 6l12 12M18 6L6 18"></path>
+                        </svg>
+                        Your answer
+                      </span>
+                    </sc-if>
+                  </div>
+                </sc-for>
+              </div>
+              <div style="margin-top: 16px; background: {{t.infoWash}}; border: 2px solid {{t.info}}; border-radius: 10px; padding: 18px 22px; display: flex; flex-direction: column; align-items: flex-start; gap: 10px">
+                <div style="display: inline-flex; align-items: center; gap: 6px; font-size: 0.85em; font-weight: 700; letter-spacing: 0.04em; background: {{t.info}}; color: {{t.card}}; border-radius: 999px; padding: 3px 12px 3px 9px">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <circle cx="12" cy="12" r="9"></circle>
+                    <path d="M12 11v6M12 7.5v.01"></path>
+                  </svg>
+                  Explanation
+                </div>
+                <div lang="vi" style="font-size: 1.05em; line-height: 1.65; font-weight: 600">
+                  Xung chữ nhật rộng T có phổ T·sinc(fT): cửa sổ trong miền thời gian tương ứng với
+                  hàm sinc trong miền tần số. Xung càng hẹp, phổ càng rộng.
+                </div>
+              </div>
+            </section>
+
+            <section style="{{cardStyle}}">
+              <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; font-size: 0.8em; color: {{t.muted}}">
+                <span>Question 20 · 2 points ·
+                  <span style="color: {{t.hint}}">#frequency-response</span></span>
+                <button onClick="{{toggleFlag}}" aria-pressed="{{flagPressed}}" style="{{flagBtn}}">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M5 21V4h11l-2 4 2 4H5"></path>
+                  </svg>
+                  {{flagLabel}}
+                </button>
+              </div>
+              <p style="margin: 8px 0 12px; font-size: 1.1em; font-weight: 600">
+                What does <code style="{{inlineCode}}">gain(2.5)</code> return? Give three decimals.
+              </p>
+              <pre style="{{codeBlock}}"><span style="color: {{t.accent}}; font-weight: 600">def</span> gain(w: <span style="color: {{t.info}}">float</span>) -&gt; <span style="color: {{t.info}}">float</span>:
+    <span style="color: {{t.muted}}; font-style: italic"># biên độ của H(jω) = 1 / (1 + jω)</span>
+    <span style="color: {{t.accent}}; font-weight: 600">return</span> <span style="color: {{t.orange}}">1</span> / math.sqrt(<span style="color: {{t.orange}}">1</span> + w ** <span style="color: {{t.orange}}">2</span>)</pre>
+              <div style="
+                  display: flex;
+                  align-items: center;
+                  gap: 14px;
+                  flex-wrap: wrap;
+                  margin-top: 12px;
+                ">
+                <label for="ans20" style="font-size: 0.9em; font-weight: 600">Your answer</label>
+                <input id="ans20" value="0,371" style="font: inherit; width: 160px; min-height: 44px; box-sizing: border-box; padding: 0 12px; border-radius: 8px; border: 1px solid {{t.lineStrong}}; background: {{t.sunken}}; color: {{t.text}}">
+                <span style="font-size: 0.8em; color: {{t.muted}}">A decimal comma is fine in a Vietnamese quiz.</span>
+              </div>
+              <div style="margin-top: 12px; border: 1px dashed {{t.hint}}; border-radius: 8px; padding: 10px 14px; display: flex; gap: 10px; align-items: baseline">
+                <span style="font-size: 0.72em; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: {{t.hint}}">Hint</span>
+                <span style="font-size: 0.95em">|H(jω)| = 1 / √(1 + ω²), so square 2.5 first.</span>
+              </div>
+            </section>
+          </main>
+
+          <sc-if value="{{sideOpen}}" hint-placeholder-val="{{ true }}">
+            <aside aria-label="Sidebar" style="{{sideStyle}}">
+              <sc-if value="{{tabbed}}" hint-placeholder-val="{{ true }}">
+                <div style="display: flex; align-items: center; gap: 8px; padding: 0 10px 0 18px; border-bottom: 1px solid {{t.line}}">
+                  <sc-if value="{{hasM}}" hint-placeholder-val="{{ true }}">
+                    <div role="tablist" aria-label="Sidebar" style="flex: 1; display: flex; gap: 20px">
+                      <button role="tab" aria-selected="{{qPressed}}" onClick="{{openQuestions}}" style="{{tabQ}}">Questions</button>
+                      <button role="tab" aria-selected="{{mPressed}}" onClick="{{openMaterials}}" style="{{tabM}}">Materials</button>
+                    </div>
+                  </sc-if>
+                  <sc-if value="{{noM}}" hint-placeholder-val="{{ false }}">
+                    <h2 style="flex: 1; margin: 0; display: flex; align-items: center; min-height: 48px; font-size: 1em; font-weight: 700">Questions</h2>
+                  </sc-if>
+                  <button onClick="{{closeSide}}" aria-label="Close the sidebar" title="Close" style="{{closeBtn}}">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <path d="M6 6l12 12M18 6L6 18"></path>
+                    </svg>
+                  </button>
+                </div>
+              </sc-if>
+              <sc-if value="{{sideQ}}" hint-placeholder-val="{{ true }}">
+                <div role="tabpanel" style="flex: 1; overflow-y: auto; padding: 16px 18px; display: flex; flex-direction: column; gap: 14px">
+                  <sc-for list="{{sections}}" as="s" hint-placeholder-count="3">
+                    <div style="display: flex; flex-direction: column; gap: 8px">
+                      <button onClick="{{s.toggle}}" aria-expanded="{{s.expanded}}" style="{{s.headStyle}}">
+                        <span style="flex: 1; text-align: left">{{s.title}}</span>
+                        <span style="font-variant-numeric: tabular-nums; color: {{t.muted}}">{{s.count}}</span>
+                        <span aria-hidden="true" style="color: {{t.muted}}">{{s.chevron}}</span>
+                      </button>
+                      <sc-if value="{{s.open}}" hint-placeholder-val="{{ true }}">
+                        <div style="
+                            display: grid;
+                            grid-template-columns: repeat(6, minmax(0, 1fr));
+                            gap: 4px;
+                          ">
+                          <sc-for list="{{s.cells}}" as="q" hint-placeholder-count="12">
+                            <button aria-label="{{q.label}}" style="{{q.style}}">
+                              {{q.n}}<sc-if value="{{q.flagged}}" hint-placeholder-val="{{ false }}"><span style="{{q.flagDot}}"></span></sc-if>
+                            </button>
+                          </sc-for>
+                        </div>
+                      </sc-if>
+                    </div>
+                  </sc-for>
+                  <div style="display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 0.75em; color: {{t.muted}}; padding-top: 4px; border-top: 1px solid {{t.line}}">
+                    <span style="display: flex; align-items: center; gap: 5px"><span style="width: 10px; height: 10px; border-radius: 3px; background: {{t.accent}}"></span>answered</span>
+                    <span style="display: flex; align-items: center; gap: 5px"><span style="width: 10px; height: 10px; border-radius: 50%; background: {{t.flag}}"></span>flagged</span>
+                    <span style="display: flex; align-items: center; gap: 5px"><span style="width: 10px; height: 10px; border-radius: 3px; border: 2px solid {{t.text}}; box-sizing: border-box"></span>current</span>
+                  </div>
+                </div>
+              </sc-if>
+              <sc-if value="{{stackedOpen}}" hint-placeholder-val="{{ false }}">
+                <div style="display: flex; flex-direction: column; gap: 10px; padding: 6px 10px 14px 18px; border-bottom: 1px solid {{t.line}}">
+                  <div style="display: flex; align-items: center; gap: 10px">
+                    <h2 style="flex: 1; margin: 0; font-size: 1em; font-weight: 700">Questions</h2>
+                    <button onClick="{{closeSide}}" aria-label="Close the sidebar (Esc)" title="Close (Esc)" style="{{closeBtn}}">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M6 6l12 12M18 6L6 18"></path>
+                      </svg>
+                    </button>
+                  </div>
+                  <div style="display: grid; grid-template-columns: minmax(0, 35fr) minmax(0, 65fr); gap: 14px; margin-right: 8px">
+                    <div role="tablist" aria-label="Parts" aria-orientation="vertical" style="display: flex; flex-direction: column; gap: 4px; padding-right: 14px; border-right: 1px solid {{t.lineStrong}}">
+                      <sc-for list="{{partTabs}}" as="pt" hint-placeholder-count="3">
+                        <button role="tab" aria-selected="{{pt.selected}}" aria-label="{{pt.aria}}" onClick="{{pt.pick}}" style="{{pt.style}}">
+                          <sc-if value="{{pt.ring}}" hint-placeholder-val="{{ true }}">
+                            <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true" style="flex-shrink: 0">
+                              <circle cx="14" cy="14" r="10" fill="none" stroke="{{t.line}}" stroke-width="3"></circle>
+                              <circle cx="14" cy="14" r="10" fill="none" stroke="{{t.accent}}" stroke-width="{{pt.ringW}}" stroke-dasharray="{{pt.dash}}" transform="rotate(-90 14 14)"></circle>
+                              <circle cx="14" cy="14" r="{{pt.discR}}" fill="{{t.accent}}"></circle>
+                              <path d="M9 14.5l3.5 3.5L19 11" fill="none" stroke="{{pt.tickColor}}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                            </svg>
+                          </sc-if>
+                          <span style="display: flex; flex-direction: column; min-width: 0">
+                            <span style="font-weight: 700">{{pt.label}}</span>
+                            <span style="{{pt.nameStyle}}">{{pt.name}}</span>
+                          </span>
+                          <sc-if value="{{pt.flagged}}" hint-placeholder-val="{{ false }}">
+                            <span title="Has flagged questions" style="{{pt.flagDot}}"></span>
+                          </sc-if>
+                        </button>
+                      </sc-for>
+                    </div>
+                    <div role="tabpanel" aria-label="{{partHeading}}" style="display: flex; flex-direction: column; gap: 8px; min-width: 0">
+                      <div style="display: flex; flex-direction: column">
+                        <span style="font-size: 0.85em; font-weight: 700">{{partHeading}}</span>
+                        <span style="font-size: 0.8em; color: {{t.muted}}; font-variant-numeric: tabular-nums">{{partStats}}</span>
+                      </div>
+                      <div style="display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 4px; max-height: 176px; overflow-y: auto">
+                        <sc-for list="{{partCells}}" as="q" hint-placeholder-count="12">
+                          <button aria-label="{{q.label}}" style="{{q.mini}}">
+                            {{q.n}}<sc-if value="{{q.flagged}}" hint-placeholder-val="{{ false }}"><span style="{{q.flagDot}}"></span></sc-if>
+                          </button>
+                        </sc-for>
+                      </div>
+                    </div>
+                  </div>
+                  <div style="display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 0.75em; color: {{t.muted}}">
+                    <span style="display: flex; align-items: center; gap: 5px"><span style="width: 10px; height: 10px; border-radius: 3px; background: {{t.accent}}"></span>answered</span>
+                    <span style="display: flex; align-items: center; gap: 5px"><span style="width: 10px; height: 10px; border-radius: 50%; background: {{t.flag}}"></span>flagged</span>
+                    <span style="display: flex; align-items: center; gap: 5px"><span style="width: 10px; height: 10px; border-radius: 3px; border: 2px solid {{t.text}}; box-sizing: border-box"></span>current</span>
+                  </div>
+                </div>
+                <h2 style="margin: 0; padding: 14px 18px 0; font-size: 1em; font-weight: 700">Materials</h2>
+              </sc-if>
+              <sc-if value="{{showSheets}}" hint-placeholder-val="{{ false }}">
+                <div role="tablist" aria-label="Sheets" style="display: flex; flex-wrap: wrap; gap: 0 8px; padding: 0 18px; border-bottom: 1px solid {{t.line}}">
+                  <sc-for list="{{sheetTabs}}" as="tb" hint-placeholder-count="3">
+                    <button role="tab" aria-selected="{{tb.selected}}" onClick="{{tb.pick}}" style="{{tb.style}}">
+                      {{tb.label}}
+                    </button>
+                  </sc-for>
+                </div>
+                <div role="tabpanel" style="
+                    flex: 1;
+                    overflow-y: auto;
+                    padding: 18px 22px 28px;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 14px;
+                  ">
+                  <sc-if value="{{sheet1}}" hint-placeholder-val="{{ true }}">
+                    <h3 style="margin: 0; font-size: 1.05em; font-weight: 700">
+                      Fourier transform properties
+                    </h3>
+                    <table style="{{mTable}}">
+                      <thead>
+                        <tr>
+                          <th style="{{mTh}}; width: 30%">Property</th>
+                          <th style="{{mTh}}">x(t)</th>
+                          <th style="{{mTh}}">X(ω)</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td style="{{mTd}}">Linearity</td>
+                          <td style="{{mMath}}">a·x(t) + b·y(t)</td>
+                          <td style="{{mMath}}">a·X(ω) + b·Y(ω)</td>
+                        </tr>
+                        <tr>
+                          <td style="{{mTd}}">Time shift</td>
+                          <td style="{{mMath}}">x(t − t₀)</td>
+                          <td style="{{mMath}}">e<sup>−jωt₀</sup>·X(ω)</td>
+                        </tr>
+                        <tr>
+                          <td style="{{mTd}}">Frequency shift</td>
+                          <td style="{{mMath}}">e<sup>jω₀t</sup>·x(t)</td>
+                          <td style="{{mMath}}">X(ω − ω₀)</td>
+                        </tr>
+                        <tr>
+                          <td style="{{mTd}}">Scaling</td>
+                          <td style="{{mMath}}">x(at)</td>
+                          <td style="{{mMath}}">(1/|a|)·X(ω/a)</td>
+                        </tr>
+                        <tr>
+                          <td style="{{mTd}}">Convolution</td>
+                          <td style="{{mMath}}">x(t) ∗ y(t)</td>
+                          <td style="{{mMath}}">X(ω)·Y(ω)</td>
+                        </tr>
+                        <tr>
+                          <td style="{{mTd}}">Multiplication</td>
+                          <td style="{{mMath}}">x(t)·y(t)</td>
+                          <td style="{{mMath}}">(1/2π)·X(ω) ∗ Y(ω)</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <p style="margin: 0">
+                      Parseval:
+                      <span style="{{mInline}}">∫ |x(t)|² dt = (1/2π) ∫ |X(ω)|² dω</span>
+                    </p>
+                    <p style="margin: 0">
+                      <span style="{{mInline}}">sinc(x) = sin(πx) / (πx)</span>, so sinc(0) = 1.
+                    </p>
+                  </sc-if>
+                  <sc-if value="{{sheet2}}" hint-placeholder-val="{{ false }}">
+                    <h3 style="margin: 0; font-size: 1.05em; font-weight: 700">
+                      Trigonometric identities
+                    </h3>
+                    <ul style="
+                        margin: 0;
+                        padding-left: 20px;
+                        display: flex;
+                        flex-direction: column;
+                        gap: 6px;
+                      ">
+                      <li>
+                        <span style="{{mInline}}">e<sup>jθ</sup> = cos θ + j·sin θ</span>
+                      </li>
+                      <li>
+                        <span style="{{mInline}}">cos θ = (e<sup>jθ</sup> + e<sup>−jθ</sup>) / 2</span>
+                      </li>
+                      <li>
+                        <span style="{{mInline}}">sin θ = (e<sup>jθ</sup> − e<sup>−jθ</sup>) / 2j</span>
+                      </li>
+                      <li>
+                        <span style="{{mInline}}">cos a·cos b = ½[cos(a − b) + cos(a + b)]</span>
+                      </li>
+                      <li><span style="{{mInline}}">sin² θ = (1 − cos 2θ) / 2</span></li>
+                    </ul>
+                  </sc-if>
+                  <sc-if value="{{sheet3}}" hint-placeholder-val="{{ false }}">
+                    <h3 style="margin: 0; font-size: 1.05em; font-weight: 700">
+                      Units and constants
+                    </h3>
+                    <table style="{{mTable}}">
+                      <thead>
+                        <tr>
+                          <th style="{{mTh}}">Quantity</th>
+                          <th style="{{mTh}}">Value</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td style="{{mTd}}">Angular and ordinary frequency</td>
+                          <td style="{{mMath}}">ω = 2πf</td>
+                        </tr>
+                        <tr>
+                          <td style="{{mTd}}">Gain in decibels</td>
+                          <td style="{{mMath}}">20·log₁₀ |H|</td>
+                        </tr>
+                        <tr>
+                          <td style="{{mTd}}">−3 dB as a ratio</td>
+                          <td style="{{mMath}}">1/√2 ≈ 0.7071</td>
+                        </tr>
+                        <tr>
+                          <td style="{{mTd}}">π</td>
+                          <td style="{{mMath}}">3.14159…</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </sc-if>
+                </div>
+              </sc-if>
+            </aside>
+          </sc-if>
+        </div>
+      </div>
+    </x-dc>
+    <script
+      type="text/x-dc"
+      data-dc-script
+      data-props='{"theme":{"editor":"enum","options":["light","dark","oled","white","paper"],"default":"light"},"font":{"editor":"enum","options":["system","sans","serif","readable"],"default":"system"},"locked":{"editor":"enum","options":["no","yes"],"default":"no"},"focus":{"editor":"enum","options":["no","yes"],"default":"no"},"materials":{"editor":"enum","options":["yes","none"],"default":"yes"},"sidebar":{"editor":"enum","options":["stacked","tabs"],"default":"stacked"},"side":{"editor":"enum","options":["questions","materials","none"],"default":"questions"},"$preview":{"width":1280,"height":940}}'
+    >
+      class Component extends DCLogic {
+        renderVals() {
+          var self = this;
+          var s = this.state || {};
+          var T = {
+            light: { bg: "#eceae5", surface: "#f4f3ef", card: "#fcfcfa", sunken: "#e4e2dc", line: "#d6d4cd", lineStrong: "#8c8b83", text: "#2a2b31", muted: "#55554f", accent: "#46608a", onAccent: "#fcfcfa", ok: "#3d6946", bad: "#963f3e", warn: "#725b1c", info: "#365b84", flag: "#b42a6f", hint: "#3b6884", orange: "#82521f", shadow: "0 1px 2px rgba(40,38,30,0.06), 0 2px 8px rgba(40,38,30,0.04)", okWash: "#e3ebe2", badWash: "#f2e3e1", infoWash: "#e2e8f0" },
+            dark: { bg: "#1b1d22", surface: "#262a31", card: "#2c3038", sunken: "#15171b", line: "#464c57", lineStrong: "#7b8394", text: "#d9dce2", muted: "#a9afba", accent: "#8fa8d4", onAccent: "#15171b", ok: "#92b99a", bad: "#d08a88", warn: "#cfb277", info: "#8fb0d6", flag: "#f27db5", hint: "#8dbad6", orange: "#d2a373", shadow: "0 1px 3px rgba(0,0,0,0.35)", okWash: "#2a3a30", badWash: "#3d2b2d", infoWash: "#243042" },
+            oled: { bg: "#000000", surface: "#0e0e10", card: "#0f0f11", sunken: "#18181b", line: "#303238", lineStrong: "#73767e", text: "#e0e0e0", muted: "#a3a5aa", accent: "#9fb2d4", onAccent: "#000000", ok: "#9cc2a5", bad: "#d9a09d", warn: "#d3bf91", info: "#a0b8d6", flag: "#e3a3c2", hint: "#9fc0d4", orange: "#d8b08a", shadow: "none", okWash: "#121c15", badWash: "#201414", infoWash: "#111a26" },
+            white: { bg: "#ffffff", surface: "#ffffff", card: "#ffffff", sunken: "#f2f2f2", line: "#c9c9c9", lineStrong: "#767676", text: "#1a1a1a", muted: "#575757", accent: "#1f4f8f", onAccent: "#ffffff", ok: "#2f6f3a", bad: "#b02a26", warn: "#7f5d00", info: "#1f5f9e", flag: "#c2246c", hint: "#24678c", orange: "#9c520f", shadow: "none", okWash: "#eef5ef", badWash: "#fbeeed", infoWash: "#eaf1fa" },
+            paper: { bg: "#f6f1e7", surface: "#efe8da", card: "#fbf8f1", sunken: "#ebe3d3", line: "#dcd2bf", lineStrong: "#8b806c", text: "#37302a", muted: "#665b4e", accent: "#4c6b65", onAccent: "#fbf8f1", ok: "#426a44", bad: "#97463b", warn: "#755a17", info: "#426283", flag: "#a92f69", hint: "#3e687c", orange: "#85521f", shadow: "0 1px 2px rgba(70,55,30,0.07)", okWash: "#e6ebdc", badWash: "#f1e1d8", infoWash: "#e4e6e4" }
+          };
+          var F = {
+            system: "'Segoe UI', system-ui, -apple-system, Roboto, 'Noto Sans', sans-serif",
+            sans: "'Be Vietnam Pro', 'Segoe UI', sans-serif",
+            serif: "'Source Serif 4', Georgia, serif",
+            readable: "'Lexend', 'Segoe UI', sans-serif"
+          };
+          var MONO = "'Cascadia Code', Consolas, Menlo, monospace";
+          var quizTheme = this.props.theme || "light";
+          var quizFont = this.props.font || "system";
+          var free = (this.props.locked || "no") !== "yes";
+          var themeName = (free && s.theme) || quizTheme;
+          var fontName = (free && s.font) || quizFont;
+          var t = T[themeName] || T.light;
+          var size = s.size || 17;
+          var edged = themeName === "oled" || themeName === "white";
+          var focus = s.focus !== undefined ? s.focus : this.props.focus === "yes";
+          // One sidebar on the right with two tabs, Questions and Materials; closed is the reading layout.
+          // Focus mode is full screen with the sidebar closed; the status line keeps time and progress in view.
+          var hasM = (this.props.materials || "yes") !== "none";
+          var side = s.side !== undefined ? s.side : this.props.side || (focus ? "none" : "questions");
+          if (!hasM && side === "materials") side = "questions";
+          // While answering, "stacked": a compact map over the materials in one 40% sidebar. After Submit, "tabs":
+          // the full map (with results and the filter) and the materials take turns.
+          var stackedLayout = hasM && (this.props.sidebar || "stacked") === "stacked";
+          var anyOpen = side === "questions" || side === "materials";
+          var sideQ = !stackedLayout && side === "questions";
+          var sideM = !stackedLayout && side === "materials";
+          var lastTab = s.lastTab || (side === "materials" ? "materials" : "questions");
+          var sheet = s.sheet || 0;
+          var sheetNames = ["Fourier properties", "Trig identities", "Units and constants"];
+
+          var pill = function (on) {
+            return "font: inherit; min-height: 36px; padding: 0 12px; border-radius: 999px; cursor: pointer; border: 1px solid " + (on ? t.accent : t.line) + "; background: " + (on ? t.accent : t.card) + "; color: " + (on ? t.onAccent : t.text) + "; font-weight: " + (on ? 700 : 400);
+          };
+          var themePills = ["light", "dark", "oled", "white", "paper"].map(function (k) {
+            var on = k === themeName;
+            return { label: k + (k === quizTheme ? " ·" : ""), pressed: on ? "true" : "false", style: pill(on), pick: function () { self.setState({ theme: k }); } };
+          });
+          var fontPills = ["system", "sans", "serif", "readable"].map(function (k) {
+            var on = k === fontName;
+            return { label: k, pressed: on ? "true" : "false", style: pill(on) + "; font-family: " + F[k], pick: function () { self.setState({ font: k }); } };
+          });
+
+          var choiceData = [
+            { letter: "A", text: "Hàm sinc", right: true, wrong: false },
+            { letter: "B", text: "Hàm Gauss", right: false, wrong: false },
+            { letter: "C", text: "Hàm mũ suy giảm", right: false, wrong: true },
+            { letter: "D", text: "Hàm delta Dirac", right: false, wrong: false }
+          ];
+          var choices = choiceData.map(function (c) {
+            var border = c.right ? t.ok : c.wrong ? t.bad : t.line;
+            var bg = c.right ? t.okWash : c.wrong ? t.badWash : t.surface;
+            return {
+              letter: c.letter, text: c.text, right: c.right, wrong: c.wrong,
+              textStyle: "flex: 1; font-size: 1.06em; color: " + t.text + "; font-weight: " + (c.right || c.wrong ? 700 : 500),
+              style: "display: flex; align-items: center; gap: 12px; min-height: 44px; padding: 6px 14px; border-radius: 8px; border: " + (c.right || c.wrong ? 2 : 1) + "px solid " + border + "; background: " + bg,
+              badge: "width: 28px; height: 28px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; border-radius: 6px; font-weight: 700; font-size: 0.85em; border: 1px solid " + t.lineStrong + "; color: " + t.text + "; background: " + t.card
+            };
+          });
+
+          var flagged = s.flag20 === undefined ? true : s.flag20;
+          var cell = function (n, state, isFlagged) {
+            var answered = state === "answered";
+            var current = state === "current";
+            return {
+              n: n,
+              flagged: isFlagged,
+              label: "Question " + n + (answered ? ", answered" : "") + (isFlagged ? ", flagged" : "") + (current ? ", current" : ""),
+              style: "position: relative; font: inherit; font-size: 0.82em; font-weight: 600; height: 40px; border-radius: 6px; cursor: pointer; font-variant-numeric: tabular-nums; background: " + (answered ? t.accent : t.card) + "; color: " + (answered ? t.onAccent : t.text) + "; border: " + (current ? "2px solid " + t.text : "1px solid " + (answered ? t.accent : t.line)),
+              flagDot: "position: absolute; top: 3px; right: 3px; width: 9px; height: 9px; border-radius: 50%; background: " + t.flag + "; box-shadow: 0 0 0 2px " + t.card
+            };
+          };
+          var range = function (a, b) { var r = []; for (var i = a; i <= b; i++) r.push(i); return r; };
+          var sectionData = [
+            { id: "s1", title: "1 · Signals", from: 1, to: 12, count: "12/12" },
+            { id: "s2", title: "2 · Fourier transform", from: 13, to: 24, count: "7/12 · 1 flag" },
+            { id: "s3", title: "3 · Sampling", from: 25, to: 32, count: "0/8" }
+          ];
+          var miniPart = s.miniPart || "s2";
+          var RING = 2 * Math.PI * 10;
+          var partState = function (sec) {
+            var nums = range(sec.from, sec.to);
+            return {
+              total: nums.length,
+              answered: nums.filter(function (n) { return n <= 19; }).length,
+              flags: nums.filter(function (n) { return (n === 20 && flagged) || n === 5; }).length
+            };
+          };
+          var miniSec = sectionData.filter(function (sec) { return sec.id === miniPart; })[0];
+          var openState = s.open || { s1: false, s2: true, s3: false };
+          var sections = sectionData.map(function (sec) {
+            var open = !!openState[sec.id];
+            return {
+              title: sec.title,
+              count: sec.id === "s2" && !flagged ? "7/12" : sec.count,
+              open: open,
+              expanded: open ? "true" : "false",
+              chevron: open ? "▾" : "▸",
+              headStyle: "font: inherit; font-size: 0.85em; font-weight: 600; display: flex; align-items: center; gap: 8px; width: 100%; min-height: 40px; padding: 0 10px; border-radius: 8px; cursor: pointer; border: 1px solid " + t.line + "; background: " + (open ? t.surface : t.card) + "; color: " + t.text,
+              toggle: function () { var o = Object.assign({}, openState); o[sec.id] = !o[sec.id]; self.setState({ open: o }); },
+              cells: range(sec.from, sec.to).map(function (n) {
+                var st = n === 20 ? "current" : n <= 19 ? "answered" : "open";
+                return cell(n, st, (n === 20 && flagged) || n === 5);
+              })
+            };
+          });
+
+          return {
+            t: t,
+            free: free,
+            menuShown: free && !!s.menu,
+            themePills: themePills,
+            fontPills: fontPills,
+            choices: choices,
+            sections: sections,
+            flagPressed: flagged ? "true" : "false",
+            flagLabel: flagged ? "Flagged" : "Flag",
+            rootStyle: "position: relative; width: 1280px; height: 940px; box-sizing: border-box; display: flex; flex-direction: column; overflow: hidden; background: " + t.bg + "; color: " + t.text + "; font-family: " + F[fontName] + "; font-size: " + size + "px; line-height: 1.6",
+            cardStyle: "background: " + t.card + "; border: 1px solid " + (edged ? t.lineStrong : t.line) + "; border-radius: " + (themeName === "white" ? 4 : 12) + "px; padding: 20px 26px; box-shadow: " + t.shadow,
+            ghostBtn: "font: inherit; font-size: 1em; font-weight: 700; min-width: 44px; min-height: 0; height: 100%; border: none; background: " + t.card + "; color: " + t.text + "; cursor: pointer",
+            ghostBtnLeft: "font: inherit; font-size: 1em; font-weight: 700; min-width: 44px; min-height: 0; height: 100%; border: none; border-left: 2px solid " + t.lineStrong + "; background: " + t.card + "; color: " + t.text + "; cursor: pointer",
+            flagBtn: "font: inherit; font-size: 1em; display: flex; align-items: center; gap: 6px; min-height: 36px; padding: 0 12px; border-radius: 999px; cursor: pointer; font-weight: 600; border: 1px solid " + (flagged ? t.flag : t.line) + "; background: " + (flagged ? t.card : t.card) + "; color: " + (flagged ? t.flag : t.muted),
+            inlineCode: "font-family: " + MONO + "; font-size: 0.9em; background: " + t.sunken + "; padding: 1px 6px; border-radius: 4px",
+            codeBlock: "margin: 0; font-family: " + MONO + "; font-size: 0.85em; line-height: 1.6; background: " + t.sunken + "; color: " + t.text + "; border: 1px solid " + t.line + "; border-radius: 8px; padding: 12px 16px; white-space: pre; overflow-x: auto",
+            focus: focus,
+            focusPressed: focus ? "true" : "false",
+            focusLabel: focus ? "Exit focus" : "Focus mode",
+            // Top-bar buttons share one fixed height and never wrap, so none grows taller than the bar.
+            hdrBtn: "font: inherit; font-size: 1em; font-weight: 700; display: flex; align-items: center; gap: 8px; flex-shrink: 0; box-sizing: border-box; height: 44px; white-space: nowrap; padding: 0 14px; border-radius: 8px; cursor: pointer; border: 2px solid " + t.lineStrong + "; background: " + t.card + "; color: " + t.text,
+            hdrBtnMenu: "font: inherit; font-size: 1em; font-weight: 700; display: flex; align-items: center; gap: 8px; flex-shrink: 0; box-sizing: border-box; height: 44px; white-space: nowrap; padding: 0 14px; border-radius: 8px; cursor: pointer; border: 2px solid " + t.lineStrong + "; background: " + (s.menu ? t.surface : t.card) + "; color: " + t.text,
+            closeBtn: "font: inherit; display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 8px; cursor: pointer; border: 1px solid " + t.lineStrong + "; background: " + t.card + "; color: " + t.text,
+            sheet1: sheet === 0,
+            sheet2: sheet === 1,
+            sheet3: sheet === 2,
+            mTable: "width: 100%; table-layout: fixed; border-collapse: separate; border-spacing: 0; font-size: 0.92em; border-top: 1px solid " + t.lineStrong + "; border-left: 1px solid " + t.line,
+            mTh: "text-align: left; font-weight: 700; padding: 6px 10px; background: " + t.surface + "; border-right: 1px solid " + t.line + "; border-bottom: 1px solid " + t.lineStrong,
+            mTd: "padding: 6px 10px; vertical-align: top; border-right: 1px solid " + t.line + "; border-bottom: 1px solid " + t.line,
+            mMath: "padding: 6px 10px; vertical-align: top; font-family: 'Cambria Math', 'Source Serif 4', Georgia, serif; border-right: 1px solid " + t.line + "; border-bottom: 1px solid " + t.line,
+            mInline: "font-family: 'Cambria Math', 'Source Serif 4', Georgia, serif",
+            menuExpanded: s.menu ? "true" : "false",
+            hdrBtnIcon: "font: inherit; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-sizing: border-box; width: 44px; height: 44px; border-radius: 8px; cursor: pointer; border: 2px solid " + (s.menu ? t.accent : t.lineStrong) + "; background: " + (s.menu ? t.surface : t.card) + "; color: " + t.text,
+            // The status line: the same segments in every layout, the clock added in Focus mode.
+            seg: "padding-right: 14px",
+            segSep: "padding: 0 14px; border-left: 1px solid " + t.line,
+            sideOpen: anyOpen,
+            tabbed: !stackedLayout,
+            stackedOpen: stackedLayout && anyOpen,
+            showSheets: sideM || (stackedLayout && anyOpen),
+            // The compact map: parts listed on the left, the chosen part's grid on the right.
+            // It opens on the current part; a long part scrolls inside the grid.
+            partTabs: sectionData.map(function (sec, i) {
+              var on = sec.id === miniPart;
+              var st = partState(sec);
+              // The selected entry shows only its name; its counts are in the grid's heading.
+              return {
+                label: "Part " + (i + 1),
+                name: sec.title.replace(/^\d+ · /, ""),
+                aria: "Part " + (i + 1) + ", " + sec.title.replace(/^\d+ · /, "") + ": " + st.answered + " of " + st.total + " answered" + (st.flags ? ", " + st.flags + " flagged" : ""),
+                selected: on ? "true" : "false",
+                pick: function () { self.setState({ miniPart: sec.id }); },
+                // The ring, on every part: an arc for the share answered, a solid disc with a tick when all are.
+                ring: true,
+                ringW: 3,
+                // Done: a solid disc with the tick cut out in the card colour. A white tick fails on the light
+                // accent of the dark themes (2.4:1 dark, 2.1:1 oled); the cut-out passes in all five (5.5:1 or more).
+                discR: st.answered === st.total ? 12 : 0,
+                tickColor: st.answered === st.total ? t.card : "none",
+                dash: (RING * st.answered) / st.total + " " + RING,
+                // Flagged: the same pink dot, in the same top-right corner, as on a question cell.
+                flagged: st.flags > 0,
+                flagDot: "position: absolute; top: 4px; right: 4px; width: 9px; height: 9px; border-radius: 50%; background: " + t.flag,
+                style: "font: inherit; font-size: 0.85em; display: flex; position: relative; flex-direction: row; align-items: center; gap: 10px; min-height: 48px; padding: 6px 16px 6px 8px; border-radius: 8px; cursor: pointer; text-align: left; color: " + t.text + "; border: " + (on ? "2px solid " + t.accent : "1px solid " + t.line) + "; background: " + (on ? t.surface : t.card),
+                nameStyle: "font-size: 0.9em; color: " + t.muted + "; white-space: nowrap; overflow: hidden; text-overflow: ellipsis"
+              };
+            }),
+            partStats: (function () {
+              var st = partState(miniSec);
+              return st.answered + " of " + st.total + " answered" + (st.flags ? " · " + st.flags + " flagged" : "");
+            })(),
+            partHeading: "Part " + (sectionData.indexOf(miniSec) + 1) + " · " + miniSec.title.replace(/^\d+ · /, ""),
+            partCells: range(miniSec.from, miniSec.to).map(function (n) {
+              var st = n === 20 ? "current" : n <= 19 ? "answered" : "open";
+              var c = cell(n, st, (n === 20 && flagged) || n === 5);
+              c.mini = c.style.replace("height: 40px", "height: 32px; padding: 0").replace("font-size: 0.82em", "font-size: 0.75em");
+              return c;
+            }),
+            sideQ: sideQ,
+            sideM: sideM,
+            qPressed: sideQ ? "true" : "false",
+            mPressed: sideM ? "true" : "false",
+            tabQ: "font: inherit; font-weight: " + (sideQ ? 700 : 500) + "; min-height: 48px; padding: 0 2px; margin-bottom: -1px; cursor: pointer; background: none; border: none; border-bottom: 3px solid " + (sideQ ? t.accent : "transparent") + "; color: " + (sideQ ? t.text : t.muted),
+            tabM: "font: inherit; font-weight: " + (sideM ? 700 : 500) + "; min-height: 48px; padding: 0 2px; margin-bottom: -1px; cursor: pointer; background: none; border: none; border-bottom: 3px solid " + (sideM ? t.accent : "transparent") + "; color: " + (sideM ? t.text : t.muted),
+            openQuestions: function () { self.setState({ side: "questions", lastTab: "questions" }); },
+            openMaterials: function () { self.setState({ side: "materials", lastTab: "materials" }); },
+            // One button: it opens the sidebar at the tab used last, or closes it. Q and M jump straight to a tab.
+            hasM: hasM,
+            noM: !hasM,
+            toggleSide: function () { self.setState({ side: anyOpen ? "none" : lastTab }); },
+            sideExpanded: anyOpen ? "true" : "false",
+            sideKeys: hasM ? "Q M" : "Q",
+            sideLabel: hasM ? "Questions & materials" : "Questions",
+            sideTitle: hasM ? "The question map and the materials (Q, M)" : "The question map (Q)",
+            sideBtn: "font: inherit; font-size: 1em; font-weight: 700; display: flex; align-items: center; gap: 8px; flex-shrink: 0; box-sizing: border-box; height: 44px; white-space: nowrap; padding: 0 14px; border-radius: 8px; cursor: pointer; border: 2px solid " + (anyOpen ? t.accent : t.lineStrong) + "; background: " + (anyOpen ? t.surface : t.card) + "; color: " + t.text,
+            closeSide: function () { self.setState({ side: "none" }); },
+            // The map is narrow; Materials widen the sidebar so a table of formulas has room.
+            // Chrome docks to the edges and content floats as cards: the sidebar is a bar like the top one.
+            sideStyle: "flex: 0 0 " + (sideM || stackedLayout ? "40%" : "320px") + "; min-width: 0; display: flex; flex-direction: column; overflow: hidden; background: " + t.card + "; border-left: 1px solid " + (edged ? t.lineStrong : t.line),
+            // With the sidebar closed the questions sit at reading width in the middle.
+            mainStyle: "flex: 1 1 0; box-sizing: border-box; display: flex; flex-direction: column; gap: 20px; min-width: 0; overflow: hidden; padding: 24px 28px" + (anyOpen ? "" : "; max-width: 876px; margin: 0 auto"),
+            toggleFocus: function () { self.setState(focus ? { focus: false } : { focus: true, side: "none" }); },
+            // Sheets are chips, so they read as a level below the sidebar's own tabs.
+            sheetTabs: sheetNames.map(function (label, i) {
+              var on = i === sheet;
+              return { label: label, selected: on ? "true" : "false", pick: function () { self.setState({ sheet: i }); }, style: "font: inherit; font-size: 0.85em; font-weight: " + (on ? 700 : 500) + "; min-height: 36px; padding: 0 12px; margin: 10px 0; border-radius: 999px; cursor: pointer; border: 1px solid " + (on ? t.accent : t.line) + "; background: " + (on ? t.surface : t.card) + "; color: " + (on ? t.text : t.muted) };
+            }),
+            toggleMenu: function () { self.setState({ menu: !s.menu }); },
+            toggleFlag: function () { self.setState({ flag20: !flagged }); },
+            smaller: function () { self.setState({ size: Math.max(14, size - 1) }); },
+            larger: function () { self.setState({ size: Math.min(22, size + 1) }); },
+            reset: function () { self.setState({ theme: null, font: null }); }
+          };
+        }
+      }
+    </script>
+  </body>
+</html>
