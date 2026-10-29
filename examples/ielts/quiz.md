@@ -3,7 +3,6 @@ title: IELTS Academic Writing practice
 description: A timed two-task writing test. Your answers are exported so an AI can give feedback and a band score.
 id: ielts-writing
 time_limit: 60m
-on_timeout: submit
 feedback: end
 theme: light
 tags: [writing]

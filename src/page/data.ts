@@ -63,8 +63,6 @@ export type PageQuiz = {
   descriptionHtml: string | null;
   /** seconds; absent when the quiz is untimed */
   timeLimit?: number;
-  /** `on_timeout: warn`: the page says time is up and goes on; absent for the default, `submit` */
-  timeoutWarns?: true;
   /** the interface language of the page chrome */
   uiLang: "en" | "vi";
   /** the language the quiz is written in: a numeric box warns about a decimal comma only for `en` */

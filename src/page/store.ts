@@ -242,7 +242,7 @@ export function createStore(data: PageData, deps: Deps = {}): Store {
     const limit = state.page.timeLimit;
     if (limit !== undefined) {
       const remaining = limit - run.counted;
-      if (remaining <= 0 && state.page.timeoutWarns !== true) {
+      if (remaining <= 0) {
         finish(state, at, true);
         return;
       }
@@ -331,7 +331,7 @@ export function createStore(data: PageData, deps: Deps = {}): Store {
           continue;
         }
         const started = startMs ?? at;
-        if (limit !== undefined && page.timeoutWarns !== true && at >= started + limit * 1000) {
+        if (limit !== undefined && at >= started + limit * 1000) {
           // the deadline passed while the page was closed: the attempt is submitted now, as of the deadline
           state.attempt.value = attempt;
           state.startedAt = started;

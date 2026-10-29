@@ -1,6 +1,6 @@
 ---
 title: T
-reference: sheet.md
+on_timeout: warn
 ---
 
 ## Q {type=single id=q}

@@ -31,7 +31,6 @@ export const FrontMatterSchema = z.object({
   profileLine: z.number().int().positive().nullable(),
   /** seconds; null when untimed */
   timeLimit: z.number().positive().nullable(),
-  onTimeout: z.enum(["submit", "warn"]),
   feedback: z.enum(["end", "instant"]),
   /** percent of auto-graded points; null when there is none */
   passMark: z.number().min(0).max(100).nullable(),

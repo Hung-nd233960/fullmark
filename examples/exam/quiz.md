@@ -5,7 +5,6 @@ description: |
   the end, shuffled questions and choices, a pass mark, and a random draw from a question bank.
   The answer key is still inside the HTML, so this is practice or honour-system use, not secure proctoring.
 time_limit: 20m
-on_timeout: submit
 feedback: end
 shuffle_questions: true
 shuffle_choices: true

@@ -258,9 +258,6 @@ export function pageQuizOf(
     title: quiz.frontMatter.title,
     descriptionHtml: quiz.frontMatter.description === null ? null : md.block(quiz.frontMatter.description),
     ...(quiz.frontMatter.timeLimit !== null ? { timeLimit: quiz.frontMatter.timeLimit } : {}),
-    ...(quiz.frontMatter.timeLimit !== null && quiz.frontMatter.onTimeout === "warn"
-      ? { timeoutWarns: true as const }
-      : {}),
     uiLang: quiz.frontMatter.uiLang,
     lang: quiz.frontMatter.lang,
     sections,

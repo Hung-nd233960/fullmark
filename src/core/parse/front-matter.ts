@@ -15,7 +15,6 @@ const KEYS = [
   "ui_lang",
   "profile",
   "time_limit",
-  "on_timeout",
   "feedback",
   "pass_mark",
   "shuffle_questions",
@@ -42,7 +41,6 @@ export function defaultFrontMatter(file: string): FrontMatter {
     profileGiven: false,
     profileLine: null,
     timeLimit: null,
-    onTimeout: "submit",
     feedback: "end",
     passMark: null,
     shuffleQuestions: false,
@@ -154,9 +152,6 @@ export function parseFrontMatter(o: Outline, file: string, r: Reporter): FrontMa
         else fm.timeLimit = s;
         break;
       }
-      case "on_timeout":
-        fm.onTimeout = oneOf(e, ["submit", "warn"] as const) ?? fm.onTimeout;
-        break;
       case "feedback":
         fm.feedback = oneOf(e, ["end", "instant"] as const) ?? fm.feedback;
         break;

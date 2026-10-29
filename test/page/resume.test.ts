@@ -252,14 +252,6 @@ describe("the timer", () => {
     expect(JSON.parse(memory.getItem(attemptKeyOf(memory)) as string).attempt.phase).toBe("submitted");
   });
 
-  it("with on_timeout: warn, passes the deadline and goes on", () => {
-    const { store, state } = open(text("time_limit: 90s\non_timeout: warn"), new Memory(), { at: T0 });
-    store.start("resume");
-    store.tick(T0 + 200_000);
-    expect(state().attempt.value.phase).toBe("answering");
-    expect(state().elapsed.value).toBe(200);
-  });
-
   it("says 5 minutes left and 1 minute left once each, and never at every second", () => {
     const { store, state } = open(text("time_limit: 6m"), new Memory(), { at: T0 });
     store.start("resume");
