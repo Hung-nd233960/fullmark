@@ -6,6 +6,7 @@ import {
   answeringMap,
   type Cell,
   chosenPart,
+  currentOf,
   hasMaterials,
   type Part,
   partOpen,
@@ -34,6 +35,8 @@ const GLYPH: Record<ResultState, string> = {
 export function SidebarButton({ t, state, store }: { t: PageMessages; state: QuizState; store: Store }) {
   const open = state.sidebar.value;
   const materials = hasMaterials(state.page);
+  const phone = store.screen.phone.value;
+  const full = materials ? t.sidebarLabelMaterials : t.sidebarLabel;
   return (
     <button
       type="button"
@@ -41,11 +44,12 @@ export function SidebarButton({ t, state, store }: { t: PageMessages; state: Qui
       data-action="sidebar"
       aria-expanded={open}
       aria-keyshortcuts={materials ? "Q M" : "Q"}
+      aria-label={phone && materials ? full : undefined}
       title={materials ? t.sidebarTitleMaterials : t.sidebarTitle}
       onClick={() => store.sidebar(state.page.id)}
     >
-      <Icon name="panel" size={18} />
-      {materials ? t.sidebarLabelMaterials : t.sidebarLabel}
+      <Icon name={phone && materials ? "book" : "panel"} size={18} />
+      {phone ? (materials ? t.materialsLabel : t.sidebarLabel) : full}
     </button>
   );
 }
@@ -370,10 +374,83 @@ function CloseButton({ t, state, store }: { t: PageMessages; state: QuizState; s
 export function Sidebar({ t, state, store }: { t: PageMessages; state: QuizState; store: Store }) {
   const attempt = state.attempt.value;
   const graded = state.graded.value;
-  const onJump = (id: string): void => jumpTo(store, state.page.id, id);
-  const form = sideForm(state.page, attempt.phase);
+  const phone = store.screen.phone.value;
+  // on a phone a tapped cell first closes the sidebar (the questions show again), then the card is reached
+  const onJump = (id: string): void => {
+    if (!phone) {
+      jumpTo(store, state.page.id, id);
+      return;
+    }
+    store.sidebar(state.page.id, false);
+    setTimeout(() => jumpTo(store, state.page.id, id), 0); // after the render that shows the questions again
+  };
+  const form = sideForm(state.page, attempt.phase, phone);
   const results = attempt.phase === "submitted" && graded;
   const tab = state.side.value;
+  if (phone) {
+    const here = currentOf(attempt.plan.questions, state.current.value);
+    const back =
+      attempt.phase === "submitted"
+        ? t.backToResults
+        : here === null
+          ? t.backToQuestions
+          : t.backToQuestion(attempt.plan.questions.indexOf(here) + 1);
+    return (
+      <aside class="fm-side" data-form={form} data-tab={tab} data-phone aria-label={t.sidebarAria}>
+        <div class="fm-back-row">
+          <button
+            type="button"
+            class="fm-back"
+            data-action="close-sidebar"
+            onClick={() => {
+              store.sidebar(state.page.id, false);
+              focusSidebarButton();
+            }}
+          >
+            <Icon name="back" size={18} stroke={2.2} />
+            {back}
+          </button>
+        </div>
+        {form === "tabs" ? (
+          <div class="fm-side-head">
+            <div class="fm-side-tabs" role="tablist" aria-label={t.sidebarAria} onKeyDown={(e) => tabKeys(e)}>
+              {(["questions", "materials"] as const).map((name) => (
+                <button
+                  key={name}
+                  type="button"
+                  role="tab"
+                  class="fm-side-tab"
+                  data-side-tab={name}
+                  aria-selected={tab === name}
+                  tabIndex={tab === name ? 0 : -1}
+                  onClick={() => {
+                    state.side.value = name;
+                  }}
+                >
+                  {name === "questions" ? t.sidebarLabel : t.materialsLabel}
+                </button>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <div class="fm-side-head">
+            <h2 class="fm-side-title">{t.sidebarLabel}</h2>
+          </div>
+        )}
+        {form === "tabs" && tab === "materials" ? (
+          <Sheets t={t} state={state} />
+        ) : (
+          <div class="fm-side-body">
+            {results ? (
+              <ResultsMap t={t} state={state} graded={graded} onJump={onJump} />
+            ) : (
+              <AnsweringMap t={t} state={state} onJump={onJump} />
+            )}
+          </div>
+        )}
+      </aside>
+    );
+  }
   if (form === "stacked") {
     return (
       <aside class="fm-side" data-form="stacked" aria-label={t.sidebarAria}>

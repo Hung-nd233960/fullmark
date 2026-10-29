@@ -10,7 +10,7 @@ import { ResultsCard } from "./ResultsCard";
 import { limitOf, missedIds, num } from "./results";
 import { Sidebar, SidebarButton } from "./Sidebar";
 import { mixedPoints, quizCount, quizPoints, sectionPoints, wholeTime } from "./start";
-import { stampParts, statusFor } from "./status";
+import { compactLine, stampParts, statusFor } from "./status";
 import { clockText, download, exportFor, type QuizState, type Store } from "./store";
 
 /** The questions of the plan, in its order, with the section each belongs to; a section's run of questions is one group. */
@@ -343,12 +343,16 @@ function StatusLine({ t, state, store }: { t: PageMessages; state: QuizState; st
 function FocusButton({ t, store }: { t: PageMessages; store: Store }) {
   const { available, fullscreen } = store.screen;
   if (!available.value) return null;
+  const phone = store.screen.phone.value;
+  const label = fullscreen.value ? t.focusModeOn : t.focusMode;
   return (
     <button
       type="button"
-      class="fm-button"
+      class={phone ? "fm-button fm-icon-button" : "fm-button"}
       data-action="focus-mode"
       aria-pressed={fullscreen.value}
+      aria-label={phone ? label : undefined}
+      title={phone ? label : undefined}
       onClick={() => store.fullscreen()}
     >
       <svg
@@ -364,7 +368,7 @@ function FocusButton({ t, store }: { t: PageMessages; store: Store }) {
       >
         <path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" />
       </svg>
-      {fullscreen.value ? t.focusModeOn : t.focusMode}
+      {phone ? null : label}
     </button>
   );
 }
@@ -400,10 +404,31 @@ function Dock({
     watch.observe(el);
     return () => watch.disconnect();
   }, []);
+  const phone = store.screen.phone.value;
+  const screen = store.screen;
+  const line = phone
+    ? compactLine({
+        page: state.page,
+        attempt: state.attempt.value,
+        elapsed: state.elapsed.value,
+        sectionSeconds: state.sectionSeconds.value,
+        current: state.current.value,
+        fullscreenClock: screen.fullscreen.value ? screen.clock.value : null,
+      })
+    : "";
   return (
-    <div class="fm-dock" data-dock ref={dock}>
+    <div class="fm-dock" data-dock data-phone={phone ? "true" : undefined} ref={dock}>
       <div class="fm-topbar">
-        <h1 class="fm-title">{state.page.title}</h1>
+        {phone ? (
+          <div class="fm-phone-title">
+            <h1 class="fm-title">{state.page.title}</h1>
+            <span class="fm-phone-line" data-compact>
+              {line}
+            </span>
+          </div>
+        ) : (
+          <h1 class="fm-title">{state.page.title}</h1>
+        )}
         <div class="fm-topbar-actions">
           <SidebarButton t={t} state={state} store={store} />
           <FocusButton t={t} store={store} />
@@ -414,7 +439,7 @@ function Dock({
           ) : null}
         </div>
       </div>
-      <StatusLine t={t} state={state} store={store} />
+      {phone ? null : <StatusLine t={t} state={state} store={store} />}
       <p class="fm-sr" role="status" aria-live="polite">
         {state.said.value}
       </p>
@@ -462,9 +487,15 @@ function QuizView({ state, api, store }: { state: QuizState; api: Api; store: St
   const attempt = state.attempt.value;
   const graded = state.graded.value;
   const started = attempt.phase !== "start";
-  const form = sideForm(page, attempt.phase);
+  const phone = store.screen.phone.value;
+  const form = sideForm(page, attempt.phase, phone);
   const wide =
-    started && state.sidebar.value && (form === "stacked" || (form === "tabs" && state.side.value === "materials"));
+    !phone &&
+    started &&
+    state.sidebar.value &&
+    (form === "stacked" || (form === "tabs" && state.side.value === "materials"));
+  // on a phone an open sidebar (or the start screen's Materials panel) takes the screen: what is under it is not there
+  const covered = phone && (started ? state.sidebar.value : state.shelf.value);
   const materials = page.materials !== undefined && page.materials.length > 0;
   let number = 0;
   const missed = graded ? new Set(missedIds(graded)) : new Set<string>();
@@ -487,7 +518,12 @@ function QuizView({ state, api, store }: { state: QuizState; api: Api; store: St
         data-side={started && state.sidebar.value ? "open" : "closed"}
         data-wide={wide ? "true" : undefined}
       >
-        <div class="fm-main">
+        <div
+          class="fm-main"
+          data-covered={covered ? "true" : undefined}
+          inert={covered}
+          aria-hidden={covered ? "true" : undefined}
+        >
           {attempt.phase === "start" ? <Resume t={t} state={state} store={store} /> : null}
           {!started ? (
             <header class="fm-header">

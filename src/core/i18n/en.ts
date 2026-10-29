@@ -227,6 +227,11 @@ export const en = {
     sidebarAria: "Sidebar",
     closeSidebar: "Close the sidebar",
     closeSidebarTitle: "Close (Esc)",
+    focusClockCompact: (clock: string) => `Clock ${clock}`,
+    timeLeftCompact: (clock: string) => `${clock} left`,
+    backToQuestion: (n: number) => `Back to question ${n}`,
+    backToQuestions: "Back to the questions",
+    backToResults: "Back to the results",
     mapPart: (n: number, title: string | null) => (title === null ? `Part ${n}` : `${n} · ${title}`),
     mapCount: (answered: number, total: number, flags: number) =>
       `${answered}/${total}${flags === 0 ? "" : flags === 1 ? " · 1 flag" : ` · ${flags} flags`}`,

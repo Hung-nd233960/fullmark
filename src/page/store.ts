@@ -64,7 +64,12 @@ export type Screen = {
   wanted: Signal<boolean>;
   /** the local time as `14:05`, for the status line in fullscreen */
   clock: Signal<string>;
+  /** the window is below 760 px wide: the phone's top bar and full-screen sidebar (`PHONE_QUERY`) */
+  phone: Signal<boolean>;
 };
+
+/** The phone layout's one media query; the CSS repeats it (`max-width: 759px`). */
+export const PHONE_QUERY = "(max-width: 759px)";
 
 export type StartOptions = { part?: string | null; seed?: string; now?: Date };
 
@@ -171,6 +176,7 @@ export function createStore(data: PageData, deps: Deps = {}): Store {
     fullscreen: signal(false),
     wanted: signal(data.focus === true),
     clock: signal(clockOf(now())),
+    phone: signal(false),
   };
   const runs = new Map<string, Run>();
   /** the section of every question, per quiz */
@@ -545,6 +551,12 @@ export function createStore(data: PageData, deps: Deps = {}): Store {
         screen.available.value = document.fullscreenEnabled === true;
         screen.fullscreen.value = document.fullscreenElement !== null;
       }
+      const narrow = typeof window.matchMedia === "function" ? window.matchMedia(PHONE_QUERY) : null;
+      const onNarrow = (): void => {
+        screen.phone.value = narrow?.matches === true;
+      };
+      onNarrow();
+      narrow?.addEventListener("change", onNarrow);
       const onFullscreen = (): void => {
         screen.fullscreen.value = document.fullscreenElement !== null;
         // entering Focus mode closes the sidebars; nothing is stored, so leaving finds them closed
@@ -574,6 +586,7 @@ export function createStore(data: PageData, deps: Deps = {}): Store {
       window.addEventListener("pagehide", onLeave);
       return () => {
         clearInterval(timer);
+        narrow?.removeEventListener("change", onNarrow);
         document.removeEventListener("fullscreenchange", onFullscreen);
         document.removeEventListener("visibilitychange", onVisibility);
         window.removeEventListener("pagehide", onLeave);

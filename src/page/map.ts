@@ -73,10 +73,12 @@ export const hasMaterials = (page: PageQuiz): boolean => (page.materials?.length
 
 /**
  * How the sidebar is laid out: `stacked` (the map over the sheets, 40%) while answering and `tabs` (Questions and
- * Materials) after Submit, for a quiz with materials; `plain` (the map alone) otherwise.
+ * Materials) after Submit, for a quiz with materials; `plain` (the map alone) otherwise. On a phone a quiz with materials
+ * has the tabs in both phases.
  */
-export function sideForm(page: PageQuiz, phase: Attempt["phase"]): "plain" | "stacked" | "tabs" {
+export function sideForm(page: PageQuiz, phase: Attempt["phase"], phone = false): "plain" | "stacked" | "tabs" {
   if (!hasMaterials(page)) return "plain";
+  if (phone) return "tabs"; // too narrow to split: Questions and Materials are tabs in both phases
   return phase === "submitted" ? "tabs" : "stacked";
 }
 

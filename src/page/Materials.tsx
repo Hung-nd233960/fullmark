@@ -122,7 +122,8 @@ export function MaterialsButton({ t, state }: { t: PageMessages; state: QuizStat
   );
 }
 
-/** Where the focus returns when the start screen's panel closes. */
+/** Where the focus returns when the start screen's panel closes (after the render that shows the start screen again). */
 export const focusMaterialsButton = (): void => {
-  if (typeof document !== "undefined") document.querySelector<HTMLElement>("[data-action=materials]")?.focus();
+  if (typeof document === "undefined") return;
+  setTimeout(() => document.querySelector<HTMLElement>("[data-action=materials]")?.focus(), 0);
 };

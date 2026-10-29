@@ -602,8 +602,61 @@
   .fm-materials-button {
     padding: 0 14px;
   }
-  /* below 760px an open sidebar covers the questions (2f3 replaces this with the phone's own screen) */
+  /* the phone, below 760px (Materials on a phone board): the compact top bar and the sidebar as a screen of its own */
   @media (max-width: 759px) {
+    .fm-dock .fm-topbar {
+      flex-wrap: nowrap;
+      gap: 10px;
+      padding: 10px 16px;
+    }
+
+    .fm-phone-title {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    .fm-phone-title .fm-title {
+      flex: none;
+      font-size: 1em;
+      line-height: 1.55;
+    }
+
+    .fm-phone-line {
+      font-size: 0.8em;
+      font-variant-numeric: tabular-nums;
+      color: var(--muted);
+    }
+
+    .fm-dock .fm-topbar-actions {
+      flex: none;
+      flex-wrap: nowrap;
+      gap: 10px;
+    }
+
+    .fm-dock .fm-topbar .fm-button {
+      height: 44px;
+      padding: 0 12px;
+    }
+
+    .fm-dock .fm-topbar .fm-icon-button {
+      width: 44px;
+      padding: 0;
+    }
+
+    .fm-dock .fm-filter {
+      padding: 10px 16px;
+    }
+
+    .fm-dock .fm-filter-group {
+      flex-wrap: wrap;
+    }
+
+    .fm-main[data-covered] {
+      visibility: hidden;
+    }
+
     .fm-body[data-side="open"] {
       grid-template-columns: minmax(0, 1fr);
     }
@@ -615,8 +668,102 @@
       bottom: 0;
       left: 0;
       z-index: 4;
+      align-self: stretch;
       height: auto;
+      overscroll-behavior: contain;
       border-left: 0;
+    }
+
+    .fm-back-row {
+      display: flex;
+      align-items: center;
+      padding: 8px 12px 0;
+    }
+
+    .fm-back {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      min-height: 44px;
+      padding: 0 8px;
+      font: inherit;
+      font-weight: 600;
+      color: var(--accent);
+      cursor: pointer;
+      background: none;
+      border: 0;
+    }
+
+    .fm-side[data-phone] .fm-side-head {
+      padding: 0 16px;
+    }
+
+    .fm-side[data-phone] .fm-side-body {
+      padding: 16px;
+    }
+
+    .fm-chips {
+      flex-wrap: nowrap;
+      padding: 0 16px;
+      overflow-x: auto;
+      border-bottom: 0;
+    }
+
+    .fm-chip {
+      flex: none;
+      min-height: 44px;
+      margin: 10px 0 0;
+      font-size: 0.9em;
+      white-space: nowrap;
+    }
+
+    .fm-sheet-panel {
+      padding: 16px;
+    }
+
+    .fm-sheet table {
+      font-size: 0.88em;
+    }
+
+    .fm-grid {
+      gap: 6px;
+    }
+
+    .fm-cell,
+    .fm-map-head {
+      min-height: 44px;
+    }
+
+    .fm-cell {
+      height: 44px;
+    }
+
+    .fm-dock .fm-filter-button {
+      height: 44px;
+    }
+
+    .fm-by-part {
+      padding-left: 0;
+      border-left: 0;
+    }
+
+    .fm-by-part .fm-part-row {
+      grid-template-columns: minmax(0, 1fr) 64px auto 3.2em;
+      gap: 8px;
+    }
+
+    .fm-quiz .fm-flag {
+      min-height: 44px;
+    }
+
+    .fm-shelf {
+      width: 100%;
+      border-left: 0;
+      box-shadow: none;
+    }
+
+    .fm-shelf-head {
+      padding: 8px 16px;
     }
   }
 }

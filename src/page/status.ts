@@ -134,3 +134,25 @@ export function statusFor({
   if (fullscreenClock !== null) segments.push({ kind: "clock", text: t.focusClock(fullscreenClock) });
   return segments;
 }
+
+/**
+ * The phone's one muted line under the title (TECHNICAL_DESIGN.md, section 8, "On a phone"): while answering the time
+ * and the progress ("18:42 left · 19 of 32 answered", untimed "Time 18:42 · ..."), then the clock in Focus mode; after
+ * Submit when it was handed in. The part, the current question and the flags are left out.
+ */
+export function compactLine(input: StatusInput): string {
+  const t = pageText(input.page);
+  const limit = limitOf(input.page, input.attempt);
+  const parts: string[] = [];
+  for (const segment of statusFor(input)) {
+    if (segment.kind === "time") {
+      const left = limit === undefined ? null : limit - input.elapsed;
+      parts.push(left !== null && left > 0 ? t.timeLeftCompact(clockText(left)) : segment.text);
+    } else if (segment.kind === "progress" || segment.kind === "submitted") {
+      parts.push(segment.text);
+    } else if (segment.kind === "clock" && input.fullscreenClock !== null) {
+      parts.push(t.focusClockCompact(input.fullscreenClock));
+    }
+  }
+  return parts.join(" · ");
+}

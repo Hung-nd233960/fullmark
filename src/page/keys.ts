@@ -57,7 +57,7 @@ export function keyHandler(store: Store): (event: KeyLike) => void {
       if (isM) {
         if (!hasMaterials(state.page)) return;
         event.preventDefault();
-        const tabs = sideForm(state.page, state.attempt.value.phase) === "tabs";
+        const tabs = sideForm(state.page, state.attempt.value.phase, store.screen.phone.value) === "tabs";
         if (open && tabs && state.side.value === "materials") {
           const inside = focusInSidebar();
           store.sidebar(quiz, false);
@@ -82,7 +82,7 @@ export function keyHandler(store: Store): (event: KeyLike) => void {
         return;
       }
       event.preventDefault();
-      const tabs = sideForm(state.page, state.attempt.value.phase) === "tabs";
+      const tabs = sideForm(state.page, state.attempt.value.phase, store.screen.phone.value) === "tabs";
       if (open && tabs && state.side.value === "materials") {
         state.side.value = "questions";
         setTimeout(focusMap, 0);

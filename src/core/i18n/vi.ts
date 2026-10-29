@@ -206,6 +206,11 @@ export const vi = {
     sidebarAria: "Thanh bên",
     closeSidebar: "Đóng thanh bên",
     closeSidebarTitle: "Đóng (Esc)",
+    focusClockCompact: (clock: string) => `Đồng hồ ${clock}`,
+    timeLeftCompact: (clock: string) => `${clock} còn lại`,
+    backToQuestion: (n: number) => `Quay lại câu ${n}`,
+    backToQuestions: "Quay lại các câu hỏi",
+    backToResults: "Quay lại kết quả",
     mapPart: (n: number, title: string | null) => (title === null ? `Phần ${n}` : `${n} · ${title}`),
     mapCount: (answered: number, total: number, flags: number) =>
       `${answered}/${total}${flags === 0 ? "" : ` · ${flags} đánh dấu`}`,

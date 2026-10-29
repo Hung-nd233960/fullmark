@@ -51,6 +51,7 @@ const PATHS = {
       <path d="M4 21V5M9 7h6" />
     </>
   ),
+  back: <path d="M15 5l-7 7 7 7" />,
   dot: <circle cx="12" cy="12" r="2.5" fill="currentColor" />,
 } satisfies Record<string, ComponentChildren>;
 
