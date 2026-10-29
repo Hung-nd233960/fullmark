@@ -605,14 +605,19 @@
   /* the phone, below 760px (Materials on a phone board): the compact top bar and the sidebar as a screen of its own */
   @media (max-width: 759px) {
     .fm-dock .fm-topbar {
-      flex-wrap: nowrap;
-      gap: 10px;
+      flex-wrap: wrap;
+      gap: 6px 10px;
       padding: 10px 16px;
     }
 
+    .fm-quiz button {
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* the title keeps a line of its own when the buttons leave it under 9rem: they drop under it, to the right */
     .fm-phone-title {
       display: flex;
-      flex: 1;
+      flex: 1 1 9rem;
       flex-direction: column;
       min-width: 0;
     }
@@ -633,6 +638,7 @@
       flex: none;
       flex-wrap: nowrap;
       gap: 10px;
+      margin-left: auto;
     }
 
     .fm-dock .fm-topbar .fm-button {
