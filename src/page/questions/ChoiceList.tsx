@@ -1,6 +1,6 @@
 import { readAnswer } from "../../core/attempt/answers";
 import type { PageQuestion } from "../data";
-import { Badges, type Ctx, Html } from "./shared";
+import { Badges, type Ctx, Html, letterOf } from "./shared";
 
 type Props = { q: Extract<PageQuestion, { type: "single" | "multi" }>; c: Ctx; multi: boolean };
 
@@ -31,7 +31,7 @@ export function ChoiceList({ q, c, multi }: Props) {
 
   return (
     <ul class="fm-choices">
-      {(c.order && c.order.length === q.choices.length ? c.order : q.choices.map((_, i) => i)).map((i) => {
+      {(c.order && c.order.length === q.choices.length ? c.order : q.choices.map((_, i) => i)).map((i, position) => {
         const choice = q.choices[i] as (typeof q.choices)[number];
         const isPicked = picked.has(i);
         const isRight = c.submitted && keyed?.choices[i]?.correct === true;
@@ -40,6 +40,7 @@ export function ChoiceList({ q, c, multi }: Props) {
           <li key={i} class="fm-choice" data-picked={isPicked} data-correct={c.submitted ? isRight : undefined}>
             <label for={id}>
               <input
+                class="fm-native"
                 type={multi ? "checkbox" : "radio"}
                 id={id}
                 name={c.name}
@@ -48,6 +49,9 @@ export function ChoiceList({ q, c, multi }: Props) {
                 disabled={c.submitted}
                 onChange={() => toggle(i)}
               />
+              <span class="fm-letter" aria-hidden="true">
+                {letterOf(position)}
+              </span>
               <Html html={choice.html} tag="span" class="fm-choice-text" />
               {c.submitted ? <Badges t={t} picked={isPicked} right={isRight} /> : null}
             </label>

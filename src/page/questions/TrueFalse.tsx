@@ -21,6 +21,7 @@ export function TrueFalse({ c }: { q: Extract<PageQuestion, { type: "truefalse" 
           >
             <label for={id}>
               <input
+                class="fm-native"
                 type="radio"
                 id={id}
                 name={c.name}
@@ -28,6 +29,9 @@ export function TrueFalse({ c }: { q: Extract<PageQuestion, { type: "truefalse" 
                 disabled={c.submitted}
                 onChange={() => c.set({ value })}
               />
+              <span class="fm-letter" aria-hidden="true">
+                {value ? t.trueLetter : t.falseLetter}
+              </span>
               <span class="fm-choice-text">{value ? t.trueLabel : t.falseLabel}</span>
               {c.submitted ? <Badges t={t} picked={isPicked} right={isRight} /> : null}
             </label>

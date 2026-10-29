@@ -9,9 +9,13 @@ export function Numeric({ q, c }: { q: Extract<PageQuestion, { type: "numeric" }
   return (
     <div class="fm-text-answer">
       <div class="fm-numeric">
+        <label class="fm-answer-label" for={`${c.name}/input`}>
+          {t.yourAnswer}
+        </label>
         <input
           type="text"
-          class="fm-text"
+          id={`${c.name}/input`}
+          class="fm-text fm-text-short"
           autocomplete="off"
           spellcheck={false}
           aria-labelledby={`${c.name}/prompt`}
@@ -25,7 +29,14 @@ export function Numeric({ q, c }: { q: Extract<PageQuestion, { type: "numeric" }
         {q.unit !== "" ? <span class="fm-unit">{q.unit}</span> : null}
       </div>
       {!c.submitted && wantsPoint(c.quiz, raw) ? <CommaWarning t={t} /> : null}
-      {c.submitted ? <Shown t={t} given={raw} correct={key ? acceptedNumber(t, key, c.quiz.uiLang) : null} /> : null}
+      {c.submitted ? (
+        <Shown
+          t={t}
+          given={raw}
+          correct={key ? acceptedNumber(t, key, c.quiz.uiLang) : null}
+          status={c.result?.status}
+        />
+      ) : null}
     </div>
   );
 }

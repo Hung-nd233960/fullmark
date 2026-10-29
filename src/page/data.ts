@@ -20,6 +20,8 @@ type PageBase = {
   graded: boolean;
   promptHtml: string;
   hintHtml: string | null;
+  /** the author's tags, shown as `#tag` in the card's header */
+  tags: string[];
 };
 
 /** A union on `type`: each type holds only what the learner may see before Submit. */

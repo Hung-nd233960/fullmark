@@ -42,7 +42,7 @@ const dataOf = (html: string): PageData => {
 describe("page data: each type holds only what the learner may see", () => {
   const html = buildPage([types], options);
   const questions = questionsOf(dataOf(html));
-  const base = ["graded", "hintHtml", "id", "points", "promptHtml", "type"];
+  const base = ["graded", "hintHtml", "id", "points", "promptHtml", "tags", "type"];
   const keysOf = (id: string) => Object.keys(questions.get(id) as object).sort();
 
   it("has the exact keys of the union, per type", () => {

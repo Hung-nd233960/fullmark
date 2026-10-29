@@ -3,6 +3,7 @@ import type { GradedQuestion } from "../../core/grade";
 import { en, type Messages, vi } from "../../core/i18n";
 import type { Question } from "../../core/ir";
 import type { PageQuiz } from "../data";
+import { Icon } from "../icons";
 import { decimal, num } from "../results";
 
 export type PageMessages = Messages["page"];
@@ -66,7 +67,7 @@ export function Html({
 const ICONS: Record<GradedQuestion["status"], string> = {
   correct: "✓",
   partial: "◐",
-  incorrect: "✗",
+  incorrect: "✕",
   unanswered: "–",
   pending: "…",
   ungraded: "•",
@@ -85,7 +86,7 @@ export function ResultLine({
 }) {
   const points = result.points > 0 ? ` · ${t.scoreLine(num(result.earned ?? 0, lang), num(result.points, lang))}` : "";
   return (
-    <p
+    <span
       class="fm-result"
       data-status={result.status}
       data-qid={result.id}
@@ -98,19 +99,38 @@ export function ResultLine({
       </span>{" "}
       <strong>{t.status[result.status]}</strong>
       {points}
-    </p>
+    </span>
   );
 }
 
-/** "Your answer" and "Correct answer" badges, as words so that colour is never the only sign. */
+/**
+ * What a choice row says on its right after Submit, with the state's icon (the board's "Correct answer" and "Your
+ * answer", bold, no pills). A correct pick shows only "Correct answer"; its accessible name still says it was the
+ * learner's.
+ */
 export function Badges({ t, picked, right }: { t: PageMessages; picked: boolean; right: boolean }) {
-  return (
-    <>
-      {picked ? <span class="fm-badge fm-badge-picked">{t.yourAnswer}</span> : null}
-      {right ? <span class="fm-badge fm-badge-right">{t.correctAnswer}</span> : null}
-    </>
-  );
+  if (right) {
+    return (
+      <>
+        {picked ? <span class="fm-sr">{`${t.yourAnswer}, `}</span> : null}
+        <span class="fm-badge fm-badge-right">
+          <Icon name="check" size={18} />
+          {t.correctAnswer}
+        </span>
+      </>
+    );
+  }
+  return picked ? (
+    <span class="fm-badge fm-badge-picked">
+      <Icon name="cross" size={18} />
+      {t.yourAnswer}
+    </span>
+  ) : null;
 }
+
+/** The letter badge of a choice row: A, B, ... in the order shown. Its row says the rest, so it is hidden from readers. */
+export const letterOf = (position: number): string =>
+  position < 26 ? String.fromCharCode(65 + position) : String(position + 1);
 
 /** A decimal comma in a box that wants a number, in a quiz written in English (the rule follows `lang`). */
 export const wantsPoint = (quiz: PageQuiz, text: string): boolean => quiz.lang === "en" && text.includes(",");
@@ -152,17 +172,31 @@ const pct = (fraction: number, lang: "en" | "vi"): string => {
   return lang === "vi" ? text.replace(".", ",") : text;
 };
 
-/** The `Your answer` / `Correct answer` pair under a text-like question after Submit. */
-export function Shown({ t, given, correct }: { t: PageMessages; given: string; correct: string | null }) {
+/** The learner's answer beside the accepted one, in two boxes, under a text-like question after Submit. */
+export function Shown({
+  t,
+  given,
+  correct,
+  status,
+}: {
+  t: PageMessages;
+  given: string;
+  correct: string | null;
+  /** the grader's word, which colours the learner's box */
+  status?: GradedQuestion["status"];
+}) {
+  const empty = given.trim() === "";
   return (
     <dl class="fm-shown">
-      <dt>{t.yourAnswer}</dt>
-      <dd>{given.trim() === "" ? t.noAnswer : given}</dd>
+      <div class="fm-shown-box" data-empty={empty} data-status={empty ? undefined : status}>
+        <dt>{t.yourAnswer}</dt>
+        <dd>{empty ? t.noAnswer : given}</dd>
+      </div>
       {correct !== null ? (
-        <>
-          <dt>{t.correctAnswer}</dt>
+        <div class="fm-shown-box fm-shown-accepted">
+          <dt>{t.acceptedAnswers}</dt>
           <dd>{correct}</dd>
-        </>
+        </div>
       ) : null}
     </dl>
   );

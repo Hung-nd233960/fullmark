@@ -136,6 +136,7 @@ function pageQuestion(
     graded: q.graded,
     promptHtml: md.block(q.prompt),
     hintHtml: q.hint ? md.block(q.hint.text) : null,
+    tags: q.tags,
   };
   switch (q.type) {
     case "single":
