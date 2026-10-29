@@ -42,7 +42,13 @@ export async function loadHighlighter(languages: Iterable<string>): Promise<High
   return (code, lang) => {
     const name = lang.toLowerCase();
     if (!wanted.includes(name)) return null;
-    const { tokens } = highlighter.codeToTokens(code.replace(/\n$/, ""), { lang: name, theme: "fullmark" });
+    const { tokens } = highlighter.codeToTokens(code.replace(/\n$/, ""), {
+      lang: name,
+      theme: "fullmark",
+      // Shiki gives up on a line after 500 ms by default and leaves the rest uncoloured, so a loaded machine would
+      // build a different page from an idle one: 0 means no limit, and the output depends on the code alone
+      tokenizeTimeLimit: 0,
+    });
     const lines = tokens.map((line) =>
       line
         .map((t) => {
