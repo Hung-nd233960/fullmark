@@ -346,6 +346,19 @@ describe("the map after Submit", () => {
     expect(cells.map((c) => c.state)).toEqual(["unanswered", "ungraded"]);
   });
 
+  it("lists the not-scored swatch in the legend only when such a question is in the map", () => {
+    const legend = (text: string) => {
+      const s = setup(text);
+      s.store.start(s.id, { seed: "seed0001" });
+      s.store.submit(s.id);
+      s.store.sidebar(s.id, true);
+      return renderToString(h(Sidebar, { t: en.page, state: s.state(), store: s.store }));
+    };
+    const head = ["---", "title: Mixed", "id: mixed", "---", "", mcq("m1")];
+    expect(legend([...head, "## Rate it. {type=scale id=m2}\n\n- 1\n- 2\n"].join("\n"))).toContain("not scored");
+    expect(legend(head.join("\n"))).not.toContain("not scored");
+  });
+
   it("prints a heading row per part with the results card's points, and words on every cell", () => {
     const s = submitted();
     const html = renderToString(h(Sidebar, { t: en.page, state: s.state(), store: s.store }));
