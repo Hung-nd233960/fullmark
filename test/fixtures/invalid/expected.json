@@ -134,6 +134,10 @@
     "rule": "syntax.front-matter",
     "line": 1
   },
+  "fm-reference": {
+    "rule": "syntax.unknown-key",
+    "line": 3
+  },
   "fm-on-timeout": {
     "rule": "syntax.unknown-key",
     "line": 3

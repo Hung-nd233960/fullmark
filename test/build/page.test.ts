@@ -64,6 +64,7 @@ describe("build page: the answer key", () => {
         timeUsed: 60,
         sectionTime: {},
         flagged: [],
+        checked: [],
         timedOut: false,
       },
       phase: "submitted" as const,

@@ -118,7 +118,7 @@ export function readSaved(text: string | null, quiz: PageQuiz): Saved | null {
     if (a.phase !== "answering" && a.phase !== "submitted") return null;
     const { plan, state } = a;
     if (!isObject(plan) || !isObject(state)) return null;
-    if (!["full", "bank", "section"].includes(plan.source as string)) return null;
+    if (!["full", "bank", "section", "retry"].includes(plan.source as string)) return null;
     if (plan.section !== undefined && typeof plan.section !== "string") return null;
     if (plan.seed !== undefined && typeof plan.seed !== "string") return null;
     if (!isStrings(plan.questions) || plan.questions.length === 0) return null;
@@ -139,7 +139,7 @@ export function readSaved(text: string | null, quiz: PageQuiz): Saved | null {
     if (!isObject(state.sectionTime) || !Object.values(state.sectionTime).every((n) => typeof n === "number")) {
       return null;
     }
-    if (!isStrings(state.flagged) || typeof state.timedOut !== "boolean") return null;
+    if (!isStrings(state.flagged) || !isStrings(state.checked) || typeof state.timedOut !== "boolean") return null;
     if (a.phase === "submitted" && state.submittedAt === null) return null;
     return {
       v: 1,

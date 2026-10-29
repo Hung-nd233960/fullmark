@@ -404,7 +404,9 @@
       "model": "claude-opus-5-5",
       "at": "2026-10-24T09:00:00"
     },
-    "warnings": []
+    "warnings": [
+      "results_hash differs from this attempt: these grades were made for another results file"
+    ]
   },
   "unknown": []
 }

@@ -1,1 +1,1 @@
-{"status":"written","file":"results.json","report":"results-report.json","score":{"earned":7.5,"points":10,"percent":75,"pending":15,"pass":{"mark":50,"passed":true}},"pending":15,"warnings":[]}
+{"status":"written","file":"results.json","report":"results-report.json","score":{"earned":7.5,"points":10,"percent":75,"pending":15,"pass":{"mark":50,"passed":true}},"pending":15,"warnings":["results_hash differs from this attempt: these grades were made for another results file"]}

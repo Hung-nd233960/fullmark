@@ -44,6 +44,8 @@ export const AttemptStateSchema = z.object({
   sectionTime: z.record(z.string(), z.number().min(0)),
   /** the ids of the questions the learner flagged for review */
   flagged: z.array(z.string()),
+  /** `feedback: instant`: the ids of the questions the learner checked, now locked; empty otherwise */
+  checked: z.array(z.string()),
   /** true when `time_limit` ran out and the page submitted */
   timedOut: z.boolean(),
 });

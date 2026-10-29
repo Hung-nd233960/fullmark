@@ -9,6 +9,7 @@ export function emptyState(): AttemptState {
     timeUsed: 0,
     sectionTime: {},
     flagged: [],
+    checked: [],
     timedOut: false,
   };
 }

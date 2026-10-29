@@ -15,6 +15,10 @@
 
 Goal 50%: reached*
 
+## Warnings
+
+- results_hash differs from this attempt: these grades were made for another results file
+
 ## By section
 
 | Name | Questions | Earned | Points | Percent |

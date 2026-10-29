@@ -74,6 +74,7 @@ function goodAttempt(hash: string) {
       timeUsed: 12,
       sectionTime: {},
       flagged: [],
+      checked: [],
       timedOut: false,
     },
   };
