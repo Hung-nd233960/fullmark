@@ -70,7 +70,7 @@ for (const look of ["free", "locked"]) {
 
 const button = (page: Page) => page.getByRole("button", { name: "Appearance" });
 const pick = (page: Page, name: string) => page.locator(`[data-theme-pick="${name}"]`);
-const reset = (page: Page) => page.getByRole("button", { name: "Reset to the quiz's look" });
+const reset = (page: Page) => page.getByRole("button", { name: "Default look" });
 /** after a reload the quiz may offer to continue; the look does not depend on it */
 const resume = async (page: Page): Promise<void> => {
   const again = page.getByRole("button", { name: "Continue" });

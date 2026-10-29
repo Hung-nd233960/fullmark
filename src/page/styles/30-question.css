@@ -16,12 +16,24 @@
     justify-content: space-between;
     min-height: 36px;
     color: var(--muted);
-    font-size: 0.8em;
   }
 
   .fm-question-meta {
     display: flex;
     flex-wrap: wrap;
+    align-items: baseline;
+  }
+
+  .fm-question-number {
+    font-size: 1em;
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  .fm-question-points,
+  .fm-flag-mark {
+    font-size: 0.85em;
+    color: var(--muted);
   }
 
   .fm-question-points::before,
@@ -33,6 +45,7 @@
   }
 
   .fm-tag {
+    font-size: 0.8em;
     color: var(--hint);
   }
 
@@ -45,6 +58,7 @@
     gap: 12px;
     align-items: center;
     margin-left: auto;
+    font-size: 0.8em;
   }
 
   .fm-flag {
@@ -148,10 +162,9 @@
   .fm-choice label {
     position: relative;
     display: flex;
-    gap: 12px;
+    gap: 14px;
     align-items: center;
-    min-height: 42px;
-    padding: 5px 13px;
+    padding: 10px 16px;
     cursor: pointer;
   }
 
@@ -176,14 +189,14 @@
     flex: none;
     align-items: center;
     justify-content: center;
-    width: 28px;
-    height: 28px;
-    font-size: 0.85em;
+    width: 32px;
+    height: 32px;
+    font-size: 0.9em;
     font-weight: 700;
     color: var(--text);
     background: var(--card);
     border: 1px solid var(--line-strong);
-    border-radius: 6px;
+    border-radius: 8px;
   }
 
   .fm-choice-text {
@@ -210,8 +223,7 @@
   .fm-choice[data-correct="true"] label,
   .fm-choice[data-picked="true"][data-correct="false"] label,
   .fm-choice[data-picked="true"]:not([data-correct]) label {
-    min-height: 40px;
-    padding: 4px 12px;
+    padding: 9px 15px;
   }
 
   .fm-choice[data-correct="true"],

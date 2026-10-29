@@ -187,7 +187,7 @@ export const en = {
     themeName: { auto: "Auto", light: "Light", dark: "Dark", oled: "OLED", white: "White", paper: "Paper" },
     themeMarked: (name: string) => `${name} ·`,
     themeQuizLook: (name: string) => `${name}, the quiz's look`,
-    resetLook: "Reset to the quiz's look",
+    resetLook: "Default look",
     focusClock: (clock: string) => `Clock ${clock} · Esc leaves full screen`,
     goalReached: (mark: string, pending: boolean) => `Goal ${mark}% · reached ✓${pending ? "*" : ""}`,
     goalNotYet: (mark: string, pending: boolean) => `Goal ${mark}% · ↗ not reached yet${pending ? "*" : ""}`,

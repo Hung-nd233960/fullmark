@@ -243,7 +243,7 @@ export const vi = {
     themeName: { auto: "Tự động", light: "Sáng", dark: "Tối", oled: "OLED", white: "Trắng", paper: "Giấy" },
     themeMarked: (name: string) => `${name} ·`,
     themeQuizLook: (name: string) => `${name}, giao diện của bài`,
-    resetLook: "Về giao diện của bài",
+    resetLook: "Giao diện mặc định",
     focusClock: (clock: string) => `Đồng hồ ${clock} · Nhấn Esc để thoát toàn màn hình`,
     goalReached: (mark: string, pending: boolean) => `Mục tiêu ${mark}% · đã đạt ✓${pending ? "*" : ""}`,
     goalNotYet: (mark: string, pending: boolean) => `Mục tiêu ${mark}% · ↗ chưa đạt${pending ? "*" : ""}`,

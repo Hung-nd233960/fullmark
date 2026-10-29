@@ -175,17 +175,17 @@ describe("the Appearance menu", () => {
     expect(html).toContain("Paper ·");
     expect(html).toContain('aria-label="Paper, the quiz\'s look"');
     expect(html).toContain('data-theme-pick="paper" aria-pressed="true"');
-    expect(html).not.toContain("Reset to the quiz");
+    expect(html).not.toContain("Default look");
   });
 
   it("offers Reset only when the choice differs from the quiz's, and picking the quiz's own theme drops the choice", () => {
     const { store } = open(new Memory(), "paper");
     store.look.menu.value = true;
     store.look.pick("dark");
-    expect(page(store)).toContain("Reset to the quiz's look");
+    expect(page(store)).toContain("Default look");
     store.look.pick("paper");
     expect(store.look.chosen.value).toBeNull();
-    expect(page(store)).not.toContain("Reset to the quiz");
+    expect(page(store)).not.toContain("Default look");
   });
 
   it("closes on Esc", () => {

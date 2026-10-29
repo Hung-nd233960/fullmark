@@ -222,8 +222,8 @@
     gap: 12px;
     align-items: center;
     justify-content: space-between;
-    min-height: 44px;
-    padding: 0 12px;
+    min-height: 54px;
+    padding: 0 16px;
     margin-top: 6px;
     background: var(--surface);
     border: 1px solid var(--line);
@@ -238,7 +238,7 @@
     justify-content: center;
     width: 44px;
     height: 44px;
-    margin-left: -12px;
+    margin-left: -16px;
     color: var(--muted);
     touch-action: none;
     cursor: grab;
@@ -317,6 +317,7 @@
     flex-wrap: wrap;
     gap: 4px 12px;
     align-items: center;
+    min-height: 54px;
     margin-top: 10px;
   }
 
