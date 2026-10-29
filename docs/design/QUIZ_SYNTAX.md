@@ -46,8 +46,7 @@ Unknown keys are errors.
 | `lang` | `en` \| `vi`: the language the quiz is **written in**. It decides how numbers in answers are read (a decimal comma in `vi`), `lang` on the question text, and the language a grader writes feedback in. One quiz has one language | `en` | S |
 | `ui_lang` | `en` \| `vi`: the language of the **interface**: page chrome, report headings, printed labels, the `review` and `grade --web` forms. Never affects grading | `lang` | S |
 | `profile` | a built-in or custom check profile | `default` (`survey` for a survey) | S |
-| `time_limit` | `90s`, `45m`, `1h30m` | untimed | S |
-| `on_timeout` | `submit` \| `warn` | `submit` | S |
+| `time_limit` | `90s`, `45m`, `1h30m`. When it runs out the page submits; there is no soft limit (`on_timeout` was dropped on 2026-10-29 and is `syntax.unknown-key`) | untimed | S |
 | `feedback` | `end` \| `instant` | `end` | S |
 | `pass_mark` | 0 to 100, percent of auto-graded points; shown on the results card as the goal. A quiz made from a brief takes it from the brief's `commitment` | none | S |
 | `shuffle_questions`, `shuffle_choices` | `true` \| `false` | `false` | S |
