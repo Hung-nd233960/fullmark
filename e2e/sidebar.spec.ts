@@ -216,7 +216,7 @@ test("below 760 px an open sidebar covers the questions at full width, and close
   await page.locator("[data-action=sidebar]").click();
   const box = (await side(page).boundingBox()) as { x: number; width: number };
   expect(box).toMatchObject({ x: 0, width: 700 });
-  await page.getByRole("button", { name: "Close the sidebar" }).click();
+  await page.getByRole("button", { name: "Back to question 1" }).click();
   await expect(side(page)).toHaveCount(0);
   await expect(card(page, "m1")).toBeInViewport();
 });
