@@ -188,7 +188,7 @@ export function Ordering({ q, c }: { q: Extract<PageQuestion, { type: "ordering"
                     disabled={position === 0}
                     onClick={() => move(position, "up")}
                   >
-                    <span aria-hidden="true">↑</span>
+                    <Icon name="up" size={18} />
                   </button>
                   <button
                     type="button"
@@ -198,7 +198,7 @@ export function Ordering({ q, c }: { q: Extract<PageQuestion, { type: "ordering"
                     disabled={position === order.length - 1}
                     onClick={() => move(position, "down")}
                   >
-                    <span aria-hidden="true">↓</span>
+                    <Icon name="down" size={18} />
                   </button>
                 </span>
               ) : (

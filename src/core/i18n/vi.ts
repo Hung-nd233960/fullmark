@@ -187,6 +187,31 @@ export const vi = {
     questionOf: (n: number, total: number) => `Câu ${n} trên ${total}`,
     answeredOf: (n: number, total: number) => `đã trả lời ${n} trên ${total}`,
     flaggedCount: (n: number) => `${n} câu đã đánh dấu`,
+    sidebarLabel: "Câu hỏi",
+    sidebarTitle: "Bản đồ câu hỏi (Q)",
+    sidebarAria: "Thanh bên",
+    closeSidebar: "Đóng thanh bên",
+    closeSidebarTitle: "Đóng (Esc)",
+    mapPart: (n: number, title: string | null) => (title === null ? `Phần ${n}` : `${n} · ${title}`),
+    mapCount: (answered: number, total: number, flags: number) =>
+      `${answered}/${total}${flags === 0 ? "" : ` · ${flags} đánh dấu`}`,
+    mapCountLabel: (answered: number, total: number, flags: number) =>
+      `đã trả lời ${answered} trên ${total}${flags === 0 ? "" : `, ${flags} câu đã đánh dấu`}`,
+    mapCell: (n: number, answered: boolean, flagged: boolean, current: boolean) =>
+      `Câu ${n}${answered ? ", đã trả lời" : ""}${flagged ? ", đã đánh dấu" : ""}${current ? ", đang xem" : ""}`,
+    mapResultCell: (n: number, state: string, flagged: boolean) =>
+      `Câu ${n}, ${state}${flagged ? ", đã đánh dấu" : ""}`,
+    mapLegendAnswered: "đã trả lời",
+    mapLegendFlagged: "đã đánh dấu",
+    mapLegendCurrent: "đang xem",
+    mapState: {
+      correct: "đúng",
+      partial: "đúng một phần",
+      incorrect: "sai",
+      unanswered: "chưa trả lời",
+      pending: "đang chờ chấm",
+      ungraded: "không tính điểm",
+    },
     takenWhole: (count: string) => `Toàn bộ bài · ${count}`,
     takenPart: (n: number, title: string, count: string) => `Phần ${n}, ${title} · ${count}`,
     takenRetry: (count: string) => `Làm lại câu sai · ${count}`,

@@ -28,13 +28,16 @@
   }
 
   .fm-quiz[data-phase="start"] {
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
     padding-top: 12px;
   }
 
-  .fm-quiz[data-phase="start"] > :not(.fm-dock) {
+  .fm-quiz[data-phase="start"] .fm-main {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .fm-quiz[data-phase="start"] .fm-main > * {
     width: min(780px, calc(100% - 56px));
   }
 

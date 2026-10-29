@@ -37,6 +37,14 @@ const PATHS = {
     </>
   ),
   grip: <path d="M9 6h.01M15 6h.01M9 12h.01M15 12h.01M9 18h.01M15 18h.01" stroke-width="3.5" />,
+  up: <path d="M12 19V5M5 12l7-7 7 7" />,
+  down: <path d="M12 5v14M5 12l7 7 7-7" />,
+  panel: (
+    <>
+      <rect x="3" y="4" width="18" height="16" rx="2" />
+      <path d="M15 4v16" />
+    </>
+  ),
   dot: <circle cx="12" cy="12" r="2.5" fill="currentColor" />,
 } satisfies Record<string, ComponentChildren>;
 

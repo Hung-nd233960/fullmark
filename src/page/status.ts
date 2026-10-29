@@ -1,6 +1,7 @@
 import type { Attempt } from "../core/attempt";
 import { en, vi } from "../core/i18n";
 import type { PageQuiz } from "./data";
+import { currentOf } from "./map";
 import { limitOf } from "./results";
 import { clockText } from "./store";
 
@@ -90,7 +91,7 @@ export function statusFor({
           : t.timeUp,
   });
 
-  const currentId = current !== null && plan.includes(current) ? current : (plan[0] ?? null);
+  const currentId = currentOf(plan, current);
   const owner = new Map<string, number>();
   page.sections.forEach((s, i) => {
     for (const q of s.questions) owner.set(q.id, i);

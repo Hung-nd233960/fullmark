@@ -209,6 +209,31 @@ export const en = {
     download: "Download results",
     flagForReview: "Flag for review",
     flaggedMark: "Flagged",
+    sidebarLabel: "Questions",
+    sidebarTitle: "The question map (Q)",
+    sidebarAria: "Sidebar",
+    closeSidebar: "Close the sidebar",
+    closeSidebarTitle: "Close (Esc)",
+    mapPart: (n: number, title: string | null) => (title === null ? `Part ${n}` : `${n} · ${title}`),
+    mapCount: (answered: number, total: number, flags: number) =>
+      `${answered}/${total}${flags === 0 ? "" : flags === 1 ? " · 1 flag" : ` · ${flags} flags`}`,
+    mapCountLabel: (answered: number, total: number, flags: number) =>
+      `${answered} of ${total} answered${flags === 0 ? "" : `, ${flags} flagged`}`,
+    mapCell: (n: number, answered: boolean, flagged: boolean, current: boolean) =>
+      `Question ${n}${answered ? ", answered" : ""}${flagged ? ", flagged" : ""}${current ? ", current" : ""}`,
+    mapResultCell: (n: number, state: string, flagged: boolean) =>
+      `Question ${n}, ${state}${flagged ? ", flagged" : ""}`,
+    mapLegendAnswered: "answered",
+    mapLegendFlagged: "flagged",
+    mapLegendCurrent: "current",
+    mapState: {
+      correct: "correct",
+      partial: "partly right",
+      incorrect: "wrong",
+      unanswered: "unanswered",
+      pending: "waiting for a grader",
+      ungraded: "not scored",
+    },
     flag: "Flag",
     acceptedAnswers: "Accepted answers",
     trueLetter: "T",

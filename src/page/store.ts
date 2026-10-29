@@ -8,7 +8,7 @@ import { type KeyBlob, openKey, type PageData, type PageQuiz } from "./data";
 import { createEvents, type Events } from "./events";
 import { type Action, newAttempt, reduce } from "./reducer";
 import { limitOf, missedIds } from "./results";
-import { attemptKey, quizPrefix, readSaved, type Saver, saverOver, saveText } from "./saved";
+import { attemptKey, quizPrefix, readSaved, type Saver, saverOver, saveText, sidebarKey, sidebarStart } from "./saved";
 import { drawSeed } from "./seed";
 
 /** An autosaved attempt that can be continued: how far it got, for the start screen. */
@@ -40,6 +40,10 @@ export type QuizState = {
   current: Signal<string | null>;
   /** seconds spent in each section so far, as the clock counts them (the attempt's copy is saved every 5 seconds) */
   sectionSeconds: Signal<Record<string, number>>;
+  /** the sidebar is open (the question map) */
+  sidebar: Signal<boolean>;
+  /** the parts the learner opened or closed in the map, by section id; a part not here is open when it holds the current question. Not stored. */
+  mapOpen: Signal<Record<string, boolean>>;
 };
 
 /** The browser's screen, for Focus mode: set once the page is running, never at build */
@@ -71,6 +75,10 @@ export type Store = {
   retry(quizId: string, seed?: string): void;
   /** the learner is on this question: its section gets the time that follows */
   focus(quizId: string, questionId: string): void;
+  /** Opens, closes or (without `open`) toggles a quiz's sidebar, and stores the choice. */
+  sidebar(quizId: string, open?: boolean): void;
+  /** the quiz the sidebar keys act on: the first one that has started */
+  sidebarTarget(): string | null;
   /** Focus mode: fullscreen on, off or toggled. A refused request is ignored. */
   fullscreen(on?: boolean): void;
   /** reads what was saved: a submitted attempt shows its results, one in progress is offered as Continue */
@@ -94,6 +102,8 @@ export type Deps = {
   storage?: () => Storage | null | undefined;
   /** random bytes for the seed */
   bytes?: (n: number) => Uint8Array;
+  /** the window width, for the sidebar's first state; the default is `window.innerWidth` */
+  width?: () => number;
 };
 
 const pad = (n: number): string => String(n).padStart(2, "0");
@@ -182,6 +192,8 @@ export function createStore(data: PageData, deps: Deps = {}): Store {
       filter: signal("all"),
       current: signal(null),
       sectionSeconds: signal({}),
+      sidebar: signal(false),
+      mapOpen: signal({}),
     });
   }
   const need = (quizId: string): QuizState => {
@@ -340,6 +352,7 @@ export function createStore(data: PageData, deps: Deps = {}): Store {
     state.filter.value = "all";
     state.current.value = null;
     state.sectionSeconds.value = {};
+    state.mapOpen.value = {};
   };
 
   const store: Store = {
@@ -426,7 +439,21 @@ export function createStore(data: PageData, deps: Deps = {}): Store {
       const run = runs.get(quizId);
       if (run && section !== undefined) run.section = section;
     },
+    sidebar(quizId, open) {
+      const state = need(quizId);
+      const want = open ?? !state.sidebar.value;
+      state.sidebar.value = want;
+      saver?.set(sidebarKey(state.page), want ? "open" : "closed");
+    },
+    sidebarTarget() {
+      for (const state of quizzes.values()) if (state.attempt.value.phase !== "start") return state.page.id;
+      return null;
+    },
     restore() {
+      const width = deps.width?.() ?? (typeof window === "undefined" ? 0 : window.innerWidth);
+      for (const state of quizzes.values()) {
+        state.sidebar.value = sidebarStart(saver?.get(sidebarKey(state.page)) ?? null, width);
+      }
       if (saver === null) return;
       // the probe: a browser that refuses to save says so now, not at the first answer
       saver.set("fullmark:v1:probe", "1");
@@ -435,7 +462,8 @@ export function createStore(data: PageData, deps: Deps = {}): Store {
       for (const state of quizzes.values()) {
         const page = state.page;
         const mine = attemptKey(page);
-        for (const key of saver.keys(quizPrefix(page.id))) if (key !== mine) saver.remove(key);
+        const side = sidebarKey(page);
+        for (const key of saver.keys(quizPrefix(page.id))) if (key !== mine && key !== side) saver.remove(key);
         const text = saver.get(mine);
         const saved = readSaved(text, page);
         if (saved === null) {
@@ -506,6 +534,8 @@ export function createStore(data: PageData, deps: Deps = {}): Store {
       }
       const onFullscreen = (): void => {
         screen.fullscreen.value = document.fullscreenElement !== null;
+        // entering Focus mode closes the sidebars; nothing is stored, so leaving finds them closed
+        if (screen.fullscreen.value) for (const state of quizzes.values()) state.sidebar.value = false;
       };
       document.addEventListener("fullscreenchange", onFullscreen);
       const timer = setInterval(() => store.tick(), 1000);

@@ -84,6 +84,16 @@ export function saverOver(find: () => Storage | null | undefined, onFail: () => 
 export const quizPrefix = (quizId: string): string => `fullmark:v1:${quizId}:`;
 export const attemptKey = (quiz: Pick<PageQuiz, "id" | "hash">): string => `${quizPrefix(quiz.id)}${quiz.hash}:attempt`;
 
+/** `fullmark:v1:<quiz id>:<quiz hash>:sidebar`: `"open"` or `"closed"`. */
+export const sidebarKey = (quiz: Pick<PageQuiz, "id" | "hash">): string => `${quizPrefix(quiz.id)}${quiz.hash}:sidebar`;
+
+/** The window width from which the sidebar starts open when nothing is stored. */
+export const SIDEBAR_WIDE = 1100;
+
+/** Whether the sidebar starts open: what was stored, else open only in a window at least `SIDEBAR_WIDE` wide. */
+export const sidebarStart = (stored: string | null, width: number): boolean =>
+  stored === "open" ? true : stored === "closed" ? false : width >= SIDEBAR_WIDE;
+
 /** What the page saves: the Attempt and the absolute start time, in milliseconds, which `startedAt` (zoneless) cannot give. */
 export type Saved = { v: 1; startMs: number | null; attempt: Attempt };
 

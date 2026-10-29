@@ -19,15 +19,23 @@ export function missedIds(graded: Graded): string[] {
     .map((q) => q.id);
 }
 
+/** The state a question is in after Submit: one of the five, or `ungraded` for a question that carries no points. */
+export type ResultState = "correct" | "partial" | "incorrect" | "unanswered" | "pending" | "ungraded";
+
+/** The one place a graded question is put in a state: the results card's counts and the map both read it. */
+export function resultState(q: GradedQuestion): ResultState {
+  if (!scored(q)) return "ungraded";
+  return q.status === "ungraded" ? "ungraded" : q.status;
+}
+
 export type Counts = { correct: number; partial: number; incorrect: number; unanswered: number; pending: number };
 
 /** How many of the scored questions are in each of the five states. */
 export function countsOf(questions: readonly GradedQuestion[]): Counts {
   const counts: Counts = { correct: 0, partial: 0, incorrect: 0, unanswered: 0, pending: 0 };
   for (const q of questions) {
-    if (!scored(q)) continue;
-    if (q.status === "correct" || q.status === "partial" || q.status === "incorrect") counts[q.status] += 1;
-    else if (q.status === "unanswered" || q.status === "pending") counts[q.status] += 1;
+    const state = resultState(q);
+    if (state !== "ungraded") counts[state] += 1;
   }
   return counts;
 }

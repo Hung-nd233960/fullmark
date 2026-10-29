@@ -1,11 +1,12 @@
 import type { ComponentChildren } from "preact";
-import { useRef } from "preact/hooks";
+import { useEffect, useRef } from "preact/hooks";
 import type { PageQuestion, PageQuiz, PageSection } from "./data";
 import { Icon, type IconName } from "./icons";
 import { type Api, QuestionCard } from "./questions/Card";
 import { Html, messagesFor, type PageMessages } from "./questions/shared";
 import { ResultsCard } from "./ResultsCard";
 import { limitOf, missedIds, num } from "./results";
+import { Sidebar, SidebarButton } from "./Sidebar";
 import { mixedPoints, quizCount, quizPoints, sectionPoints, wholeTime } from "./start";
 import { stampParts, statusFor } from "./status";
 import { clockText, download, exportFor, type QuizState, type Store } from "./store";
@@ -384,11 +385,25 @@ function Dock({
   children?: ComponentChildren;
 }) {
   const answering = state.attempt.value.phase === "answering";
+  const dock = useRef<HTMLDivElement>(null);
+  // the sidebar and the cards' scroll margin sit below the docked block, whatever height it wraps to
+  useEffect(() => {
+    const el = dock.current;
+    const quiz = el?.parentElement;
+    if (!el || !quiz) return;
+    const measure = (): void => quiz.style.setProperty("--dock-h", `${el.offsetHeight}px`);
+    measure();
+    if (typeof ResizeObserver === "undefined") return;
+    const watch = new ResizeObserver(measure);
+    watch.observe(el);
+    return () => watch.disconnect();
+  }, []);
   return (
-    <div class="fm-dock" data-dock>
+    <div class="fm-dock" data-dock ref={dock}>
       <div class="fm-topbar">
         <h1 class="fm-title">{state.page.title}</h1>
         <div class="fm-topbar-actions">
+          <SidebarButton t={t} state={state} store={store} />
           <FocusButton t={t} store={store} />
           {answering ? (
             <button type="button" class="fm-button fm-primary" data-action="submit" onClick={() => api.submit()}>
@@ -461,89 +476,94 @@ function QuizView({ state, api, store }: { state: QuizState; api: Api; store: St
           ) : null}
         </Dock>
       ) : null}
-      {attempt.phase === "start" ? <Resume t={t} state={state} store={store} /> : null}
-      {!started ? (
-        <header class="fm-header">
-          <h1>{page.title}</h1>
-          {page.descriptionHtml !== null ? <Html html={page.descriptionHtml} class="fm-description" /> : null}
-        </header>
-      ) : null}
-      {attempt.phase === "start" ? (
-        <>
-          <Facts t={t} page={page} />
-          {state.resume.value === null ? <Picker t={t} state={state} /> : null}
-          <Rules t={t} state={state} />
-          <FocusBox t={t} store={store} />
-          {state.resume.value === null ? (
-            <div class="fm-start">
-              <button
-                type="button"
-                class="fm-button fm-primary fm-start-button"
-                data-action="start"
-                onClick={() => api.start()}
-              >
-                {t.start}
-              </button>
-              <span class="fm-clock-note">{t.clockStarts}</span>
-            </div>
+      <div class="fm-body" data-side={started && state.sidebar.value ? "open" : "closed"}>
+        <div class="fm-main">
+          {attempt.phase === "start" ? <Resume t={t} state={state} store={store} /> : null}
+          {!started ? (
+            <header class="fm-header">
+              <h1>{page.title}</h1>
+              {page.descriptionHtml !== null ? <Html html={page.descriptionHtml} class="fm-description" /> : null}
+            </header>
           ) : null}
-        </>
-      ) : null}
-      {attempt.phase === "answering" ? <Notice t={t} state={state} /> : null}
-      {attempt.phase === "submitted" ? (
-        <>
-          {attempt.state.timedOut ? (
-            <p class="fm-notice" role="status" data-notice="timed-out">
-              {t.timedOutNote}
-            </p>
+          {attempt.phase === "start" ? (
+            <>
+              <Facts t={t} page={page} />
+              {state.resume.value === null ? <Picker t={t} state={state} /> : null}
+              <Rules t={t} state={state} />
+              <FocusBox t={t} store={store} />
+              {state.resume.value === null ? (
+                <div class="fm-start">
+                  <button
+                    type="button"
+                    class="fm-button fm-primary fm-start-button"
+                    data-action="start"
+                    onClick={() => api.start()}
+                  >
+                    {t.start}
+                  </button>
+                  <span class="fm-clock-note">{t.clockStarts}</span>
+                </div>
+              ) : null}
+            </>
           ) : null}
-          {graded ? (
-            <ResultsCard
-              page={page}
-              state={state}
-              graded={graded}
-              onDownload={() => {
-                const file = exportFor(state, new Date());
-                download(file.name, file.text);
-              }}
-              onNew={() => store.newAttempt(page.id)}
-              onRetry={() => store.retry(page.id)}
-            />
-          ) : null}
-        </>
-      ) : null}
-      <div class="fm-questions" hidden={!started}>
-        {groupsOf(state).map(({ section, questions }) => (
-          <section
-            class="fm-section"
-            key={section.id}
-            hidden={!questions.some((q) => shown(q.id))}
-            id={section.title !== null ? `${page.id}/${section.id}` : undefined}
-          >
-            {section.title !== null ? (
-              <h2>
-                {section.title}
-                {section.time !== undefined ? (
-                  <span class="fm-section-time"> · {t.suggestedTime(minutes(t, section.time))}</span>
-                ) : null}
-              </h2>
-            ) : null}
-            {section.introHtml !== "" ? <Html html={section.introHtml} class="fm-intro" /> : null}
-            {questions.map((question) => {
-              number += 1;
-              return (
-                <QuestionCard
-                  key={question.id}
+          {attempt.phase === "answering" ? <Notice t={t} state={state} /> : null}
+          {attempt.phase === "submitted" ? (
+            <>
+              {attempt.state.timedOut ? (
+                <p class="fm-notice" role="status" data-notice="timed-out">
+                  {t.timedOutNote}
+                </p>
+              ) : null}
+              {graded ? (
+                <ResultsCard
+                  page={page}
                   state={state}
-                  api={api}
-                  question={question}
-                  number={number}
-                  hidden={!shown(question.id)}
+                  graded={graded}
+                  onDownload={() => {
+                    const file = exportFor(state, new Date());
+                    download(file.name, file.text);
+                  }}
+                  onNew={() => store.newAttempt(page.id)}
+                  onRetry={() => store.retry(page.id)}
                 />
-              );
-            })}
-          </section>
-        ))}
+              ) : null}
+            </>
+          ) : null}
+          <div class="fm-questions" hidden={!started}>
+            {groupsOf(state).map(({ section, questions }) => (
+              <section
+                class="fm-section"
+                key={section.id}
+                hidden={!questions.some((q) => shown(q.id))}
+                id={section.title !== null ? `${page.id}/${section.id}` : undefined}
+              >
+                {section.title !== null ? (
+                  <h2>
+                    {section.title}
+                    {section.time !== undefined ? (
+                      <span class="fm-section-time"> · {t.suggestedTime(minutes(t, section.time))}</span>
+                    ) : null}
+                  </h2>
+                ) : null}
+                {section.introHtml !== "" ? <Html html={section.introHtml} class="fm-intro" /> : null}
+                {questions.map((question) => {
+                  number += 1;
+                  return (
+                    <QuestionCard
+                      key={question.id}
+                      state={state}
+                      api={api}
+                      question={question}
+                      number={number}
+                      hidden={!shown(question.id)}
+                    />
+                  );
+                })}
+              </section>
+            ))}
+          </div>
+        </div>
+        {started && state.sidebar.value ? <Sidebar t={t} state={state} store={store} /> : null}
       </div>
     </section>
   );

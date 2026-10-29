@@ -30,7 +30,7 @@ function SplitBar({ counts, label }: { counts: Counts; label: string }) {
 }
 
 /** "23.5 / 33", with the points still waiting after a plus and an asterisk. */
-function Points({
+export function Points({
   earned,
   points,
   pending,
