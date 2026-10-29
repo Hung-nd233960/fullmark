@@ -30,8 +30,9 @@ const TRY = {
   second: "a second, small quiz",
 };
 
-rmSync(OUT, { recursive: true, force: true });
+// empty the folder rather than remove it: on Windows another program (Explorer, a browser) may hold the folder itself
 mkdirSync(OUT, { recursive: true });
+for (const name of readdirSync(OUT)) rmSync(join(OUT, name), { recursive: true, force: true });
 
 const sources = [
   ...readdirSync("examples", { withFileTypes: true })
