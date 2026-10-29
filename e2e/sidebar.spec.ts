@@ -11,7 +11,6 @@ const map = buildIn("test/fixtures/page/map.md", "map.md");
 
 const side = (page: Page) => page.locator("aside.fm-side");
 const cell = (page: Page, id: string) => side(page).locator(`[data-cell="${id}"]`);
-const button = (page: Page) => page.getByRole("button", { name: "Questions", exact: true }).first();
 const head = (page: Page, part: string) => side(page).locator(`[data-part="${part}"] [data-part-head]`);
 
 async function start(page: Page, width = 1280): Promise<void> {
