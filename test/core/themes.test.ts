@@ -22,6 +22,7 @@ const ICONS: TokenName[] = ["muted", "accent", "ok", "bad", "warn", "info", "fla
 /** Every pair that fails, as "theme: a on b = ratio" */
 function failures(name: ThemeName): string[] {
   const t: Tokens = SETS[name].tokens;
+  const theme = SETS[name];
   const bad: string[] = [];
   const check = (a: string, b: string, bLabel: string, aLabel: string, need: number): void => {
     const r = contrast(a, b);
@@ -29,7 +30,7 @@ function failures(name: ThemeName): string[] {
   };
   for (const text of TEXT) {
     for (const s of SURFACES) check(t[text], t[s], s, text, TEXT_RATIO);
-    for (const w of Object.keys(WASHES) as (keyof typeof WASHES)[]) check(t[text], washOf(t, w), w, text, TEXT_RATIO);
+    for (const w of Object.keys(WASHES) as (keyof typeof WASHES)[]) check(t[text], washOf(theme, w), w, text, TEXT_RATIO);
   }
   check(t["on-accent"], t.accent, "accent", "on-accent", TEXT_RATIO);
   for (const s of ["card", "bg"] as const) {
@@ -74,7 +75,13 @@ describe("the token CSS", () => {
   });
 
   it("derives the washes from the tokens", () => {
-    expect(themeCss("light")).toContain("--ok-wash:color-mix(in srgb,var(--ok) 12%,var(--card))");
+    expect(themeCss("light")).toContain("--ok-wash:color-mix(in srgb,var(--ok) 13%,var(--card))");
+  });
+
+  it("gives each theme its own wash percentages", () => {
+    const css = themeCss("light");
+    expect(css).toContain(`--ok-wash:color-mix(in srgb,var(--ok) ${SETS.dark.wash["ok-wash"]}%,var(--card))`);
+    expect(css).toContain(`--info-wash:color-mix(in srgb,var(--info) ${SETS.oled.wash["info-wash"]}%,var(--card))`);
   });
 
   it("is the same for the same theme", () => {

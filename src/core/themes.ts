@@ -34,6 +34,8 @@ export type Tokens = Record<TokenName, string>;
 
 export type Theme = {
   scheme: "light" | "dark";
+  /** the share (whole %) of the status colour in each wash: the one that brings the mix closest to the board's wash */
+  wash: Record<WashName, number>;
   tokens: Tokens;
   /** a `box-shadow` value */
   shadow: string;
@@ -46,6 +48,7 @@ export type Theme = {
 export const SETS: Record<ThemeName, Theme> = {
   light: {
     scheme: "light",
+    wash: { "ok-wash": 13, "bad-wash": 13, "info-wash": 12 },
     tokens: {
       bg: "#eceae5",
       surface: "#f4f3ef",
@@ -72,6 +75,7 @@ export const SETS: Record<ThemeName, Theme> = {
   },
   dark: {
     scheme: "dark",
+    wash: { "ok-wash": 2, "bad-wash": 3, "info-wash": 1 },
     tokens: {
       bg: "#1b1d22",
       surface: "#262a31",
@@ -81,16 +85,13 @@ export const SETS: Record<ThemeName, Theme> = {
       "line-strong": "#7b8394",
       text: "#d9dce2",
       muted: "#a9afba",
-      // board #8fa8d4 reaches 4.39:1 on the ok wash; nearest passing value
-      accent: "#92aad5",
+      accent: "#8fa8d4",
       "on-accent": "#15171b",
       ok: "#92b99a",
-      // board #d08a88 reaches 3.87:1 on the ok wash; nearest passing value
-      bad: "#d29c9c",
+      bad: "#d08a88",
       warn: "#cfb277",
       info: "#8fb0d6",
-      // board #f27db5 reaches 4.22:1 on the ok wash; nearest passing value
-      flag: "#ef89bb",
+      flag: "#f27db5",
       hint: "#8dbad6",
       orange: "#d2a373",
     },
@@ -100,6 +101,7 @@ export const SETS: Record<ThemeName, Theme> = {
   },
   oled: {
     scheme: "dark",
+    wash: { "ok-wash": 5, "bad-wash": 6, "info-wash": 7 },
     tokens: {
       bg: "#000000",
       surface: "#0e0e10",
@@ -125,6 +127,7 @@ export const SETS: Record<ThemeName, Theme> = {
   },
   white: {
     scheme: "light",
+    wash: { "ok-wash": 8, "bad-wash": 8, "info-wash": 9 },
     tokens: {
       bg: "#ffffff",
       surface: "#ffffff",
@@ -150,6 +153,7 @@ export const SETS: Record<ThemeName, Theme> = {
   },
   paper: {
     scheme: "light",
+    wash: { "ok-wash": 11, "bad-wash": 13, "info-wash": 12 },
     tokens: {
       bg: "#f6f1e7",
       surface: "#efe8da",
@@ -174,13 +178,6 @@ export const SETS: Record<ThemeName, Theme> = {
     radius: 12,
   },
 };
-
-/**
- * The share of the status colour in its wash: `color-mix(in srgb, var(--ok) 12%, var(--card))`. One number for every
- * wash of every theme; 12 brings the light theme closest to the board's listed washes (sum of channel differences 18
- * over the three washes, against 38 at 10 and 25 at 14).
- */
-export const WASH_PERCENT = 12;
 
 /** The three washes: the status colour that gives each its hue. */
 export const WASHES = { "ok-wash": "ok", "bad-wash": "bad", "info-wash": "info" } as const;
@@ -220,7 +217,8 @@ export function contrast(a: string, b: string): number {
 }
 
 /** A wash as the CSS mixes it, for the contrast test */
-export const washOf = (tokens: Tokens, wash: WashName): string => mix(tokens[WASHES[wash]], WASH_PERCENT, tokens.card);
+export const washOf = (theme: Theme, wash: WashName): string =>
+  mix(theme.tokens[WASHES[wash]], theme.wash[wash], theme.tokens.card);
 
 // ---- code colours ----
 
@@ -267,6 +265,8 @@ export function codeColours(tokens: Tokens): Record<string, string> {
 const setOf = (theme: Theme): string => {
   const t = theme.tokens;
   const parts = TOKEN_NAMES.map((n) => `--${n}:${t[n]}`);
+  for (const [wash, token] of Object.entries(WASHES))
+    parts.push(`--${wash}:color-mix(in srgb,var(--${token}) ${theme.wash[wash as WashName]}%,var(--card))`);
   parts.push(`--shadow:${theme.shadow}`);
   parts.push(`--card-line:var(--${theme.edged ? "line-strong" : "line"})`);
   parts.push(`--card-radius:${theme.radius}px`);
@@ -278,7 +278,7 @@ const setOf = (theme: Theme): string => {
 /**
  * The token CSS a page carries: all five sets, each a rule on `:root[data-theme="<name>"]`. The set the quiz opens in
  * is also the plain `:root` rule (`auto` opens as `light`; the page switches it at once when the device is dark), so
- * no `data-theme` is needed for it. The washes are the same rule for every theme.
+ * no `data-theme` is needed for it. Each set carries its own washes.
  */
 export function themeCss(quiz: Choice): string {
   const first: ThemeName = quiz === "auto" ? "light" : quiz;
@@ -286,10 +286,7 @@ export function themeCss(quiz: Choice): string {
     const selector = `:root[data-theme="${name}"]`;
     return `${name === first ? `:root,${selector}` : selector}{${setOf(SETS[name])}}`;
   });
-  const washes = Object.entries(WASHES).map(
-    ([wash, token]) => `--${wash}:color-mix(in srgb,var(--${token}) ${WASH_PERCENT}%,var(--card))`,
-  );
-  const common = `:root{${washes.join(";")};--font:"Segoe UI",system-ui,-apple-system,Roboto,"Noto Sans",sans-serif;--mono:"Cascadia Code",Consolas,Menlo,monospace}`;
+  const common = `:root{--font:"Segoe UI",system-ui,-apple-system,Roboto,"Noto Sans",sans-serif;--mono:"Cascadia Code",Consolas,Menlo,monospace}`;
   return `@layer tokens,base,components;@layer tokens{${common}${rules.join("")}}`;
 }
 
