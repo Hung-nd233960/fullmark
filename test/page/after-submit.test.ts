@@ -190,7 +190,7 @@ describe("Retry missed", () => {
     expect(attempt.state.answers).toEqual({});
     expect(attempt.state.flagged).toEqual([]);
     expect(limitOf(s.state().page, attempt)).toBeUndefined();
-    expect(s.html()).toContain("Time 0:00");
+    expect(s.html()).toContain("Time <b>0:00</b>");
     expect(s.html()).not.toContain("Time left");
   });
 

@@ -1,10 +1,12 @@
+import type { ComponentChildren } from "preact";
 import { useRef } from "preact/hooks";
 import type { PageQuestion, PageSection } from "./data";
 import { type Api, QuestionCard } from "./questions/Card";
 import { Html, messagesFor, type PageMessages } from "./questions/shared";
 import { ResultsCard } from "./ResultsCard";
-import { limitOf, missedIds } from "./results";
-import { clockText, download, exportFor, type QuizState, type Store } from "./store";
+import { missedIds } from "./results";
+import { statusFor } from "./status";
+import { download, exportFor, type QuizState, type Store } from "./store";
 
 /** The questions of the plan, in its order, with the section each belongs to; a section's run of questions is one group. */
 function groupsOf(state: QuizState): { section: PageSection; questions: PageQuestion[] }[] {
@@ -31,6 +33,25 @@ function Notice({ t, state }: { t: PageMessages; state: QuizState }) {
       {t.storageBlocked}
     </p>
   ) : null;
+}
+
+/** The start screen's Focus mode checkbox: pressing Start then enters fullscreen (a page cannot, without a click). */
+function FocusBox({ t, store }: { t: PageMessages; store: Store }) {
+  const { available, wanted } = store.screen;
+  if (!available.value) return null;
+  return (
+    <label class="fm-focus-box">
+      <input
+        type="checkbox"
+        data-focus-box
+        checked={wanted.value}
+        onChange={(event) => {
+          wanted.value = (event.currentTarget as HTMLInputElement).checked;
+        }}
+      />{" "}
+      {t.focusMode}
+    </label>
+  );
 }
 
 /** The part picker (the whole quiz pinned first, then the titled sections in a list of 5 visible rows) and Start. */
@@ -136,24 +157,130 @@ function Resume({ t, state, store }: { t: PageMessages; state: QuizState; store:
   );
 }
 
-/** The timer line above the questions, and the live region for "5 minutes left" (the visible text is not live). */
-function Timer({ t, state }: { t: PageMessages; state: QuizState }) {
-  const limit = limitOf(state.page, state.attempt.value);
-  const elapsed = state.elapsed.value;
-  const text =
-    limit === undefined
-      ? t.timeSoFar(clockText(elapsed))
-      : limit - elapsed > 0
-        ? t.timeLeft(clockText(limit - elapsed))
-        : t.timeUp;
+const CLOCK = /\d+:\d\d(?::\d\d)?/;
+const FIRST_NUMBER = /\d+/;
+
+/** A segment's text with its value in bold (the part's time in the warning colour), as the design has it. */
+function Emphasis({ kind, text }: { kind: string; text: string }) {
+  const found = (kind === "question" ? FIRST_NUMBER : CLOCK).exec(text);
+  if (found === null || kind === "submitted" || kind === "taken" || kind === "flags") return <>{text}</>;
+  const at = found.index;
   return (
-    <div class="fm-timer-bar">
-      <p class="fm-timer" data-timer>
-        {text}
-      </p>
+    <span>
+      {text.slice(0, at)}
+      <b class={kind === "part" ? "fm-status-warn" : undefined}>{found[0]}</b>
+      {text.slice(at + found[0].length)}
+    </span>
+  );
+}
+
+/** The status line: plain segments divided by thin rules, every value labelled. The timer is one of them, never hidden. */
+function StatusLine({ t, state, store }: { t: PageMessages; state: QuizState; store: Store }) {
+  const screen = store.screen;
+  const segments = statusFor({
+    page: state.page,
+    attempt: state.attempt.value,
+    elapsed: state.elapsed.value,
+    sectionSeconds: state.sectionSeconds.value,
+    current: state.current.value,
+    fullscreenClock: screen.fullscreen.value ? screen.clock.value : null,
+  });
+  return (
+    <ul class="fm-status" aria-label={t.statusLabel}>
+      {segments.map((segment) => (
+        <li
+          key={segment.kind}
+          class="fm-status-seg"
+          data-seg={segment.kind}
+          data-timer={segment.kind === "time" ? "" : undefined}
+        >
+          {segment.kind === "progress" ? (
+            <>
+              <span>{segment.text}</span>
+              <progress
+                class="fm-progress"
+                max={segment.max}
+                value={segment.value}
+                aria-label={segment.text}
+                data-progress
+              />
+              <b>{segment.percent}%</b>
+            </>
+          ) : (
+            <Emphasis kind={segment.kind} text={segment.text} />
+          )}
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+/** Focus mode's button: fullscreen through the browser, labelled and pressed as the page really is. */
+function FocusButton({ t, store }: { t: PageMessages; store: Store }) {
+  const { available, fullscreen } = store.screen;
+  if (!available.value) return null;
+  return (
+    <button
+      type="button"
+      class="fm-button"
+      data-action="focus-mode"
+      aria-pressed={fullscreen.value}
+      onClick={() => store.fullscreen()}
+    >
+      <svg
+        width="18"
+        height="18"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" />
+      </svg>
+      {fullscreen.value ? t.focusModeOn : t.focusMode}
+    </button>
+  );
+}
+
+/**
+ * The docked block: the top bar (title, Focus mode, Submit), the status line under it and, after Submit, the review
+ * filter. The live region for "5 minutes left" sits here too (the visible text is not live).
+ */
+function Dock({
+  t,
+  state,
+  store,
+  api,
+  children,
+}: {
+  t: PageMessages;
+  state: QuizState;
+  store: Store;
+  api: Api;
+  children?: ComponentChildren;
+}) {
+  const answering = state.attempt.value.phase === "answering";
+  return (
+    <div class="fm-dock" data-dock>
+      <div class="fm-topbar">
+        <h1 class="fm-title">{state.page.title}</h1>
+        <div class="fm-topbar-actions">
+          <FocusButton t={t} store={store} />
+          {answering ? (
+            <button type="button" class="fm-button fm-primary" data-action="submit" onClick={() => api.submit()}>
+              {t.submit}
+            </button>
+          ) : null}
+        </div>
+      </div>
+      <StatusLine t={t} state={state} store={store} />
       <p class="fm-sr" role="status" aria-live="polite">
         {state.said.value}
       </p>
+      {children}
     </div>
   );
 }
@@ -205,10 +332,19 @@ function QuizView({ state, api, store }: { state: QuizState; api: Api; store: St
 
   return (
     <section class="fm-quiz" id={page.id} data-phase={attempt.phase} data-quiz={page.id}>
-      <header class="fm-header">
-        <h1>{page.title}</h1>
-        {page.descriptionHtml !== null ? <Html html={page.descriptionHtml} class="fm-description" /> : null}
-      </header>
+      {started ? (
+        <Dock t={t} state={state} store={store} api={api}>
+          {attempt.phase === "submitted" ? (
+            <Filter t={t} state={state} missed={missed.size} flagged={flaggedIds.size} />
+          ) : null}
+        </Dock>
+      ) : null}
+      {!started || page.descriptionHtml !== null ? (
+        <header class="fm-header">
+          {!started ? <h1>{page.title}</h1> : null}
+          {page.descriptionHtml !== null ? <Html html={page.descriptionHtml} class="fm-description" /> : null}
+        </header>
+      ) : null}
       {attempt.phase === "start" ? (
         <div class="fm-start">
           <p class="fm-start-facts">
@@ -216,6 +352,7 @@ function QuizView({ state, api, store }: { state: QuizState; api: Api; store: St
             {page.timeLimit !== undefined ? ` · ${t.timeLimitLine(minutes(t, page.timeLimit))}` : ""}
           </p>
           <Notice t={t} state={state} />
+          <FocusBox t={t} store={store} />
           {state.resume.value !== null ? (
             <Resume t={t} state={state} store={store} />
           ) : (
@@ -223,12 +360,7 @@ function QuizView({ state, api, store }: { state: QuizState; api: Api; store: St
           )}
         </div>
       ) : null}
-      {attempt.phase === "answering" ? (
-        <>
-          <Timer t={t} state={state} />
-          <Notice t={t} state={state} />
-        </>
-      ) : null}
+      {attempt.phase === "answering" ? <Notice t={t} state={state} /> : null}
       {attempt.phase === "submitted" ? (
         <>
           {attempt.state.timedOut ? (
@@ -249,7 +381,6 @@ function QuizView({ state, api, store }: { state: QuizState; api: Api; store: St
               onRetry={() => store.retry(page.id)}
             />
           ) : null}
-          <Filter t={t} state={state} missed={missed.size} flagged={flaggedIds.size} />
         </>
       ) : null}
       <div class="fm-questions" hidden={!started}>
@@ -285,13 +416,6 @@ function QuizView({ state, api, store }: { state: QuizState; api: Api; store: St
           </section>
         ))}
       </div>
-      {attempt.phase === "answering" ? (
-        <div class="fm-actions">
-          <button type="button" class="fm-button fm-primary" data-action="submit" onClick={() => api.submit()}>
-            {t.submit}
-          </button>
-        </div>
-      ) : null}
     </section>
   );
 }
@@ -303,7 +427,11 @@ export function App({ store }: { store: Store }) {
         const id = state.page.id;
         const api: Api = {
           dispatch: (action) => store.dispatch(id, action),
-          start: () => store.start(id, { part: state.part.value }),
+          start: () => {
+            // inside the click: a browser allows fullscreen only after a gesture
+            if (store.screen.wanted.value && store.screen.available.value) store.fullscreen(true);
+            store.start(id, { part: state.part.value });
+          },
           submit: () => store.submit(id),
           flag: (questionId) => store.dispatch(id, { type: "flag", question: questionId }),
           check: (questionId) => store.check(id, questionId),

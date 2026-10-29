@@ -4,18 +4,30 @@
 @layer tokens {
   :root {
     color-scheme: light;
-    --bg: #f6f5f1;
-    --surface: #ffffff;
-    --text: #23252b;
-    --muted: #5d6270;
-    --border: #d9d6cc;
-    --accent: #2f5f8a;
-    --accent-text: #ffffff;
-    --good: #2d6a3e;
-    --good-bg: #e6f2e8;
-    --bad: #9b2c2c;
-    --bad-bg: #f8e6e4;
-    --warn: #8a5a12;
+    /* the design's light set (Design canvas, Quiz.dc.html `T.light`) */
+    --bg: #eceae5;
+    --surface: #f4f3ef;
+    --card: #fcfcfa;
+    --sunken: #e4e2dc;
+    --line: #d6d4cd;
+    --line-strong: #8c8b83;
+    --text: #2a2b31;
+    --muted: #55554f;
+    --accent: #46608a;
+    --on-accent: #fcfcfa;
+    --ok: #3d6946;
+    --bad: #963f3e;
+    --warn: #725b1c;
+    --info: #365b84;
+    --flag: #b42a6f;
+    --hint: #3b6884;
+    --orange: #82521f;
+    /* the old names, as aliases */
+    --border: var(--line);
+    --accent-text: var(--on-accent);
+    --good: var(--ok);
+    --good-bg: #e3ebe2;
+    --bad-bg: #f2e3e1;
     --radius: 8px;
     --gap: 16px;
     --font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;

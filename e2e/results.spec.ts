@@ -188,7 +188,7 @@ test("instant feedback: Check shows the result and locks the answer, and a reloa
   await expect(first.getByLabel("wrong i1")).toBeChecked();
   await expect(first.locator('[data-correct="true"]')).toHaveCount(1);
   await expect(first.getByRole("button", { name: "Check" })).toHaveCount(0);
-  await expect(page.locator('.fm-timer-bar [role="status"]')).toHaveText("Question 1: Wrong");
+  await expect(page.locator('.fm-sr[role="status"]')).toHaveText("Question 1: Wrong");
   // the others show nothing
   await expect(card(page, "i2").locator(".fm-result")).toHaveCount(0);
   await expect(card(page, "i2").locator("[data-correct]")).toHaveCount(0);

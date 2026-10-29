@@ -1,6 +1,7 @@
 import { hydrate } from "preact";
 import { App } from "./App";
 import type { PageData } from "./data";
+import { installKeys } from "./keys";
 import { createStore } from "./store";
 
 /**
@@ -17,6 +18,7 @@ if (dataElement && root) {
   // after hydration, so the first render is the one the build made: then a saved attempt is restored over it
   store.restore();
   store.run();
+  installKeys(store);
   (window as unknown as { fullmark: unknown }).fullmark = { events: store.events };
   store.events.emit("ready", { quizIds: [...store.quizzes.keys()] });
 }

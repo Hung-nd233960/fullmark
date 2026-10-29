@@ -78,7 +78,8 @@ export type PageQuiz = {
   hasMath?: true;
 };
 
-export type PageData = { version: 1; quizzes: PageQuiz[] };
+/** `focus`: tick the start screen's Focus mode box (step 3's `--focus`; `build` never sets it) */
+export type PageData = { version: 1; quizzes: PageQuiz[]; focus?: true };
 
 /**
  * What the blob holds: the quiz IR without its presentation text (the page plans an attempt from it at Start), and

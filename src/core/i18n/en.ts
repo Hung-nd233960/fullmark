@@ -138,7 +138,26 @@ export const en = {
     results: "Results",
     pointsCell: "Points",
     timeUsedCell: "Time used",
-    submittedAt: (time: string) => `Submitted ${time}`,
+    submittedOn: (day: number, month: string, time: string) => `Submitted ${day} ${month}, ${time}`,
+    monthsShort: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+    statusLabel: "Status",
+    partTimeLeft: (n: number, of: number, title: string | null, clock: string) =>
+      title === null ? `Part ${n} of ${of}: ${clock} left` : `Part ${n} of ${of}, ${title}: ${clock} left`,
+    partTimePassed: (n: number, of: number, title: string | null) =>
+      title === null
+        ? `Part ${n} of ${of}: suggested time passed`
+        : `Part ${n} of ${of}, ${title}: suggested time passed`,
+    questionOf: (n: number, total: number) => `Question ${n} of ${total}`,
+    answeredOf: (n: number, total: number) => `${n} of ${total} answered`,
+    flaggedCount: (n: number) => `${n} flagged`,
+    takenWhole: (count: string) => `The whole quiz · ${count}`,
+    takenPart: (n: number, title: string, count: string) => `Part ${n}, ${title} · ${count}`,
+    takenRetry: (count: string) => `Retry · ${count}`,
+    timeUsedLine: (used: string, limit: string | null) =>
+      limit === null ? `Time used ${used}` : `Time used ${used} of ${limit}`,
+    focusMode: "Focus mode",
+    focusModeOn: "Leave focus mode",
+    focusClock: (clock: string) => `Clock ${clock} · Esc leaves full screen`,
     goalReached: (mark: string, pending: boolean) => `Goal ${mark}% · reached ✓${pending ? "*" : ""}`,
     goalNotYet: (mark: string, pending: boolean) => `Goal ${mark}% · ↗ not reached yet${pending ? "*" : ""}`,
     pendingNote: (n: number) =>

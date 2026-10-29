@@ -36,12 +36,29 @@ export type QuizState = {
   checks: Signal<Record<string, GradedQuestion>>;
   /** the review filter under the results card; not stored */
   filter: Signal<"all" | "missed" | "flagged">;
+  /** the question the learner last focused or answered; null before any (the status line then names the first) */
+  current: Signal<string | null>;
+  /** seconds spent in each section so far, as the clock counts them (the attempt's copy is saved every 5 seconds) */
+  sectionSeconds: Signal<Record<string, number>>;
+};
+
+/** The browser's screen, for Focus mode: set once the page is running, never at build */
+export type Screen = {
+  /** `document.fullscreenEnabled`: false at build, and where the browser has no fullscreen for pages */
+  available: Signal<boolean>;
+  /** the page is fullscreen right now */
+  fullscreen: Signal<boolean>;
+  /** the start screen's Focus mode checkbox */
+  wanted: Signal<boolean>;
+  /** the local time as `14:05`, for the status line in fullscreen */
+  clock: Signal<string>;
 };
 
 export type StartOptions = { part?: string | null; seed?: string; now?: Date };
 
 export type Store = {
   events: Events;
+  screen: Screen;
   /** `Map<QuizId, Attempt>` (TECHNICAL_DESIGN.md, seam 2), with the rest of each quiz's state beside it */
   quizzes: Map<string, QuizState>;
   dispatch(quizId: string, action: Action): void;
@@ -54,6 +71,8 @@ export type Store = {
   retry(quizId: string, seed?: string): void;
   /** the learner is on this question: its section gets the time that follows */
   focus(quizId: string, questionId: string): void;
+  /** Focus mode: fullscreen on, off or toggled. A refused request is ignored. */
+  fullscreen(on?: boolean): void;
   /** reads what was saved: a submitted attempt shows its results, one in progress is offered as Continue */
   restore(): void;
   continueAttempt(quizId: string): void;
@@ -83,6 +102,12 @@ const pad = (n: number): string => String(n).padStart(2, "0");
 export function localIso(d: Date): string {
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
 }
+
+/** The local time of day as `14:05`. */
+const clockOf = (ms: number): string => {
+  const d = new Date(ms);
+  return `${pad(d.getHours())}:${pad(d.getMinutes())}`;
+};
 
 /** `YYYYMMDD-HHMMSS` in the learner's local time, for the export's file name. */
 export function localStamp(d: Date): string {
@@ -123,6 +148,12 @@ export function createStore(data: PageData, deps: Deps = {}): Store {
   const now = deps.now ?? (() => Date.now());
   const bytes = deps.bytes;
   const quizzes = new Map<string, QuizState>();
+  const screen: Screen = {
+    available: signal(false),
+    fullscreen: signal(false),
+    wanted: signal(data.focus === true),
+    clock: signal(clockOf(now())),
+  };
   const runs = new Map<string, Run>();
   /** the section of every question, per quiz */
   const sectionOf = new Map<string, Map<string, string>>();
@@ -149,6 +180,8 @@ export function createStore(data: PageData, deps: Deps = {}): Store {
       said: signal(""),
       checks: signal({}),
       filter: signal("all"),
+      current: signal(null),
+      sectionSeconds: signal({}),
     });
   }
   const need = (quizId: string): QuizState => {
@@ -227,6 +260,8 @@ export function createStore(data: PageData, deps: Deps = {}): Store {
     // a deadline submits as of the deadline, not as of the moment the page noticed
     const when = timedOut && run && limit !== undefined ? run.startMs + limit * 1000 : at;
     runs.delete(id);
+    // Submit leaves Focus mode, so results and review open in the normal layout
+    store.fullscreen(false);
     store.dispatch(id, {
       type: "submit",
       at: localIso(new Date(when)),
@@ -257,6 +292,7 @@ export function createStore(data: PageData, deps: Deps = {}): Store {
       fired: new Set(ANNOUNCE.filter((s) => s >= remaining)),
     });
     state.startedAt = startMs;
+    state.sectionSeconds.value = { ...attempt.state.sectionTime };
     state.elapsed.value = counted;
     state.said.value = "";
   };
@@ -268,6 +304,7 @@ export function createStore(data: PageData, deps: Deps = {}): Store {
     const before = run.counted;
     advance(state, run, at);
     state.elapsed.value = run.counted;
+    state.sectionSeconds.value = { ...run.sectionTime };
     const limit = limitOf(state.page, state.attempt.value);
     if (limit !== undefined) {
       const remaining = limit - run.counted;
@@ -301,10 +338,13 @@ export function createStore(data: PageData, deps: Deps = {}): Store {
     state.said.value = "";
     state.checks.value = {};
     state.filter.value = "all";
+    state.current.value = null;
+    state.sectionSeconds.value = {};
   };
 
   const store: Store = {
     events,
+    screen,
     quizzes,
     dispatch(quizId, action) {
       const state = need(quizId);
@@ -316,6 +356,7 @@ export function createStore(data: PageData, deps: Deps = {}): Store {
         const section = sectionOf.get(quizId)?.get(action.question);
         const run = runs.get(quizId);
         if (run && section !== undefined) run.section = section;
+        state.current.value = action.question;
       }
       if (action.type === "submit") grading(state, after);
       if (action.type === "check") gradeChecks(state);
@@ -379,6 +420,8 @@ export function createStore(data: PageData, deps: Deps = {}): Store {
       finish(state, at?.getTime() ?? now(), false);
     },
     focus(quizId, questionId) {
+      const found = quizzes.get(quizId);
+      if (found && found.attempt.value.phase === "answering") found.current.value = questionId;
       const section = sectionOf.get(quizId)?.get(questionId);
       const run = runs.get(quizId);
       if (run && section !== undefined) run.section = section;
@@ -443,10 +486,28 @@ export function createStore(data: PageData, deps: Deps = {}): Store {
     newAttempt(quizId) {
       resetState(need(quizId));
     },
+    fullscreen(on) {
+      if (typeof document === "undefined" || !document.fullscreenEnabled) return;
+      const full = document.fullscreenElement !== null;
+      const want = on ?? !full;
+      if (want === full) return;
+      // a refused request (no user gesture, a policy) is ignored: the page stays as it is
+      if (want) document.documentElement.requestFullscreen().catch(() => undefined);
+      else document.exitFullscreen().catch(() => undefined);
+    },
     tick(at = now()) {
+      screen.clock.value = clockOf(at);
       for (const state of quizzes.values()) tickOne(state, at);
     },
     run() {
+      if (typeof document !== "undefined") {
+        screen.available.value = document.fullscreenEnabled === true;
+        screen.fullscreen.value = document.fullscreenElement !== null;
+      }
+      const onFullscreen = (): void => {
+        screen.fullscreen.value = document.fullscreenElement !== null;
+      };
+      document.addEventListener("fullscreenchange", onFullscreen);
       const timer = setInterval(() => store.tick(), 1000);
       const onVisibility = (): void => {
         const at = now();
@@ -470,6 +531,7 @@ export function createStore(data: PageData, deps: Deps = {}): Store {
       window.addEventListener("pagehide", onLeave);
       return () => {
         clearInterval(timer);
+        document.removeEventListener("fullscreenchange", onFullscreen);
         document.removeEventListener("visibilitychange", onVisibility);
         window.removeEventListener("pagehide", onLeave);
       };

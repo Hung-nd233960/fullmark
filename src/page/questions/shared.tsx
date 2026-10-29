@@ -3,7 +3,7 @@ import type { GradedQuestion } from "../../core/grade";
 import { en, type Messages, vi } from "../../core/i18n";
 import type { Question } from "../../core/ir";
 import type { PageQuiz } from "../data";
-import { num } from "../results";
+import { decimal, num } from "../results";
 
 export type PageMessages = Messages["page"];
 
@@ -141,7 +141,7 @@ export function acceptedNumber(
     // the key's own text (`2.5`) follows the interface language like every other number
     const base = lang === "vi" && /^[−+]?\d+\.\d+$/.test(shown) ? shown.replace(".", ",") : shown;
     if (key.relTolerance !== null) return key.relTolerance > 0 ? `${base} ± ${pct(key.relTolerance, lang)}%` : base;
-    return key.tolerance > 0 ? `${base} ± ${num(key.tolerance, lang)}` : base;
+    return key.tolerance > 0 ? `${base} ± ${decimal(key.tolerance, lang)}` : base;
   });
   const unit = key.unit ? ` ${key.unit}` : "";
   return `${parts.join(` ${t.or} `)}${unit}`;

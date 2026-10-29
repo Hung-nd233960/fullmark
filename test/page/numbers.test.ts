@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { en, vi } from "../../src/core/i18n";
-import { num } from "../../src/page/results";
+import { en } from "../../src/core/i18n";
+import { decimal, num } from "../../src/page/results";
 import { setup } from "../helpers/page";
 
 describe("count strings in the singular and the plural (en)", () => {
@@ -32,6 +32,8 @@ describe("num", () => {
     expect(num(2.5, "vi")).toBe("2,5");
     expect(num(1 / 3, "vi")).toBe("0,33");
     expect(num(3, "vi")).toBe("3");
+    expect(decimal(0.001, "vi")).toBe("0,001");
+    expect(decimal(0.001)).toBe("0.001");
   });
 });
 
@@ -82,5 +84,14 @@ describe("numbers on the page", () => {
     const h = head(after);
     expect(h.indexOf("fm-question-points")).toBeLessThan(h.indexOf("fm-flag-mark"));
     expect(after).not.toMatch(/<section class="fm-results"[^>]*>\s*<h2/);
+  });
+});
+
+describe("accepted numbers", () => {
+  const key = { raw: ["0.0481"], values: [0.0481], tolerance: 0.001, relTolerance: null };
+  it("keep their precision and follow the interface language", async () => {
+    const { acceptedNumber } = await import("../../src/page/questions/shared");
+    expect(acceptedNumber(en.page, key, "en")).toBe("0.0481 ± 0.001");
+    expect(acceptedNumber(en.page, key, "vi")).toBe("0,0481 ± 0,001");
   });
 });

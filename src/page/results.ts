@@ -32,6 +32,10 @@ export function countsOf(questions: readonly GradedQuestion[]): Counts {
   return counts;
 }
 
+/** A number as it is, at full precision (a tolerance), with the language's decimal mark. */
+export const decimal = (n: number, lang: "en" | "vi" = "en"): string =>
+  lang === "vi" ? String(n).replace(".", ",") : String(n);
+
 /**
  * A number as the interface prints it: at most two decimals, no trailing zeros, and a decimal comma when `lang` is `vi`
  * (TECHNICAL_DESIGN.md, section 9, "Vietnamese pitfalls", item 2). Never `toLocaleString`: it depends on the browser.
