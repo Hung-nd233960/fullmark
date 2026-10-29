@@ -20,6 +20,7 @@ New in step 2: **a slice is sized to fit one Sonnet session** (about the work of
 | 2c ordering, matching, essay, code | done, reviewed, gaps decided | `06ab9f3`..`92af933` |
 | 2c3 maths and code highlighting | done, reviewed, gaps decided | `12daca7`..`2809ed6` |
 | 2d start screen, plan at Start, timer, autosave | done, reviewed, gaps decided | `345ed3a`..`ede03f5` |
+| 2e results, filter, Retry missed, instant feedback | brief written, with Sonnet | |
 
 Step 1 is done (see [STEP1.md](STEP1.md)): `check`, `rules`, `grade` and `ids`, 1309 tests.
 
@@ -103,7 +104,8 @@ Also raised on 2026-10-28 and kept outside v1: [proposals/rapid-response.md](../
    - **B.** The determinism flake (two concurrent runs of the `build/maths-and-code` golden once differed inside the `fm-data` line): loop that build until it differs, find the cause, fix it.
    - **C. `on_timeout` is dropped** (Opus's lean, accepted): a timed quiz always submits at the deadline; `on_timeout` becomes `syntax.unknown-key`. Remove it from the parser, the IR, the page data and the `warn` path, the tests, the front-matter key list (goldens), and `examples/exam` and `examples/ielts`.
    - Kept as built: the compile cache in `src/cli/bin.ts`; the whole `time_limit` for one part; time closed in `timeUsed` and in no section; the storage-blocked notice until Submit; a timed-out `submittedAt` is the deadline; a deadline passed on the start screen is caught at Continue; the storage key with the full `quizHash` (now in foundation 2); the key blob decoded at Start; shuffled choices in `optionOrder`, `math.syntax` on `description`, `PageQuiz.descriptionHtml`, `dataOrder` in the key blob.
-10. **Next:** settle 2e's design gaps (results card, review filter, Retry missed, `feedback: instant`; the section 8 rows leave some open), then write the 2e brief with A, B and C first.
+10. **2e's design gaps, decided by the owner on 2026-10-29 as recommended** (TECHNICAL_DESIGN.md `AttemptState.checked`, section 8 rows "Retry missed" and "Instant feedback"; QUIZ_SYNTAX.md `feedback`): Check on each auto-graded question shows its result and explanation and locks it; essays, code and ungraded questions get none; Submit grades all; `checked` is in the format; a retry replaces the one saved attempt after a confirm, covers only this plan's missed questions with a fresh seed, can itself be retried, and has no button when nothing is missed; pending essays are not missed; the submitted time sits on the results card until 2f.
+11. **Next:** 2e, brief below, with Sonnet.
 
 ## Goal
 
@@ -378,3 +380,42 @@ Two parts, in this order. First 2c3's review fixes (the Handoff's "Next steps" i
 
 - `npm run check` passes, Playwright (chromium and Firefox) and axe included; every example builds; the startup test passes three runs in a row.
 - Report: commits, test counts per browser, the runtime's gzipped size before and after, the startup medians before and after the compile cache, the golden count with one line each, every gap, what was decided differently and why, files read beyond the list.
+
+## Slice 2e: 2d's fixes, then results, the review filter, Retry missed and instant feedback
+
+Two parts, in this order. First 2d's review fixes (the Handoff's "Next steps" item 9: A, B, C). Then what happens after an answer is judged: the results card, the review filter, the flag on a question, Retry missed, and `feedback: instant`. The test that matters: **the score the page shows, on the card, per part and per question, equals what `quiz grade` gives for the exported file**, for a full attempt, a one-part attempt, a retry and an instant-feedback attempt.
+
+### Read first
+
+- This brief, and the Handoff's "Next steps" items 9 and 10.
+- TECHNICAL_DESIGN.md: section 4 "Plan and Attempt" (the `Plan` type) and "`results-v2`" (the `AttemptState` type only, with its new `checked`); section 6, the paragraph "The score while grades are pending"; section 8, the rows "Results (after Submit)", "Review filter", "Retry missed", "Instant feedback".
+- QUIZ_SYNTAX.md: section 2, the rows `time_limit`, `feedback`, `pass_mark`; the `explanation` container.
+- Code: `src/core/parse/front-matter.ts`, `src/core/ir.ts`, `src/build/page.ts` (the `on_timeout` path, and how the data line is written, for B), `src/page/data.ts`, `src/page/reducer.ts`, `src/page/store.ts`, `src/page/saved.ts`, `src/page/App.tsx`, `src/page/questions/Card.tsx`, `ChoiceList.tsx`, `shared.tsx`, `src/core/attempt/schema.ts`, `src/core/grade/index.ts` and `types.ts` (to reuse `grade`), `src/core/plan/index.ts`, `src/core/i18n/en.ts` and `vi.ts` (the `page` block); the tests next to each; `e2e/helpers.ts`, `e2e/start.spec.ts`, `e2e/screens-2d.spec.ts`; `test/golden/` only to update.
+
+### Decided for this slice
+
+- **A (owner, 2026-10-29).** While answering, no element carries `data-correct` or any other right/wrong mark; they appear only in the submitted state and on a checked question (below). Test that an answering page has no `[data-correct]`.
+- **B (owner, 2026-10-29).** Reproduce first: build the `build/maths-and-code` golden's input in a loop (several processes at once, as vitest runs them, and right after `npm run build`) until two outputs differ, or 200 runs pass. Report what differed and why; fix the cause, not the test. If it never reproduces, say so, keep the offset message, and move on.
+- **C (owner, 2026-10-29).** `on_timeout` goes: from the front-matter key list, the IR, `PageData`, the page's `warn` path, the tests (the `warn` cases are deleted, not rewritten), `examples/exam/quiz.md` and `examples/ielts/quiz.md`. `on_timeout:` in a quiz is then `syntax.unknown-key` like any unknown key; add one invalid fixture. Goldens that print the key list change (report the count).
+- **Results card** (section 8, "Results"), above the first question in the submitted state: the score as a large percentage; **Points** ("23.5 / 33"); **Time used** ("27:14 / 30:00" with a thin neutral bar when timed, "27:14" alone when not); the goal line when `pass_mark` is set; one row per part when the plan has more than one section (a bar split by result, counts in its label, points, percentage by points); then **Retry missed (N)**, **Download results** (the existing Export, renamed) and **New attempt**. Until 2f's status line exists, the card also shows the submitted time ("Submitted 14:32"). Every number comes from core's `grade`, never recomputed in the page. The pending asterisks are built and unit-tested with `ManualScores` passed in the test, since a page only gets grades from replay (2j); a page with pending answers shows the note that N answers wait for a grader and the score covers the rest.
+- **Five result states per question** (correct, wrong, partly right, unanswered, waiting for a grade): icon, word and points on each question card, never colour alone. Reuse what 2b and 2c built and fill the gaps; report what changed.
+- **The flag** (decided here: the design stores `flagged` but no slice built the control). Each question card has a toggle button "Flag for review" (`aria-pressed`) while answering, in the card's header; it writes `flagged` through a reducer action and autosaves. After Submit the flag shows as a mark and cannot be changed. The question map and its flag dots are 2f.
+- **Review filter**, under the results card until 2f's top bar: **All · Missed · Flagged**, each with its count and no other text (a native radio group or `aria-pressed` buttons); Missed's tooltip says essays count once graded below full marks. Filtering hides cards with the `hidden` attribute; the DOM order never changes. The choice is not stored.
+- **Retry missed** (section 8, "Retry missed"): the questions graded wrong, partial or unanswered, in the current plan's display order, go to `planFor` as a `retry` request with a fresh seed (extend `PlanRequest` as needed; core does not decide which are missed, the page passes the list). No time limit: the retry's clock counts visible time. The confirm reuses Start over's `<dialog>`: it says the results are replaced and to download them first, with buttons "Retry missed" and "Cancel". With N = 0 the button is absent and the card says "Nothing missed". A retry is saved, resumed, exported and retried like any attempt.
+- **Instant feedback** (section 8, "Instant feedback"): `checked: QuestionId[]` joins `AttemptState` (required; `[]` with `feedback: end`). Update the schema, the serialiser, `quiz grade`'s reader, `saved.ts`, and every results fixture and golden that holds an attempt (report the count). A **Check** button under the answer of each auto-graded question (not essay, code or `graded=false`), disabled until the question is answered. Check grades that one question with core's `grade` (on the attempt restricted to it, or through a per-question export from `src/core/grade`: report which), shows its result line, its explanation and the right/wrong marks, and locks the controls (read-only where the control allows it, else disabled, the answer still readable). A polite live region says the result once. Submit works as before and grades every answer.
+- **Strings** in `en` and `vi` for everything new; no string built by concatenation.
+
+### Tasks
+
+1. **2d's fixes**, one commit each for A, B and C; goldens updated, counts reported.
+2. **The results card and the five states** (one commit): vitest on the card's numbers from `grade`, and on the pending asterisks with `ManualScores`.
+3. **The flag and the review filter** (one commit).
+4. **Retry missed** (one commit): vitest on the retry plan (only the missed questions, a fresh seed, the same plan for the same seed, no button when nothing is missed).
+5. **Instant feedback** (one commit, or two: the `checked` format change first, then the page).
+6. **Playwright** (chromium and Firefox): answer some right, some wrong, leave some, flag two, submit; the card's score and the part rows match `quiz grade` on the export; the filter's counts and the cards it shows; Retry missed after the confirm shows only the missed questions with no time limit, and its export grades the same; "Nothing missed" on a perfect attempt; with a `feedback: instant` fixture, Check locks the answer and shows the explanation, a reload keeps it locked, Submit grades unchecked answers too, and the export grades the same; an answering page has no `[data-correct]`; axe on the results card, the Missed view and a checked question.
+7. **Screens:** add `e2e/screens-2e.spec.ts` (run with `FULLMARK_SCREENS=1`, as 2d's): the results card (timed, with parts and a goal), the Missed filter, the retry confirm, a checked question; list the paths.
+
+### Done when
+
+- `npm run check` passes, Playwright (chromium and Firefox) and axe included; every example builds.
+- Report: commits, test counts per browser, the runtime's gzipped size before and after, what B found, the golden and fixture counts with one line each, every gap, what was decided differently and why, files read beyond the list, the screenshot paths for the owner.

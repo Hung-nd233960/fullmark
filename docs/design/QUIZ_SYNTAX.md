@@ -47,7 +47,7 @@ Unknown keys are errors.
 | `ui_lang` | `en` \| `vi`: the language of the **interface**: page chrome, report headings, printed labels, the `review` and `grade --web` forms. Never affects grading | `lang` | S |
 | `profile` | a built-in or custom check profile | `default` (`survey` for a survey) | S |
 | `time_limit` | `90s`, `45m`, `1h30m`. When it runs out the page submits; there is no soft limit (`on_timeout` was dropped on 2026-10-29 and is `syntax.unknown-key`) | untimed | S |
-| `feedback` | `end` \| `instant` | `end` | S |
+| `feedback` | `end` \| `instant`. With `instant`, each auto-graded question has a Check button that shows its result and explanation and locks the answer; Submit still grades everything ([TECHNICAL_DESIGN.md](TECHNICAL_DESIGN.md) section 8, "Instant feedback") | `end` | S |
 | `pass_mark` | 0 to 100, percent of auto-graded points; shown on the results card as the goal. A quiz made from a brief takes it from the brief's `commitment` | none | S |
 | `shuffle_questions`, `shuffle_choices` | `true` \| `false` | `false` | S |
 | `partial` | `true` \| `false`: partial credit in `multi`, `ordering` and `matching`. `blanks` and `fields` always give partial credit (an equal share per blank, or each field's points) and ignore it | `true` | S |
