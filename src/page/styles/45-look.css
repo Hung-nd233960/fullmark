@@ -10,6 +10,39 @@
     border-color: var(--accent);
   }
 
+  /* A− / A+: the board's joined pair, 44 px high; the outline is drawn inside so the buttons keep the full 44 px */
+  .fm-textsize {
+    display: flex;
+    flex: none;
+    height: 44px;
+    overflow: hidden;
+    border-radius: 8px;
+    outline: 2px solid var(--line-strong);
+    outline-offset: -2px;
+  }
+
+  .fm-textsize-button {
+    min-width: 44px;
+    height: 44px;
+    padding: 0;
+    font: inherit;
+    font-weight: 700;
+    color: var(--text);
+    cursor: pointer;
+    background: var(--card);
+    border: 0;
+  }
+
+  .fm-textsize-button + .fm-textsize-button {
+    border-left: 2px solid var(--line-strong);
+  }
+
+  .fm-textsize-button:disabled {
+    color: var(--muted);
+    cursor: default;
+    opacity: 0.5;
+  }
+
   .fm-look-menu {
     display: flex;
     flex-wrap: wrap;

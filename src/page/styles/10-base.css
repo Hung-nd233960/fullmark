@@ -9,6 +9,23 @@
     font-size: 106.25%; /* 17px at the default size */
   }
 
+  /* the text size (A- / A+): everything else is in em or rem, so the page scales from here */
+  html[data-size="15"] {
+    font-size: 15px;
+  }
+
+  html[data-size="19"] {
+    font-size: 19px;
+  }
+
+  html[data-size="21"] {
+    font-size: 21px;
+  }
+
+  html[data-size="23"] {
+    font-size: 23px;
+  }
+
   body {
     margin: 0;
     background: var(--bg);

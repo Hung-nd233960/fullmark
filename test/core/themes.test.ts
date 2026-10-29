@@ -30,7 +30,8 @@ function failures(name: ThemeName): string[] {
   };
   for (const text of TEXT) {
     for (const s of SURFACES) check(t[text], t[s], s, text, TEXT_RATIO);
-    for (const w of Object.keys(WASHES) as (keyof typeof WASHES)[]) check(t[text], washOf(theme, w), w, text, TEXT_RATIO);
+    for (const w of Object.keys(WASHES) as (keyof typeof WASHES)[])
+      check(t[text], washOf(theme, w), w, text, TEXT_RATIO);
   }
   check(t["on-accent"], t.accent, "accent", "on-accent", TEXT_RATIO);
   for (const s of ["card", "bg"] as const) {

@@ -42,9 +42,12 @@ const oneRow = async (page: Page): Promise<void> => {
   const size = await line.evaluate((e) => Number.parseFloat(getComputedStyle(e).fontSize));
   const base = await page.evaluate(() => Number.parseFloat(getComputedStyle(document.body).fontSize));
   expect(size).toBeCloseTo(base * 0.9, 1);
-  expect(await line.locator("b").first().evaluate((e) => getComputedStyle(e).color)).not.toBe(
-    await line.evaluate((e) => getComputedStyle(e).color),
-  );
+  expect(
+    await line
+      .locator("b")
+      .first()
+      .evaluate((e) => getComputedStyle(e).color),
+  ).not.toBe(await line.evaluate((e) => getComputedStyle(e).color));
 };
 const press = async (page: Page, target: Locator): Promise<void> => {
   if (await page.evaluate(() => "ontouchstart" in window)) await target.tap();
@@ -70,7 +73,9 @@ const shortButtons = (page: Page) =>
       .map((b) => `${b.className} ${(b.textContent ?? "").trim().slice(0, 20)} ${b.getBoundingClientRect().height}`),
   );
 
-test("the compact bar: no title, the muted line with bold numbers that follows the answers, Submit in the bar", async ({ page }) => {
+test("the compact bar: no title, the muted line with bold numbers that follows the answers, Submit in the bar", async ({
+  page,
+}) => {
   const seen = watch(page);
   await begin(page);
   await expect(page.locator(".fm-status")).toHaveCount(0);

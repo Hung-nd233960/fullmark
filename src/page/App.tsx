@@ -1,6 +1,6 @@
 import type { ComponentChildren } from "preact";
 import { useEffect, useRef } from "preact/hooks";
-import { AppearanceButton, AppearanceMenu } from "./Appearance";
+import { AppearanceButton, AppearanceMenu, TextSize } from "./Appearance";
 import type { PageQuestion, PageQuiz, PageSection } from "./data";
 import { Icon, type IconName } from "./icons";
 import { MaterialsButton, MaterialsPanel } from "./Materials";
@@ -10,48 +10,28 @@ import { Html, messagesFor, type PageMessages } from "./questions/shared";
 import { ResultsCard } from "./ResultsCard";
 import { limitOf, missedIds, num } from "./results";
 import { Sidebar, SidebarButton } from "./Sidebar";
-import {
-  mixedPoints,
-  quizCount,
-  quizPoints,
-  sectionPoints,
-  wholeTime,
-} from "./start";
+import { mixedPoints, quizCount, quizPoints, sectionPoints, wholeTime } from "./start";
 import { compactParts, stampParts, statusFor } from "./status";
-import {
-  clockText,
-  download,
-  exportFor,
-  type QuizState,
-  type Store,
-} from "./store";
+import { clockText, download, exportFor, type QuizState, type Store } from "./store";
 
 /** The questions of the plan, in its order, with the section each belongs to; a section's run of questions is one group. */
-function groupsOf(
-  state: QuizState,
-): { section: PageSection; questions: PageQuestion[] }[] {
-  const owner = new Map<
-    string,
-    { section: PageSection; question: PageQuestion }
-  >();
+function groupsOf(state: QuizState): { section: PageSection; questions: PageQuestion[] }[] {
+  const owner = new Map<string, { section: PageSection; question: PageQuestion }>();
   for (const section of state.page.sections) {
-    for (const question of section.questions)
-      owner.set(question.id, { section, question });
+    for (const question of section.questions) owner.set(question.id, { section, question });
   }
   const groups: { section: PageSection; questions: PageQuestion[] }[] = [];
   for (const id of state.attempt.value.plan.questions) {
     const found = owner.get(id);
     if (!found) continue;
     const last = groups.at(-1);
-    if (last && last.section === found.section)
-      last.questions.push(found.question);
+    if (last && last.section === found.section) last.questions.push(found.question);
     else groups.push({ section: found.section, questions: [found.question] });
   }
   return groups;
 }
 
-const minutes = (t: PageMessages, seconds: number): string =>
-  t.duration(seconds);
+const minutes = (t: PageMessages, seconds: number): string => t.duration(seconds);
 
 function Notice({ t, state }: { t: PageMessages; state: QuizState }) {
   return state.blocked.value ? (
@@ -85,15 +65,14 @@ function FocusBox({ t, store }: { t: PageMessages; store: Store }) {
 
 /** The facts tiles: questions and points always, the time limit and the pass mark when the quiz has them. */
 function Facts({ t, page }: { t: PageMessages; page: PageQuiz }) {
-  const tiles: { id: string; label: string; value: string; icon: IconName }[] =
-    [
-      {
-        id: "questions",
-        label: t.factQuestions,
-        value: num(quizCount(page), page.uiLang),
-        icon: "list",
-      },
-    ];
+  const tiles: { id: string; label: string; value: string; icon: IconName }[] = [
+    {
+      id: "questions",
+      label: t.factQuestions,
+      value: num(quizCount(page), page.uiLang),
+      icon: "list",
+    },
+  ];
   const points = quizPoints(page);
   if (points !== undefined) {
     tiles.push({
@@ -219,39 +198,26 @@ function Picker({ t, state }: { t: PageMessages; state: QuizState }) {
     <fieldset class="fm-parts">
       <legend>{t.choosePart}</legend>
       <label class="fm-part fm-part-whole" data-checked={chosen === null}>
-        <input
-          type="radio"
-          name={`${page.id}/part`}
-          value=""
-          checked={chosen === null}
-          onChange={() => pick(null)}
-        />
+        <input type="radio" name={`${page.id}/part`} value="" checked={chosen === null} onChange={() => pick(null)} />
         <span class="fm-part-text">
           <span class="fm-part-name">
-            <strong>{t.wholeQuiz}</strong>{" "}
-            <span class="fm-recommend">{t.recommended}</span>
+            <strong>{t.wholeQuiz}</strong> <span class="fm-recommend">{t.recommended}</span>
           </span>
           <span class="fm-part-meta">
             {[
               t.partsCount(parts.length),
               t.partQuestions(null, quizCount(page)),
-              ...(wholePoints === undefined
-                ? []
-                : [t.pointsLabel(num(wholePoints, page.uiLang))]),
+              ...(wholePoints === undefined ? [] : [t.pointsLabel(num(wholePoints, page.uiLang))]),
             ].join(" · ")}
           </span>
         </span>
-        {time !== undefined ? (
-          <span class="fm-part-time">{t.duration(time)}</span>
-        ) : null}
+        {time !== undefined ? <span class="fm-part-time">{t.duration(time)}</span> : null}
       </label>
       <div class="fm-part-head">
         <span>{t.orOnePart}</span>
         {many ? <span>{t.partsScroll(parts.length)}</span> : null}
       </div>
-      <div
-        class={many ? "fm-part-scroll fm-part-scroll-many" : "fm-part-scroll"}
-      >
+      <div class={many ? "fm-part-scroll fm-part-scroll-many" : "fm-part-scroll"}>
         <div class="fm-part-list">
           {parts.map((s, i) => (
             <label class="fm-part" key={s.id} data-checked={chosen === s.id}>
@@ -267,17 +233,11 @@ function Picker({ t, state }: { t: PageMessages; state: QuizState }) {
                 <span class="fm-part-meta">
                   {[
                     t.partQuestions(s.pick ?? null, s.questions.length),
-                    ...(mixedPoints(s)
-                      ? []
-                      : [t.pointsLabel(num(sectionPoints(s), page.uiLang))]),
+                    ...(mixedPoints(s) ? [] : [t.pointsLabel(num(sectionPoints(s), page.uiLang))]),
                   ].join(" · ")}
                 </span>
               </span>
-              {s.time !== undefined ? (
-                <span class="fm-part-time">
-                  {t.suggestedTime(minutes(t, s.time))}
-                </span>
-              ) : null}
+              {s.time !== undefined ? <span class="fm-part-time">{t.suggestedTime(minutes(t, s.time))}</span> : null}
             </label>
           ))}
         </div>
@@ -287,34 +247,18 @@ function Picker({ t, state }: { t: PageMessages; state: QuizState }) {
 }
 
 /** "Started 26 Oct · 13 of 32 answered · 21:18 left on the clock", or "... · 18:00 used" when untimed. */
-function resumeLine(
-  t: PageMessages,
-  page: PageQuiz,
-  resume: NonNullable<QuizState["resume"]["value"]>,
-): string {
+function resumeLine(t: PageMessages, page: PageQuiz, resume: NonNullable<QuizState["resume"]["value"]>): string {
   const stamp = stampParts(resume.attempt.state.startedAt ?? "");
   const limit = limitOf(page, resume.attempt);
   return [
-    ...(stamp === null
-      ? []
-      : [t.startedOn(stamp.day, t.monthsShort[stamp.month - 1] ?? "")]),
+    ...(stamp === null ? [] : [t.startedOn(stamp.day, t.monthsShort[stamp.month - 1] ?? "")]),
     t.answeredOf(resume.answered, resume.total),
-    limit === undefined
-      ? t.clockUsed(clockText(resume.used))
-      : t.clockLeft(clockText(limit - resume.used)),
+    limit === undefined ? t.clockUsed(clockText(resume.used)) : t.clockLeft(clockText(limit - resume.used)),
   ].join(" · ");
 }
 
 /** The banner of an attempt that can be continued: how far it got, Start over (which asks first) and Continue. */
-function Resume({
-  t,
-  state,
-  store,
-}: {
-  t: PageMessages;
-  state: QuizState;
-  store: Store;
-}) {
+function Resume({ t, state, store }: { t: PageMessages; state: QuizState; store: Store }) {
   const resume = state.resume.value;
   const dialog = useRef<HTMLDialogElement>(null);
   if (resume === null) return null;
@@ -328,12 +272,7 @@ function Resume({
         </span>
       </div>
       <div class="fm-resume">
-        <button
-          type="button"
-          class="fm-button"
-          data-action="start-over"
-          onClick={() => dialog.current?.showModal()}
-        >
+        <button type="button" class="fm-button" data-action="start-over" onClick={() => dialog.current?.showModal()}>
           {t.startOver}
         </button>
         <button
@@ -345,11 +284,7 @@ function Resume({
           {t.continue}
         </button>
       </div>
-      <dialog
-        ref={dialog}
-        class="fm-dialog"
-        aria-labelledby={`${id}/over-title`}
-      >
+      <dialog ref={dialog} class="fm-dialog" aria-labelledby={`${id}/over-title`}>
         <h2 id={`${id}/over-title`}>{t.startOverQuestion}</h2>
         <p>{t.startOverBody}</p>
         <div class="fm-dialog-actions">
@@ -364,12 +299,7 @@ function Resume({
           >
             {t.startOver}
           </button>
-          <button
-            type="button"
-            class="fm-button"
-            data-action="cancel"
-            onClick={() => dialog.current?.close()}
-          >
+          <button type="button" class="fm-button" data-action="cancel" onClick={() => dialog.current?.close()}>
             {t.cancel}
           </button>
         </div>
@@ -383,13 +313,7 @@ const FIRST_NUMBER = /\d+/;
 /** A segment's text with its value in bold (the part's time in the warning colour), as the design has it. */
 function Emphasis({ kind, text }: { kind: string; text: string }) {
   const found = (kind === "question" ? FIRST_NUMBER : CLOCK).exec(text);
-  if (
-    found === null ||
-    kind === "submitted" ||
-    kind === "taken" ||
-    kind === "flags"
-  )
-    return <>{text}</>;
+  if (found === null || kind === "submitted" || kind === "taken" || kind === "flags") return <>{text}</>;
   const at = found.index;
   return (
     <span>
@@ -401,15 +325,7 @@ function Emphasis({ kind, text }: { kind: string; text: string }) {
 }
 
 /** The status line: plain segments divided by thin rules, every value labelled. The timer is one of them, never hidden. */
-function StatusLine({
-  t,
-  state,
-  store,
-}: {
-  t: PageMessages;
-  state: QuizState;
-  store: Store;
-}) {
+function StatusLine({ t, state, store }: { t: PageMessages; state: QuizState; store: Store }) {
   const screen = store.screen;
   const segments = statusFor({
     page: state.page,
@@ -507,8 +423,7 @@ function Dock({
     const el = dock.current;
     const quiz = el?.parentElement;
     if (!el || !quiz) return;
-    const measure = (): void =>
-      quiz.style.setProperty("--dock-h", `${el.offsetHeight}px`);
+    const measure = (): void => quiz.style.setProperty("--dock-h", `${el.offsetHeight}px`);
     measure();
     if (typeof ResizeObserver === "undefined") return;
     const watch = new ResizeObserver(measure);
@@ -528,12 +443,7 @@ function Dock({
       })
     : [];
   return (
-    <div
-      class="fm-dock"
-      data-dock
-      data-phone={phone ? "true" : undefined}
-      ref={dock}
-    >
+    <div class="fm-dock" data-dock data-phone={phone ? "true" : undefined} ref={dock}>
       <div class="fm-topbar">
         {phone ? (
           <>
@@ -542,10 +452,7 @@ function Dock({
               {line.map((part, i) => (
                 <span key={part.kind}>
                   {i > 0 ? " · " : null}
-                  <Emphasis
-                    kind={part.kind === "progress" ? "question" : part.kind}
-                    text={part.text}
-                  />
+                  <Emphasis kind={part.kind === "progress" ? "question" : part.kind} text={part.text} />
                 </span>
               ))}
             </span>
@@ -556,14 +463,10 @@ function Dock({
         <div class="fm-topbar-actions">
           <SidebarButton t={t} state={state} store={store} />
           <FocusButton t={t} store={store} />
-          {store.look.locked ? null : <AppearanceButton t={t} store={store} />}
+          {phone ? null : <TextSize t={t} store={store} />}
+          {store.look.locked && !phone ? null : <AppearanceButton t={t} store={store} />}
           {answering ? (
-            <button
-              type="button"
-              class="fm-button fm-primary"
-              data-action="submit"
-              onClick={() => api.submit()}
-            >
+            <button type="button" class="fm-button fm-primary" data-action="submit" onClick={() => api.submit()}>
               {t.submit}
             </button>
           ) : null}
@@ -574,23 +477,13 @@ function Dock({
         {state.said.value}
       </p>
       {children}
-      {store.look.locked ? null : <AppearanceMenu t={t} store={store} />}
+      {store.look.locked && !phone ? null : <AppearanceMenu t={t} store={store} />}
     </div>
   );
 }
 
 /** All · Missed · Flagged, under the results card. The choice is not stored. */
-function Filter({
-  t,
-  state,
-  missed,
-  flagged,
-}: {
-  t: PageMessages;
-  state: QuizState;
-  missed: number;
-  flagged: number;
-}) {
+function Filter({ t, state, missed, flagged }: { t: PageMessages; state: QuizState; missed: number; flagged: number }) {
   const all = state.attempt.value.plan.questions.length;
   const chosen = state.filter.value;
   const options = [
@@ -622,15 +515,7 @@ function Filter({
   );
 }
 
-function QuizView({
-  state,
-  api,
-  store,
-}: {
-  state: QuizState;
-  api: Api;
-  store: Store;
-}) {
+function QuizView({ state, api, store }: { state: QuizState; api: Api; store: Store }) {
   const { page } = state;
   const t = messagesFor(page);
   const attempt = state.attempt.value;
@@ -642,37 +527,23 @@ function QuizView({
     !phone &&
     started &&
     state.sidebar.value &&
-    (form === "stacked" ||
-      (form === "tabs" && state.side.value === "materials"));
+    (form === "stacked" || (form === "tabs" && state.side.value === "materials"));
   // on a phone an open sidebar (or the start screen's Materials panel) takes the screen: what is under it is not there
   const covered = phone && (started ? state.sidebar.value : state.shelf.value);
   const materials = page.materials !== undefined && page.materials.length > 0;
   let number = 0;
   const missed = graded ? new Set(missedIds(graded)) : new Set<string>();
-  const flaggedIds = new Set(
-    attempt.state.flagged.filter((id) => attempt.plan.questions.includes(id)),
-  );
+  const flaggedIds = new Set(attempt.state.flagged.filter((id) => attempt.plan.questions.includes(id)));
   const filter = attempt.phase === "submitted" ? state.filter.value : "all";
   const shown = (id: string): boolean =>
-    filter === "all" ||
-    (filter === "missed" ? missed.has(id) : flaggedIds.has(id));
+    filter === "all" || (filter === "missed" ? missed.has(id) : flaggedIds.has(id));
 
   return (
-    <section
-      class="fm-quiz"
-      id={page.id}
-      data-phase={attempt.phase}
-      data-quiz={page.id}
-    >
+    <section class="fm-quiz" id={page.id} data-phase={attempt.phase} data-quiz={page.id}>
       {started ? (
         <Dock t={t} state={state} store={store} api={api}>
           {attempt.phase === "submitted" ? (
-            <Filter
-              t={t}
-              state={state}
-              missed={missed.size}
-              flagged={flaggedIds.size}
-            />
+            <Filter t={t} state={state} missed={missed.size} flagged={flaggedIds.size} />
           ) : null}
         </Dock>
       ) : null}
@@ -687,23 +558,17 @@ function QuizView({
           inert={covered}
           aria-hidden={covered ? "true" : undefined}
         >
-          {attempt.phase === "start" ? (
-            <Resume t={t} state={state} store={store} />
-          ) : null}
+          {attempt.phase === "start" ? <Resume t={t} state={state} store={store} /> : null}
           {!started ? (
             <header class="fm-header">
               <h1>{page.title}</h1>
-              {page.descriptionHtml !== null ? (
-                <Html html={page.descriptionHtml} class="fm-description" />
-              ) : null}
+              {page.descriptionHtml !== null ? <Html html={page.descriptionHtml} class="fm-description" /> : null}
             </header>
           ) : null}
           {attempt.phase === "start" ? (
             <>
               <Facts t={t} page={page} />
-              {state.resume.value === null ? (
-                <Picker t={t} state={state} />
-              ) : null}
+              {state.resume.value === null ? <Picker t={t} state={state} /> : null}
               <Rules t={t} state={state} />
               <FocusBox t={t} store={store} />
               {state.resume.value === null ? (
@@ -717,16 +582,12 @@ function QuizView({
                     {t.start}
                   </button>
                   {materials ? <MaterialsButton t={t} state={state} /> : null}
-                  <span class="fm-clock-note">
-                    {materials ? t.clockStartsMaterials : t.clockStarts}
-                  </span>
+                  <span class="fm-clock-note">{materials ? t.clockStartsMaterials : t.clockStarts}</span>
                 </div>
               ) : null}
             </>
           ) : null}
-          {attempt.phase === "answering" ? (
-            <Notice t={t} state={state} />
-          ) : null}
+          {attempt.phase === "answering" ? <Notice t={t} state={state} /> : null}
           {attempt.phase === "submitted" ? (
             <>
               {attempt.state.timedOut ? (
@@ -755,26 +616,17 @@ function QuizView({
                 class="fm-section"
                 key={section.id}
                 hidden={!questions.some((q) => shown(q.id))}
-                id={
-                  section.title !== null
-                    ? `${page.id}/${section.id}`
-                    : undefined
-                }
+                id={section.title !== null ? `${page.id}/${section.id}` : undefined}
               >
                 {section.title !== null ? (
                   <h2>
                     {section.title}
                     {section.time !== undefined ? (
-                      <span class="fm-section-time">
-                        {" "}
-                        · {t.suggestedTime(minutes(t, section.time))}
-                      </span>
+                      <span class="fm-section-time"> · {t.suggestedTime(minutes(t, section.time))}</span>
                     ) : null}
                   </h2>
                 ) : null}
-                {section.introHtml !== "" ? (
-                  <Html html={section.introHtml} class="fm-intro" />
-                ) : null}
+                {section.introHtml !== "" ? <Html html={section.introHtml} class="fm-intro" /> : null}
                 {questions.map((question) => {
                   number += 1;
                   return (
@@ -792,12 +644,8 @@ function QuizView({
             ))}
           </div>
         </div>
-        {started && state.sidebar.value ? (
-          <Sidebar t={t} state={state} store={store} />
-        ) : null}
-        {attempt.phase === "start" && materials && state.shelf.value ? (
-          <MaterialsPanel t={t} state={state} />
-        ) : null}
+        {started && state.sidebar.value ? <Sidebar t={t} state={state} store={store} /> : null}
+        {attempt.phase === "start" && materials && state.shelf.value ? <MaterialsPanel t={t} state={state} /> : null}
       </div>
     </section>
   );
@@ -812,13 +660,11 @@ export function App({ store }: { store: Store }) {
           dispatch: (action) => store.dispatch(id, action),
           start: () => {
             // inside the click: a browser allows fullscreen only after a gesture
-            if (store.screen.wanted.value && store.screen.available.value)
-              store.fullscreen(true);
+            if (store.screen.wanted.value && store.screen.available.value) store.fullscreen(true);
             store.start(id, { part: state.part.value });
           },
           submit: () => store.submit(id),
-          flag: (questionId) =>
-            store.dispatch(id, { type: "flag", question: questionId }),
+          flag: (questionId) => store.dispatch(id, { type: "flag", question: questionId }),
           check: (questionId) => store.check(id, questionId),
           focus: (questionId) => store.focus(id, questionId),
         };

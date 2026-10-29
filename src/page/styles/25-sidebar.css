@@ -604,8 +604,9 @@
   }
   /* the phone, below 760px (Materials on a phone board): the compact top bar and the sidebar as a screen of its own */
   @media (max-width: 759px) {
+    /* at the larger text sizes the line no longer fits beside the buttons: it takes a row of its own, never cut */
     .fm-dock .fm-topbar {
-      flex-wrap: nowrap;
+      flex-wrap: wrap;
       gap: 10px;
       align-items: center;
       padding: 10px 16px;
@@ -617,8 +618,9 @@
 
     /* the compact line takes the title's place: wraps rather than being cut; the numbers are bold in --text as in the status line */
     .fm-phone-line {
-      flex: 1 1 0;
+      flex: 1 1 5em;
       min-width: 0;
+      overflow-wrap: break-word;
       font-size: 0.9em;
       font-variant-numeric: tabular-nums;
       line-height: 1.4;

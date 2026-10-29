@@ -74,7 +74,9 @@ describe("the look", () => {
     const memory = new Memory();
     const first = open(memory);
     first.store.look.pick("dark");
-    expect(JSON.parse(memory.items.get(first.key) as string)).toEqual({ theme: "dark" });
+    expect(JSON.parse(memory.items.get(first.key) as string)).toEqual({
+      theme: "dark",
+    });
     const next = open(memory);
     next.store.restore();
     expect(next.store.look.shown.value).toBe("dark");
@@ -87,9 +89,14 @@ describe("the look", () => {
     memory.items.set(a.key, JSON.stringify({ theme: "white", font: "serif" }));
     a.store.restore();
     a.store.look.pick("oled");
-    expect(JSON.parse(memory.items.get(a.key) as string)).toEqual({ theme: "oled", font: "serif" });
+    expect(JSON.parse(memory.items.get(a.key) as string)).toEqual({
+      theme: "oled",
+      font: "serif",
+    });
     a.store.look.pick(null);
-    expect(JSON.parse(memory.items.get(a.key) as string)).toEqual({ font: "serif" });
+    expect(JSON.parse(memory.items.get(a.key) as string)).toEqual({
+      font: "serif",
+    });
     expect(a.store.look.shown.value).toBe("paper");
     memory.items.set(a.key, JSON.stringify({ theme: "oled" }));
     a.store.look.pick(null);
@@ -193,5 +200,134 @@ describe("the Appearance menu", () => {
     store.look.menu.value = true;
     esc(store);
     expect(store.look.menu.value).toBe(false);
+  });
+});
+
+describe("the text size", () => {
+  const throwing = () => {
+    throw new Error("blocked");
+  };
+
+  it("steps through 15, 17, 19, 21, 23 and stays at the ends", () => {
+    const { store } = open(new Memory());
+    store.restore();
+    const seen: number[] = [store.look.size.value];
+    for (let i = 0; i < 5; i++) {
+      store.look.step(1);
+      seen.push(store.look.size.value);
+    }
+    expect(seen).toEqual([17, 19, 21, 23, 23, 23]);
+    for (let i = 0; i < 6; i++) store.look.step(-1);
+    expect(store.look.size.value).toBe(15);
+  });
+
+  it("is stored in the look object beside the theme, and the default is not stored", () => {
+    const memory = new Memory();
+    const a = open(memory);
+    a.store.restore();
+    a.store.look.pick("dark");
+    a.store.look.step(1);
+    expect(JSON.parse(memory.items.get(a.key) as string)).toEqual({
+      theme: "dark",
+      size: 19,
+    });
+    a.store.look.step(-1);
+    expect(JSON.parse(memory.items.get(a.key) as string)).toEqual({
+      theme: "dark",
+    });
+  });
+
+  it("comes back after a reload, under free", () => {
+    const memory = new Memory();
+    const a = open(memory);
+    a.store.restore();
+    a.store.look.step(1);
+    a.store.look.step(1);
+    const b = open(memory);
+    b.store.restore();
+    expect(b.store.look.size.value).toBe(21);
+  });
+
+  it("is applied under locked while the stored theme stays ignored and kept", () => {
+    const memory = new Memory();
+    const a = open(memory, "paper", "locked");
+    memory.items.set(a.key, '{"theme":"dark","size":23}');
+    a.store.restore();
+    expect(a.store.look.shown.value).toBe("paper");
+    expect(a.store.look.size.value).toBe(23);
+    a.store.look.step(-1);
+    expect(JSON.parse(memory.items.get(a.key) as string)).toEqual({
+      theme: "dark",
+      size: 21,
+    });
+  });
+
+  it("ignores a stored size that is not one of the five", () => {
+    const memory = new Memory();
+    const a = open(memory);
+    memory.items.set(a.key, '{"size":18}');
+    a.store.restore();
+    expect(a.store.look.size.value).toBe(17);
+  });
+
+  it("Default look resets the theme and the size", () => {
+    const memory = new Memory();
+    const a = open(memory, "paper");
+    a.store.restore();
+    a.store.look.pick("dark");
+    a.store.look.step(1);
+    a.store.look.reset();
+    expect(a.store.look.chosen.value).toBeNull();
+    expect(a.store.look.size.value).toBe(17);
+    expect(memory.items.has(a.key)).toBe(false);
+  });
+
+  it("works for the visit when storage throws", () => {
+    const broken = {
+      get length(): number {
+        return throwing();
+      },
+      getItem: throwing,
+      setItem: throwing,
+      removeItem: throwing,
+      key: throwing,
+    };
+    const page = pageQuizOf(build(QUIZ));
+    const store = createStore(
+      { version: 1, quizzes: [page], look: "locked" },
+      { storage: () => broken as unknown as Storage },
+    );
+    store.restore();
+    store.look.step(1);
+    expect(store.look.size.value).toBe(19);
+  });
+
+  it("draws the pair in the bar (disabled at the ends) and, on a phone, the Text size row; locked keeps both", () => {
+    const render = (store: ReturnType<typeof open>["store"]) => {
+      store.start([...store.quizzes.keys()][0] as string);
+      return renderToString(h(App, { store }));
+    };
+    const { store } = open(new Memory());
+    let html = render(store);
+    expect(html).toContain(">Smaller text<");
+    expect(html).toContain(">Larger text<");
+    expect(html).not.toContain("Text size");
+    for (let i = 0; i < 4; i++) store.look.step(-1);
+    html = render(store);
+    expect(html).toMatch(/data-action="smaller"[^>]*disabled/);
+    store.screen.phone.value = true;
+    store.look.menu.value = true;
+    html = render(store);
+    expect(html).toContain("Text size");
+    expect(html).not.toMatch(/data-textsize[\s\S]*data-textsize[\s\S]*Appearance/);
+    const locked = open(new Memory(), "paper", "locked").store;
+    expect(render(locked)).toContain(">Larger text<");
+    expect(render(locked)).not.toContain('data-action="appearance"');
+    locked.screen.phone.value = true;
+    locked.look.menu.value = true;
+    const lockedPhone = render(locked);
+    expect(lockedPhone).toContain('data-action="appearance"');
+    expect(lockedPhone).toContain("Text size");
+    expect(lockedPhone).not.toContain("data-theme-pick");
   });
 });

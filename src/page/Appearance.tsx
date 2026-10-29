@@ -1,6 +1,7 @@
 import { useEffect } from "preact/hooks";
 import { type Choice, THEME_NAMES } from "../core/themes";
 import { Icon } from "./icons";
+import { DEFAULT_SIZE, SIZES } from "./look";
 import type { PageMessages } from "./questions/shared";
 import type { Store } from "./store";
 
@@ -30,6 +31,41 @@ export function AppearanceButton({ t, store }: { t: PageMessages; store: Store }
   );
 }
 
+/** A− / A+ (the board's joined pair): five sizes, each button disabled at its end. Under both `free` and `locked`. */
+export function TextSize({ t, store }: { t: PageMessages; store: Store }) {
+  const size = store.look.size.value;
+  const smallest = size <= (SIZES[0] as number);
+  const largest = size >= (SIZES.at(-1) as number);
+  return (
+    <div class="fm-textsize" data-textsize>
+      <button
+        type="button"
+        class="fm-textsize-button"
+        data-action="smaller"
+        title={t.smallerText}
+        disabled={smallest}
+        aria-disabled={smallest}
+        onClick={() => store.look.step(-1)}
+      >
+        <span aria-hidden="true">A−</span>
+        <span class="fm-sr">{t.smallerText}</span>
+      </button>
+      <button
+        type="button"
+        class="fm-textsize-button"
+        data-action="larger"
+        title={t.largerText}
+        disabled={largest}
+        aria-disabled={largest}
+        onClick={() => store.look.step(1)}
+      >
+        <span aria-hidden="true">A+</span>
+        <span class="fm-sr">{t.largerText}</span>
+      </button>
+    </div>
+  );
+}
+
 const CHOICES: readonly Choice[] = ["auto", ...THEME_NAMES];
 
 /** The menu strip under the docked block: the Theme row and Reset. A click outside closes it; Esc is in `keys.ts`. */
@@ -48,30 +84,40 @@ export function AppearanceMenu({ t, store }: { t: PageMessages; store: Store }) 
   }, [open, look]);
   if (!open) return null;
   const current = look.chosen.value ?? look.quiz;
+  const phone = store.screen.phone.value;
+  const changed = (look.chosen.value !== null && look.chosen.value !== look.quiz) || look.size.value !== DEFAULT_SIZE;
   return (
     <div class="fm-look-menu" data-look-menu>
-      <div class="fm-look-row">
-        <span class="fm-look-label">{t.themeLabel}</span>
-        {CHOICES.map((k) => {
-          const name = t.themeName[k];
-          const mine = k === look.quiz;
-          return (
-            <button
-              key={k}
-              type="button"
-              class="fm-pill"
-              data-theme-pick={k}
-              aria-pressed={k === current}
-              aria-label={mine ? t.themeQuizLook(name) : undefined}
-              onClick={() => look.pick(k)}
-            >
-              {mine ? t.themeMarked(name) : name}
-            </button>
-          );
-        })}
-      </div>
-      {look.chosen.value !== null && look.chosen.value !== look.quiz ? (
-        <button type="button" class="fm-look-reset" data-action="reset-look" onClick={() => look.pick(null)}>
+      {phone ? (
+        <div class="fm-look-row">
+          <span class="fm-look-label">{t.textSizeLabel}</span>
+          <TextSize t={t} store={store} />
+        </div>
+      ) : null}
+      {look.locked ? null : (
+        <div class="fm-look-row">
+          <span class="fm-look-label">{t.themeLabel}</span>
+          {CHOICES.map((k) => {
+            const name = t.themeName[k];
+            const mine = k === look.quiz;
+            return (
+              <button
+                key={k}
+                type="button"
+                class="fm-pill"
+                data-theme-pick={k}
+                aria-pressed={k === current}
+                aria-label={mine ? t.themeQuizLook(name) : undefined}
+                onClick={() => look.pick(k)}
+              >
+                {mine ? t.themeMarked(name) : name}
+              </button>
+            );
+          })}
+        </div>
+      )}
+      {!look.locked && changed ? (
+        <button type="button" class="fm-look-reset" data-action="reset-look" onClick={() => look.reset()}>
           {t.resetLook}
         </button>
       ) : null}

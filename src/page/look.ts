@@ -25,8 +25,29 @@ export function applyLook(store: Store, root: HTMLElement = document.documentEle
     if (shown === plain) root.removeAttribute("data-theme");
     else root.setAttribute("data-theme", shown);
   });
+  // the text size: `data-size` only when it is not the default; the CSS sets the base size from it
+  const stopSize = effect(() => {
+    const size = look.size.value;
+    if (size === DEFAULT_SIZE) root.removeAttribute("data-size");
+    else root.setAttribute("data-size", String(size));
+  });
   return () => {
     stop();
+    stopSize();
     for (const q of queries) q.removeEventListener("change", read);
   };
+}
+
+/** The five text sizes: the page's base size in px. 17 is the default. */
+export const SIZES = [15, 17, 19, 21, 23] as const;
+export const DEFAULT_SIZE = 17;
+
+/** The stored `size`: one of the five, else the default. */
+export const sizeOf = (stored: unknown): number =>
+  typeof stored === "number" && (SIZES as readonly number[]).includes(stored) ? stored : DEFAULT_SIZE;
+
+/** One step up or down from `size`; at an end it stays. */
+export function stepSize(size: number, direction: -1 | 1): number {
+  const at = SIZES.indexOf(sizeOf(size) as (typeof SIZES)[number]);
+  return SIZES[Math.min(SIZES.length - 1, Math.max(0, at + direction))] as number;
 }

@@ -7,6 +7,7 @@ import { planFor } from "../core/plan";
 import { type Choice, isChoice, shownTheme, type ThemeName } from "../core/themes";
 import { type KeyBlob, openKey, type PageData, type PageQuiz } from "./data";
 import { createEvents, type Events } from "./events";
+import { DEFAULT_SIZE, sizeOf, stepSize } from "./look";
 import { type Action, newAttempt, reduce } from "./reducer";
 import { limitOf, missedIds } from "./results";
 import {
@@ -94,7 +95,13 @@ export type Look = {
   menu: Signal<boolean>;
   /** the theme the page shows now */
   shown: ReadonlySignal<ThemeName>;
-  /** reads the stored choice (once; `restore` and the page's first step both call it) */
+  /** the text size in px (one of five; 17 is the default). Kept under both `free` and `locked`. */
+  size: Signal<number>;
+  /** one step smaller (-1) or larger (1); stays at the ends */
+  step(direction: -1 | 1): void;
+  /** Default look: the quiz's theme and the default text size */
+  reset(): void;
+  /** reads the stored look (once; `restore` and the page's first step both call it) */
   load(): void;
   /** the learner picks a theme (the quiz's own, like null, drops the stored choice); null resets to the quiz's */
   pick(choice: Choice | null): void;
@@ -217,29 +224,47 @@ export function createStore(data: PageData, deps: Deps = {}): Store {
     const locked = data.look === "locked";
     const chosen = signal<Choice | null>(null);
     const device = signal({ dark: false, more: false });
+    const size = signal(DEFAULT_SIZE);
     let loaded = false;
+    /** writes the look object with `patch` applied (a null value drops the field); an empty object is removed */
+    const write = (patch: Record<string, unknown>): void => {
+      if (saver === null) return;
+      const next: Record<string, unknown> = { ...readLook(saver.get(lookKey(first))), ...patch };
+      for (const [k, v] of Object.entries(patch)) if (v === null) delete next[k];
+      if (Object.keys(next).length === 0) saver.remove(lookKey(first));
+      else saver.set(lookKey(first), JSON.stringify(next));
+    };
+    const pick = (choice: Choice | null): void => {
+      if (locked) return;
+      if (choice === quiz) choice = null;
+      chosen.value = choice;
+      write({ theme: choice });
+    };
+    const setSize = (next: number): void => {
+      size.value = next;
+      write({ size: next === DEFAULT_SIZE ? null : next });
+    };
     return {
       quiz,
       locked,
       chosen,
       device,
+      size,
       menu: signal(false),
       shown: computed(() => shownTheme(chosen.value ?? quiz, device.value)),
       load() {
-        if (loaded || locked || saver === null) return;
+        if (loaded || saver === null) return;
         loaded = true;
-        const theme = readLook(saver.get(lookKey(first))).theme;
-        if (isChoice(theme)) chosen.value = theme;
+        const stored = readLook(saver.get(lookKey(first)));
+        size.value = sizeOf(stored.size);
+        // under `look: locked` the stored theme is ignored (not deleted); the size is applied
+        if (!locked && isChoice(stored.theme)) chosen.value = stored.theme;
       },
-      pick(choice) {
-        if (locked) return;
-        if (choice === quiz) choice = null;
-        chosen.value = choice;
-        if (saver === null) return;
-        const { theme: _gone, ...rest } = readLook(saver.get(lookKey(first)));
-        const next = choice === null ? rest : { ...rest, theme: choice };
-        if (Object.keys(next).length === 0) saver.remove(lookKey(first));
-        else saver.set(lookKey(first), JSON.stringify(next));
+      pick,
+      step: (direction) => setSize(stepSize(size.value, direction)),
+      reset() {
+        pick(null);
+        setSize(DEFAULT_SIZE);
       },
     };
   })();
