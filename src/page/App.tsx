@@ -6,7 +6,7 @@ import { type Api, QuestionCard } from "./questions/Card";
 import { Html, messagesFor, type PageMessages } from "./questions/shared";
 import { ResultsCard } from "./ResultsCard";
 import { limitOf, missedIds, num } from "./results";
-import { quizCount, quizPoints, sectionPoints, wholeTime } from "./start";
+import { mixedPoints, quizCount, quizPoints, sectionPoints, wholeTime } from "./start";
 import { stampParts, statusFor } from "./status";
 import { clockText, download, exportFor, type QuizState, type Store } from "./store";
 
@@ -202,7 +202,10 @@ function Picker({ t, state }: { t: PageMessages; state: QuizState }) {
               <span class="fm-part-text">
                 <strong>{t.partTitle(i + 1, s.title ?? "")}</strong>
                 <span class="fm-part-meta">
-                  {`${t.partQuestions(s.pick ?? null, s.questions.length)} · ${t.pointsLabel(num(sectionPoints(s), page.uiLang))}`}
+                  {[
+                    t.partQuestions(s.pick ?? null, s.questions.length),
+                    ...(mixedPoints(s) ? [] : [t.pointsLabel(num(sectionPoints(s), page.uiLang))]),
+                  ].join(" · ")}
                 </span>
               </span>
               {s.time !== undefined ? <span class="fm-part-time">{t.suggestedTime(minutes(t, s.time))}</span> : null}

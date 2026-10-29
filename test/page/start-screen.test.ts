@@ -63,6 +63,15 @@ describe("the start screen", () => {
     expect(setup(QUIZ("")).html()).toContain('data-fact="points"');
   });
 
+  it("leaves out a mixed bank's points on its part row only", () => {
+    const rows = (bank: [number, number, number]) =>
+      [...setup(QUIZ("", bank)).html().matchAll(/<span class="fm-part-meta">([^<]*)<\/span>/g)].map((m) => m[1]);
+    const mixed = rows([1, 2, 3]);
+    expect(mixed.at(-1)).not.toMatch(/point/i);
+    expect(mixed.at(-2)).toMatch(/point/i); // the plain part keeps them
+    expect(rows([2, 2, 2]).at(-1)).toMatch(/point/i);
+  });
+
   it("names the feedback rule, and the timeout rule only for a timed quiz", () => {
     const rules = (front: string) =>
       [

@@ -10,6 +10,10 @@ export function sectionPoints(section: PageSection): number {
   return (all / section.questions.length) * section.pick;
 }
 
+/** True for a bank (`pick`) whose questions carry different points: what it is worth is not known before Start. */
+export const mixedPoints = (section: PageSection): boolean =>
+  section.pick !== undefined && section.questions.some((q) => q.points !== section.questions[0]?.points);
+
 /** The number of questions in one attempt of a section: the draw for a bank, else all of them. */
 export const sectionCount = (section: PageSection): number => section.pick ?? section.questions.length;
 
@@ -20,10 +24,7 @@ export const quizCount = (page: PageQuiz): number => page.sections.reduce((n, s)
  * since the total is then not known before Start.
  */
 export function quizPoints(page: PageQuiz): number | undefined {
-  const mixed = page.sections.some(
-    (s) => s.pick !== undefined && s.questions.some((q) => q.points !== s.questions[0]?.points),
-  );
-  if (mixed) return undefined;
+  if (page.sections.some(mixedPoints)) return undefined;
   return Math.round(page.sections.reduce((n, s) => n + sectionPoints(s), 0) * 100) / 100;
 }
 
