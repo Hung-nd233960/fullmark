@@ -394,30 +394,42 @@
   /* hint and explanation */
   .fm-hint {
     margin: 12px 0;
+  }
+
+  .fm-hint-toggle {
+    height: 36px;
+    padding: 0 14px;
+    font-size: 0.9em;
+  }
+
+  .fm-hint-box {
+    display: flex;
+    gap: 10px;
+    align-items: baseline;
+    margin-top: 12px;
     padding: 10px 14px;
     border: 1px dashed var(--hint);
     border-radius: 8px;
   }
 
-  .fm-hint summary {
-    display: inline-block;
-    margin-right: 10px;
+  .fm-hint-label {
     font-size: 0.72em;
     font-weight: 700;
     color: var(--hint);
     text-transform: uppercase;
     letter-spacing: 0.08em;
-    cursor: pointer;
   }
 
-  .fm-hint[open] > div {
-    display: inline;
+  .fm-hint-text {
     font-size: 0.95em;
   }
 
-  .fm-hint[open] > div > p {
-    display: inline;
-    margin: 0;
+  .fm-hint-text > :last-child {
+    margin-bottom: 0;
+  }
+
+  .fm-hint-text > :first-child {
+    margin-top: 0;
   }
 
   .fm-explanation {

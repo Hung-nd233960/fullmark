@@ -87,9 +87,7 @@ test("reload offers Continue with the same plan and answers; Start over asks fir
   expect(key).toMatch(/^fullmark:v1:parts:[0-9a-f]{64}:attempt$/);
 
   await page.reload();
-  await expect(page.locator("[data-resume]")).toHaveText(
-    /^2 of 12 answered · \d+ s used$|^2 of 12 answered · .* used$/,
-  );
+  await expect(page.locator("[data-resume]")).toHaveText(/^Started \d+ \w+ · 2 of 12 answered · \d\d:\d\d used$/);
   await expect(page.getByRole("button", { name: "Continue" })).toBeVisible();
   await expect(page.getByRole("button", { name: "Start over" })).toBeVisible();
   // the part picker is hidden while an attempt can be continued

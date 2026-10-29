@@ -9,6 +9,11 @@ const sourcesOf = (list: Locator): Promise<number[]> =>
 
 /** Moves an ordering card's items, with their up buttons, into this order of source indices. */
 async function arrange(list: Locator, target: number[]): Promise<void> {
+  // the question is answered whatever order the seed drew: if the page already shows the target, move one item down and back
+  if ((await sourcesOf(list)).join() === target.join()) {
+    await list.locator(".fm-order-item").nth(0).locator('[data-dir="down"]').click();
+    await list.locator(".fm-order-item").nth(1).locator('[data-dir="up"]').click();
+  }
   for (let place = 0; place < target.length; place++) {
     const now = await sourcesOf(list);
     for (let at = now.indexOf(target[place] as number); at > place; at--) {
@@ -91,7 +96,7 @@ test("every simple type: status and points on the page equal quiz grade", async 
   // an empty blank says so, and is not called incorrect; the hint follows the prompt
   await expect(card(page, "b1").locator(".fm-blank-results li").nth(3)).toContainText("No answer");
   await expect(card(page, "b1").locator(".fm-blank-results li").nth(3)).not.toContainText("Incorrect");
-  await expect(card(page, "b1").locator(":scope > div:has(.fm-prompt) + details.fm-hint")).toHaveCount(1);
+  await expect(card(page, "b1").locator(":scope > div:has(.fm-prompt) + .fm-hint")).toHaveCount(1);
   await expect(card(page, "f1").locator(".fm-field-mark")).toHaveCount(2);
   await expect(card(page, "f1")).toContainText("zq-field-name");
   await expect(card(page, "n2")).toContainText("3.14 ± 1%");
@@ -264,4 +269,24 @@ test("the comma warning: shown in an en quiz, never in a vi one; 2,5 scores righ
   await expect(vi).toHaveValue("2,5");
   await page.getByRole("button", { name: "Nộp bài" }).click();
   await expect(card(page, "n3").locator(".fm-result")).toHaveAttribute("data-status", "correct");
+});
+
+test("a hint is a button until opened; a typed answer after Submit shows only the two boxes", async ({ page }) => {
+  await page.goto(types.url);
+  await page.getByRole("button", { name: "Start" }).click();
+  const q = card(page, "b1");
+  const toggle = q.getByRole("button", { name: "Show hint" });
+  await expect(toggle).toHaveAttribute("aria-expanded", "false");
+  await expect(q.locator(".fm-hint-box")).toHaveCount(0);
+  await toggle.click();
+  await expect(q.getByRole("button", { name: "Hide hint" })).toHaveAttribute("aria-expanded", "true");
+  await expect(q.locator(".fm-hint-box")).toBeVisible();
+  await q.getByRole("button", { name: "Hide hint" }).click();
+  await expect(q.locator(".fm-hint-box")).toHaveCount(0);
+
+  await card(page, "n3").locator("input.fm-text").fill("2.5");
+  await page.getByRole("button", { name: "Submit" }).click();
+  await expect(card(page, "n3").locator("input.fm-text")).toHaveCount(0);
+  await expect(card(page, "n3").locator(".fm-shown-box")).toHaveCount(2);
+  await expect(card(page, "n3").locator(".fm-shown-box").first()).toContainText("2.5");
 });

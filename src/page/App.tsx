@@ -5,10 +5,10 @@ import { Icon, type IconName } from "./icons";
 import { type Api, QuestionCard } from "./questions/Card";
 import { Html, messagesFor, type PageMessages } from "./questions/shared";
 import { ResultsCard } from "./ResultsCard";
-import { missedIds, num } from "./results";
+import { limitOf, missedIds, num } from "./results";
 import { quizCount, quizPoints, sectionPoints, wholeTime } from "./start";
-import { statusFor } from "./status";
-import { download, exportFor, type QuizState, type Store } from "./store";
+import { stampParts, statusFor } from "./status";
+import { clockText, download, exportFor, type QuizState, type Store } from "./store";
 
 /** The questions of the plan, in its order, with the section each belongs to; a section's run of questions is one group. */
 function groupsOf(state: QuizState): { section: PageSection; questions: PageQuestion[] }[] {
@@ -68,8 +68,11 @@ function Facts({ t, page }: { t: PageMessages; page: PageQuiz }) {
       value: num(quizCount(page), page.uiLang),
       icon: "list",
     },
-    { id: "points", label: t.pointsCell, value: num(quizPoints(page), page.uiLang), icon: "star" },
   ];
+  const points = quizPoints(page);
+  if (points !== undefined) {
+    tiles.push({ id: "points", label: t.pointsCell, value: num(points, page.uiLang), icon: "star" });
+  }
   if (page.timeLimit !== undefined) {
     tiles.push({
       id: "time",
@@ -160,6 +163,7 @@ function Picker({ t, state }: { t: PageMessages; state: QuizState }) {
   };
   if (parts.length === 0) return null;
   const time = wholeTime(page);
+  const wholePoints = quizPoints(page);
   const many = parts.length > 5;
   return (
     <fieldset class="fm-parts">
@@ -174,7 +178,7 @@ function Picker({ t, state }: { t: PageMessages; state: QuizState }) {
             {[
               t.partsCount(parts.length),
               t.partQuestions(null, quizCount(page)),
-              t.pointsLabel(num(quizPoints(page), page.uiLang)),
+              ...(wholePoints === undefined ? [] : [t.pointsLabel(num(wholePoints, page.uiLang))]),
             ].join(" · ")}
           </span>
         </span>
@@ -210,6 +214,17 @@ function Picker({ t, state }: { t: PageMessages; state: QuizState }) {
   );
 }
 
+/** "Started 26 Oct · 13 of 32 answered · 21:18 left on the clock", or "... · 18:00 used" when untimed. */
+function resumeLine(t: PageMessages, page: PageQuiz, resume: NonNullable<QuizState["resume"]["value"]>): string {
+  const stamp = stampParts(resume.attempt.state.startedAt ?? "");
+  const limit = limitOf(page, resume.attempt);
+  return [
+    ...(stamp === null ? [] : [t.startedOn(stamp.day, t.monthsShort[stamp.month - 1] ?? "")]),
+    t.answeredOf(resume.answered, resume.total),
+    limit === undefined ? t.clockUsed(clockText(resume.used)) : t.clockLeft(clockText(limit - resume.used)),
+  ].join(" · ");
+}
+
 /** The banner of an attempt that can be continued: how far it got, Start over (which asks first) and Continue. */
 function Resume({ t, state, store }: { t: PageMessages; state: QuizState; store: Store }) {
   const resume = state.resume.value;
@@ -221,7 +236,7 @@ function Resume({ t, state, store }: { t: PageMessages; state: QuizState; store:
       <div class="fm-resume-text">
         <strong>{t.unfinishedAttempt}</strong>
         <span class="fm-resume-line" data-resume>
-          {t.progressSoFar(resume.answered, resume.total, minutes(t, resume.used))}
+          {resumeLine(t, state.page, resume)}
         </span>
       </div>
       <div class="fm-resume">
@@ -444,9 +459,9 @@ function QuizView({ state, api, store }: { state: QuizState; api: Api; store: St
         </Dock>
       ) : null}
       {attempt.phase === "start" ? <Resume t={t} state={state} store={store} /> : null}
-      {!started || page.descriptionHtml !== null ? (
+      {!started ? (
         <header class="fm-header">
-          {!started ? <h1>{page.title}</h1> : null}
+          <h1>{page.title}</h1>
           {page.descriptionHtml !== null ? <Html html={page.descriptionHtml} class="fm-description" /> : null}
         </header>
       ) : null}

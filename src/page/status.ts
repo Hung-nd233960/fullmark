@@ -25,7 +25,7 @@ export type StatusInput = {
 const pageText = (page: PageQuiz) => (page.uiLang === "vi" ? vi : en).page;
 
 /** `26 Oct, 14:32`'s parts from a zoneless stamp (`2026-10-26T14:32:00`), read as written: no `toLocaleString`. */
-function stampParts(stamp: string): { day: number; month: number; time: string } | null {
+export function stampParts(stamp: string): { day: number; month: number; time: string } | null {
   const m = /^\d{4}-(\d\d)-(\d\d)T(\d\d:\d\d)/.exec(stamp);
   return m ? { month: Number(m[1]), day: Number(m[2]), time: m[3] as string } : null;
 }

@@ -8,26 +8,28 @@ export function Numeric({ q, c }: { q: Extract<PageQuestion, { type: "numeric" }
   const key = c.keyed?.type === "numeric" ? c.keyed.key : undefined;
   return (
     <div class="fm-text-answer">
-      <div class="fm-numeric">
-        <label class="fm-answer-label" for={`${c.name}/input`}>
-          {t.yourAnswer}
-        </label>
-        <input
-          type="text"
-          id={`${c.name}/input`}
-          class="fm-text fm-text-short"
-          autocomplete="off"
-          spellcheck={false}
-          aria-labelledby={`${c.name}/prompt`}
-          value={raw}
-          disabled={c.submitted}
-          onInput={(e) => {
-            const text = (e.currentTarget as HTMLInputElement).value;
-            c.set(text === "" ? null : { raw: text });
-          }}
-        />
-        {q.unit !== "" ? <span class="fm-unit">{q.unit}</span> : null}
-      </div>
+      {!c.submitted ? (
+        <div class="fm-numeric">
+          <label class="fm-answer-label" for={`${c.name}/input`}>
+            {t.yourAnswer}
+          </label>
+          <input
+            type="text"
+            id={`${c.name}/input`}
+            class="fm-text fm-text-short"
+            autocomplete="off"
+            spellcheck={false}
+            aria-labelledby={`${c.name}/prompt`}
+            value={raw}
+            disabled={c.submitted}
+            onInput={(e) => {
+              const text = (e.currentTarget as HTMLInputElement).value;
+              c.set(text === "" ? null : { raw: text });
+            }}
+          />
+          {q.unit !== "" ? <span class="fm-unit">{q.unit}</span> : null}
+        </div>
+      ) : null}
       {!c.submitted && wantsPoint(c.quiz, raw) ? <CommaWarning t={t} /> : null}
       {c.submitted ? (
         <Shown

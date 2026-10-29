@@ -15,9 +15,17 @@ export const sectionCount = (section: PageSection): number => section.pick ?? se
 
 export const quizCount = (page: PageQuiz): number => page.sections.reduce((n, s) => n + sectionCount(s), 0);
 
-/** Rounded to two decimals, so a bank's average does not print as `7.333333`. */
-export const quizPoints = (page: PageQuiz): number =>
-  Math.round(page.sections.reduce((n, s) => n + sectionPoints(s), 0) * 100) / 100;
+/**
+ * The points of the whole quiz, rounded to two decimals; absent when a bank draws from questions with different points,
+ * since the total is then not known before Start.
+ */
+export function quizPoints(page: PageQuiz): number | undefined {
+  const mixed = page.sections.some(
+    (s) => s.pick !== undefined && s.questions.some((q) => q.points !== s.questions[0]?.points),
+  );
+  if (mixed) return undefined;
+  return Math.round(page.sections.reduce((n, s) => n + sectionPoints(s), 0) * 100) / 100;
+}
 
 /** The seconds the whole quiz suggests: its time limit, else the sum of the sections' suggested times; absent if none. */
 export function wholeTime(page: PageQuiz): number | undefined {

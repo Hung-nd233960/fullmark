@@ -52,6 +52,14 @@ const QUIZ = (front: string) =>
     "",
   ].join("\n");
 
+/** What a reader sees: no scripts, styles or tags, so no attribute or icon path counts. */
+const visibleText = (page: string): string =>
+  page
+    .replace(/<script[\s\S]*?<\/script>/g, "")
+    .replace(/<style[\s\S]*?<\/style>/g, "")
+    .replace(/<[^>]*>/g, "")
+    .replace(/\s+/g, " ");
+
 describe("numbers on the page", () => {
   it("uses the decimal comma on a vi page, in the card and the result", () => {
     const { store, id, html } = setup(QUIZ("ui_lang: vi"));
@@ -61,7 +69,7 @@ describe("numbers on the page", () => {
     store.submit(id);
     const page = html();
     expect(page).toContain("2,5 / 2,5");
-    expect(page.replace(/data-[a-z-]+="[^"]*"/g, "")).not.toContain("2.5");
+    expect(visibleText(page)).not.toContain("2.5");
   });
 
   it("keeps the point on an en page", () => {

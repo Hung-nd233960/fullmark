@@ -6,7 +6,7 @@ import { build, setup } from "../helpers/page";
 const single = (id: string, points: number) =>
   `## Question ${id}? {type=single id=${id} points=${points}}\n\n- [x] right ${id}\n- [ ] wrong ${id}\n`;
 
-const QUIZ = (front: string) =>
+const QUIZ = (front: string, bank: [number, number, number] = [2, 2, 2]) =>
   [
     "---",
     "title: Tiles",
@@ -20,9 +20,9 @@ const QUIZ = (front: string) =>
     single("b", 2),
     "# Bank {id=bank pick=2 time=5m}",
     "",
-    single("c", 1),
-    single("d", 2),
-    single("e", 3),
+    single("c", bank[0]),
+    single("d", bank[1]),
+    single("e", bank[2]),
   ].join("\n");
 
 describe("the start screen's numbers", () => {
@@ -53,6 +53,14 @@ describe("the start screen", () => {
     expect(tiles("")).toEqual(["questions", "points"]);
     expect(tiles("time_limit: 20m")).toEqual(["questions", "points", "time"]);
     expect(tiles("time_limit: 20m\npass_mark: 60")).toEqual(["questions", "points", "time", "pass"]);
+  });
+
+  it("leaves out the Points tile and the whole quiz's points when a bank mixes points", () => {
+    const mixed = setup(QUIZ("", [1, 2, 3])).html();
+    expect(mixed).not.toContain('data-fact="points"');
+    expect(mixed).toContain('data-fact="questions"');
+    expect(quizPoints(pageQuizOf(build(QUIZ("", [1, 2, 3]))))).toBeUndefined();
+    expect(setup(QUIZ("")).html()).toContain('data-fact="points"');
   });
 
   it("names the feedback rule, and the timeout rule only for a timed quiz", () => {

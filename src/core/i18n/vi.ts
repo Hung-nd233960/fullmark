@@ -83,6 +83,8 @@ export const vi = {
   page: {
     start: "Bắt đầu",
     hint: "Gợi ý",
+    showHint: "Hiện gợi ý",
+    hideHint: "Ẩn gợi ý",
     questionsCount: (n: number) => `${n} câu hỏi`,
     submit: "Nộp bài",
     exportHint: "Lưu tệp kết quả; lệnh `quiz grade` đọc tệp này.",
@@ -143,15 +145,16 @@ export const vi = {
     ruleSavedBody: "Trong trình duyệt này, nên bạn có thể đóng trang và quay lại sau.",
     ruleNotSaved: "Không được lưu",
     focusModeDetail:
-      "Toàn màn hình, ẩn bảng bên cạnh; thời gian vẫn ở thanh trên. Nhấn F để bật hoặc tắt, Esc để thoát toàn màn hình.",
+      "Toàn màn hình, đóng thanh bên; thời gian vẫn ở thanh trên. Nhấn F để bật hoặc tắt, Esc để thoát toàn màn hình.",
     clockStarts: "Đồng hồ bắt đầu chạy khi bạn nhấn Bắt đầu.",
     continue: "Tiếp tục",
     startOver: "Làm lại từ đầu",
     startOverQuestion: "Làm lại từ đầu?",
     startOverBody: "Các câu trả lời bạn đã nhập sẽ bị xóa.",
     cancel: "Hủy",
-    progressSoFar: (answered: number, total: number, used: string) =>
-      `đã trả lời ${answered} trên ${total} · đã dùng ${used}`,
+    startedOn: (day: number, month: string) => `Bắt đầu ${day} ${month}`,
+    clockLeft: (clock: string) => `còn ${clock} trên đồng hồ`,
+    clockUsed: (clock: string) => `đã dùng ${clock}`,
     newAttempt: "Làm lượt mới",
     timeLeft: (clock: string) => `Còn lại ${clock}`,
     timeSoFar: (clock: string) => `Thời gian ${clock}`,

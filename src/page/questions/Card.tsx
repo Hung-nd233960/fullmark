@@ -1,4 +1,5 @@
 import type { FunctionComponent } from "preact";
+import { useState } from "preact/hooks";
 import type { Answer } from "../../core/attempt";
 import type { PageQuestion } from "../data";
 import { Icon } from "../icons";
@@ -65,6 +66,7 @@ export function QuestionCard({
 }) {
   const quiz = state.page;
   const t = messagesFor(quiz);
+  const [hintOpen, setHintOpen] = useState(false);
   const attempt = state.attempt.value;
   const submitted = attempt.phase === "submitted";
   const checked = attempt.state.checked.includes(question.id);
@@ -152,10 +154,25 @@ export function QuestionCard({
         <Html html={question.promptHtml} class="fm-prompt" id={`${name}/prompt`} />
       )}
       {question.hintHtml !== null ? (
-        <details class="fm-hint">
-          <summary>{t.hint}</summary>
-          <Html html={question.hintHtml} />
-        </details>
+        <div class="fm-hint" data-open={hintOpen ? "true" : undefined}>
+          <button
+            type="button"
+            class="fm-button fm-hint-toggle"
+            data-action="hint"
+            aria-expanded={hintOpen}
+            aria-controls={`${name}/hint`}
+            onClick={() => setHintOpen(!hintOpen)}
+          >
+            <Icon name="info" />
+            {hintOpen ? t.hideHint : t.showHint}
+          </button>
+          {hintOpen ? (
+            <div class="fm-hint-box" id={`${name}/hint`}>
+              <span class="fm-hint-label">{t.hint}</span>
+              <Html html={question.hintHtml} class="fm-hint-text" />
+            </div>
+          ) : null}
+        </div>
       ) : null}
       <Content q={question} c={c} />
       {checkable ? (
