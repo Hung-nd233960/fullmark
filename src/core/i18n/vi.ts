@@ -144,8 +144,7 @@ export const vi = {
     ruleSaved: "Tự động lưu",
     ruleSavedBody: "Trong trình duyệt này, nên bạn có thể đóng trang và quay lại sau.",
     ruleNotSaved: "Không được lưu",
-    focusModeDetail:
-      "Toàn màn hình, đóng thanh bên; thời gian vẫn ở thanh trên. Nhấn F để bật hoặc tắt, Esc để thoát toàn màn hình.",
+    focusModeDetail: "Chế độ tập trung, nhấn F để bật/tắt, Esc để thoát",
     clockStarts: "Đồng hồ bắt đầu chạy khi bạn nhấn Bắt đầu.",
     continue: "Tiếp tục",
     startOver: "Làm lại từ đầu",
@@ -154,7 +153,7 @@ export const vi = {
     cancel: "Hủy",
     startedOn: (day: number, month: string) => `Bắt đầu ${day} ${month}`,
     clockLeft: (clock: string) => `còn ${clock} trên đồng hồ`,
-    clockUsed: (clock: string) => `đã dùng ${clock}`,
+    clockUsed: (clock: string) => `đã hết ${clock}`,
     newAttempt: "Làm lượt mới",
     timeLeft: (clock: string) => `Còn lại ${clock}`,
     timeSoFar: (clock: string) => `Thời gian ${clock}`,
