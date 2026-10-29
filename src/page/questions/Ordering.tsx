@@ -1,13 +1,22 @@
 import { useEffect, useRef, useState } from "preact/hooks";
 import { readAnswer } from "../../core/attempt/answers";
 import type { PageQuestion } from "../data";
+import { Icon } from "../icons";
+import { edgeScroll, landingIndex, moveItem } from "./drag";
 import { type Ctx, Html, shownEntries } from "./shared";
 
 type Dir = "up" | "down";
 
+/** What a drag in progress shows: the lifted item, and the place among the others where it will land. */
+type Drag = { source: number; to: number };
+
+/** The pointer side of a drag: how the lifted item was grabbed, and what to undo when it ends. */
+type Session = { offset: number; height: number; y: number; frame: number; stop(): void };
+
 /**
- * `ordering`: a list with ↑ and ↓ buttons. Nothing is stored until the first move (the page never starts in the right
- * order, and an untouched list is unanswered). Dragging comes later, on top of these buttons.
+ * `ordering`: a list with a drag handle and ↑ and ↓ buttons on each item. Nothing is stored until the first move (the
+ * page never starts in the right order, and an untouched list is unanswered). A drop and a button press record the same
+ * action: one `answer` with the new order. The buttons are the accessible way; the handle is for a mouse or a finger.
  */
 export function Ordering({ q, c }: { q: Extract<PageQuestion, { type: "ordering" }>; c: Ctx }) {
   const { t } = c;
@@ -21,6 +30,12 @@ export function Ordering({ q, c }: { q: Extract<PageQuestion, { type: "ordering"
   const [said, setSaid] = useState("");
   const focus = useRef<{ source: number; dir: Dir } | null>(null);
   const list = useRef<HTMLOListElement>(null);
+  const [drag, setDrag] = useState<Drag | null>(null);
+  const dragging = useRef<Drag | null>(null);
+  const session = useRef<Session | null>(null);
+  // the handlers of a drag outlive the render they were made in
+  const latest = useRef({ order, c, say: setSaid });
+  latest.current = { order, c, say: setSaid };
 
   useEffect(() => {
     const want = focus.current;
@@ -32,6 +47,12 @@ export function Ordering({ q, c }: { q: Extract<PageQuestion, { type: "ordering"
     (same && !same.disabled ? same : other)?.focus();
   });
 
+  // a drag ends with the component, and when the question is locked under it (the time ran out)
+  useEffect(() => {
+    if (c.submitted) session.current?.stop();
+    return () => session.current?.stop();
+  }, [c.submitted]);
+
   const move = (from: number, dir: Dir) => {
     const to = dir === "up" ? from - 1 : from + 1;
     if (to < 0 || to >= order.length) return;
@@ -42,19 +63,118 @@ export function Ordering({ q, c }: { q: Extract<PageQuestion, { type: "ordering"
     c.set({ order: next });
   };
 
+  /** Lifts the item whose handle was pressed; the pointer is followed on the window until it is let go. */
+  const lift = (e: PointerEvent, source: number) => {
+    const ol = list.current;
+    const row = (e.currentTarget as HTMLElement).closest<HTMLElement>(".fm-order-item");
+    if (c.submitted || ol === null || row === null || session.current !== null) return;
+    if (e.pointerType === "mouse" && e.button !== 0) return;
+    e.preventDefault();
+    try {
+      (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+    } catch {
+      // the window listeners below do the work without it
+    }
+    const box = row.getBoundingClientRect();
+    ol.style.setProperty("--drag-x", `${box.left}px`);
+    ol.style.setProperty("--drag-w", `${box.width}px`);
+    ol.style.setProperty("--drag-h", `${box.height}px`);
+    const s: Session = { offset: e.clientY - box.top, height: box.height, y: e.clientY, frame: 0, stop: () => {} };
+    session.current = s;
+
+    // the lifted item follows the pointer; the slot goes where its middle falls among the items that stay
+    const follow = () => {
+      const top = s.y - s.offset;
+      ol.style.setProperty("--drag-y", `${top}px`);
+      const staying = [...ol.querySelectorAll<HTMLElement>(".fm-order-item:not([data-lifted])")].map((el) => {
+        const r = el.getBoundingClientRect();
+        return { top: r.top, height: r.height };
+      });
+      const to = landingIndex(staying, top + s.height / 2);
+      if (dragging.current !== null && dragging.current.to !== to) {
+        dragging.current = { source, to };
+        setDrag(dragging.current);
+      }
+    };
+    const scroll = () => {
+      const dy = edgeScroll(s.y, window.innerHeight);
+      if (dy !== 0) {
+        window.scrollBy(0, dy);
+        follow();
+      }
+      s.frame = requestAnimationFrame(scroll);
+    };
+    const moved = (ev: PointerEvent) => {
+      s.y = ev.clientY;
+      follow();
+    };
+    const end = (drop: boolean) => {
+      const here = dragging.current;
+      s.stop();
+      if (!drop || here === null) return;
+      const { order: now, c: ctx, say } = latest.current;
+      const from = now.indexOf(here.source);
+      if (here.to === from) return;
+      say(ctx.t.movedTo(here.to + 1, now.length));
+      ctx.set({ order: moveItem(now, from, here.to) });
+    };
+    const up = () => end(true);
+    const cancel = () => end(false);
+    const key = (ev: KeyboardEvent) => {
+      if (ev.key !== "Escape") return;
+      ev.preventDefault();
+      end(false);
+    };
+    s.stop = () => {
+      cancelAnimationFrame(s.frame);
+      window.removeEventListener("pointermove", moved);
+      window.removeEventListener("pointerup", up);
+      window.removeEventListener("pointercancel", cancel);
+      window.removeEventListener("keydown", key, true);
+      for (const name of ["--drag-x", "--drag-y", "--drag-w", "--drag-h"]) ol.style.removeProperty(name);
+      session.current = null;
+      dragging.current = null;
+      setDrag(null);
+    };
+    window.addEventListener("pointermove", moved);
+    window.addEventListener("pointerup", up);
+    window.addEventListener("pointercancel", cancel);
+    window.addEventListener("keydown", key, true);
+    dragging.current = { source, to: order.indexOf(source) };
+    setDrag(dragging.current);
+    follow();
+    s.frame = requestAnimationFrame(scroll);
+  };
+
+  // while dragging, the slot goes before the staying item the lifted one will land in front of (or at the end)
+  const staying = drag === null ? order : order.filter((s) => s !== drag.source);
+  const slotBefore = drag === null ? null : (staying[drag.to] ?? null);
+  const slot = <li key="slot" class="fm-order-slot" aria-hidden="true" />;
+
   return (
     <div class="fm-ordering">
-      <ol class="fm-order-list" ref={list} aria-labelledby={`${c.name}/prompt`}>
-        {order.map((source, position) => {
+      <ol
+        class="fm-order-list"
+        ref={list}
+        aria-labelledby={`${c.name}/prompt`}
+        data-dragging={drag === null ? undefined : "true"}
+      >
+        {order.flatMap((source, position) => {
           const item = itemOf(source);
           const hit = c.submitted && !untouched ? (c.result?.results?.[position] ?? null) : null;
-          return (
+          const row = (
             <li
               key={source}
               class="fm-order-item"
               data-source={source}
+              data-lifted={drag?.source === source ? "true" : undefined}
               data-result={hit === null ? undefined : hit ? "correct" : "wrong"}
             >
+              {!c.submitted ? (
+                <span class="fm-drag-handle" aria-hidden="true" onPointerDown={(e) => lift(e, source)}>
+                  <Icon name="grip" size={20} />
+                </span>
+              ) : null}
               <Html html={item.html} tag="span" class="fm-order-text" />
               {!c.submitted ? (
                 <span class="fm-order-buttons">
@@ -87,7 +207,9 @@ export function Ordering({ q, c }: { q: Extract<PageQuestion, { type: "ordering"
               )}
             </li>
           );
+          return source === slotBefore ? [slot, row] : [row];
         })}
+        {drag !== null && slotBefore === null ? slot : null}
       </ol>
       <p class="fm-sr" role="status" aria-live="polite">
         {said}

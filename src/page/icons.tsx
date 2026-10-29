@@ -36,6 +36,7 @@ const PATHS = {
       <path d="M8 4v5h7V4M8 20v-6h8v6" />
     </>
   ),
+  grip: <path d="M9 6h.01M15 6h.01M9 12h.01M15 12h.01M9 18h.01M15 18h.01" stroke-width="3.5" />,
   dot: <circle cx="12" cy="12" r="2.5" fill="currentColor" />,
 } satisfies Record<string, ComponentChildren>;
 

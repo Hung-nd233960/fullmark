@@ -1,0 +1,51 @@
+import { describe, expect, it } from "vitest";
+import { edgeScroll, landingIndex, moveItem } from "../../src/page/questions/drag";
+
+const rows = (heights: number[], gap = 6) => {
+  let top = 100;
+  return heights.map((height) => {
+    const r = { top, height };
+    top += height + gap;
+    return r;
+  });
+};
+
+describe("landingIndex", () => {
+  const rects = rows([44, 44, 60, 44]); // middles 122, 172, 230, 296
+  it("is the number of staying items whose middle is above the lifted middle", () => {
+    expect(landingIndex(rects, 50)).toBe(0);
+    expect(landingIndex(rects, 130)).toBe(1);
+    expect(landingIndex(rects, 200)).toBe(2);
+    expect(landingIndex(rects, 250)).toBe(3);
+    expect(landingIndex(rects, 900)).toBe(4);
+  });
+  it("is 0 for an empty list", () => {
+    expect(landingIndex([], 10)).toBe(0);
+  });
+});
+
+describe("moveItem", () => {
+  it("takes the item out and puts it back among the others", () => {
+    expect(moveItem([5, 6, 7, 8], 0, 3)).toEqual([6, 7, 8, 5]);
+    expect(moveItem([5, 6, 7, 8], 3, 0)).toEqual([8, 5, 6, 7]);
+    expect(moveItem([5, 6, 7, 8], 1, 1)).toEqual([5, 6, 7, 8]);
+  });
+  it("gives the same order as the equivalent presses of the buttons", () => {
+    const swap = (o: number[], i: number, j: number) => {
+      const n = [...o];
+      [n[i], n[j]] = [n[j] as number, n[i] as number];
+      return n;
+    };
+    // item 0 moved down twice
+    expect(moveItem([5, 6, 7, 8], 0, 2)).toEqual(swap(swap([5, 6, 7, 8], 0, 1), 1, 2));
+  });
+});
+
+describe("edgeScroll", () => {
+  it("scrolls up near the top, down near the bottom, and not elsewhere", () => {
+    expect(edgeScroll(300, 800)).toBe(0);
+    expect(edgeScroll(10, 800)).toBeLessThan(0);
+    expect(edgeScroll(790, 800)).toBeGreaterThan(0);
+    expect(edgeScroll(-20, 800)).toBe(-18);
+  });
+});

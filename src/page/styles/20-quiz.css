@@ -223,11 +223,58 @@
     gap: 12px;
     align-items: center;
     justify-content: space-between;
-    padding: 8px 12px;
+    min-height: 44px;
+    padding: 0 12px;
     margin-top: 6px;
     counter-increment: fm-order;
+    background: var(--surface);
     border: 1px solid var(--line);
-    border-radius: 6px;
+    border-radius: 8px;
+  }
+
+  .fm-drag-handle {
+    display: flex;
+    flex: none;
+    order: -1;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    margin-left: -12px;
+    color: var(--muted);
+    touch-action: none;
+    cursor: grab;
+  }
+
+  .fm-order-list[data-dragging] {
+    user-select: none;
+  }
+
+  .fm-order-list[data-dragging] .fm-drag-handle {
+    cursor: grabbing;
+  }
+
+  .fm-order-item[data-lifted] {
+    position: fixed;
+    top: var(--drag-y);
+    left: var(--drag-x);
+    z-index: 20;
+    box-sizing: border-box;
+    width: var(--drag-w);
+    margin: 0;
+    pointer-events: none;
+    background: var(--card);
+    border: 2px solid var(--accent);
+    box-shadow: var(--shadow);
+    counter-increment: none;
+  }
+
+  .fm-order-slot {
+    box-sizing: border-box;
+    height: var(--drag-h);
+    margin-top: 6px;
+    border: 1px dashed var(--line-strong);
+    border-radius: 8px;
   }
 
   .fm-order-item::before {
