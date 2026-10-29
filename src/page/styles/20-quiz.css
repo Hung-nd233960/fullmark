@@ -742,8 +742,6 @@
     font-weight: 600;
   }
 
-  .fm-part-bar,
-  .fm-part-row .fm-bar,
   .fm-part-counts {
     grid-column: 1 / -1;
   }
@@ -754,6 +752,7 @@
   }
 
   .fm-bar {
+    grid-column: 1 / -1;
     display: block;
     width: 100%;
     height: 8px;

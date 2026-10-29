@@ -213,7 +213,7 @@ test("a vi quiz's export grades the same with quiz grade", async ({ page }) => {
   await card(page, "e1").locator("textarea").fill("một hai ba");
   await page.getByRole("button", { name: "Nộp bài" }).click();
   await expect(page.locator(".fm-total")).toBeVisible();
-  const results = await expectGradeMatches(page, typesVi.dir, "types-vi.md", "Xuất kết quả");
+  const results = await expectGradeMatches(page, typesVi.dir, "types-vi.md", "Tải kết quả về");
   const status = Object.fromEntries(results.map((r) => [r.id, r.status]));
   expect(status.n3).toBe("correct");
   expect(status.g1).toBe("partial");
