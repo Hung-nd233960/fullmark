@@ -127,12 +127,15 @@ test("the questions keep their reading width when it is closed and share the roo
 const settled = async (page: Page): Promise<void> => {
   let last = "";
   await expect
-    .poll(async () => {
-      const now = await page.evaluate(() => `${innerWidth}x${innerHeight}`);
-      const same = now === last;
-      last = now;
-      return same;
-    }, { intervals: [150] })
+    .poll(
+      async () => {
+        const now = await page.evaluate(() => `${innerWidth}x${innerHeight}`);
+        const same = now === last;
+        last = now;
+        return same;
+      },
+      { intervals: [150] },
+    )
     .toBe(true);
 };
 
