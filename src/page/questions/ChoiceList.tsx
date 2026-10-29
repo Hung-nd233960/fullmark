@@ -37,7 +37,7 @@ export function ChoiceList({ q, c, multi }: Props) {
         const isRight = c.submitted && keyed?.choices[i]?.correct === true;
         const id = `${c.name}/c${i}`;
         return (
-          <li key={i} class="fm-choice" data-picked={isPicked} data-correct={isRight}>
+          <li key={i} class="fm-choice" data-picked={isPicked} data-correct={c.submitted ? isRight : undefined}>
             <label for={id}>
               <input
                 type={multi ? "checkbox" : "radio"}

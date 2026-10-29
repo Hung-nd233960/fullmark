@@ -13,7 +13,7 @@ export function TrueFalse({ c }: { q: Extract<PageQuestion, { type: "truefalse" 
         const isPicked = given === value;
         const isRight = c.submitted && right === value;
         return (
-          <li key={String(value)} class="fm-choice" data-picked={isPicked} data-correct={isRight}>
+          <li key={String(value)} class="fm-choice" data-picked={isPicked} data-correct={c.submitted ? isRight : undefined}>
             <label for={id}>
               <input
                 type="radio"
