@@ -4,14 +4,14 @@ import { buildIn, card, root } from "./helpers";
 
 /**
  * Screenshots of slice 2e for the owner to compare with the Design canvas. Not part of `npm run check`: run with
- * FULLMARK_SCREENS=1 npx playwright test e2e/screens-2e.spec.ts --project=chromium. They land in test-results/2e-screens/.
+ * FULLMARK_SCREENS=1 npx playwright test e2e/screens-2e.spec.ts --project=chromium. They land in docs/screens/2e/, which is committed for the owner's review.
  */
 test.skip(!process.env.FULLMARK_SCREENS, "screenshots are made on request");
 test.use({ viewport: { width: 820, height: 900 } });
 
 const results = buildIn("test/fixtures/page/results.md", "results.md");
 const instant = buildIn("test/fixtures/page/instant.md", "instant.md");
-const out = (name: string) => join(root, "test-results", "2e-screens", `${name}.png`);
+const out = (name: string) => join(root, "docs", "screens", "2e", `${name}.png`);
 
 test("the results card, the Missed filter and the retry confirm", async ({ page }) => {
   await page.goto(results.url);

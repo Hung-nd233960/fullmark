@@ -125,6 +125,7 @@ Step 1's rules hold ([STEP1.md](STEP1.md), "Rules for every slice"): the design 
 - **Golden and screenshot updates are reported as a count and a one-line summary each**, not as diffs. Opus reads the diffs in review.
 - **If the slice turns out bigger than planned,** stop at a clean commit and report what is left, rather than carry on with a full context.
 - **Report:** commits (hashes, one line each), test counts, every gap in the design docs, anything decided differently and why, and for 2d onward the screenshot paths for the owner.
+- **Screenshots are committed** (owner, 2026-10-29): each slice's screens spec (`e2e/screens-<slice>.spec.ts`, run with `FULLMARK_SCREENS=1`) writes to `docs/screens/<slice>/`, never `test-results/`, and the PNGs are committed with the slice, so the owner reviews them in the repo.
 
 ## Slices
 

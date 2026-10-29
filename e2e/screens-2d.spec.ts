@@ -4,14 +4,14 @@ import { buildIn, root } from "./helpers";
 
 /**
  * Screenshots of slice 2d for the owner to compare with the Design canvas. Not part of `npm run check`: run with
- * FULLMARK_SCREENS=1 npx playwright test e2e/screens-2d.spec.ts --project=chromium. They land in test-results/2d-screens/.
+ * FULLMARK_SCREENS=1 npx playwright test e2e/screens-2d.spec.ts --project=chromium. They land in docs/screens/2d/, which is committed for the owner's review.
  */
 test.skip(!process.env.FULLMARK_SCREENS, "screenshots are made on request");
 test.use({ viewport: { width: 820, height: 900 } });
 
 const parts = buildIn("test/fixtures/page/parts.md", "parts.md");
 const timed = buildIn("test/fixtures/page/timed.md", "timed.md");
-const out = (name: string) => join(root, "test-results", "2d-screens", `${name}.png`);
+const out = (name: string) => join(root, "docs", "screens", "2d", `${name}.png`);
 
 test("start screen with parts, without parts, Continue, the Start over dialog, storage blocked", async ({ page }) => {
   await page.goto(parts.url);
