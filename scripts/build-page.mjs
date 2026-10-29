@@ -3,6 +3,7 @@
 import { readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { build } from "esbuild";
+import { minifyCss } from "./minify-css.mjs";
 
 const root = resolve(import.meta.dirname, "..");
 
@@ -26,11 +27,5 @@ const css = readdirSync(styles)
   .sort()
   .map((f) => readFileSync(join(styles, f), "utf8"))
   .join("\n");
-// plain minification: drop comments and the white space around punctuation
-const small = css
-  .replace(/\/\*[\s\S]*?\*\//g, "")
-  .replace(/\s+/g, " ")
-  .replace(/\s*([{};:,>])\s*/g, "$1")
-  .replace(/;}/g, "}")
-  .trim();
+const small = minifyCss(css);
 writeFileSync(join(root, "dist/page.css"), `${small}\n`);
