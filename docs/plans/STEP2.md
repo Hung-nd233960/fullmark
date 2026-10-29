@@ -20,7 +20,8 @@ New in step 2: **a slice is sized to fit one Sonnet session** (about the work of
 | 2c ordering, matching, essay, code | done, reviewed, gaps decided | `06ab9f3`..`92af933` |
 | 2c3 maths and code highlighting | done, reviewed, gaps decided | `12daca7`..`2809ed6` |
 | 2d start screen, plan at Start, timer, autosave | done, reviewed, gaps decided | `345ed3a`..`ede03f5` |
-| 2e results, filter, Retry missed, instant feedback | done, reviewed, **gaps waiting for the owner** | `5e6182d`..`a6b9ec8` |
+| 2e results, filter, Retry missed, instant feedback | done, reviewed, gaps decided | `5e6182d`..`a6b9ec8` |
+| 2f top bar, status line, Focus mode | brief written, with Sonnet | |
 
 Step 1 is done (see [STEP1.md](STEP1.md)): `check`, `rules`, `grade` and `ids`, 1309 tests.
 
@@ -106,7 +107,8 @@ Also raised on 2026-10-28 and kept outside v1: [proposals/rapid-response.md](../
    - Kept as built: the compile cache in `src/cli/bin.ts`; the whole `time_limit` for one part; time closed in `timeUsed` and in no section; the storage-blocked notice until Submit; a timed-out `submittedAt` is the deadline; a deadline passed on the start screen is caught at Continue; the storage key with the full `quizHash` (now in foundation 2); the key blob decoded at Start; shuffled choices in `optionOrder`, `math.syntax` on `description`, `PageQuiz.descriptionHtml`, `dataOrder` in the key blob.
 10. **2e's design gaps, decided by the owner on 2026-10-29 as recommended** (TECHNICAL_DESIGN.md `AttemptState.checked`, section 8 rows "Retry missed" and "Instant feedback"; QUIZ_SYNTAX.md `feedback`): Check on each auto-graded question shows its result and explanation and locks it; essays, code and ungraded questions get none; Submit grades all; `checked` is in the format; a retry replaces the one saved attempt after a confirm, covers only this plan's missed questions with a fresh seed, can itself be retried, and has no button when nothing is missed; pending essays are not missed; the submitted time sits on the results card until 2f.
 11. Done: 2e. Reviewed on 2026-10-29. Commits `5e6182d` (A), `75098ec` (B: not reproduced in 1200 concurrent builds; the likely cause, found by reading, is Shiki's default 500 ms per-line `tokenizeTimeLimit`, now 0), `e543a63` (C), `c397978` (`checked` in the format; 113 grade inputs gained `"checked": []`), `fab27ed` (results card, five states, flag, filter, Retry missed, Check; one commit, as the parts share files), `958a13a` (Playwright `e2e/results.spec.ts`, screens `e2e/screens-2e.spec.ts`), `a6b9ec8`. 1524 vitest tests, 2 startup tests, 58 Playwright tests (29 per browser, axe clean). The runtime is 36.9 KB gzipped (33.8 before). The startup test failed once in review's `npm run check` (161 ms against 150, right after the full vitest run) and passed three runs alone. Sonnet's choices kept: Check grades the attempt cut down to one question; `PlanRequest` gains `{source: "retry", questions}`; a retry's plan is one untitled section, its card's part rows from the real sections; a question with no points is never missed; an unanswered essay is missed; a saved attempt without `checked` is dropped; `src/page/ResultsCard.tsx` and `results.ts`. Found in review, from the screenshots: "1 of 1 points" (no singular); "Results" twice (the page heading and the card's label); a flagged card's "2 pt" moves next to the question number, and the answering cards put it there too; scores print `2.5` on a `vi` page; one `any` lint warning in `e2e/results.spec.ts`.
-12. **Waiting for the owner:** 2e's findings (above), then the 2f brief.
+12. **2e's findings, decided by the owner on 2026-10-29 as recommended** (TECHNICAL_DESIGN.md section 8 row "Results", section 9 "Vietnamese pitfalls" item 2, section 11 "Budgets"). The first tasks of 2f: **D.** "1 point" in the singular (every count string, `en`; `vi` has no plural); **E.** the results card has no label of its own; **F.** the card header is the same in every phase: number left, points then flag right; **G.** a decimal comma in every number the interface prints when `ui_lang` is `vi`; **H.** a startup measurement over the limit is taken once more before the test fails. Sonnet's choices 5 to 11 kept.
+13. **2f split in two** (Opus, 2026-10-29, as 2e ran to about 230k tokens against the 150k target): **2f** the top bar, the status line and Focus mode, with D to H first; **2f2** the docked sidebar, the question map and the materials. **Next:** 2f, brief below, with Sonnet.
 
 ## Goal
 
@@ -138,7 +140,8 @@ Step 1's rules hold ([STEP1.md](STEP1.md), "Rules for every slice"): the design 
 | **2c3** | Maths (KaTeX) and code highlighting (Shiki) at build time, in questions and in sheets; CSS and fonts only when used; the startup budget kept |
 | **2d** | Start screen and part picker, sections and `pick`, shuffling with a seed drawn at Start, the timer, autosave and resume, storage blocked; Playwright adds Firefox here, for its isolated `file://` storage (foundation 2) and one full answer-submit-export run |
 | **2e** | Results card (asterisks, goal line), review filter, Retry missed, `feedback: instant` |
-| **2f** | The top bar and its status line, the docked sidebar (one button, `Q`/`M`/`Esc`, stacked while answering, tabs after Submit, full screen on a phone), the question map with rings and flags, the materials in the sidebar, Focus mode |
+| **2f** | 2e's fixes; the top bar and its status line, Focus mode |
+| **2f2** | The docked sidebar (one button, `Q`/`M`/`Esc`, stacked while answering, tabs after Submit, full screen on a phone), the question map with rings and flags, the materials in the sidebar and on the start screen |
 | **2g** | Themes: five token sets, the light/dark toggle, `look: locked`, the contrast test |
 | **2h** | Fonts: four fonts, `--fonts`, the Vietnamese glyph test, screenshot baselines |
 | **2i** | `build` across the CLI: several files, `--build-file`, `-o`, `--strict`, `--open`, `--json`, `build.size`, `--ui-lang` and the `vi` chrome scan, `--acknowledgements` and the page's licence comment, the 300-question budget, golden files; KaTeX fonts embedded by use |
@@ -421,3 +424,41 @@ Two parts, in this order. First 2d's review fixes (the Handoff's "Next steps" it
 
 - `npm run check` passes, Playwright (chromium and Firefox) and axe included; every example builds.
 - Report: commits, test counts per browser, the runtime's gzipped size before and after, what B found, the golden and fixture counts with one line each, every gap, what was decided differently and why, files read beyond the list, the screenshot paths for the owner.
+
+## Slice 2f: 2e's fixes, then the top bar, the status line and Focus mode
+
+Two parts, in this order. First 2e's review fixes (the Handoff's "Next steps" item 12: D to H). Then the page's chrome: the top bar that docks to the top edge, the status line under it in both phases, and Focus mode. The sidebar, the question map and the materials are 2f2, so the top bar has no sidebar button yet; A− / A+ is 2h and the look control 2g. The test that matters: **the status line always tells the truth** (time, the current question, progress and flags agree with the attempt at every step, and the timer is never hidden), and Focus mode never traps the learner.
+
+### Read first
+
+- This brief, and the Handoff's "Next steps" item 12.
+- TECHNICAL_DESIGN.md: section 8, the rows "Top bar and status line", "Focus mode", "Review filter" (where the bar sits), "Results (after Submit)" (only its first sentence and the header sentence decided on 2026-10-29); section 9, "Vietnamese pitfalls" item 2; section 11, the "Budgets" bullet.
+- QUIZ_SYNTAX.md: section 3, the section attribute `time`.
+- COMMANDS.md: the `--focus` row of `serve` (what the page must expose; the flag itself is step 3).
+- Code: `src/page/App.tsx`, `src/page/ResultsCard.tsx`, `src/page/results.ts` (`num`), `src/page/store.ts`, `src/page/data.ts`, `src/page/questions/Card.tsx`, `src/page/questions/shared.tsx`, `src/page/styles/20-quiz.css`, `src/core/i18n/en.ts` and `vi.ts` (the `page` block); `test/startup.test.ts`; the tests next to each; `e2e/helpers.ts`, `e2e/results.spec.ts`, `e2e/screens-2e.spec.ts`.
+
+### Decided for this slice
+
+- **D (owner, 2026-10-29).** Every string that prints a count says "1 point", "1 question", "1 answer", "1 word" in the singular in `en`; `vi` has no plural. Grep the `page` block for every count string and name them in the report; one vitest per changed string for 1 and for 2.
+- **E (owner, 2026-10-29).** The results card has no heading or label of its own (today it repeats "Results").
+- **F (owner, 2026-10-29).** A question card's header is the same in every phase: the question number on the left; its points, then the flag (the toggle while answering, the mark after Submit), on the right.
+- **G (owner, 2026-10-29).** Every number the interface prints (points, scores, percentages with decimals, tolerances, the goal) uses a decimal comma when `ui_lang` is `vi` ("2,5 / 5"), a point otherwise: one formatting function taking the catalog's language, used by `num` and wherever the page prints a number. Never `toLocaleString` (it depends on the browser). Clock text ("12:34") is not a number in this sense.
+- **H (owner, 2026-10-29).** In `test/startup.test.ts`, a measurement over its limit is taken once more; the test fails only if the second is over too.
+- **The top bar** docks to the top edge (`position: sticky`, full width, the card colour, a bottom border; "chrome docks to the edges, content floats as cards"). It holds, in order: the quiz title, **Focus mode** (when the browser has fullscreen for pages) and **Submit** (while answering). The Submit at the bottom of the questions goes; the confirm, if one exists today, stays. On the start screen there is no top bar.
+- **The status line** sits under the top bar, in the same docked block: plain segments divided by thin rules, every value labelled, wrapping on narrow screens (never truncated). While answering: time left ("Time left 12:34"), or elapsed when untimed or a retry ("Time 12:34"); when the current question's section has a suggested `time`, that part's segment ("Part 2 of 3, Fourier transform: 04:10 left", counting down from the section's `time` minus its `sectionTime`; once that passes, "Part 2 of 3, Fourier transform: suggested time passed", and nothing else happens; an untitled section is never named); the current question ("Question 20 of 32": the one last focused or answered, as `sectionTime` uses, the first before any); progress ("19 of 32 answered", a thin bar, "59%", the bar a `progressbar` with that label); the flag count when there are flags ("2 flagged"). After Submit: "Submitted 26 Oct, 14:32" (date and time in `ui_lang`, from `submittedAt`, without `toLocaleString`), what was taken ("The whole quiz · 32 questions", "Part 2, Fourier transform · 12 questions", "Retry · 4 questions") and "Time used 27:14 of 30:00" ("Time used 27:14" untimed). The replay wording is 2j's. The 2d timer line above the questions and 2e's "Submitted 14:32" on the card go; the card keeps its Time used cell. The 5-minute and 1-minute announcements stay in their polite live region; the status line itself is not a live region.
+- **The review filter** moves under the status line, inside the docked block, in the submitted state.
+- **Focus mode** (section 8, "Focus mode"): fullscreen through `document.documentElement.requestFullscreen()` and nothing else. Entered by the top-bar button, the `F` key, or Start when the start screen's **Focus mode** checkbox is ticked (the checkbox is unticked by default; `PageData` gains an optional `focus: true` that ticks it, for step 3's `--focus`; `build` never sets it). Left by the button (its label and `aria-pressed` follow the real fullscreen state through `fullscreenchange`), `F`, or the browser's Esc. While fullscreen, the status line ends with a muted "Clock 14:05 · Esc leaves full screen" (the local time, updated each minute). Submit leaves fullscreen. The checkbox and the button are absent when `document.fullscreenEnabled` is false. Keys (`F` now; `Q`, `M`, `Esc` in 2f2) never act while the focus is in a text field, a `select` or a `contenteditable`, nor with a modifier held; one key handler in the page, built so 2f2 adds its keys there. A refused `requestFullscreen` (a rejected promise) is ignored: the page stays as it is.
+- **Strings** in `en` and `vi` for everything new; no string built by concatenation.
+
+### Tasks
+
+1. **2e's fixes**, one commit each for D, E with F, G and H; goldens updated, counts reported.
+2. **The top bar and the status line** (one commit): vitest on the status line's text for each segment, both phases, a retry, a part with a passed suggested time, `vi`.
+3. **Focus mode** (one commit): the key handler, the checkbox, `PageData.focus`, the clock segment.
+4. **Playwright** (chromium and Firefox): the status line while answering (answer, flag, move to a question in another part: each segment follows) and after Submit; the timer stays visible after scrolling to the last question; the top bar's Submit submits; Focus mode by the button and by `F` (Playwright's fullscreen: if a browser refuses it headless, assert the request was made and say why in the test), `F` typed in a short-answer box does not toggle it, Submit leaves it; the checkbox then Start enters it; a page whose `fullscreenEnabled` is false shows no button and no checkbox; a `vi` page shows "2,5"; axe on the start screen with the checkbox, while answering and after Submit.
+5. **Screens:** `e2e/screens-2f.spec.ts`, writing to `docs/screens/2f/` (see "Rules for every slice"): the docked bar and status line while answering (timed, with parts, a flag), after Submit, on a 390 px wide phone (wrapped), in Focus mode if the headless browser allows it; commit the PNGs.
+
+### Done when
+
+- `npm run check` passes, Playwright (chromium and Firefox) and axe included; every example builds.
+- Report: commits, test counts per browser, the runtime's gzipped size before and after, the count strings changed, the golden counts with one line each, every gap, what was decided differently and why, files read beyond the list, the screenshot paths in `docs/screens/2f/`.
