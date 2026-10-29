@@ -19,6 +19,7 @@
     "test": "vitest run test/startup.test.ts && vitest run --exclude test/startup.test.ts",
     "typecheck": "tsc --noEmit",
     "lint": "biome check",
+    "samples": "npm run build && node scripts/samples.mjs",
     "golden:update": "node scripts/golden-update.mjs",
     "check": "npm run typecheck && npm run lint && npm run test && npm run test:e2e",
     "test:e2e": "npm run build && playwright test"
