@@ -26,6 +26,16 @@ const PATHS = {
     </>
   ),
   dash: <path d="M6 12h12" />,
+  list: <path d="M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01" />,
+  star: <path d="M12 3l2.8 5.7 6.2.9-4.5 4.4 1 6.2L12 17.3 6.5 20.2l1-6.2L3 9.6l6.2-.9z" />,
+  timer: <path d="M12 21a8 8 0 1 0 0-16 8 8 0 0 0 0 16zM12 9v4l2.5 2.5M9 2h6" />,
+  speech: <path d="M4 5h16v11H8l-4 4z" />,
+  save: (
+    <>
+      <path d="M5 4h11l3 3v13H5z" />
+      <path d="M8 4v5h7V4M8 20v-6h8v6" />
+    </>
+  ),
   dot: <circle cx="12" cy="12" r="2.5" fill="currentColor" />,
 } satisfies Record<string, ComponentChildren>;
 

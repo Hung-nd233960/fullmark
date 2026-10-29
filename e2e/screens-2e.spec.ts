@@ -7,13 +7,14 @@ import { buildIn, card, root } from "./helpers";
  * FULLMARK_SCREENS=1 npx playwright test e2e/screens-2e.spec.ts --project=chromium. They land in docs/screens/2e/, which is committed for the owner's review.
  */
 test.skip(!process.env.FULLMARK_SCREENS, "screenshots are made on request");
-test.use({ viewport: { width: 820, height: 900 } });
+test.use({ viewport: { width: 1280, height: 940 } });
 
 const results = buildIn("test/fixtures/page/results.md", "results.md");
 const instant = buildIn("test/fixtures/page/instant.md", "instant.md");
 const out = (name: string) => join(root, "docs", "screens", "2e", `${name}.png`);
 
 test("the results card, the Missed filter and the retry confirm", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 1560 });
   await page.goto(results.url);
   await page.getByRole("button", { name: "Start" }).click();
   await page.getByLabel("right r1").check();

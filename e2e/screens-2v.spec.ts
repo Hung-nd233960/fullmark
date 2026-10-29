@@ -9,6 +9,7 @@ import { buildIn, card, root } from "./helpers";
 test.skip(!process.env.FULLMARK_SCREENS, "screenshots are made on request");
 
 const mockup = buildIn("test/fixtures/page/mockup.md", "mockup.md");
+const parts = buildIn("test/fixtures/page/parts.md", "parts.md");
 const out = (name: string) => join(root, "docs", "screens", "2v", `${name}.png`);
 
 /** The learner's pass through the quiz: q19 wrong, q20 wrong, q27 left empty, one flagged, an essay waiting. */
@@ -24,9 +25,23 @@ async function answer(page: Page) {
 }
 
 test("the start screen (Start board)", async ({ page }) => {
-  await page.setViewportSize({ width: 1280, height: 940 });
+  await page.setViewportSize({ width: 1280, height: 1240 });
   await page.goto(mockup.url);
   await page.screenshot({ path: out("1-start") });
+});
+
+test("the start screen with an unfinished attempt, and with a long list of parts (Start board)", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 1240 });
+  await page.goto(parts.url);
+  await page.getByRole("button", { name: "Start" }).click();
+  const first = await page.locator("article.fm-question").first().getAttribute("data-qid");
+  await page.getByLabel(`right ${first}`).check();
+  await page.reload();
+  await expect(page.getByRole("button", { name: "Continue" })).toBeVisible();
+  await page.screenshot({ path: out("1b-start-continue") });
+  await page.evaluate(() => localStorage.clear());
+  await page.reload();
+  await page.screenshot({ path: out("1c-start-six-parts") });
 });
 
 test("answering (Quiz board)", async ({ page }) => {

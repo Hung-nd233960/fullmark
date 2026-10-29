@@ -7,7 +7,7 @@ import { buildIn, root } from "./helpers";
  * FULLMARK_SCREENS=1 npx playwright test e2e/screens-2d.spec.ts --project=chromium. They land in docs/screens/2d/, which is committed for the owner's review.
  */
 test.skip(!process.env.FULLMARK_SCREENS, "screenshots are made on request");
-test.use({ viewport: { width: 820, height: 900 } });
+test.use({ viewport: { width: 1280, height: 940 } });
 
 const parts = buildIn("test/fixtures/page/parts.md", "parts.md");
 const timed = buildIn("test/fixtures/page/timed.md", "timed.md");
@@ -31,7 +31,7 @@ test("start screen with parts, without parts, Continue, the Start over dialog, s
   await page.screenshot({ path: out("4-start-over-dialog") });
   await page.getByRole("button", { name: "Cancel" }).click();
   await page.getByRole("button", { name: "Continue" }).click();
-  await page.screenshot({ path: out("5-answering-untimed-line"), clip: { x: 0, y: 0, width: 820, height: 520 } });
+  await page.screenshot({ path: out("5-answering-untimed-line"), clip: { x: 0, y: 0, width: 1280, height: 520 } });
 });
 
 test("the timer line, and the results after reopening", async ({ page }) => {
@@ -41,7 +41,7 @@ test("the timer line, and the results after reopening", async ({ page }) => {
   await page.getByRole("button", { name: "Start" }).click();
   await page.getByLabel("right t1").check();
   await page.clock.runFor(35_000);
-  await page.screenshot({ path: out("6-timer-line-timed"), clip: { x: 0, y: 0, width: 820, height: 520 } });
+  await page.screenshot({ path: out("6-timer-line-timed"), clip: { x: 0, y: 0, width: 1280, height: 520 } });
   await page.getByRole("button", { name: "Submit" }).click();
   await page.clock.resume();
   await page.reload();
@@ -61,5 +61,5 @@ test("storage blocked notice", async ({ page }) => {
   await page.goto(parts.url);
   await page.screenshot({ path: out("8-start-storage-blocked"), fullPage: true });
   await page.getByRole("button", { name: "Start" }).click();
-  await page.screenshot({ path: out("9-answering-storage-blocked"), clip: { x: 0, y: 0, width: 820, height: 520 } });
+  await page.screenshot({ path: out("9-answering-storage-blocked"), clip: { x: 0, y: 0, width: 1280, height: 520 } });
 });

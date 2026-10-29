@@ -257,18 +257,18 @@
   }
 
   /* the review filter: a segmented control, in a band of its own under the top bar */
-  .fm-dock .fm-filter {
-    padding: 10px 28px;
-    background: var(--surface);
-    border-top: 1px solid var(--line);
-  }
-
   .fm-filter {
     display: flex;
     min-width: 0;
     margin: 0;
     padding: 0;
     border: 0;
+  }
+
+  .fm-dock .fm-filter {
+    padding: 10px 28px;
+    background: var(--surface);
+    border-top: 1px solid var(--line);
   }
 
   .fm-filter-group {

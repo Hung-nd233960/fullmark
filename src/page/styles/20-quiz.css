@@ -9,10 +9,6 @@
     margin-inline: auto;
   }
 
-  .fm-header {
-    padding-top: 24px;
-  }
-
   .fm-dock {
     position: sticky;
     top: 0;
@@ -109,103 +105,8 @@
     background: var(--accent);
   }
 
-  .fm-focus-box {
-    display: block;
-    margin: 0 0 12px;
-  }
-
   .fm-quiz + .fm-quiz {
     margin-top: 48px;
-  }
-
-  .fm-header h1 {
-    margin: 0 0 4px;
-    font-size: 1.6rem;
-  }
-
-  .fm-description {
-    margin: 0 0 16px;
-    color: var(--muted);
-  }
-
-  .fm-start {
-    margin: 16px 0;
-    padding: 20px;
-    background: var(--surface);
-    border: 1px solid var(--line);
-    border-radius: 8px;
-  }
-
-  .fm-start-facts {
-    margin: 0 0 12px;
-    color: var(--muted);
-  }
-
-  .fm-parts {
-    margin: 0 0 16px;
-    padding: 0;
-    border: 0;
-  }
-
-  .fm-parts legend {
-    margin-bottom: 8px;
-    padding: 0;
-    font-weight: 600;
-  }
-
-  .fm-part {
-    display: flex;
-    gap: 10px;
-    align-items: flex-start;
-    padding: 8px 10px;
-    border-radius: 8px;
-    cursor: pointer;
-  }
-
-  .fm-part:has(input:checked) {
-    background: var(--bg);
-  }
-
-  .fm-part-whole {
-    border: 1px solid var(--line);
-  }
-
-  .fm-part-text {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 2px 8px;
-  }
-
-  .fm-part-meta {
-    flex-basis: 100%;
-    color: var(--muted);
-    font-size: 0.9rem;
-  }
-
-  .fm-part-list {
-    max-height: 19.75rem;
-    margin-top: 6px;
-    overflow-y: auto;
-  }
-
-  .fm-resume-line {
-    margin: 0 0 12px;
-  }
-
-  .fm-resume,
-  .fm-dialog-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-  }
-
-  .fm-dialog {
-    max-width: 24rem;
-    padding: 20px;
-    color: var(--text);
-    background: var(--surface);
-    border: 1px solid var(--line);
-    border-radius: 8px;
   }
 
   .fm-dialog::backdrop {

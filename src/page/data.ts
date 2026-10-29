@@ -67,6 +67,8 @@ export type PageQuiz = {
   feedback?: "instant";
   /** seconds; absent when the quiz is untimed */
   timeLimit?: number;
+  /** percent of the auto-graded points; absent when the quiz has no goal (shown on the start screen) */
+  passMark?: number;
   /** the interface language of the page chrome */
   uiLang: "en" | "vi";
   /** the language the quiz is written in: a numeric box warns about a decimal comma only for `en` */

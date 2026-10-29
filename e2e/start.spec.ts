@@ -36,7 +36,7 @@ test("the start screen: the whole quiz pinned and recommended, the parts in a li
   await expect(page.locator("h1")).toHaveText("Parts");
   // the description is rendered at build, maths included
   await expect(page.locator(".fm-description .katex")).toHaveCount(1);
-  await expect(page.locator(".fm-start-facts")).toHaveText("12 questions");
+  await expect(page.locator('[data-fact="questions"] .fm-tile-value')).toHaveText("12");
   const whole = page.getByRole("radio", { name: /The whole quiz/ });
   await expect(whole).toBeChecked();
   await expect(page.locator(".fm-part-whole")).toContainText("Recommended");
@@ -72,7 +72,8 @@ test("a quiz without sections has no choice, only Start", async ({ page }) => {
   await page.goto(timed.url);
   await expect(page.locator(".fm-parts")).toHaveCount(0);
   await expect(page.getByRole("button", { name: "Start" })).toBeVisible();
-  await expect(page.locator(".fm-start-facts")).toHaveText("2 questions · Time limit: 1 min 30 s");
+  await expect(page.locator('[data-fact="questions"] .fm-tile-value')).toHaveText("2");
+  await expect(page.locator('[data-fact="time"] .fm-tile-value')).toHaveText("1 min 30 s");
 });
 
 test("reload offers Continue with the same plan and answers; Start over asks first", async ({ page }) => {
