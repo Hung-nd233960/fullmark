@@ -1,14 +1,26 @@
-import { type Signal, signal } from "@preact/signals";
+import { computed, type ReadonlySignal, type Signal, signal } from "@preact/signals";
 import type { Attempt, Plan } from "../core/attempt";
 import { resultsOf } from "../core/attempt/serialise";
 import { type Graded, type GradedQuestion, grade } from "../core/grade";
 import { en, vi } from "../core/i18n";
 import { planFor } from "../core/plan";
+import { type Choice, isChoice, shownTheme, type ThemeName } from "../core/themes";
 import { type KeyBlob, openKey, type PageData, type PageQuiz } from "./data";
 import { createEvents, type Events } from "./events";
 import { type Action, newAttempt, reduce } from "./reducer";
 import { limitOf, missedIds } from "./results";
-import { attemptKey, quizPrefix, readSaved, type Saver, saverOver, saveText, sidebarKey, sidebarStart } from "./saved";
+import {
+  attemptKey,
+  lookKey,
+  quizPrefix,
+  readLook,
+  readSaved,
+  type Saver,
+  saverOver,
+  saveText,
+  sidebarKey,
+  sidebarStart,
+} from "./saved";
 import { drawSeed } from "./seed";
 
 /** An autosaved attempt that can be continued: how far it got, for the start screen. */
@@ -68,6 +80,26 @@ export type Screen = {
   phone: Signal<boolean>;
 };
 
+/** The page's look (TECHNICAL_DESIGN.md, section 8, "The look: recommended or locked"): the theme and its menu. */
+export type Look = {
+  /** the quiz's recommended theme */
+  quiz: Choice;
+  /** `look: locked`: no menu, and a stored choice is ignored (not deleted) */
+  locked: boolean;
+  /** the learner's stored choice; null: the quiz's. Always null when locked. */
+  chosen: Signal<Choice | null>;
+  /** what the device says: dark colours preferred, more contrast preferred */
+  device: Signal<{ dark: boolean; more: boolean }>;
+  /** the Appearance menu is open */
+  menu: Signal<boolean>;
+  /** the theme the page shows now */
+  shown: ReadonlySignal<ThemeName>;
+  /** reads the stored choice (once; `restore` and the page's first step both call it) */
+  load(): void;
+  /** the learner picks a theme (a choice equal to the quiz's still counts as a pick); null resets to the quiz's */
+  pick(choice: Choice | null): void;
+};
+
 /** The phone layout's one media query; the CSS repeats it (`max-width: 759px`). */
 export const PHONE_QUERY = "(max-width: 759px)";
 
@@ -76,6 +108,7 @@ export type StartOptions = { part?: string | null; seed?: string; now?: Date };
 export type Store = {
   events: Events;
   screen: Screen;
+  look: Look;
   /** `Map<QuizId, Attempt>` (TECHNICAL_DESIGN.md, seam 2), with the rest of each quiz's state beside it */
   quizzes: Map<string, QuizState>;
   dispatch(quizId: string, action: Action): void;
@@ -178,6 +211,37 @@ export function createStore(data: PageData, deps: Deps = {}): Store {
     clock: signal(clockOf(now())),
     phone: signal(false),
   };
+  const first = data.quizzes[0] as PageQuiz;
+  const look: Look = (() => {
+    const quiz = data.theme ?? "auto";
+    const locked = data.look === "locked";
+    const chosen = signal<Choice | null>(null);
+    const device = signal({ dark: false, more: false });
+    let loaded = false;
+    return {
+      quiz,
+      locked,
+      chosen,
+      device,
+      menu: signal(false),
+      shown: computed(() => shownTheme(chosen.value ?? quiz, device.value)),
+      load() {
+        if (loaded || locked || saver === null) return;
+        loaded = true;
+        const theme = readLook(saver.get(lookKey(first))).theme;
+        if (isChoice(theme)) chosen.value = theme;
+      },
+      pick(choice) {
+        if (locked) return;
+        chosen.value = choice;
+        if (saver === null) return;
+        const { theme: _gone, ...rest } = readLook(saver.get(lookKey(first)));
+        const next = choice === null ? rest : { ...rest, theme: choice };
+        if (Object.keys(next).length === 0) saver.remove(lookKey(first));
+        else saver.set(lookKey(first), JSON.stringify(next));
+      },
+    };
+  })();
   const runs = new Map<string, Run>();
   /** the section of every question, per quiz */
   const sectionOf = new Map<string, Map<string, string>>();
@@ -374,6 +438,7 @@ export function createStore(data: PageData, deps: Deps = {}): Store {
   };
 
   const store: Store = {
+    look,
     events,
     screen,
     quizzes,
@@ -473,6 +538,7 @@ export function createStore(data: PageData, deps: Deps = {}): Store {
       for (const state of quizzes.values()) {
         state.sidebar.value = sidebarStart(saver?.get(sidebarKey(state.page)) ?? null, width);
       }
+      look.load();
       if (saver === null) return;
       // the probe: a browser that refuses to save says so now, not at the first answer
       saver.set("fullmark:v1:probe", "1");
@@ -482,7 +548,10 @@ export function createStore(data: PageData, deps: Deps = {}): Store {
         const page = state.page;
         const mine = attemptKey(page);
         const side = sidebarKey(page);
-        for (const key of saver.keys(quizPrefix(page.id))) if (key !== mine && key !== side) saver.remove(key);
+        const looks = lookKey(page);
+        for (const key of saver.keys(quizPrefix(page.id))) {
+          if (key !== mine && key !== side && key !== looks) saver.remove(key);
+        }
         const text = saver.get(mine);
         const saved = readSaved(text, page);
         if (saved === null) {

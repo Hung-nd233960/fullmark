@@ -87,6 +87,22 @@ export const attemptKey = (quiz: Pick<PageQuiz, "id" | "hash">): string => `${qu
 /** `fullmark:v1:<quiz id>:<quiz hash>:sidebar`: `"open"` or `"closed"`. */
 export const sidebarKey = (quiz: Pick<PageQuiz, "id" | "hash">): string => `${quizPrefix(quiz.id)}${quiz.hash}:sidebar`;
 
+/** `fullmark:v1:<quiz id>:<quiz hash>:look`: `{"theme": "<name>"}` (2h adds `font` and `size` to the same object). */
+export const lookKey = (quiz: Pick<PageQuiz, "id" | "hash">): string => `${quizPrefix(quiz.id)}${quiz.hash}:look`;
+
+/** The stored look as an object; anything that is not one is no look. */
+export function readLook(text: string | null): Record<string, unknown> {
+  if (text === null) return {};
+  try {
+    const value: unknown = JSON.parse(text);
+    return typeof value === "object" && value !== null && !Array.isArray(value)
+      ? (value as Record<string, unknown>)
+      : {};
+  } catch {
+    return {};
+  }
+}
+
 /** The window width from which the sidebar starts open when nothing is stored. */
 export const SIDEBAR_WIDE = 1100;
 
