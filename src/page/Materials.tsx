@@ -31,6 +31,7 @@ export function tabKeys(event: KeyboardEvent, vertical = false): void {
 /** A table of a sheet that is wider than its panel scrolls in its own box, which the keyboard must reach. */
 const scrollable = (panel: HTMLElement | null): void => {
   if (panel === null) return;
+  panel.tabIndex = 0; // the panel scrolls (the tabpanel pattern: reachable by Tab)
   for (const table of panel.querySelectorAll<HTMLElement>("table")) table.tabIndex = 0;
 };
 
@@ -71,7 +72,6 @@ export function Sheets({ t, state }: { t: PageMessages; state: QuizState }) {
         role="tabpanel"
         id={`${id}-panel`}
         aria-labelledby={`${id}-tab-${chosen}`}
-        tabIndex={0}
         ref={scrollable}
       >
         {sheet ? <Html html={sheet.html} class="fm-sheet" /> : null}
