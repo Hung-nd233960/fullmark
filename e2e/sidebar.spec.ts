@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { expect, type Page, test } from "@playwright/test";
-import { buildIn, card, noViolations, run, watch } from "./helpers";
+import { buildIn, card, noViolations, run, submitAttempt, watch } from "./helpers";
 
 /**
  * The sidebar and the question map (TECHNICAL_DESIGN.md, section 8, rows "Sidebar" and "Question map"). The test that
@@ -20,7 +20,7 @@ async function start(page: Page, width = 1280): Promise<void> {
 }
 
 const answeredCells = (page: Page) => side(page).locator("[data-cell][data-answered]");
-const submit = (page: Page) => page.locator(".fm-topbar").getByRole("button", { name: "Submit" }).click();
+const submit = (page: Page) => submitAttempt(page);
 
 test("the button and Q open and close the sidebar, Esc closes it and returns the focus", async ({ page }) => {
   const seen = watch(page);

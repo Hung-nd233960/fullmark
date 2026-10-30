@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { buildIn, card, noViolations, watch } from "./helpers";
+import { buildIn, card, noViolations, submitAttempt, watch } from "./helpers";
 
 /**
  * The top bar, the status line and Focus mode (TECHNICAL_DESIGN.md, section 8). The test that matters: the status line
@@ -46,7 +46,7 @@ test("the status line follows each answer, flag and move, and the timer stays vi
   await expect(page.locator(".fm-topbar").getByRole("button", { name: "Submit" })).toBeVisible();
   await noViolations(page);
 
-  await page.locator(".fm-topbar").getByRole("button", { name: "Submit" }).click();
+  await submitAttempt(page);
   await expect(seg(page, "submitted")).toHaveText(/^Submitted \d{1,2} [A-Z][a-z]{2}, \d\d:\d\d$/);
   await expect(seg(page, "taken")).toHaveText("The whole quiz · 14 questions");
   await expect(seg(page, "used")).toHaveText(/^Time used \d+:\d\d of 30:00$/);
@@ -64,7 +64,7 @@ test("a vi page prints a decimal comma", async ({ page }) => {
   await expect(page.locator(".fm-question-points")).toHaveText("2,5 điểm");
   await expect(seg(page, "time")).toContainText("Còn lại");
   await page.getByLabel("đúng v1").check();
-  await page.getByRole("button", { name: "Nộp bài" }).click();
+  await submitAttempt(page);
   await expect(page.locator('[data-cell="points"]')).toHaveText("2,5 / 2,5");
   await expect(page.locator(".fm-result")).toContainText("2,5 trên 2,5 điểm");
 });
@@ -113,7 +113,7 @@ test("Focus mode: the button and F enter and leave, the clock shows, Submit leav
   await expect.poll(() => fullscreenNow(page)).toBe(true);
 
   // Submit leaves full screen
-  await page.getByRole("button", { name: "Submit" }).click();
+  await submitAttempt(page);
   await expect.poll(() => fullscreenNow(page)).toBe(false);
   await expect(seg(page, "clock")).toHaveCount(0);
 });

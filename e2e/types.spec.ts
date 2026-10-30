@@ -1,5 +1,5 @@
 import { expect, type Locator, test } from "@playwright/test";
-import { buildIn, card, expectGradeMatches, noViolations, watch } from "./helpers";
+import { buildIn, card, expectGradeMatches, noViolations, submitAttempt, watch } from "./helpers";
 
 const types = buildIn("test/fixtures/page/types.md", "types.md");
 const typesVi = buildIn("test/fixtures/page/types-vi.md", "types-vi.md");
@@ -64,7 +64,7 @@ test("every simple type: status and points on the page equal quiz grade", async 
   await card(page, "e1").locator("textarea").fill("a cache saves work");
   await card(page, "k1").locator("textarea").fill("fn zqlargest() {}");
 
-  await page.getByRole("button", { name: "Submit" }).click();
+  await submitAttempt(page);
   await expect(page.locator(".fm-total")).toBeVisible();
   const results = await expectGradeMatches(page, types.dir, "types.md");
   const status = Object.fromEntries(results.map((r) => [r.id, r.status]));
@@ -148,7 +148,7 @@ test("ordering by keyboard: Enter on a button moves the item, the focus stays, t
   await expect(list.locator('[role="status"]')).toHaveText("Moved to position 3 of 3");
   await expect(list.locator('[data-dir="down"]').first()).toHaveAccessibleName(/^Move down: zq-/);
   // the move is stored: after Submit the question is answered
-  await page.getByRole("button", { name: "Submit" }).click();
+  await submitAttempt(page);
   await expect(list.locator(".fm-result")).not.toHaveAttribute("data-status", "unanswered");
 });
 
@@ -167,7 +167,7 @@ test("the word count is live and never blocks Submit; clearing a code box does n
   await expect(code).toHaveAttribute("spellcheck", "false");
   await code.fill("");
   await expect(code).toHaveValue("");
-  await page.getByRole("button", { name: "Submit" }).click();
+  await submitAttempt(page);
   await expect(card(page, "e1").locator(".fm-result")).toHaveAttribute("data-status", "pending");
   await expect(card(page, "k1").locator(".fm-result")).toHaveAttribute("data-status", "unanswered");
   // an untouched ordering and matching are unanswered
@@ -203,7 +203,7 @@ test("a cleared code box offers Reset to starter, which puts the starter back an
   await expect(code).toHaveValue(/todo![(][)]/);
   await expect(reset).toHaveCount(0);
   await expect.poll(() => code.evaluate((el) => el === document.activeElement)).toBe(true);
-  await page.getByRole("button", { name: "Submit" }).click();
+  await submitAttempt(page);
   await expect(q.locator(".fm-result")).toHaveAttribute("data-status", "unanswered");
   await expect(q.getByRole("button", { name: "Reset to starter" })).toHaveCount(0);
 });
@@ -216,7 +216,7 @@ test("a vi quiz's export grades the same with quiz grade", async ({ page }) => {
   await arrange(card(page, "o1"), [0, 2, 1]);
   await card(page, "g1").locator("select").nth(2).selectOption({ label: "packs the files" });
   await card(page, "e1").locator("textarea").fill("một hai ba");
-  await page.getByRole("button", { name: "Nộp bài" }).click();
+  await submitAttempt(page);
   await expect(page.locator(".fm-total")).toBeVisible();
   const results = await expectGradeMatches(page, typesVi.dir, "types-vi.md", "Tải kết quả về");
   const status = Object.fromEntries(results.map((r) => [r.id, r.status]));
@@ -240,7 +240,7 @@ test("examples/exam, answered in part, grades the same", async ({ page }) => {
   await blanks.nth(1).fill("mean");
   // the bonus bank draws one of ci-a and ci-b with the seed drawn at Start
   await page.locator('article[data-qid="ci-a"], article[data-qid="ci-b"]').getByRole("radio").nth(0).check();
-  await page.getByRole("button", { name: "Submit" }).click();
+  await submitAttempt(page);
   await expectGradeMatches(page, exam.dir, "exam.md");
   await noViolations(page);
   expect(seen.problems).toEqual([]);
@@ -267,7 +267,7 @@ test("the comma warning: shown in an en quiz, never in a vi one; 2,5 scores righ
   await vi.fill("2,5");
   await expect(card(page, "n3").locator(".fm-warn")).toHaveCount(0);
   await expect(vi).toHaveValue("2,5");
-  await page.getByRole("button", { name: "Nộp bài" }).click();
+  await submitAttempt(page);
   await expect(card(page, "n3").locator(".fm-result")).toHaveAttribute("data-status", "correct");
 });
 
@@ -285,7 +285,7 @@ test("a hint is a button until opened; a typed answer after Submit shows only th
   await expect(q.locator(".fm-hint-box")).toHaveCount(0);
 
   await card(page, "n3").locator("input.fm-text").fill("2.5");
-  await page.getByRole("button", { name: "Submit" }).click();
+  await submitAttempt(page);
   await expect(card(page, "n3").locator("input.fm-text")).toHaveCount(0);
   await expect(card(page, "n3").locator(".fm-shown-box")).toHaveCount(2);
   await expect(card(page, "n3").locator(".fm-shown-box").first()).toContainText("2.5");

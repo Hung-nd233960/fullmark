@@ -1,6 +1,6 @@
 import { join } from "node:path";
 import { expect, test } from "@playwright/test";
-import { buildIn, card, root } from "./helpers";
+import { buildIn, card, root, submitAttempt } from "./helpers";
 
 /**
  * Screenshots of slice 2e for the owner to compare with the Design canvas. Not part of `npm run check`: run with
@@ -23,7 +23,7 @@ test("the results card, the Missed filter and the retry confirm", async ({ page 
   await page.getByLabel("wrong r5").check();
   await page.getByLabel("two r6").check();
   await card(page, "r2").getByRole("button", { name: "Flag for review" }).click();
-  await page.getByRole("button", { name: "Submit" }).click();
+  await submitAttempt(page);
   await expect(page.locator(".fm-results")).toBeVisible();
   await page.screenshot({ path: out("1-results-card"), fullPage: true });
   await page.locator('[data-filter="missed"]').click();

@@ -1,6 +1,6 @@
 import { join } from "node:path";
 import { expect, type Page, test } from "@playwright/test";
-import { buildWith, card, root } from "./helpers";
+import { buildWith, card, root, submitAttempt } from "./helpers";
 
 /**
  * Screenshots of slice 2h2: the part list with a one-question part, an ordering question mid-drag and at rest, single
@@ -12,7 +12,7 @@ test.skip(!process.env.FULLMARK_SCREENS, "screenshots are made on request");
 const out = (name: string) => join(root, "docs", "screens", "2h2", `${name}.png`);
 const quiz = (source: string, name: string, theme = "light") =>
   buildWith(source, `${name}-${theme}.md`, [`theme: ${theme}`]);
-const submit = (page: Page) => page.locator(".fm-topbar").getByRole("button", { name: "Submit" }).click();
+const submit = (page: Page) => submitAttempt(page);
 
 const scrollTo = (page: Page, id: string, above = 140) =>
   page.evaluate(

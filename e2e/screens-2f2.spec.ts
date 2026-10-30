@@ -1,6 +1,6 @@
 import { join } from "node:path";
 import { expect, type Page, test } from "@playwright/test";
-import { buildIn, card, root } from "./helpers";
+import { buildIn, card, root, submitAttempt } from "./helpers";
 
 /**
  * Screenshots of slice 2f2 for the owner to compare with the Quiz, Results and Focus boards. Not part of
@@ -42,7 +42,7 @@ test("after Submit with the results map", async ({ page }) => {
   await card(page, "m8").getByRole("textbox").fill("an answer");
   await page.getByLabel(/wrong m4$/).check();
   await card(page, "m4").getByRole("button", { name: "Flag for review" }).click();
-  await page.locator(".fm-topbar").getByRole("button", { name: "Submit" }).click();
+  await submitAttempt(page);
   await expect(page.locator(".fm-results")).toBeVisible();
   await page.evaluate(() => window.scrollTo(0, 0));
   await page.screenshot({ path: out("3-submitted-results-map") });

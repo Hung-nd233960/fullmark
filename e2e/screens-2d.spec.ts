@@ -1,6 +1,6 @@
 import { join } from "node:path";
 import { expect, test } from "@playwright/test";
-import { buildIn, root } from "./helpers";
+import { buildIn, root, submitAttempt } from "./helpers";
 
 /**
  * Screenshots of slice 2d for the owner to compare with the Design canvas. Not part of `npm run check`: run with
@@ -42,7 +42,7 @@ test("the timer line, and the results after reopening", async ({ page }) => {
   await page.getByLabel("right t1").check();
   await page.clock.runFor(35_000);
   await page.screenshot({ path: out("6-timer-line-timed"), clip: { x: 0, y: 0, width: 1280, height: 520 } });
-  await page.getByRole("button", { name: "Submit" }).click();
+  await submitAttempt(page);
   await page.clock.resume();
   await page.reload();
   await expect(page.locator(".fm-total")).toBeVisible();

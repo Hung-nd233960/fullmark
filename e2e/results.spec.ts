@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { expect, type Page, test } from "@playwright/test";
-import { buildIn, card, expectGradeMatches, noViolations, run, watch } from "./helpers";
+import { buildIn, card, expectGradeMatches, noViolations, run, submitAttempt, watch } from "./helpers";
 
 const results = buildIn("test/fixtures/page/results.md", "results.md");
 const instant = buildIn("test/fixtures/page/instant.md", "instant.md");
@@ -98,7 +98,7 @@ test("the results card, the filter and Retry missed all agree with quiz grade", 
   await page.goto(results.url);
   await page.getByRole("button", { name: "Start" }).click();
   await answerSome(page);
-  await page.getByRole("button", { name: "Submit" }).click();
+  await submitAttempt(page);
 
   // the card
   await expect(page.locator(".fm-results")).toBeVisible();
@@ -142,7 +142,7 @@ test("the results card, the filter and Retry missed all agree with quiz grade", 
   for (const id of ["r2", "r3", "r5"]) await right(page, id);
   await page.getByLabel("two r6").check();
   await page.getByLabel("three r6").check();
-  await page.getByRole("button", { name: "Submit" }).click();
+  await submitAttempt(page);
   const retry = await graded(page, results.dir, "results.md");
   expect(retry.attempt.source).toBe("retry");
   expect(retry.attempt.questions).toBe(4);
@@ -163,7 +163,7 @@ test("a one-part attempt is scored on its own part", async ({ page }) => {
   await page.getByRole("radio", { name: /Geometry/ }).check();
   await page.getByRole("button", { name: "Start" }).click();
   await right(page, "r4");
-  await page.getByRole("button", { name: "Submit" }).click();
+  await submitAttempt(page);
   const report = await graded(page, results.dir, "results.md");
   expect(report.attempt.source).toBe("section");
   await expectCardMatches(page, report);
@@ -203,7 +203,7 @@ test("instant feedback: Check shows the result and locks the answer, and a reloa
   // an unchecked answer is graded at Submit all the same
   await right(page, "i2");
   await page.getByLabel("False").check();
-  await page.getByRole("button", { name: "Submit" }).click();
+  await submitAttempt(page);
   await expect(card(page, "i2").locator(".fm-result")).toContainText("Correct");
   const report = await graded(page, instant.dir, "instant.md");
   await expectCardMatches(page, report);
@@ -216,7 +216,7 @@ test("the export of an instant-feedback attempt lists what was checked", async (
   await page.getByRole("button", { name: "Start" }).click();
   await right(page, "i1");
   await card(page, "i1").getByRole("button", { name: "Check" }).click();
-  await page.getByRole("button", { name: "Submit" }).click();
+  await submitAttempt(page);
   const download = page.waitForEvent("download");
   await page.getByRole("button", { name: "Download results" }).click();
   const file = await download;

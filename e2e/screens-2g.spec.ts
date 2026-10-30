@@ -1,6 +1,6 @@
 import { join } from "node:path";
 import { expect, type Page, test } from "@playwright/test";
-import { buildWith, card, root } from "./helpers";
+import { buildWith, card, root, submitAttempt } from "./helpers";
 
 /**
  * Screenshots of slice 2g, one per theme board, to lay beside docs/mockup/images/. Not part of `npm run check`: run
@@ -74,7 +74,7 @@ test.describe("the phone, 390 x 844", () => {
   test("the bar in one row, then the filter in one row", async ({ page }) => {
     await answer(page, quiz("light", "free").url);
     await page.screenshot({ path: out("9-phone-bar") });
-    await page.locator(".fm-topbar").getByRole("button", { name: "Submit" }).tap();
+    await submitAttempt(page);
     await expect(page.locator(".fm-results")).toBeVisible();
     await page.evaluate(() => window.scrollTo(0, 0));
     await page.screenshot({ path: out("10-phone-filter") });

@@ -1,6 +1,6 @@
 import { join } from "node:path";
 import { expect, type Page, test } from "@playwright/test";
-import { buildIn, card, root } from "./helpers";
+import { buildIn, card, root, submitAttempt } from "./helpers";
 
 /**
  * Screenshots of slice 2v, one per board built, to lay beside docs/mockup/images/. Not part of `npm run check`: run
@@ -58,7 +58,7 @@ test("answering (Quiz board)", async ({ page }) => {
 test("after Submit (Results board)", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 1560 });
   await answer(page);
-  await page.locator(".fm-topbar").getByRole("button", { name: "Submit" }).click();
+  await submitAttempt(page);
   await expect(page.locator(".fm-results")).toBeVisible();
   await page.evaluate(() => window.scrollTo(0, 0));
   await page.screenshot({ path: out("3-results") });

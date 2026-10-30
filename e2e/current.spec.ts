@@ -1,5 +1,5 @@
 import { expect, type Page, test } from "@playwright/test";
-import { buildIn, card } from "./helpers";
+import { buildIn, card, submitAttempt } from "./helpers";
 
 /**
  * The current card (TECHNICAL_DESIGN.md, section 8, row "Hint, explanation label and current card"): the card the
@@ -72,7 +72,7 @@ test("no card is marked after Submit", async ({ page }) => {
   await start(page);
   await page.getByLabel(/right m2$/).check();
   await expect(marked(page)).toHaveCount(1);
-  await page.locator(".fm-topbar").getByRole("button", { name: "Submit" }).click();
+  await submitAttempt(page);
   await expect(page.locator("section.fm-quiz")).toHaveAttribute("data-phase", "submitted");
   await expect(marked(page)).toHaveCount(0);
 });

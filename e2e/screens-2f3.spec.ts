@@ -1,6 +1,6 @@
 import { join } from "node:path";
 import { expect, test } from "@playwright/test";
-import { buildFolder, card, root } from "./helpers";
+import { buildFolder, card, root, submitAttempt } from "./helpers";
 
 /**
  * Screenshots of slice 2f3 for the owner to compare with the MaterialsStacked, Materials, MaterialsFocus and Start
@@ -29,7 +29,7 @@ test("after Submit, the Materials tab", async ({ page }) => {
   await page.getByRole("button", { name: "Start" }).click();
   await page.getByLabel(/right m1$/).check();
   await page.getByLabel(/wrong m2$/).check();
-  await page.locator(".fm-topbar").getByRole("button", { name: "Submit" }).click();
+  await submitAttempt(page);
   await expect(page.locator(".fm-results")).toBeVisible();
   await page.getByRole("tab", { name: "Materials" }).click();
   await page.evaluate(() => window.scrollTo(0, 0));

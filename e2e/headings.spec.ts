@@ -1,5 +1,5 @@
 import { expect, type Page, test } from "@playwright/test";
-import { buildIn, card, noViolations, watch } from "./helpers";
+import { buildIn, card, noViolations, submitAttempt, watch } from "./helpers";
 
 /**
  * The part list's headings and rows (TECHNICAL_DESIGN.md, section 8, row "Question map"): a double-click or Enter on a
@@ -11,7 +11,7 @@ const oneq = buildIn("test/fixtures/page/oneq.md", "oneq.md");
 const side = (page: Page) => page.locator("aside.fm-side");
 const head = (page: Page, part: string) => side(page).locator(`[data-part="${part}"] [data-part-head]`);
 const row = (page: Page, id: string) => side(page).locator(`[data-cell="${id}"].fm-cell-row`);
-const submit = (page: Page) => page.locator(".fm-topbar").getByRole("button", { name: "Submit" }).click();
+const submit = (page: Page) => submitAttempt(page);
 
 /** The id of the question card that holds the focus. */
 const focused = (page: Page) =>

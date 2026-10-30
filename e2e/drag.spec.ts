@@ -1,5 +1,5 @@
 import { expect, type Locator, type Page, test } from "@playwright/test";
-import { buildIn, card, expectGradeMatches, noViolations, watch } from "./helpers";
+import { buildIn, card, expectGradeMatches, noViolations, submitAttempt, watch } from "./helpers";
 
 const types = buildIn("test/fixtures/page/types.md", "types.md");
 
@@ -69,7 +69,7 @@ test("a drag moves an item, stores the order as the buttons do, and grades the s
   expect(await stored(page, "o1")).toEqual(byButtons);
   await expect(q.locator(".fm-sr")).toHaveText("Moved to position 3 of 3");
 
-  await page.getByRole("button", { name: "Submit" }).click();
+  await submitAttempt(page);
   await expect(q.locator(".fm-drag-handle")).toHaveCount(0);
   await expectGradeMatches(page, types.dir, "types.md");
   expect(seen.problems).toEqual([]);

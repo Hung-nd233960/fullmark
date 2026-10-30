@@ -1,6 +1,6 @@
 import { expect, type Page, test } from "@playwright/test";
 import { SETS, THEME_NAMES, type ThemeName } from "../src/core/themes";
-import { buildWith, noViolations, watch } from "./helpers";
+import { buildWith, noViolations, submitAttempt, watch } from "./helpers";
 
 /**
  * The themes (TECHNICAL_DESIGN.md, section 8): a page opens in the quiz's theme and never in another unless the learner
@@ -151,7 +151,7 @@ test("a picked look stays after Submit, and the button is there in both phases",
   await button(page).click();
   await pick(page, "oled").click();
   await page.getByLabel(/right m1$/).check();
-  await page.getByRole("button", { name: "Submit" }).click();
+  await submitAttempt(page);
   await expect(page.locator(".fm-results")).toBeVisible();
   expect(await bg(page)).toBe(SETS.oled.tokens.bg);
   await expect(button(page)).toBeVisible();
@@ -167,7 +167,7 @@ for (const name of THEME_NAMES) {
     await button(page).click();
     await noViolations(page);
     await page.keyboard.press("Escape");
-    await page.getByRole("button", { name: "Submit" }).click();
+    await submitAttempt(page);
     await expect(page.locator(".fm-results")).toBeVisible();
     await noViolations(page);
   });

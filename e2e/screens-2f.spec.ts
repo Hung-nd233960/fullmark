@@ -1,6 +1,6 @@
 import { join } from "node:path";
 import { expect, test } from "@playwright/test";
-import { buildIn, card, root } from "./helpers";
+import { buildIn, card, root, submitAttempt } from "./helpers";
 
 /**
  * Screenshots of slice 2f for the owner to compare with the Design canvas. Not part of `npm run check`: run with
@@ -29,7 +29,7 @@ test("the docked bar and status line while answering", async ({ page }) => {
 
 test("after Submit", async ({ page }) => {
   await answering(page);
-  await page.locator(".fm-topbar").getByRole("button", { name: "Submit" }).click();
+  await submitAttempt(page);
   await expect(page.locator(".fm-results")).toBeVisible();
   await page.screenshot({ path: out("3-submitted") });
 });

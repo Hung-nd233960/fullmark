@@ -1,5 +1,5 @@
 import { expect, type Page, test } from "@playwright/test";
-import { buildIn, card, noViolations, watch } from "./helpers";
+import { buildIn, card, noViolations, submitAttempt, watch } from "./helpers";
 
 /**
  * One answer or several, and the letter badge's even inset (TECHNICAL_DESIGN.md, section 8, row "Question card"): round
@@ -32,7 +32,7 @@ test("single and true/false badges are round, multi's are square, and the header
   await card(page, "s1").getByRole("radio").first().check();
   await expect(card(page, "s1").locator(".fm-tick")).toHaveCount(0);
   await noViolations(page);
-  await page.locator(".fm-topbar").getByRole("button", { name: "Submit" }).click();
+  await submitAttempt(page);
   await expect(card(page, "m1").locator(".fm-tick")).toHaveCount(0);
   await noViolations(page);
   expect(seen.problems).toEqual([]);

@@ -1,6 +1,6 @@
 import { join } from "node:path";
 import { expect, type Page, test } from "@playwright/test";
-import { buildWith, card, root } from "./helpers";
+import { buildWith, card, root, submitAttempt } from "./helpers";
 
 /**
  * Screenshots of slice 2h: the question card's new header and choice rows, A- / A+, the phone bar and its menu. Not part
@@ -37,7 +37,7 @@ for (const theme of ["light", "dark"]) {
     await answer(page, quiz(theme).url);
     await toCards(page);
     await page.screenshot({ path: out(`1-${theme}-answering`) });
-    await page.locator(".fm-topbar").getByRole("button", { name: "Submit" }).click();
+    await submitAttempt(page);
     await expect(page.locator(".fm-results")).toBeVisible();
     await toCards(page);
     await page.screenshot({ path: out(`2-${theme}-submitted`) });

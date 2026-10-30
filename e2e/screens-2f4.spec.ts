@@ -1,6 +1,6 @@
 import { join } from "node:path";
 import { expect, test } from "@playwright/test";
-import { buildFolder, card, root } from "./helpers";
+import { buildFolder, card, root, submitAttempt } from "./helpers";
 
 /**
  * Screenshots of slice 2f4 for the owner to compare with the MaterialsPhone board's source (the board has no image
@@ -43,7 +43,7 @@ test("the sidebar on Questions", async ({ page }) => {
 
 test("after Submit, the results map", async ({ page }) => {
   await answering(page);
-  await page.locator(".fm-topbar").getByRole("button", { name: "Submit" }).tap();
+  await submitAttempt(page);
   await expect(page.locator(".fm-results")).toBeVisible();
   await page.screenshot({ path: out("4-submitted") });
   await page.locator("[data-action=sidebar]").tap();

@@ -3,6 +3,7 @@ import { copyFileSync, mkdtempSync, readFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { expect, type Page, test } from "@playwright/test";
+import { submitAttempt } from "./helpers";
 
 const root = resolve(import.meta.dirname, "..");
 const cli = join(root, "dist", "cli.js");
@@ -73,7 +74,7 @@ test("answers, submits and exports a score that quiz grade reproduces", async ({
   await page.getByPlaceholder("Where does it come from?").fill("From the air");
   // the fourth is left empty
 
-  await page.getByRole("button", { name: "Submit" }).click();
+  await submitAttempt(page);
   const onPage = await shown(page);
   expect(onPage.results).toEqual([
     { id: "prime", status: "correct" },

@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { expect, type Page, test } from "@playwright/test";
-import { buildFolder, card, noViolations, watch } from "./helpers";
+import { buildFolder, card, noViolations, submitAttempt, watch } from "./helpers";
 
 /**
  * The materials (TECHNICAL_DESIGN.md, section 8, rows "Sidebar", "Question map" and "Materials"). The test that matters:
@@ -11,7 +11,7 @@ const quiz = buildFolder("test/fixtures/page", "materials.md");
 
 const side = (page: Page) => page.locator("aside.fm-side");
 const chip = (page: Page, name: string) => page.getByRole("tab", { name, exact: true });
-const submit = (page: Page) => page.locator(".fm-topbar").getByRole("button", { name: "Submit" }).click();
+const submit = (page: Page) => submitAttempt(page);
 
 async function start(page: Page): Promise<void> {
   await page.setViewportSize({ width: 1280, height: 940 });

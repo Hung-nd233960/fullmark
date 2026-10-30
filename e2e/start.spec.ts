@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { expect, type Page, test } from "@playwright/test";
-import { buildIn, card, expectGradeMatches, noViolations, run, watch } from "./helpers";
+import { buildIn, card, expectGradeMatches, noViolations, run, submitAttempt, watch } from "./helpers";
 
 const parts = buildIn("test/fixtures/page/parts.md", "parts.md");
 const timed = buildIn("test/fixtures/page/timed.md", "timed.md");
@@ -62,7 +62,7 @@ test("the start screen: the whole quiz pinned and recommended, the parts in a li
   await expect(page.locator("[data-timer]")).toHaveText(/^Time \d+:\d\d$/);
   await noViolations(page);
   await right(page, (await idsOn(page))[0] as string);
-  await page.getByRole("button", { name: "Submit" }).click();
+  await submitAttempt(page);
   await noViolations(page);
   expect(seen.problems).toEqual([]);
   expect(seen.requests).toEqual([]);
@@ -125,7 +125,7 @@ test("a submitted attempt reopens on its results until New attempt", async ({ pa
   await page.getByRole("button", { name: "Start" }).click();
   const ids = await idsOn(page);
   await right(page, ids[0] as string);
-  await page.getByRole("button", { name: "Submit" }).click();
+  await submitAttempt(page);
   const total = await page.locator(".fm-total").textContent();
   const statuses = await page
     .locator(".fm-result")
@@ -157,7 +157,7 @@ test("one part: only its questions, and the export grades the same with quiz gra
   await expect(page.getByRole("heading", { level: 2, name: "Geometry" })).toBeVisible();
   await expect(page.getByRole("heading", { level: 2, name: "Algebra" })).toHaveCount(0);
   await right(page, "ge1");
-  await page.getByRole("button", { name: "Submit" }).click();
+  await submitAttempt(page);
   const results = await expectGradeMatches(page, parts.dir, "parts.md");
   expect(results.map((r) => r.id).sort()).toEqual(["ge1", "ge2"]);
   const { file } = await exported(page, parts.dir);
@@ -209,6 +209,7 @@ test("a page reopened after the deadline submits on open", async ({ page }) => {
   await page.reload();
   await expect(page.locator(".fm-total")).toBeVisible();
   await expect(page.locator('[data-notice="timed-out"]')).toBeVisible();
+  await expect(page.locator("dialog[data-submit-dialog]")).toHaveCount(0);
   const { file } = await exported(page, timed.dir);
   expect(file.state.timedOut).toBe(true);
   expect(file.state.timeUsed).toBe(90);
@@ -232,7 +233,7 @@ test("an untimed quiz counts only the time the page is visible", async ({ page }
   await visibility("visible");
   await page.clock.runFor(5_000);
   await expect(page.locator("[data-timer]")).toHaveText("Time 00:15");
-  await page.getByRole("button", { name: "Submit" }).click();
+  await submitAttempt(page);
   const { file } = await exported(page, parts.dir);
   expect(file.state.timeUsed).toBe(15);
   expect(file.state.timedOut).toBe(false);
@@ -258,7 +259,7 @@ test("storage blocked: the page says so, and still starts, submits and exports",
   await page.getByRole("button", { name: "Start" }).click();
   await expect(page.locator('[data-notice="storage"]')).toHaveText(notice);
   await right(page, (await idsOn(page))[0] as string);
-  await page.getByRole("button", { name: "Submit" }).click();
+  await submitAttempt(page);
   await expectGradeMatches(page, parts.dir, "parts.md");
   expect(seen.problems).toEqual([]);
 });
@@ -274,7 +275,7 @@ test("the page shows the items in the order the plan drew, and the export record
   const source = ["zq-parse", "zq-check", "zq-render"];
   const shown = await card(page, "o1").locator(".fm-order-text").allTextContents();
   expect(shown).not.toEqual(source);
-  await page.getByRole("button", { name: "Submit" }).click();
+  await submitAttempt(page);
   const { file } = await exported(page, types.dir);
   const order = file.plan.optionOrder.o1 as number[];
   expect(order.map((i) => source[i])).toEqual(shown);

@@ -1,6 +1,6 @@
 import { join } from "node:path";
 import { expect, test } from "@playwright/test";
-import { buildIn, card, root } from "./helpers";
+import { buildIn, card, root, submitAttempt } from "./helpers";
 
 /**
  * Screenshots of slice 2c4. Not part of `npm run check`: run with
@@ -31,7 +31,7 @@ test("ordering at rest, mid-drag and after Submit", async ({ page }) => {
   await page.screenshot({ path: out("2-ordering-dragging") });
   await page.mouse.up();
 
-  await page.getByRole("button", { name: "Submit" }).click();
+  await submitAttempt(page);
   await expect(page.locator(".fm-results")).toBeVisible();
   await q.scrollIntoViewIfNeeded();
   await q.screenshot({ path: out("3-ordering-submitted") });
@@ -47,7 +47,7 @@ test("the hint closed and opened, and a typed answer after Submit", async ({ pag
   await b1.getByRole("button", { name: "Hint" }).click();
   await b1.screenshot({ path: out("5-hint-open") });
   await card(page, "n3").locator("input.fm-text").fill("2.4");
-  await page.getByRole("button", { name: "Submit" }).click();
+  await submitAttempt(page);
   await expect(page.locator(".fm-results")).toBeVisible();
   await card(page, "n3").scrollIntoViewIfNeeded();
   await card(page, "n3").screenshot({ path: out("6-typed-after-submit") });

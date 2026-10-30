@@ -1,5 +1,5 @@
 import { test as base, expect, type Locator, type Page } from "@playwright/test";
-import { buildFolder, card, noViolations, watch } from "./helpers";
+import { buildFolder, card, noViolations, submitAttempt, watch } from "./helpers";
 
 /**
  * The page on a phone, below 760 px (TECHNICAL_DESIGN.md, section 8, rows "Top bar and status line", "Sidebar",
@@ -93,7 +93,7 @@ test("the compact bar: no title, the muted line with bold numbers that follows t
   expect(await shortButtons(page)).toEqual([]);
   expect(await noSideways(page)).toBe(true);
   await noViolations(page);
-  await press(page, bar(page).getByRole("button", { name: "Submit" }));
+  await submitAttempt(page);
   await expect(page.locator(".fm-results")).toBeVisible();
   await expect(page.locator("[data-compact]")).toHaveText(/^Submitted \d+ \w+, \d\d:\d\d$/);
   await expect(bar(page).getByRole("button", { name: "Submit" })).toHaveCount(0);
@@ -200,7 +200,7 @@ test("the Materials tab: chips in one scrolling row, the sheet, a wide table in 
 test("after Submit: the results map, Back to the results, the tabs and the filter", async ({ page }) => {
   await begin(page);
   await page.getByLabel(/right m1$/).check();
-  await press(page, bar(page).getByRole("button", { name: "Submit" }));
+  await submitAttempt(page);
   await expect(page.locator(".fm-results")).toBeVisible();
   await press(page, toggle(page));
   await expect(back(page)).toHaveText("Back to the results");
