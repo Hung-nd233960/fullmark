@@ -120,8 +120,9 @@
 
   .fm-grid {
     display: grid;
-    grid-template-columns: repeat(6, minmax(0, 1fr));
+    grid-template-columns: repeat(auto-fill, 40px);
     gap: 4px;
+    justify-content: start;
   }
 
   .fm-cell {
@@ -458,15 +459,10 @@
     color: var(--muted);
   }
 
+  /* about four rows, then it scrolls: a half row shows that there is more */
   .fm-grid-mini {
-    grid-template-columns: repeat(8, minmax(0, 1fr));
-    max-height: 176px;
+    max-height: calc(4.5 * 40px + 4 * 4px);
     overflow-y: auto;
-  }
-
-  .fm-grid-mini .fm-cell {
-    height: 32px;
-    font-size: 0.75em;
   }
 
   .fm-side-materials {
@@ -769,7 +765,12 @@
     }
 
     .fm-grid {
+      grid-template-columns: repeat(auto-fill, 44px);
       gap: 6px;
+    }
+
+    .fm-grid-mini {
+      max-height: calc(4.5 * 44px + 4 * 6px);
     }
 
     .fm-cell,
