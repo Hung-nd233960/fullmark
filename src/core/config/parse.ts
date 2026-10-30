@@ -1,4 +1,5 @@
 import { parse as parseToml } from "smol-toml";
+import { FONT_CHOICES, type FontsChoice } from "../fonts";
 import { QUESTION_TYPES, type QuestionType } from "../ir";
 import type { Level } from "../issue";
 import { suggest } from "../parse/report";
@@ -66,6 +67,7 @@ export function parseConfig(text: string, file: string, kind: "project" | "user"
   const data: ConfigFileData = {
     file,
     check: { profile: null, profileLine: 1, failOn: null, failOnLine: 1 },
+    fonts: null,
     profiles: new Map(),
   };
 
@@ -106,6 +108,13 @@ export function parseConfig(text: string, file: string, kind: "project" | "user"
         }
       }
     }
+  }
+
+  // the machine config's default for `--fonts` (the rest of that file belongs to the library)
+  if (kind === "user" && doc.fonts !== undefined) {
+    if ((FONT_CHOICES as readonly string[]).includes(doc.fonts as string)) data.fonts = doc.fonts as FontsChoice;
+    else
+      fail(["fonts"], `\`fonts\` must be ${FONT_CHOICES.map((c) => `"${c}"`).join(", ")}, not ${describe(doc.fonts)}`);
   }
 
   const profiles = doc.profiles;

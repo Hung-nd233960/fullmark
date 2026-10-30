@@ -163,7 +163,6 @@ export function buildProgram(outcome: Outcome = { exit: EXIT.done }, io: Io = te
     "answer-sheet",
     "seed",
     "ui-lang",
-    "fonts",
     "watch",
     "serve",
     "port",
@@ -186,7 +185,10 @@ export function buildProgram(outcome: Outcome = { exit: EXIT.done }, io: Io = te
     .option("--answer-sheet", "(not available yet)")
     .option("--seed <s>", "(not available yet)")
     .option("--ui-lang <lang>", "(not available yet)")
-    .option("--fonts <which>", "(not available yet)")
+    .option(
+      "--fonts <which>",
+      "which fonts the page embeds: quiz (the quiz's own), all or none (default: fonts in config.toml, else quiz)",
+    )
     .option("--watch", "(not available yet)")
     .option("--serve", "(not available yet)")
     .option("--port <n>", "(not available yet)")
@@ -200,6 +202,7 @@ export function buildProgram(outcome: Outcome = { exit: EXIT.done }, io: Io = te
         later: LATER.filter(
           (name) => options[name.replace(/-(\w)/g, (_m, c: string) => c.toUpperCase())] !== undefined,
         ),
+        fonts: (options.fonts as string | undefined) ?? null,
         version: VERSION,
       };
       outcome.exit = await (await import("./build")).runBuild(files, opts, io);

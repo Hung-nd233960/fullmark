@@ -46,6 +46,8 @@ export type ConfigFileData = {
   file: string;
   /** `[check]`: read from `fullmark.toml` only */
   check: { profile: string | null; profileLine: number; failOn: "error" | "warning" | null; failOnLine: number };
+  /** `fonts` at the top of the machine `config.toml`: the default of `--fonts` */
+  fonts: "quiz" | "all" | "none" | null;
   profiles: Map<string, ProfileDef>;
 };
 

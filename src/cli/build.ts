@@ -4,8 +4,11 @@ import { fileURLToPath } from "node:url";
 import { languagesUsed, loadHighlighter } from "../build/highlight";
 import { buildPage } from "../build/page";
 import { katexTools } from "../build/tex";
+import { FONT_CHOICES, FONT_REGISTRY, type FontsChoice } from "../core/fonts";
+import type { Issue } from "../core/issue";
 import { type WriteError, writeFileAtomic } from "./atomic";
 import { type CheckIo, checkFile, describeOutcome, humanIssue } from "./check";
+import { loadConfig, realMachine } from "./config";
 import { EXIT, type ExitCode } from "./exit-codes";
 import { fail } from "./fail";
 import { expandInputs } from "./files";
@@ -17,6 +20,8 @@ export type BuildOptions = {
   strict: boolean;
   output: string | null;
   builtAt: string | null;
+  /** `--fonts`; null: `fonts` in the machine config, else `quiz` */
+  fonts: string | null;
   /** the options that arrive with later slices; any of them set is "not available yet" */
   later: string[];
   version: string;
@@ -47,6 +52,10 @@ export async function runBuild(patterns: readonly string[], opts: BuildOptions, 
     fail(io, false, `--built-at ${opts.builtAt} is not an ISO date and time, such as 2026-10-24T09:00:00+07:00`);
     return EXIT.usage;
   }
+  if (opts.fonts !== null && !(FONT_CHOICES as readonly string[]).includes(opts.fonts)) {
+    fail(io, false, `--fonts ${opts.fonts} is not one of quiz, all, none`);
+    return EXIT.usage;
+  }
   const inputs = expandInputs(patterns, io.cwd);
   if (inputs.files.length + inputs.errors.length > 1) {
     fail(io, false, "building several files is not available yet: give one quiz file");
@@ -74,6 +83,27 @@ export async function runBuild(patterns: readonly string[], opts: BuildOptions, 
     return EXIT.problems;
   }
   for (const issue of result.issues) for (const line of humanIssue(issue, false)) io.out(line);
+
+  // `--fonts`, else the machine config's `fonts`, else the quiz's own font
+  const machine = io.machine ?? { ...realMachine(), cwd: io.cwd };
+  const fonts: FontsChoice =
+    (opts.fonts as FontsChoice | null) ??
+    loadConfig(machine, dirname(resolve(io.cwd, file)), opts.config).layers.user?.fonts ??
+    "quiz";
+  const front = result.loaded.quiz.frontMatter;
+  if (fonts === "none" && front.look === "locked" && front.font !== "system") {
+    const family = FONT_REGISTRY[front.font].family;
+    const issue: Issue = {
+      rule: "build.font-not-embedded",
+      level: opts.strict ? "error" : "warning",
+      file,
+      line: 1,
+      message: `the quiz is locked to the font ${family}, which this page does not embed: the system font will stand in unless ${family} is installed`,
+      fix: "build without `--fonts none`, or give the quiz `font: system`",
+    };
+    for (const line of humanIssue(issue, false)) io.out(line);
+    if (opts.strict) return EXIT.problems;
+  }
 
   const folder = io.runtimeDir ?? runtimeFolder();
   let runtime: string;
@@ -105,6 +135,7 @@ export async function runBuild(patterns: readonly string[], opts: BuildOptions, 
       version: opts.version,
       math: katexTools(),
       highlight,
+      fonts,
     },
   );
 

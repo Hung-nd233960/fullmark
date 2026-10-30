@@ -19,6 +19,17 @@ export const BUILD_RULES: QualityRule[] = [
   },
   {
     kind: "quality",
+    id: "build.font-not-embedded",
+    level: "warning",
+    summary: "a locked look names a font the page does not embed (checked by `build`, from `--fonts none`)",
+    why: "A `look: locked` quiz promises everyone the author's look, and with `--fonts none` the font is only used where it is installed; otherwise the system font stands in.",
+    example: "(checked by `quiz build --fonts none`: a quiz with `look: locked` and `font: serif`)",
+    fix: "build without `--fonts none`, or give the quiz `font: system`",
+    options: z.object({}).strict(),
+    run: () => [],
+  },
+  {
+    kind: "quality",
     id: "build.size",
     level: "warning",
     summary: "the built page is large (checked by `build`, from step 2 of the order of work)",
