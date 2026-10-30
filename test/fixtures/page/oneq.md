@@ -25,7 +25,7 @@ id: oneq
 ## Question b1? {type=single id=b1 points=1}
 
 - [x] right b1
-- [ ] wrong b1
+- [ ] wrong b1, a choice that runs on and on so that at a phone width its text has to wrap onto a second and even a third line
 
 # Review {id=r}
 

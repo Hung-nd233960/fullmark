@@ -34,6 +34,8 @@ function failures(name: ThemeName): string[] {
       check(t[text], washOf(theme, w), w, text, TEXT_RATIO);
   }
   check(t["on-accent"], t.accent, "accent", "on-accent", TEXT_RATIO);
+  // the "Choose one" tag of a question card
+  check(t.accent, washOf(theme, "info-wash"), "info-wash", "accent", TEXT_RATIO);
   for (const s of ["card", "bg"] as const) {
     check(t["line-strong"], t[s], s, "line-strong", 3);
     for (const icon of ICONS) check(t[icon], t[s], s, icon, 3);

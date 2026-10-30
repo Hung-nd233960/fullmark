@@ -1,5 +1,6 @@
 import { readAnswer } from "../../core/attempt/answers";
 import type { PageQuestion } from "../data";
+import { Icon } from "../icons";
 import { Badges, type Ctx, Html, letterOf } from "./shared";
 
 type Props = { q: Extract<PageQuestion, { type: "single" | "multi" }>; c: Ctx; multi: boolean };
@@ -53,6 +54,11 @@ export function ChoiceList({ q, c, multi }: Props) {
                 {letterOf(position)}
               </span>
               <Html html={choice.html} tag="span" class="fm-choice-text" />
+              {multi && isPicked && !c.submitted ? (
+                <span class="fm-tick" aria-hidden="true">
+                  <Icon name="check" size={20} />
+                </span>
+              ) : null}
               {c.submitted ? <Badges t={t} picked={isPicked} right={isRight} /> : null}
             </label>
             {choice.input !== null && isPicked ? (

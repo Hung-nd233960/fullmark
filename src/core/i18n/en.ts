@@ -88,6 +88,8 @@ export const en = {
     submit: "Submit",
     exportHint: "Save the results file; `quiz grade` reads it.",
     questionLabel: (n: number) => `Question ${n}`,
+    chooseOne: "Choose one",
+    chooseAll: "Choose all that apply",
     pointsLabel: (points: string) => `${points} ${points === "1" ? "point" : "points"}`,
     inputPlaceholder: "Type here",
     yourScore: "Your score",

@@ -121,6 +121,9 @@ export function QuestionCard({
           {question.graded ? (
             <span class="fm-question-points">{t.pointsLabel(num(question.points, quiz.uiLang))}</span>
           ) : null}
+          {question.type === "single" || question.type === "multi" ? (
+            <span class="fm-kind">{question.type === "multi" ? t.chooseAll : t.chooseOne}</span>
+          ) : null}
           {question.tags.map((tag) => (
             <span key={tag} class="fm-tag">{`#${tag}`}</span>
           ))}

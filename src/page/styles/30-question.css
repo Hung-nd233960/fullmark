@@ -153,7 +153,6 @@
   }
 
   .fm-choice {
-    min-height: 44px;
     background: var(--surface);
     border: 1px solid var(--line);
     border-radius: 8px;
@@ -163,8 +162,8 @@
     position: relative;
     display: flex;
     gap: 14px;
-    align-items: center;
-    padding: 10px 16px;
+    align-items: flex-start;
+    padding: 12px;
     cursor: pointer;
   }
 
@@ -199,11 +198,37 @@
     border-radius: 8px;
   }
 
+  /* a single answer is round, several are square */
+  [data-type="single"] .fm-letter,
+  [data-type="truefalse"] .fm-letter {
+    border-radius: 50%;
+  }
+
+  /* the first line of the text is centred on the 32 px badge, whatever the row's height */
   .fm-choice-text {
     flex: 1;
     min-width: 0;
+    margin-block: calc((32px - 1lh) / 2);
     font-size: 1.06em;
     font-weight: 500;
+  }
+
+  .fm-tick {
+    display: flex;
+    flex: none;
+    align-items: center;
+    height: 32px;
+    margin-left: auto;
+    color: var(--accent);
+  }
+
+  .fm-kind {
+    padding: 1px 7px;
+    margin-left: 10px;
+    font-size: 0.85em;
+    color: var(--accent);
+    background: var(--info-wash);
+    border-radius: 6px;
   }
 
   .fm-choice-text p {
@@ -223,7 +248,7 @@
   .fm-choice[data-correct="true"] label,
   .fm-choice[data-picked="true"][data-correct="false"] label,
   .fm-choice[data-picked="true"]:not([data-correct]) label {
-    padding: 9px 15px;
+    padding: 11px;
   }
 
   .fm-choice[data-correct="true"],
@@ -251,6 +276,7 @@
     flex: none;
     gap: 6px;
     align-items: center;
+    height: 32px;
     margin-left: auto;
     font-size: 0.85em;
     font-weight: 700;

@@ -89,6 +89,8 @@ export const vi = {
     submit: "Nộp bài",
     exportHint: "Lưu tệp kết quả; lệnh `quiz grade` đọc tệp này.",
     questionLabel: (n: number) => `Câu ${n}`,
+    chooseOne: "Chọn một đáp án",
+    chooseAll: "Chọn tất cả đáp án đúng",
     pointsLabel: (points: string) => `${points} điểm`,
     inputPlaceholder: "Nhập ở đây",
     yourScore: "Điểm của bạn",
