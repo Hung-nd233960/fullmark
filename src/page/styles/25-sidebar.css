@@ -178,10 +178,9 @@
   }
 
   .fm-cell-row .fm-cell-flag {
-    top: 50%;
-    right: auto;
-    left: -3px;
-    transform: translateY(-50%);
+    top: 4px;
+    right: 4px;
+    box-shadow: none;
   }
 
   .fm-map-head-static[aria-disabled="true"] {

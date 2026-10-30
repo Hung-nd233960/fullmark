@@ -123,3 +123,66 @@ test("a part of one question is a single row that jumps and shows the cell's sta
   await noViolations(page);
   expect(seen.problems).toEqual([]);
 });
+
+test("a double-click never opens or closes the heading on its way", async ({ page }) => {
+  await start(page);
+  await page.evaluate(() => {
+    const el = document.querySelector("[data-part=r] [data-part-head]");
+    const seen: string[] = [];
+    (window as unknown as { __expanded: string[] }).__expanded = seen;
+    if (el === null) return;
+    new MutationObserver(() => seen.push(el.getAttribute("aria-expanded") ?? "")).observe(el, {
+      attributes: true,
+      attributeFilter: ["aria-expanded"],
+    });
+  });
+  await head(page, "r").dblclick();
+  await expect.poll(() => focused(page)).toBe("r1");
+  await page.waitForTimeout(500);
+  expect(await page.evaluate(() => (window as unknown as { __expanded: string[] }).__expanded)).toEqual([]);
+  await expect(head(page, "r")).toHaveAttribute("aria-expanded", "false");
+  // a single click still toggles, after the wait
+  await head(page, "r").click();
+  await expect(head(page, "r")).toHaveAttribute("aria-expanded", "true");
+});
+
+test("the jump from a heading is smooth, instant under reduced motion", async ({ page }) => {
+  await start(page);
+  const behaviours = () =>
+    page.evaluate(() => {
+      const seen: string[] = [];
+      (window as unknown as { __b: string[] }).__b = seen;
+      const original = Element.prototype.scrollIntoView;
+      Element.prototype.scrollIntoView = function (arg?: boolean | ScrollIntoViewOptions) {
+        seen.push(typeof arg === "object" && arg !== null ? (arg.behavior ?? "") : "");
+        return original.call(this, arg as ScrollIntoViewOptions);
+      };
+    });
+  await behaviours();
+  await head(page, "r").dblclick();
+  await expect.poll(() => focused(page)).toBe("r1");
+  expect(await page.evaluate(() => (window as unknown as { __b: string[] }).__b)).toEqual(["smooth"]);
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.evaluate(() => {
+    (window as unknown as { __b: string[] }).__b.length = 0;
+  });
+  await head(page, "r").dblclick();
+  await expect.poll(() => page.evaluate(() => (window as unknown as { __b: string[] }).__b.length)).toBe(1);
+  expect(await page.evaluate(() => (window as unknown as { __b: string[] }).__b)).toEqual(["auto"]);
+});
+
+test("a one-question row's flag dot sits in its top-right corner", async ({ page }) => {
+  await start(page);
+  const target = side(page).locator(".fm-cell-row").first();
+  await target.waitFor();
+  const id = await target.getAttribute("data-cell");
+  await card(page, id ?? "")
+    .getByRole("button", { name: /flag/i })
+    .first()
+    .click();
+  const dot = target.locator(".fm-cell-flag");
+  await expect(dot).toBeVisible();
+  const [box, dotBox] = [await target.boundingBox(), await dot.boundingBox()];
+  expect(box && dotBox && dotBox.x + dotBox.width <= box.x + box.width && dotBox.x > box.x + box.width / 2).toBe(true);
+  expect(box && dotBox && dotBox.y < box.y + box.height / 2).toBe(true);
+});

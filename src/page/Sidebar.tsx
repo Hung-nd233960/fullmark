@@ -18,7 +18,7 @@ import {
   sideForm,
   singleRow,
 } from "./map";
-import { focusSidebarButton, jumpTo } from "./mapdom";
+import { clickToggle, focusSidebarButton, jumpTo } from "./mapdom";
 import type { PageMessages } from "./questions/shared";
 import { Points } from "./ResultsCard";
 import { missedIds, num, percentOf, type ResultState } from "./results";
@@ -57,7 +57,15 @@ export function SidebarButton({ t, state, store }: { t: PageMessages; state: Qui
   );
 }
 
-function AnsweringCell({ t, cell, onJump }: { t: PageMessages; cell: Cell; onJump(id: string): void }) {
+function AnsweringCell({
+  t,
+  cell,
+  onJump,
+}: {
+  t: PageMessages;
+  cell: Cell;
+  onJump(id: string, smooth?: boolean): void;
+}) {
   return (
     <button
       type="button"
@@ -76,7 +84,15 @@ function AnsweringCell({ t, cell, onJump }: { t: PageMessages; cell: Cell; onJum
   );
 }
 
-function ResultCellButton({ t, cell, onJump }: { t: PageMessages; cell: ResultCell; onJump(id: string): void }) {
+function ResultCellButton({
+  t,
+  cell,
+  onJump,
+}: {
+  t: PageMessages;
+  cell: ResultCell;
+  onJump(id: string, smooth?: boolean): void;
+}) {
   return (
     <button
       type="button"
@@ -116,7 +132,15 @@ function AnsweringLegend({ t }: { t: PageMessages }) {
 }
 
 /** The map while answering: collapsible parts of cells, then the legend. */
-function AnsweringMap({ t, state, onJump }: { t: PageMessages; state: QuizState; onJump(id: string): void }) {
+function AnsweringMap({
+  t,
+  state,
+  onJump,
+}: {
+  t: PageMessages;
+  state: QuizState;
+  onJump(id: string, smooth?: boolean): void;
+}) {
   const attempt = state.attempt.value;
   const parts = answeringMap(state.page, attempt, state.current.value);
   const chosen = state.mapOpen.value;
@@ -156,7 +180,7 @@ function AnsweringMap({ t, state, onJump }: { t: PageMessages; state: QuizState;
                       only.current,
                       t.mapPart(part.number, part.title),
                     )}
-                    onClick={() => onJump(only.id)}
+                    onClick={() => onJump(only.id, true)}
                   >
                     <span class="fm-map-head-title">{t.mapPart(part.number, part.title)}</span>
                     {only.flagged ? <span class="fm-cell-flag" aria-hidden="true" /> : null}
@@ -174,17 +198,20 @@ function AnsweringMap({ t, state, onJump }: { t: PageMessages; state: QuizState;
                   data-current-part={part.cells.some((c) => c.current) ? "true" : undefined}
                   aria-expanded={open}
                   aria-description={t.mapHeadHint}
-                  onClick={() => {
-                    state.mapOpen.value = { ...chosen, [part.id]: !open };
-                  }}
+                  onClick={(e) =>
+                    clickToggle(part.id, e.detail, () => {
+                      state.mapOpen.value = { ...state.mapOpen.value, [part.id]: !partOpen(part, state.mapOpen.value) };
+                    })
+                  }
                   onDblClick={() => {
-                    // the double-click's two clicks toggled the part twice, so it is as it was
-                    if (target !== null) onJump(target);
+                    // the second click cancelled the pending toggle; pin the part as it is, so the jump does not open it
+                    state.mapOpen.value = { ...state.mapOpen.value, [part.id]: open };
+                    if (target !== null) onJump(target, true);
                   }}
                   onKeyDown={(e) => {
                     if (e.key !== "Enter" || target === null) return;
                     e.preventDefault(); // Enter would press the button; here it jumps, and Space still opens and closes
-                    onJump(target);
+                    onJump(target, true);
                   }}
                 >
                   <span class="fm-map-head-title">{t.mapPart(part.number, part.title)}</span>
@@ -217,7 +244,7 @@ function ResultsMap({
   t: PageMessages;
   state: QuizState;
   graded: Graded;
-  onJump(id: string): void;
+  onJump(id: string, smooth?: boolean): void;
 }) {
   const page: PageQuiz = state.page;
   const attempt = state.attempt.value;
@@ -255,7 +282,7 @@ function ResultsMap({
                       only.flagged,
                       t.mapPart(part.number, part.title),
                     )}
-                    onClick={() => onJump(only.id)}
+                    onClick={() => onJump(only.id, true)}
                   >
                     <span class="fm-map-head-title">{t.mapPart(part.number, part.title)}</span>
                     <span class="fm-cell-glyph" aria-hidden="true">
@@ -274,7 +301,7 @@ function ResultsMap({
                   aria-disabled={target === null ? "true" : undefined}
                   aria-description={t.mapHeadHintResults}
                   onClick={() => {
-                    if (target !== null) onJump(target);
+                    if (target !== null) onJump(target, true);
                   }}
                 >
                   <span class="fm-map-head-title">{t.mapPart(part.number, part.title)}</span>
@@ -350,7 +377,15 @@ function Ring({ answered, total }: { answered: number; total: number }) {
 }
 
 /** The map while answering, for a quiz with materials: the parts as a vertical tablist, the chosen part's grid beside it. */
-function StackedMap({ t, state, onJump }: { t: PageMessages; state: QuizState; onJump(id: string): void }) {
+function StackedMap({
+  t,
+  state,
+  onJump,
+}: {
+  t: PageMessages;
+  state: QuizState;
+  onJump(id: string, smooth?: boolean): void;
+}) {
   const attempt = state.attempt.value;
   const parts: Part<Cell>[] = answeringMap(state.page, attempt, state.current.value);
   const headless = parts.length === 1 || attempt.plan.source === "retry";
@@ -404,7 +439,7 @@ function StackedMap({ t, state, onJump }: { t: PageMessages; state: QuizState; o
                 }}
                 onDblClick={() => {
                   const target = jumpTargetAnswering(p);
-                  if (target !== null) onJump(target);
+                  if (target !== null) onJump(target, true);
                 }}
               >
                 <Ring answered={c.answered} total={p.cells.length} />
@@ -459,13 +494,13 @@ export function Sidebar({ t, state, store }: { t: PageMessages; state: QuizState
   const graded = state.graded.value;
   const phone = store.screen.phone.value;
   // on a phone a tapped cell first closes the sidebar (the questions show again), then the card is reached
-  const onJump = (id: string): void => {
+  const onJump = (id: string, smooth = false): void => {
     if (!phone) {
-      jumpTo(store, state.page.id, id);
+      jumpTo(store, state.page.id, id, smooth);
       return;
     }
     store.sidebar(state.page.id, false);
-    setTimeout(() => jumpTo(store, state.page.id, id), 0); // after the render that shows the questions again
+    setTimeout(() => jumpTo(store, state.page.id, id, smooth), 0); // after the render that shows the questions again
   };
   const form = sideForm(state.page, attempt.phase, phone);
   const results = attempt.phase === "submitted" && graded;
