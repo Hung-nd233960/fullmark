@@ -12,8 +12,8 @@ export default defineConfig({
     options.jsx = "automatic";
     options.jsxImportSource = "preact";
   },
-  // one file: a command imported lazily stays inside the bundle, and only starts up when the command is used
-  splitting: false,
+  // chunks: a command imported lazily is its own chunk, so `check` never loads the page builder (test/cli-graph.test.ts)
+  splitting: true,
   // `yaml` is CommonJS and calls require("process"); the bundle is ESM, so give those calls a require.
   banner: {
     js: '#!/usr/bin/env node\nimport { createRequire as __fullmarkCreateRequire } from "node:module";\nconst require = __fullmarkCreateRequire(import.meta.url);',
