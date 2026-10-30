@@ -36,6 +36,8 @@ export type Theme = {
   scheme: "light" | "dark";
   /** the share (whole %) of the status colour in each wash: the one that brings the mix closest to the board's wash */
   wash: Record<WashName, number>;
+  /** what the washes mix into: the card (light, white, paper) or the page ground (dark, oled) */
+  washBase: "card" | "bg";
   tokens: Tokens;
   /** a `box-shadow` value */
   shadow: string;
@@ -49,6 +51,7 @@ export const SETS: Record<ThemeName, Theme> = {
   light: {
     scheme: "light",
     wash: { "ok-wash": 13, "bad-wash": 13, "info-wash": 12 },
+    washBase: "card",
     tokens: {
       bg: "#eceae5",
       surface: "#f4f3ef",
@@ -75,7 +78,8 @@ export const SETS: Record<ThemeName, Theme> = {
   },
   dark: {
     scheme: "dark",
-    wash: { "ok-wash": 2, "bad-wash": 3, "info-wash": 1 },
+    wash: { "ok-wash": 16, "bad-wash": 16, "info-wash": 15 },
+    washBase: "bg",
     tokens: {
       bg: "#1b1d22",
       surface: "#262a31",
@@ -101,7 +105,8 @@ export const SETS: Record<ThemeName, Theme> = {
   },
   oled: {
     scheme: "dark",
-    wash: { "ok-wash": 5, "bad-wash": 6, "info-wash": 7 },
+    wash: { "ok-wash": 13, "bad-wash": 14, "info-wash": 14 },
+    washBase: "bg",
     tokens: {
       bg: "#000000",
       surface: "#0e0e10",
@@ -128,6 +133,7 @@ export const SETS: Record<ThemeName, Theme> = {
   white: {
     scheme: "light",
     wash: { "ok-wash": 8, "bad-wash": 8, "info-wash": 9 },
+    washBase: "card",
     tokens: {
       bg: "#ffffff",
       surface: "#ffffff",
@@ -154,6 +160,7 @@ export const SETS: Record<ThemeName, Theme> = {
   paper: {
     scheme: "light",
     wash: { "ok-wash": 11, "bad-wash": 13, "info-wash": 12 },
+    washBase: "card",
     tokens: {
       bg: "#f6f1e7",
       surface: "#efe8da",
@@ -218,7 +225,7 @@ export function contrast(a: string, b: string): number {
 
 /** A wash as the CSS mixes it, for the contrast test */
 export const washOf = (theme: Theme, wash: WashName): string =>
-  mix(theme.tokens[WASHES[wash]], theme.wash[wash], theme.tokens.card);
+  mix(theme.tokens[WASHES[wash]], theme.wash[wash], theme.tokens[theme.washBase]);
 
 // ---- code colours ----
 
@@ -266,7 +273,7 @@ const setOf = (theme: Theme): string => {
   const t = theme.tokens;
   const parts = TOKEN_NAMES.map((n) => `--${n}:${t[n]}`);
   for (const [wash, token] of Object.entries(WASHES))
-    parts.push(`--${wash}:color-mix(in srgb,var(--${token}) ${theme.wash[wash as WashName]}%,var(--card))`);
+    parts.push(`--${wash}:color-mix(in srgb,var(--${token}) ${theme.wash[wash as WashName]}%,var(--${theme.washBase}))`);
   parts.push(`--shadow:${theme.shadow}`);
   parts.push(`--card-line:var(--${theme.edged ? "line-strong" : "line"})`);
   parts.push(`--card-radius:${theme.radius}px`);

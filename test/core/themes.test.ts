@@ -81,8 +81,18 @@ describe("the token CSS", () => {
 
   it("gives each theme its own wash percentages", () => {
     const css = themeCss("light");
-    expect(css).toContain(`--ok-wash:color-mix(in srgb,var(--ok) ${SETS.dark.wash["ok-wash"]}%,var(--card))`);
-    expect(css).toContain(`--info-wash:color-mix(in srgb,var(--info) ${SETS.oled.wash["info-wash"]}%,var(--card))`);
+    expect(css).toContain(`--ok-wash:color-mix(in srgb,var(--ok) ${SETS.dark.wash["ok-wash"]}%,var(--bg))`);
+    expect(css).toContain(`--info-wash:color-mix(in srgb,var(--info) ${SETS.oled.wash["info-wash"]}%,var(--bg))`);
+  });
+
+  it("mixes the dark themes' washes into the page ground and the light themes' into the card", () => {
+    expect(Object.fromEntries(THEME_NAMES.map((n) => [n, SETS[n].washBase]))).toEqual({
+      light: "card",
+      dark: "bg",
+      oled: "bg",
+      white: "card",
+      paper: "card",
+    });
   });
 
   it("is the same for the same theme", () => {
