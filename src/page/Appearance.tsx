@@ -2,7 +2,7 @@ import { useEffect } from "preact/hooks";
 import type { FontId } from "../core/fonts";
 import { type Choice, THEME_NAMES } from "../core/themes";
 import { Icon } from "./icons";
-import { DEFAULT_SIZE, SIZES } from "./look";
+import { DEFAULT_SIZE, SIZES, sizePercent } from "./look";
 import type { PageMessages } from "./questions/shared";
 import type { Store } from "./store";
 
@@ -37,6 +37,8 @@ export function TextSize({ t, store }: { t: PageMessages; store: Store }) {
   const size = store.look.size.value;
   const smallest = size <= (SIZES[0] as number);
   const largest = size >= (SIZES.at(-1) as number);
+  const percent = sizePercent(size);
+  const plain = size === DEFAULT_SIZE;
   return (
     <div class="fm-textsize" data-textsize>
       <button
@@ -50,6 +52,19 @@ export function TextSize({ t, store }: { t: PageMessages; store: Store }) {
       >
         <span aria-hidden="true">A−</span>
         <span class="fm-sr">{t.smallerText}</span>
+      </button>
+      <button
+        type="button"
+        class="fm-textsize-reset"
+        data-action="reset-size"
+        aria-label={plain ? t.textSizeNow(percent) : t.textSizeResets(percent)}
+        aria-disabled={plain}
+        title={plain ? t.textSizeNow(percent) : t.textSizeBack}
+        onClick={() => {
+          if (!plain) store.look.resetSize();
+        }}
+      >
+        {t.textSizeValue(percent)}
       </button>
       <button
         type="button"

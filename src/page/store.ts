@@ -110,6 +110,8 @@ export type Look = {
   size: Signal<number>;
   /** one step smaller (-1) or larger (1); stays at the ends */
   step(direction: -1 | 1): void;
+  /** back to the default text size, stored like a step */
+  resetSize(): void;
   /** Default look: the quiz's theme and the default text size */
   reset(): void;
   /** reads the stored look (once; `restore` and the page's first step both call it) */
@@ -294,6 +296,7 @@ export function createStore(data: PageData, deps: Deps = {}): Store {
       },
       pick,
       step: (direction) => setSize(stepSize(size.value, direction)),
+      resetSize: () => setSize(DEFAULT_SIZE),
       reset() {
         pick(null);
         pickFont(null);

@@ -5,6 +5,8 @@ import { pageQuizOf } from "../../src/build/page";
 import type { Choice } from "../../src/core/themes";
 import { App } from "../../src/page/App";
 import { keyHandler } from "../../src/page/keys";
+import { SIZES, sizePercent } from "../../src/page/look";
+import { messagesFor } from "../../src/page/questions/shared";
 import { lookKey } from "../../src/page/saved";
 import { createStore } from "../../src/page/store";
 import { build } from "../helpers/page";
@@ -204,6 +206,36 @@ describe("the Appearance menu", () => {
 });
 
 describe("the text size", () => {
+  it("shows the size as a percentage of the default, rounded", () => {
+    expect(SIZES.map(sizePercent)).toEqual([88, 100, 112, 124, 135]);
+  });
+
+  it("the middle button is inert at 100%, and resets (stored) at any other size", () => {
+    const memory = new Memory();
+    const a = open(memory);
+    a.store.restore();
+    const html = () => {
+      a.store.start([...a.store.quizzes.keys()][0] as string);
+      return renderToString(h(App, { store: a.store }));
+    };
+    let h1 = html();
+    expect(h1).toMatch(
+      /data-action="reset-size" aria-label="Text size 100%" aria-disabled="true" title="Text size 100%">100%</,
+    );
+    a.store.look.step(1);
+    h1 = html();
+    expect(h1).toMatch(/aria-label="Text size 112%, reset to 100%" aria-disabled="false" title="Back to 100%">112%</);
+    a.store.look.resetSize();
+    expect(a.store.look.size.value).toBe(17);
+    expect(memory.items.get(a.key) ?? "").not.toContain("size");
+  });
+
+  it("says it in Vietnamese", () => {
+    const m = messagesFor({ lang: "vi", uiLang: "vi" } as never);
+    expect(m.textSizeResets(112)).toBe("Cỡ chữ 112%, về 100%");
+    expect(m.textSizeNow(100)).toBe("Cỡ chữ 100%");
+  });
+
   const throwing = () => {
     throw new Error("blocked");
   };
@@ -311,14 +343,14 @@ describe("the text size", () => {
     let html = render(store);
     expect(html).toContain(">Smaller text<");
     expect(html).toContain(">Larger text<");
-    expect(html).not.toContain("Text size");
+    expect(html).not.toContain('class="fm-look-label">Text size<');
     for (let i = 0; i < 4; i++) store.look.step(-1);
     html = render(store);
     expect(html).toMatch(/data-action="smaller"[^>]*disabled/);
     store.screen.phone.value = true;
     store.look.menu.value = true;
     html = render(store);
-    expect(html).toContain("Text size");
+    expect(html).toContain('class="fm-look-label">Text size<');
     expect(html).not.toMatch(/data-textsize[\s\S]*data-textsize[\s\S]*Appearance/);
     const locked = open(new Memory(), "paper", "locked").store;
     expect(render(locked)).toContain(">Larger text<");
@@ -327,7 +359,7 @@ describe("the text size", () => {
     locked.look.menu.value = true;
     const lockedPhone = render(locked);
     expect(lockedPhone).toContain('data-action="appearance"');
-    expect(lockedPhone).toContain("Text size");
+    expect(lockedPhone).toContain('class="fm-look-label">Text size<');
     expect(lockedPhone).not.toContain("data-theme-pick");
   });
 });

@@ -33,8 +33,28 @@
     border: 0;
   }
 
-  .fm-textsize-button + .fm-textsize-button {
-    border-left: 2px solid var(--line-strong);
+  /* the middle: the size as a percentage of the default; it resets, and does nothing at 100% */
+  .fm-textsize-reset {
+    flex: none;
+    width: 46px;
+    height: 44px;
+    padding: 0;
+    font: inherit;
+    font-size: 0.75em;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    color: var(--accent);
+    cursor: pointer;
+    background: var(--card);
+    border: 0;
+    border-right: 1px solid var(--line);
+    border-left: 1px solid var(--line);
+  }
+
+  .fm-textsize-reset[aria-disabled="true"] {
+    font-weight: 400;
+    color: var(--muted);
+    cursor: default;
   }
 
   .fm-textsize-button:disabled {
