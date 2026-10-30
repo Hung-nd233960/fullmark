@@ -253,6 +253,12 @@ export const en = {
     mapLegendAnswered: "answered",
     mapLegendFlagged: "flagged",
     mapLegendCurrent: "current",
+    mapHeadHint: "Double-click or press Enter to go to the first unanswered question",
+    mapHeadHintResults: "Go to the first question shown",
+    mapRowCell: (n: number, answered: boolean, flagged: boolean, current: boolean, part: string) =>
+      `Question ${n}${answered ? ", answered" : ""}${flagged ? ", flagged" : ""}${current ? ", current" : ""}, ${part}`,
+    mapRowResult: (n: number, state: string, flagged: boolean, part: string) =>
+      `Question ${n}, ${state}${flagged ? ", flagged" : ""}, ${part}`,
     mapState: {
       correct: "correct",
       partial: "partly right",

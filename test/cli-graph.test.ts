@@ -37,7 +37,9 @@ function closure(start: string): string[] {
     if (seen.has(file)) continue;
     seen.add(file);
     const text = readFileSync(join(dist, file), "utf8");
-    for (const m of text.matchAll(/^(?:import|export)\b[^"';]*?\bfrom\s*"\.\/([^"]+\.js)"|^import\s*"\.\/([^"]+\.js)"/gm)) {
+    for (const m of text.matchAll(
+      /^(?:import|export)\b[^"';]*?\bfrom\s*"\.\/([^"]+\.js)"|^import\s*"\.\/([^"]+\.js)"/gm,
+    )) {
       queue.push((m[1] ?? m[2]) as string);
     }
   }

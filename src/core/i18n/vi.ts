@@ -223,6 +223,12 @@ export const vi = {
     mapLegendAnswered: "đã trả lời",
     mapLegendFlagged: "đã đánh dấu",
     mapLegendCurrent: "đang xem",
+    mapHeadHint: "Nhấp đúp hoặc nhấn Enter để đến câu hỏi đầu tiên chưa trả lời",
+    mapHeadHintResults: "Đến câu hỏi đầu tiên đang hiển thị",
+    mapRowCell: (n: number, answered: boolean, flagged: boolean, current: boolean, part: string) =>
+      `Câu ${n}${answered ? ", đã trả lời" : ""}${flagged ? ", đã đánh dấu" : ""}${current ? ", đang xem" : ""}, ${part}`,
+    mapRowResult: (n: number, state: string, flagged: boolean, part: string) =>
+      `Câu ${n}, ${state}${flagged ? ", đã đánh dấu" : ""}, ${part}`,
     mapState: {
       correct: "đúng",
       partial: "đúng một phần",

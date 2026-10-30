@@ -97,3 +97,21 @@ export function chosenPart<C extends { current: boolean }>(
 ): Part<C> | undefined {
   return parts.find((p) => p.id === chosen) ?? parts.find((p) => p.cells.some((c) => c.current)) ?? parts[0];
 }
+
+/** Where a part heading's jump goes while answering: the part's first unanswered question, else its first. */
+export function jumpTargetAnswering(part: Part<Cell>): string | null {
+  return (part.cells.find((c) => !c.answered) ?? part.cells[0])?.id ?? null;
+}
+
+/** Where a part heading's jump goes after Submit: the part's first question the review filter shows, else nothing. */
+export function jumpTargetResults(
+  part: Part<ResultCell>,
+  filter: "all" | "missed" | "flagged",
+  missed: ReadonlySet<string>,
+): string | null {
+  const shown = (c: ResultCell): boolean => filter === "all" || (filter === "missed" ? missed.has(c.id) : c.flagged);
+  return part.cells.find(shown)?.id ?? null;
+}
+
+/** A part with exactly one question has no grid in the part list: its heading row is the cell. */
+export const singleRow = (part: Part<unknown>): boolean => part.cells.length === 1;

@@ -4,8 +4,16 @@ import { describe, expect, it } from "vitest";
 import { pageQuizOf } from "../../src/build/page";
 import { en } from "../../src/core/i18n";
 import { keyHandler } from "../../src/page/keys";
-import { answeringMap, currentOf, partOpen, resultsMap } from "../../src/page/map";
-import { countsOf, resultState } from "../../src/page/results";
+import {
+  answeringMap,
+  currentOf,
+  jumpTargetAnswering,
+  jumpTargetResults,
+  partOpen,
+  resultsMap,
+  singleRow,
+} from "../../src/page/map";
+import { countsOf, missedIds, resultState } from "../../src/page/results";
 import { Sidebar } from "../../src/page/Sidebar";
 import { sidebarKey, sidebarStart } from "../../src/page/saved";
 import { createStore } from "../../src/page/store";
@@ -373,7 +381,9 @@ describe("the map after Submit", () => {
     expect(html).toContain('aria-label="Question 1, correct"');
     // the glyphs are not read
     expect(html).toMatch(/aria-hidden="true">✓/);
-    expect(html).not.toContain("data-part-head");
+    // two parts have a heading and a grid; the one-question part is a single row
+    expect(html.match(/data-part-head/g)?.length).toBe(2);
+    expect(html).toContain('aria-label="Question 6, unanswered, 3 · Sampling"');
   });
 
   it("prints the part points with a decimal comma in vi", () => {
@@ -392,5 +402,81 @@ describe("the map after Submit", () => {
     s.state().filter.value = "missed";
     const html = renderToString(h(Sidebar, { t: en.page, state: s.state(), store: s.store }));
     expect(html.match(/data-cell=/g)?.length).toBe(6);
+  });
+});
+
+describe("jumping from a part heading", () => {
+  const start = () => {
+    const s = setup(THREE);
+    s.store.start(s.id, { seed: "seed0001" });
+    return s;
+  };
+  const answer = (s: ReturnType<typeof start>, question: string, choice = 0) =>
+    s.store.dispatch(s.id, { type: "answer", question, answer: { choices: [choice] } });
+
+  it("goes to the part's first unanswered question while answering, else its first", () => {
+    const s = start();
+    const map = () => answeringMap(s.state().page, s.state().attempt.value, null);
+    expect(jumpTargetAnswering(map()[0] as never)).toBe("a1");
+    answer(s, "a1");
+    expect(jumpTargetAnswering(map()[0] as never)).toBe("a2");
+    answer(s, "a2");
+    answer(s, "a3");
+    expect(jumpTargetAnswering(map()[0] as never)).toBe("a1");
+  });
+
+  const submitted = () => {
+    const s = start();
+    answer(s, "a1");
+    answer(s, "a2", 1);
+    s.store.dispatch(s.id, { type: "flag", question: "a3" });
+    s.store.submit(s.id);
+    const graded = s.state().graded.value;
+    if (graded === null) throw new Error("not graded");
+    const parts = resultsMap(s.state().page, s.state().attempt.value, graded);
+    return { parts, missed: new Set(missedIds(graded)) };
+  };
+
+  it("goes after Submit to the part's first question the filter shows", () => {
+    const { parts, missed } = submitted();
+    const first = parts[0] as (typeof parts)[number];
+    expect(jumpTargetResults(first, "all", missed)).toBe("a1");
+    expect(jumpTargetResults(first, "missed", missed)).toBe(first.cells.find((c) => missed.has(c.id))?.id);
+    expect(missed.has("a3")).toBe(true);
+    expect(jumpTargetResults(first, "flagged", missed)).toBe("a3");
+  });
+
+  it("goes nowhere when the filter shows none of the part", () => {
+    const { parts, missed } = submitted();
+    // part 2 holds b1 and e1: nothing is flagged there
+    expect(jumpTargetResults(parts[1] as (typeof parts)[number], "flagged", missed)).toBeNull();
+  });
+
+  it("has a row, not a grid, for a part of one question", () => {
+    const s = start();
+    const parts = answeringMap(s.state().page, s.state().attempt.value, null);
+    expect(parts.map(singleRow)).toEqual([false, false, true]);
+    const html = renderToString(h(Sidebar, { t: en.page, state: s.state(), store: s.store }));
+    expect(html.match(/data-part-head/g)?.length).toBe(2);
+    expect(html).toContain('aria-label="Question 6, current, 3 · Sampling"'.replace(", current", ""));
+    expect(html).toContain('aria-description="Double-click or press Enter to go to the first unanswered question"');
+  });
+
+  it("shows the one-question row's state where the cell would", () => {
+    const s = start();
+    answer(s, "c1");
+    s.store.dispatch(s.id, { type: "flag", question: "c1" });
+    const html = renderToString(h(Sidebar, { t: en.page, state: s.state(), store: s.store }));
+    expect(html).toMatch(/data-cell="c1"[^>]*data-answered="true"[^>]*data-flagged="true"/);
+    expect(html).toContain('aria-label="Question 6, answered, flagged, current, 3 · Sampling"');
+  });
+
+  it("leaves a quiz of one part with its heading-less grid, even with one question", () => {
+    const one = ["---", "title: One", "id: one", "---", "", mcq("only")].join("\n");
+    const s = setup(one);
+    s.store.start(s.id, { seed: "seed0001" });
+    const html = renderToString(h(Sidebar, { t: en.page, state: s.state(), store: s.store }));
+    expect(html).not.toContain("fm-cell-row");
+    expect(html).toContain("fm-grid");
   });
 });

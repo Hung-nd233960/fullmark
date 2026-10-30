@@ -8,17 +8,20 @@ import {
   chosenPart,
   currentOf,
   hasMaterials,
+  jumpTargetAnswering,
+  jumpTargetResults,
   type Part,
   partOpen,
   type ResultCell,
   resultsMap,
   ringOf,
   sideForm,
+  singleRow,
 } from "./map";
 import { focusSidebarButton, jumpTo } from "./mapdom";
 import type { PageMessages } from "./questions/shared";
 import { Points } from "./ResultsCard";
-import { num, percentOf, type ResultState } from "./results";
+import { missedIds, num, percentOf, type ResultState } from "./results";
 import type { QuizState, Store } from "./store";
 
 /** The mark on a cell after Submit, by state; `ungraded` has none. */
@@ -133,6 +136,37 @@ function AnsweringMap({ t, state, onJump }: { t: PageMessages; state: QuizState;
             const open = partOpen(part, chosen);
             const answered = part.cells.filter((c) => c.answered).length;
             const flags = part.cells.filter((c) => c.flagged).length;
+            const target = jumpTargetAnswering(part);
+            const only = part.cells[0];
+            if (singleRow(part) && only !== undefined) {
+              return (
+                <div class="fm-map-part" key={part.id} data-part={part.id}>
+                  <button
+                    type="button"
+                    class="fm-cell fm-cell-row"
+                    data-cell={only.id}
+                    data-answered={only.answered ? "true" : undefined}
+                    data-current={only.current ? "true" : undefined}
+                    data-flagged={only.flagged ? "true" : undefined}
+                    aria-current={only.current ? "true" : undefined}
+                    aria-label={t.mapRowCell(
+                      only.number,
+                      only.answered,
+                      only.flagged,
+                      only.current,
+                      t.mapPart(part.number, part.title),
+                    )}
+                    onClick={() => onJump(only.id)}
+                  >
+                    <span class="fm-map-head-title">{t.mapPart(part.number, part.title)}</span>
+                    <span class="fm-cell-row-number" aria-hidden="true">
+                      {only.number}
+                    </span>
+                    {only.flagged ? <span class="fm-cell-flag" aria-hidden="true" /> : null}
+                  </button>
+                </div>
+              );
+            }
             return (
               <div class="fm-map-part" key={part.id} data-part={part.id}>
                 <button
@@ -142,8 +176,18 @@ function AnsweringMap({ t, state, onJump }: { t: PageMessages; state: QuizState;
                   data-open={open ? "true" : undefined}
                   data-current-part={part.cells.some((c) => c.current) ? "true" : undefined}
                   aria-expanded={open}
+                  aria-description={t.mapHeadHint}
                   onClick={() => {
                     state.mapOpen.value = { ...chosen, [part.id]: !open };
+                  }}
+                  onDblClick={() => {
+                    // the double-click's two clicks toggled the part twice, so it is as it was
+                    if (target !== null) onJump(target);
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key !== "Enter" || target === null) return;
+                    e.preventDefault(); // Enter would press the button; here it jumps, and Space still opens and closes
+                    onJump(target);
                   }}
                 >
                   <span class="fm-map-head-title">{t.mapPart(part.number, part.title)}</span>
@@ -181,6 +225,7 @@ function ResultsMap({
   const page: PageQuiz = state.page;
   const attempt = state.attempt.value;
   const parts = resultsMap(page, attempt, graded);
+  const missed = new Set(missedIds(graded));
   const headless = parts.length === 1 || attempt.plan.source === "retry";
   const grid = (cells: ResultCell[]) => (
     <div class="fm-grid">
@@ -196,9 +241,48 @@ function ResultsMap({
         : parts.map((part) => {
             const score = graded.sections.find((s) => s.id === part.id);
             const percent = score === undefined ? null : percentOf(score.earned, score.points);
+            const target = jumpTargetResults(part, state.filter.value, missed);
+            const only = part.cells[0];
+            if (singleRow(part) && only !== undefined) {
+              return (
+                <div class="fm-map-part" key={part.id} data-part={part.id}>
+                  <button
+                    type="button"
+                    class="fm-cell fm-cell-row"
+                    data-cell={only.id}
+                    data-state={only.state}
+                    data-flagged={only.flagged ? "true" : undefined}
+                    aria-label={t.mapRowResult(
+                      only.number,
+                      t.mapState[only.state],
+                      only.flagged,
+                      t.mapPart(part.number, part.title),
+                    )}
+                    onClick={() => onJump(only.id)}
+                  >
+                    <span class="fm-map-head-title">{t.mapPart(part.number, part.title)}</span>
+                    <span class="fm-cell-row-number" aria-hidden="true">
+                      {only.number}
+                    </span>
+                    <span class="fm-cell-glyph" aria-hidden="true">
+                      {GLYPH[only.state]}
+                    </span>
+                  </button>
+                </div>
+              );
+            }
             return (
               <div class="fm-map-part" key={part.id} data-part={part.id}>
-                <div class="fm-map-head fm-map-head-static">
+                <button
+                  type="button"
+                  class="fm-map-head fm-map-head-static"
+                  data-part-head
+                  aria-disabled={target === null ? "true" : undefined}
+                  aria-description={t.mapHeadHintResults}
+                  onClick={() => {
+                    if (target !== null) onJump(target);
+                  }}
+                >
                   <span class="fm-map-head-title">{t.mapPart(part.number, part.title)}</span>
                   {score !== undefined && score.points > 0 ? (
                     <span class="fm-map-head-count" data-part-score>
@@ -206,7 +290,7 @@ function ResultsMap({
                       {percent === null ? null : ` · ${num(percent, page.uiLang)}%${score.pending > 0 ? "*" : ""}`}
                     </span>
                   ) : null}
-                </div>
+                </button>
                 {grid(part.cells)}
               </div>
             );
@@ -319,9 +403,14 @@ function StackedMap({ t, state, onJump }: { t: PageMessages; state: QuizState; o
                 data-part-tab={p.id}
                 aria-selected={on}
                 aria-label={t.partTabLabel(p.number, p.title, c.answered, p.cells.length, c.flags)}
+                aria-description={t.mapHeadHint}
                 tabIndex={on ? 0 : -1}
                 onClick={() => {
                   state.miniPart.value = p.id;
+                }}
+                onDblClick={() => {
+                  const target = jumpTargetAnswering(p);
+                  if (target !== null) onJump(target);
                 }}
               >
                 <Ring answered={c.answered} total={p.cells.length} />

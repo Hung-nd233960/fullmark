@@ -273,7 +273,9 @@ const setOf = (theme: Theme): string => {
   const t = theme.tokens;
   const parts = TOKEN_NAMES.map((n) => `--${n}:${t[n]}`);
   for (const [wash, token] of Object.entries(WASHES))
-    parts.push(`--${wash}:color-mix(in srgb,var(--${token}) ${theme.wash[wash as WashName]}%,var(--${theme.washBase}))`);
+    parts.push(
+      `--${wash}:color-mix(in srgb,var(--${token}) ${theme.wash[wash as WashName]}%,var(--${theme.washBase}))`,
+    );
   parts.push(`--shadow:${theme.shadow}`);
   parts.push(`--card-line:var(--${theme.edged ? "line-strong" : "line"})`);
   parts.push(`--card-radius:${theme.radius}px`);
