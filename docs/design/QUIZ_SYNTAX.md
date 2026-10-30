@@ -151,7 +151,7 @@ Containers, written the same way everywhere:
 
 ```markdown
 ::: hint
-Hidden behind a "Show hint" button.
+Hidden behind a "Hint" button.
 :::
 
 ::: explanation
