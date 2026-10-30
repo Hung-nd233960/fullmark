@@ -516,7 +516,7 @@ function Filter({ t, state, missed, flagged }: { t: PageMessages; state: QuizSta
   );
 }
 
-function QuizView({ state, api, store }: { state: QuizState; api: Api; store: Store }) {
+function QuizView({ state, api, store, last }: { state: QuizState; api: Api; store: Store; last: boolean }) {
   const { page } = state;
   const t = messagesFor(page);
   const attempt = state.attempt.value;
@@ -644,6 +644,8 @@ function QuizView({ state, api, store }: { state: QuizState; api: Api; store: St
               </section>
             ))}
           </div>
+          {/* the page's foot, after the last question; Focus mode shows nothing but the quiz: no button, no tab stop */}
+          {last && !store.screen.fullscreen.value ? <LicencesButton t={t} /> : null}
         </div>
         {started && state.sidebar.value ? <Sidebar t={t} state={state} store={store} /> : null}
         {attempt.phase === "start" && materials && state.shelf.value ? <MaterialsPanel t={t} state={state} /> : null}
@@ -652,13 +654,10 @@ function QuizView({ state, api, store }: { state: QuizState; api: Api; store: St
   );
 }
 
-/** The page's own words (the foot's button): the first quiz's language. */
-const footMessages = (store: Store): PageMessages => messagesFor([...store.quizzes.values()][0]?.page as PageQuiz);
-
 export function App({ store }: { store: Store }) {
   return (
     <main class="fm-page">
-      {[...store.quizzes.values()].map((state) => {
+      {[...store.quizzes.values()].map((state, index, all) => {
         const id = state.page.id;
         const api: Api = {
           dispatch: (action) => store.dispatch(id, action),
@@ -672,10 +671,8 @@ export function App({ store }: { store: Store }) {
           check: (questionId) => store.check(id, questionId),
           focus: (questionId) => store.focus(id, questionId),
         };
-        return <QuizView key={id} state={state} api={api} store={store} />;
+        return <QuizView key={id} state={state} api={api} store={store} last={index === all.length - 1} />;
       })}
-      {/* Focus mode shows nothing but the quiz: no button, so no tab stop, until it ends */}
-      {store.screen.fullscreen.value ? null : <LicencesButton t={footMessages(store)} />}
     </main>
   );
 }

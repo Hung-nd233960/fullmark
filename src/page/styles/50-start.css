@@ -359,6 +359,7 @@
     display: inline-flex;
     gap: 6px;
     align-items: center;
+    min-height: 44px;
     padding: 6px 10px;
     font: inherit;
     font-size: 0.8em;
