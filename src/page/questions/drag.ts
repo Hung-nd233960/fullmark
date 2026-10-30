@@ -47,3 +47,21 @@ export function liveNumbers(length: number, from: number | null, to: number | nu
   }
   return result;
 }
+
+/** How far (px) a mouse or pen must move after a press before the row lifts; below it the press is a click. */
+export const DRAG_SLOP = 4;
+
+/**
+ * How a press on an `ordering` row starts a drag: with a mouse or pen a press anywhere on the row lifts it once the
+ * pointer has moved `DRAG_SLOP` (`after-move`); on touch only the handle drags, at once (`now`); a press on the Up or
+ * Down button never drags.
+ */
+export function grabOf(pointerType: string, onHandle: boolean, onButton: boolean): "now" | "after-move" | "never" {
+  if (onButton) return "never";
+  if (pointerType === "mouse" || pointerType === "pen") return "after-move";
+  return onHandle ? "now" : "never";
+}
+
+/** Whether the pointer has moved far enough from where it was pressed to lift the row. */
+export const pulled = (x0: number, y0: number, x: number, y: number): boolean =>
+  Math.hypot(x - x0, y - y0) >= DRAG_SLOP;

@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "preact/hooks";
 import { readAnswer } from "../../core/attempt/answers";
 import type { PageQuestion } from "../data";
 import { Icon } from "../icons";
-import { edgeScroll, landingIndex, liveNumbers, moveItem } from "./drag";
+import { edgeScroll, grabOf, landingIndex, liveNumbers, moveItem, pulled } from "./drag";
 import { type Ctx, Html, shownEntries } from "./shared";
 
 type Dir = "up" | "down";
@@ -63,15 +63,12 @@ export function Ordering({ q, c }: { q: Extract<PageQuestion, { type: "ordering"
     c.set({ order: next });
   };
 
-  /** Lifts the item whose handle was pressed; the pointer is followed on the window until it is let go. */
-  const lift = (e: PointerEvent, source: number) => {
+  /** Lifts `row`; the pointer is followed on the window until it is let go. */
+  const lift = (g: { pointerId: number; clientY: number; pointerType: string }, row: HTMLElement, source: number) => {
     const ol = list.current;
-    const row = (e.currentTarget as HTMLElement).closest<HTMLElement>(".fm-order-item");
-    if (c.submitted || ol === null || row === null || session.current !== null) return;
-    if (e.pointerType === "mouse" && e.button !== 0) return;
-    e.preventDefault();
+    if (c.submitted || ol === null || session.current !== null) return;
     try {
-      (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+      row.setPointerCapture(g.pointerId);
     } catch {
       // the window listeners below do the work without it
     }
@@ -79,7 +76,7 @@ export function Ordering({ q, c }: { q: Extract<PageQuestion, { type: "ordering"
     ol.style.setProperty("--drag-x", `${box.left}px`);
     ol.style.setProperty("--drag-w", `${box.width}px`);
     ol.style.setProperty("--drag-h", `${box.height}px`);
-    const s: Session = { offset: e.clientY - box.top, height: box.height, y: e.clientY, frame: 0, stop: () => {} };
+    const s: Session = { offset: g.clientY - box.top, height: box.height, y: g.clientY, frame: 0, stop: () => {} };
     session.current = s;
 
     // the lifted item follows the pointer; the slot goes where its middle falls among the items that stay
@@ -146,6 +143,40 @@ export function Ordering({ q, c }: { q: Extract<PageQuestion, { type: "ordering"
     s.frame = requestAnimationFrame(scroll);
   };
 
+  /**
+   * A press on a row. Touch drags by the handle at once; a mouse or pen drags by any part of the row once it has moved a
+   * few pixels (below that it is a click, and the row's text is not half-selected); the buttons never drag.
+   */
+  const press = (e: PointerEvent, source: number) => {
+    const row = e.currentTarget as HTMLElement;
+    const target = e.target as HTMLElement;
+    const how = grabOf(e.pointerType, target.closest(".fm-drag-handle") !== null, target.closest("button") !== null);
+    if (c.submitted || session.current !== null || how === "never") return;
+    if (e.pointerType === "mouse" && e.button !== 0) return;
+    const grab = { pointerId: e.pointerId, clientY: e.clientY, pointerType: e.pointerType };
+    if (how === "now") {
+      e.preventDefault();
+      lift(grab, row, source);
+      return;
+    }
+    const [x0, y0] = [e.clientX, e.clientY];
+    row.setAttribute("data-pressing", "true");
+    const unwatch = () => {
+      row.removeAttribute("data-pressing");
+      window.removeEventListener("pointermove", watch);
+      window.removeEventListener("pointerup", unwatch);
+      window.removeEventListener("pointercancel", unwatch);
+    };
+    const watch = (ev: PointerEvent) => {
+      if (ev.pointerId !== grab.pointerId || !pulled(x0, y0, ev.clientX, ev.clientY)) return;
+      unwatch();
+      lift({ ...grab, clientY: ev.clientY }, row, source);
+    };
+    window.addEventListener("pointermove", watch);
+    window.addEventListener("pointerup", unwatch);
+    window.addEventListener("pointercancel", unwatch);
+  };
+
   // while dragging, the slot goes before the staying item the lifted one will land in front of (or at the end)
   const staying = drag === null ? order : order.filter((s) => s !== drag.source);
   const slotBefore = drag === null ? null : (staying[drag.to] ?? null);
@@ -170,10 +201,11 @@ export function Ordering({ q, c }: { q: Extract<PageQuestion, { type: "ordering"
               data-source={source}
               data-lifted={drag?.source === source ? "true" : undefined}
               data-n={numbers[position]}
+              onPointerDown={c.submitted ? undefined : (e) => press(e, source)}
               data-result={hit === null ? undefined : hit ? "correct" : "wrong"}
             >
               {!c.submitted ? (
-                <span class="fm-drag-handle" aria-hidden="true" onPointerDown={(e) => lift(e, source)}>
+                <span class="fm-drag-handle" aria-hidden="true">
                   <Icon name="grip" size={20} />
                 </span>
               ) : null}
@@ -188,7 +220,8 @@ export function Ordering({ q, c }: { q: Extract<PageQuestion, { type: "ordering"
                     disabled={position === 0}
                     onClick={() => move(position, "up")}
                   >
-                    <Icon name="up" size={18} />
+                    <Icon name="up" size={16} />
+                    {t.moveUpWord}
                   </button>
                   <button
                     type="button"
@@ -198,7 +231,8 @@ export function Ordering({ q, c }: { q: Extract<PageQuestion, { type: "ordering"
                     disabled={position === order.length - 1}
                     onClick={() => move(position, "down")}
                   >
-                    <Icon name="down" size={18} />
+                    <Icon name="down" size={16} />
+                    {t.moveDownWord}
                   </button>
                 </span>
               ) : (

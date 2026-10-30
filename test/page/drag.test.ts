@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { edgeScroll, landingIndex, liveNumbers, moveItem } from "../../src/page/questions/drag";
+import { DRAG_SLOP, edgeScroll, grabOf, landingIndex, liveNumbers, moveItem, pulled } from "../../src/page/questions/drag";
 
 const rows = (heights: number[], gap = 6) => {
   let top = 100;
@@ -71,5 +71,35 @@ describe("liveNumbers", () => {
         order.forEach((item, i) => expect(numbers[i]).toBe(landed.indexOf(item) + 1));
       }
     }
+  });
+});
+
+describe("who drags a row", () => {
+  it("lets a mouse or pen drag by any part of the row, after it has moved", () => {
+    for (const type of ["mouse", "pen"]) {
+      expect(grabOf(type, false, false)).toBe("after-move");
+      expect(grabOf(type, true, false)).toBe("after-move");
+    }
+  });
+
+  it("lets touch drag by the handle only, at once", () => {
+    expect(grabOf("touch", true, false)).toBe("now");
+    expect(grabOf("touch", false, false)).toBe("never");
+  });
+
+  it("never drags from the Up or Down button", () => {
+    for (const type of ["mouse", "pen", "touch"]) {
+      expect(grabOf(type, false, true)).toBe("never");
+      expect(grabOf(type, true, true)).toBe("never");
+    }
+  });
+
+  it("lifts at 4 px of movement, not before", () => {
+    expect(DRAG_SLOP).toBe(4);
+    expect(pulled(10, 10, 10, 13)).toBe(false);
+    expect(pulled(10, 10, 13, 13)).toBe(true); // 4.24 px along the diagonal
+    expect(pulled(10, 10, 10, 14)).toBe(true);
+    expect(pulled(10, 10, 6, 10)).toBe(true);
+    expect(pulled(10, 10, 10, 10)).toBe(false);
   });
 });

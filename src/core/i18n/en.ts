@@ -100,6 +100,8 @@ export const en = {
     or: "or",
     blankLabel: (n: number) => `Blank ${n}`,
     commaWarning: "Use a point for decimals: 2.5, not 2,5",
+    moveUpWord: "Up",
+    moveDownWord: "Down",
     moveUp: (item: string) => `Move up: ${item}`,
     moveDown: (item: string) => `Move down: ${item}`,
     movedTo: (n: number, of: number) => `Moved to position ${n} of ${of}`,

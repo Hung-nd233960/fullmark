@@ -101,6 +101,8 @@ export const vi = {
     or: "hoặc",
     blankLabel: (n: number) => `Chỗ trống ${n}`,
     commaWarning: "Dùng dấu chấm cho số thập phân: 2.5, không phải 2,5",
+    moveUpWord: "Lên",
+    moveDownWord: "Xuống",
     moveUp: (item: string) => `Chuyển lên: ${item}`,
     moveDown: (item: string) => `Chuyển xuống: ${item}`,
     movedTo: (n: number, of: number) => `Đã chuyển đến vị trí ${n} trên ${of}`,

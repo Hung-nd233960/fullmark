@@ -296,9 +296,39 @@
   }
 
   .fm-move {
-    min-width: 40px;
-    min-height: 40px;
-    padding: 4px 10px;
+    display: inline-flex;
+    gap: 6px;
+    align-items: center;
+    min-height: 32px;
+    padding: 0 10px;
+    font-size: 0.85em;
+  }
+
+  @media (pointer: coarse) {
+    .fm-move {
+      min-height: 44px;
+    }
+  }
+
+  /* a mouse or pen drags by the whole row: no text is half-selected while it is pressed */
+  .fm-order-item {
+    cursor: grab;
+  }
+
+  .fm-order-item[data-pressing] {
+    user-select: none;
+  }
+
+  .fm-order-item .fm-move {
+    cursor: pointer;
+  }
+
+  .fm-order-item .fm-move:disabled {
+    cursor: default;
+  }
+
+  .fm-order-list[data-dragging] .fm-order-item {
+    cursor: grabbing;
   }
 
   .fm-move:disabled {
