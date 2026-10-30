@@ -55,12 +55,15 @@ export function QuestionCard({
   api,
   question,
   number,
+  current = false,
   hidden = false,
 }: {
   state: QuizState;
   api: Api;
   question: PageQuestion;
   number: number;
+  /** the card the status line and the map call current: its border takes a little of the accent */
+  current?: boolean;
   /** the review filter hides the card; the DOM order never changes */
   hidden?: boolean;
 }) {
@@ -112,6 +115,7 @@ export function QuestionCard({
       data-qid={question.id}
       data-status={revealed ? result?.status : undefined}
       data-flagged={flagged ? "true" : undefined}
+      data-current={current ? "true" : undefined}
       data-checked={checked ? "true" : undefined}
       onFocusIn={() => api.focus(question.id)}
     >

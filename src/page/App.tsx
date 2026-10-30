@@ -5,7 +5,7 @@ import type { PageQuestion, PageQuiz, PageSection } from "./data";
 import { Icon, type IconName } from "./icons";
 import { LicencesButton } from "./Licences";
 import { MaterialsButton, MaterialsPanel } from "./Materials";
-import { sideForm } from "./map";
+import { currentOf, sideForm } from "./map";
 import { type Api, QuestionCard } from "./questions/Card";
 import { Html, messagesFor, type PageMessages } from "./questions/shared";
 import { ResultsCard } from "./ResultsCard";
@@ -536,6 +536,11 @@ function QuizView({ state, api, store, last }: { state: QuizState; api: Api; sto
   const missed = graded ? new Set(missedIds(graded)) : new Set<string>();
   const flaggedIds = new Set(attempt.state.flagged.filter((id) => attempt.plan.questions.includes(id)));
   const filter = attempt.phase === "submitted" ? state.filter.value : "all";
+  // the card the status line and the map call current; none after Submit and none in Focus mode
+  const currentId =
+    attempt.phase === "answering" && !store.screen.fullscreen.value
+      ? currentOf(attempt.plan.questions, state.current.value)
+      : null;
   const shown = (id: string): boolean =>
     filter === "all" || (filter === "missed" ? missed.has(id) : flaggedIds.has(id));
 
@@ -637,6 +642,7 @@ function QuizView({ state, api, store, last }: { state: QuizState; api: Api; sto
                       api={api}
                       question={question}
                       number={number}
+                      current={question.id === currentId}
                       hidden={!shown(question.id)}
                     />
                   );

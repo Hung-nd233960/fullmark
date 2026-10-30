@@ -7,6 +7,17 @@
     border: 1px solid var(--card-line);
     border-radius: var(--card-radius);
     box-shadow: var(--shadow);
+    transition: border-color 150ms;
+  }
+
+  .fm-question[data-current] {
+    border-color: color-mix(in srgb, var(--accent) 40%, var(--card-line));
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .fm-question {
+      transition: none;
+    }
   }
 
   .fm-question-head {
