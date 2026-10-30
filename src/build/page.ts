@@ -3,6 +3,7 @@ import { utf8ToBytes } from "@noble/hashes/utils.js";
 import { h } from "preact";
 import { renderToString } from "preact-render-to-string";
 import { canonicalJson } from "../core/canonical";
+import { embeddedFonts, type FontsChoice, fontFaceCss, offeredFonts } from "../core/fonts";
 import { en, type Messages, vi } from "../core/i18n";
 import type { Question, Quiz, Rubric, Section } from "../core/ir";
 import { encodeKey, toBase64 } from "../core/keyblob";
@@ -11,6 +12,7 @@ import { themeCss } from "../core/themes";
 import { App } from "../page/App";
 import type { KeyBlob, PageCriterion, PageData, PageItem, PageQuestion, PageQuiz, PageSection } from "../page/data";
 import { createStore } from "../page/store";
+import { fontDataUri } from "./fonts";
 import type { Highlight } from "./highlight";
 import { type Asset, createRenderer, type RenderTools } from "./render";
 import type { MathTools } from "./tex";
@@ -35,6 +37,10 @@ export type PageOptions = {
   math?: MathTools;
   /** the highlighter for the languages the quizzes use (`loadHighlighter`); null or absent: code stays plain */
   highlight?: Highlight | null;
+  /** `--fonts`: which fonts the page embeds (`quiz` when absent) */
+  fonts?: FontsChoice;
+  /** turns a registry font file's package path into a `data:` URI; absent: read from the npm package */
+  fontData?: (path: string) => string;
 };
 
 /** A lone `<p>…</p>` loses its paragraph, so a choice is not set apart from its marker. */
@@ -297,7 +303,11 @@ export function buildPage(quizzes: readonly BuildQuiz[], options: PageOptions): 
     look: (quizzes[0] as BuildQuiz).quiz.frontMatter.look,
   };
   // the token CSS comes from the theme registry, with the quiz's theme as the plain `:root` rule; the rest is the page's
-  const css = themeCss((quizzes[0] as BuildQuiz).quiz.frontMatter.theme) + options.css;
+  const front = (quizzes[0] as BuildQuiz).quiz.frontMatter;
+  const choice = options.fonts ?? "quiz";
+  const css = themeCss(front.theme, front.font, offeredFonts(choice, front.font)) + options.css;
+  const embedded = embeddedFonts(choice, front.font);
+  const fontCss = embedded.length === 0 ? null : fontFaceCss(embedded, options.fontData ?? fontDataUri);
   const tree = renderToString(h(App, { store: createStore(data) }));
   const first = data.quizzes[0] as PageQuiz;
   // KaTeX's styles and fonts, once, and only for a page that has maths
@@ -305,7 +315,7 @@ export function buildPage(quizzes: readonly BuildQuiz[], options: PageOptions): 
   const csp = [
     "default-src 'none'",
     `script-src ${sha256Source(options.runtime)}`,
-    `style-src ${[css, ...(mathCss === null ? [] : [mathCss])].map(sha256Source).join(" ")}`,
+    `style-src ${[css, ...(fontCss === null ? [] : [fontCss]), ...(mathCss === null ? [] : [mathCss])].map(sha256Source).join(" ")}`,
     "img-src data:",
     "media-src data:",
     "font-src data:",
@@ -322,6 +332,7 @@ export function buildPage(quizzes: readonly BuildQuiz[], options: PageOptions): 
     `<meta name="generator" content="${escapeAttr(`fullmark ${options.version}; built ${options.builtAt}`)}">`,
     `<title>${escapeAttr(first.title)}</title>`,
     `<style>${css}</style>`,
+    ...(fontCss === null ? [] : [`<style id="fm-fonts">${fontCss}</style>`]),
     ...(mathCss === null ? [] : [`<style id="fm-katex">${mathCss}</style>`]),
     "</head>",
     "<body>",

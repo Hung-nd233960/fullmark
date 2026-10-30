@@ -4,6 +4,8 @@
  * Quiz board's (docs/mockup/boards/Quiz.dc.html, the map `T`); the washes and the code colours are derived.
  */
 
+import { FONT_REGISTRY, type FontId, fontRulesCss } from "./fonts";
+
 export const THEME_NAMES = ["light", "dark", "oled", "white", "paper"] as const;
 export type ThemeName = (typeof THEME_NAMES)[number];
 
@@ -289,13 +291,13 @@ const setOf = (theme: Theme): string => {
  * is also the plain `:root` rule (`auto` opens as `light`; the page switches it at once when the device is dark), so
  * no `data-theme` is needed for it. Each set carries its own washes.
  */
-export function themeCss(quiz: Choice): string {
+export function themeCss(quiz: Choice, font: FontId = "system", offered: readonly FontId[] = []): string {
   const first: ThemeName = quiz === "auto" ? "light" : quiz;
   const rules = THEME_NAMES.map((name) => {
     const selector = `:root[data-theme="${name}"]`;
     return `${name === first ? `:root,${selector}` : selector}{${setOf(SETS[name])}}`;
   });
-  const common = `:root{--font:"Segoe UI",system-ui,-apple-system,Roboto,"Noto Sans",sans-serif;--mono:"Cascadia Code",Consolas,Menlo,monospace}`;
+  const common = `:root{--font:${FONT_REGISTRY[font].stack};--mono:"Cascadia Code",Consolas,Menlo,monospace}${fontRulesCss(offered)}`;
   return `@layer tokens,base,components;@layer tokens{${common}${rules.join("")}}`;
 }
 
