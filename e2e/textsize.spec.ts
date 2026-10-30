@@ -99,7 +99,7 @@ test("Default look resets the theme and the size", async ({ page }) => {
 
 const phone = base.extend({
   page: async ({ browser, browserName }, use) => {
-    const touch = browserName === "chromium" ? { hasTouch: true, isMobile: true } : {};
+    const touch = browserName === "chromium" ? { hasTouch: true, isMobile: true } : { hasTouch: true };
     const context = await browser.newContext({ viewport: { width: 390, height: 844 }, ...touch });
     await use(await context.newPage());
     await context.close();

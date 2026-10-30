@@ -219,7 +219,8 @@
 
   .fm-order-item {
     display: flex;
-    gap: 12px;
+    flex-wrap: wrap;
+    gap: 8px 12px;
     align-items: center;
     justify-content: space-between;
     min-height: 58px;
@@ -282,7 +283,8 @@
   }
 
   .fm-order-text {
-    flex: 1;
+    flex: 1 1 8em;
+    min-width: 0;
   }
 
   .fm-order-text p {
@@ -293,6 +295,7 @@
     display: flex;
     flex: none;
     gap: 6px;
+    margin-left: auto;
   }
 
   .fm-move.fm-button {
