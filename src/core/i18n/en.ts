@@ -82,7 +82,6 @@ export const en = {
   page: {
     start: "Start",
     hint: "Hint",
-    showHint: "Show hint",
     hideHint: "Hide hint",
     questionsCount: (n: number) => (n === 1 ? "1 question" : `${n} questions`),
     submit: "Submit",

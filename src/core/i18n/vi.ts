@@ -83,7 +83,6 @@ export const vi = {
   page: {
     start: "Bắt đầu",
     hint: "Gợi ý",
-    showHint: "Hiện gợi ý",
     hideHint: "Ẩn gợi ý",
     questionsCount: (n: number) => `${n} câu hỏi`,
     submit: "Nộp bài",

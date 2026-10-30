@@ -166,8 +166,7 @@ export function QuestionCard({
             aria-controls={`${name}/hint`}
             onClick={() => setHintOpen(!hintOpen)}
           >
-            <Icon name="info" />
-            {hintOpen ? t.hideHint : t.showHint}
+            {hintOpen ? t.hideHint : t.hint}
           </button>
           {hintOpen ? (
             <div class="fm-hint-box" id={`${name}/hint`}>
@@ -191,10 +190,7 @@ export function QuestionCard({
       ) : null}
       {revealed && key?.explanations[question.id] ? (
         <div class="fm-explanation">
-          <strong class="fm-explanation-label">
-            <Icon name="info" />
-            {t.explanation}
-          </strong>
+          <strong class="fm-explanation-label">{t.explanation}</strong>
           <Html html={key.explanations[question.id] ?? ""} class="fm-explanation-text" />
         </div>
       ) : null}

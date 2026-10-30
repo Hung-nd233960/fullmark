@@ -44,7 +44,7 @@ test("the hint closed and opened, and a typed answer after Submit", async ({ pag
   const b1 = card(page, "b1");
   await b1.scrollIntoViewIfNeeded();
   await b1.screenshot({ path: out("4-hint-closed") });
-  await b1.getByRole("button", { name: "Show hint" }).click();
+  await b1.getByRole("button", { name: "Hint" }).click();
   await b1.screenshot({ path: out("5-hint-open") });
   await card(page, "n3").locator("input.fm-text").fill("2.4");
   await page.getByRole("button", { name: "Submit" }).click();

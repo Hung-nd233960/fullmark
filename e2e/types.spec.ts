@@ -275,7 +275,7 @@ test("a hint is a button until opened; a typed answer after Submit shows only th
   await page.goto(types.url);
   await page.getByRole("button", { name: "Start" }).click();
   const q = card(page, "b1");
-  const toggle = q.getByRole("button", { name: "Show hint" });
+  const toggle = q.getByRole("button", { name: "Hint" });
   await expect(toggle).toHaveAttribute("aria-expanded", "false");
   await expect(q.locator(".fm-hint-box")).toHaveCount(0);
   await toggle.click();

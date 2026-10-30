@@ -446,20 +446,19 @@
     align-items: baseline;
     margin-top: 12px;
     padding: 10px 14px;
-    border: 1px dashed var(--hint);
-    border-radius: 8px;
+    background: var(--info-wash);
+    border-left: 3px solid var(--hint);
+    border-radius: 0 8px 8px 0;
   }
 
   .fm-hint-label {
-    font-size: 0.72em;
+    font-size: 0.9em;
     font-weight: 700;
     color: var(--hint);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
   }
 
   .fm-hint-text {
-    font-size: 0.95em;
+    font-size: 1em;
   }
 
   .fm-hint-text > :last-child {
@@ -484,9 +483,8 @@
 
   .fm-explanation-label {
     display: inline-flex;
-    gap: 6px;
     align-items: center;
-    padding: 3px 12px 3px 9px;
+    padding: 3px 12px;
     font-size: 0.85em;
     letter-spacing: 0.04em;
     color: var(--card);
