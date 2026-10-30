@@ -6,11 +6,11 @@ import { buildFolder, card, noViolations, watch } from "./helpers";
  * "Materials"). The test that matters: on a 390 x 844 touch screen everything the wide page offers is reachable, every
  * target is 44 px high, nothing scrolls sideways but a wide table in its own box, and the questions behind an open
  * sidebar can be neither seen nor tabbed to. Chromium runs as a touch phone; Firefox has no mobile mode, so it runs
- * as a narrow window without touch.
+ * as a narrow window with touch.
  */
 const test = base.extend({
   page: async ({ browser, browserName }, use) => {
-    const touch = browserName === "chromium" ? { hasTouch: true, isMobile: true } : {};
+    const touch = browserName === "chromium" ? { hasTouch: true, isMobile: true } : { hasTouch: true };
     const context = await browser.newContext({ viewport: { width: 390, height: 844 }, ...touch });
     await use(await context.newPage());
     await context.close();

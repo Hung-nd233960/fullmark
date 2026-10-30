@@ -257,7 +257,7 @@ test("after Submit, each cell's state is what quiz grade gives for the export", 
   await expect(side(page)).toBeVisible();
 
   // heading rows with the part scores, always open
-  await expect(side(page).locator("[data-part-head]")).toHaveCount(0);
+  await expect(side(page).locator("[data-part-head]")).toHaveCount(3);
   await expect(side(page).locator("[data-part]")).toHaveCount(3);
   await expect(side(page).locator('[data-part="sig"] [data-part-score]')).toHaveText("1 / 6 · 17%");
   await expect(side(page).locator("[data-cell]")).toHaveCount(18);

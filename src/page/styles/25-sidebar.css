@@ -177,11 +177,6 @@
     flex: 1;
   }
 
-  .fm-cell-row-number {
-    font-variant-numeric: tabular-nums;
-    opacity: 0.8;
-  }
-
   .fm-cell-row .fm-cell-flag {
     top: 50%;
     right: auto;

@@ -159,9 +159,6 @@ function AnsweringMap({ t, state, onJump }: { t: PageMessages; state: QuizState;
                     onClick={() => onJump(only.id)}
                   >
                     <span class="fm-map-head-title">{t.mapPart(part.number, part.title)}</span>
-                    <span class="fm-cell-row-number" aria-hidden="true">
-                      {only.number}
-                    </span>
                     {only.flagged ? <span class="fm-cell-flag" aria-hidden="true" /> : null}
                   </button>
                 </div>
@@ -261,9 +258,6 @@ function ResultsMap({
                     onClick={() => onJump(only.id)}
                   >
                     <span class="fm-map-head-title">{t.mapPart(part.number, part.title)}</span>
-                    <span class="fm-cell-row-number" aria-hidden="true">
-                      {only.number}
-                    </span>
                     <span class="fm-cell-glyph" aria-hidden="true">
                       {GLYPH[only.state]}
                     </span>

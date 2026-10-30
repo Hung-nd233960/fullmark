@@ -64,7 +64,7 @@ export function Ordering({ q, c }: { q: Extract<PageQuestion, { type: "ordering"
   };
 
   /** Lifts `row`; the pointer is followed on the window until it is let go. */
-  const lift = (g: { pointerId: number; clientY: number; pointerType: string }, row: HTMLElement, source: number) => {
+  const lift = (g: { pointerId: number; clientY: number; pressY: number }, row: HTMLElement, source: number) => {
     const ol = list.current;
     if (c.submitted || ol === null || session.current !== null) return;
     try {
@@ -76,7 +76,7 @@ export function Ordering({ q, c }: { q: Extract<PageQuestion, { type: "ordering"
     ol.style.setProperty("--drag-x", `${box.left}px`);
     ol.style.setProperty("--drag-w", `${box.width}px`);
     ol.style.setProperty("--drag-h", `${box.height}px`);
-    const s: Session = { offset: g.clientY - box.top, height: box.height, y: g.clientY, frame: 0, stop: () => {} };
+    const s: Session = { offset: g.pressY - box.top, height: box.height, y: g.clientY, frame: 0, stop: () => {} };
     session.current = s;
 
     // the lifted item follows the pointer; the slot goes where its middle falls among the items that stay
@@ -153,7 +153,7 @@ export function Ordering({ q, c }: { q: Extract<PageQuestion, { type: "ordering"
     const how = grabOf(e.pointerType, target.closest(".fm-drag-handle") !== null, target.closest("button") !== null);
     if (c.submitted || session.current !== null || how === "never") return;
     if (e.pointerType === "mouse" && e.button !== 0) return;
-    const grab = { pointerId: e.pointerId, clientY: e.clientY, pointerType: e.pointerType };
+    const grab = { pointerId: e.pointerId, clientY: e.clientY, pressY: e.clientY };
     if (how === "now") {
       e.preventDefault();
       lift(grab, row, source);

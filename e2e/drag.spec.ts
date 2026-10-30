@@ -128,3 +128,98 @@ test("a finger drags too (a touch screen, Chromium)", async ({ browser, browserN
   expect(await stored(page, "o1")).toEqual({ order: moveItem(start, 0, 2) });
   await context.close();
 });
+
+/** Presses on the text of the item at `from` (not its handle) and carries it to the middle of the item at `to`. */
+async function carryByText(page: Page, list: Locator, from: number, to: number, nudge = 10): Promise<void> {
+  await list.scrollIntoViewIfNeeded();
+  const text = await centre(list.locator(".fm-order-item").nth(from).locator(".fm-order-text"));
+  const target = await centre(list.locator(".fm-order-item").nth(to));
+  await page.mouse.move(text.x, text.y);
+  await page.mouse.down();
+  await page.mouse.move(text.x, (text.y + target.y) / 2, { steps: 4 });
+  await page.mouse.move(text.x, target.y + nudge, { steps: 4 });
+}
+
+test("a mouse drags by the row's text, and the order is stored as the buttons store it", async ({ page }) => {
+  const q = await begin(page);
+  const start = await sourcesOf(q);
+  await q.locator(".fm-order-item").nth(0).locator('[data-dir="down"]').click();
+  await q.locator(".fm-order-item").nth(1).locator('[data-dir="down"]').click();
+  const byButtons = await stored(page, "o1");
+  await q.locator(".fm-order-item").nth(2).locator('[data-dir="up"]').click();
+  await q.locator(".fm-order-item").nth(1).locator('[data-dir="up"]').click();
+  expect(await sourcesOf(q)).toEqual(start);
+
+  await carryByText(page, q, 0, 2);
+  await expect(q.locator('.fm-order-item[data-lifted="true"]')).toHaveCount(1);
+  await page.mouse.up();
+  expect(await sourcesOf(q)).toEqual(moveItem(start, 0, 2));
+  expect(await stored(page, "o1")).toEqual(byButtons);
+});
+
+test("a click on the row, or a press that moves under 4 px, moves nothing and lifts nothing", async ({ page }) => {
+  const q = await begin(page);
+  const start = await sourcesOf(q);
+  const text = await centre(q.locator(".fm-order-item").nth(1).locator(".fm-order-text"));
+  await page.mouse.move(text.x, text.y);
+  await page.mouse.down();
+  await page.mouse.move(text.x, text.y + 3);
+  await expect(q.locator(".fm-order-slot")).toHaveCount(0);
+  await page.mouse.up();
+  await page.mouse.click(text.x, text.y);
+  expect(await sourcesOf(q)).toEqual(start);
+  expect(await stored(page, "o1")).toBeNull();
+  await expect(q.locator(".fm-order-slot")).toHaveCount(0);
+});
+
+test("a press on an Up or Down button never drags", async ({ page }) => {
+  const q = await begin(page);
+  const start = await sourcesOf(q);
+  const button = await centre(q.locator(".fm-order-item").nth(1).locator('[data-dir="down"]'));
+  await page.mouse.move(button.x, button.y);
+  await page.mouse.down();
+  await page.mouse.move(button.x - 120, button.y + 90, { steps: 6 });
+  await expect(q.locator(".fm-order-slot")).toHaveCount(0);
+  await page.mouse.up();
+  expect(await sourcesOf(q)).toEqual(start);
+  expect(await stored(page, "o1")).toBeNull();
+});
+
+test("the buttons are 32 px high with a mouse, and say Up and Down", async ({ page }) => {
+  const q = await begin(page);
+  expect(await page.evaluate(() => matchMedia("(pointer: coarse)").matches)).toBe(false);
+  const down = q.locator(".fm-order-item").nth(0).locator('[data-dir="down"]');
+  const up = q.locator(".fm-order-item").nth(1).locator('[data-dir="up"]');
+  expect((await down.boundingBox())?.height).toBeCloseTo(32, 0);
+  await expect(down).toHaveText("Down");
+  await expect(up).toHaveText("Up");
+  await expect(down).toHaveAccessibleName(/^Move down: /);
+  await noViolations(page);
+});
+
+test("on a touch screen the buttons are 44 px, and only the handle drags", async ({ browser, browserName }) => {
+  test.skip(browserName !== "chromium", "Playwright can drive touch moves only through the Chromium protocol");
+  const context = await browser.newContext({ hasTouch: true, isMobile: true, viewport: { width: 390, height: 800 } });
+  const page = await context.newPage();
+  const q = await begin(page);
+  await q.scrollIntoViewIfNeeded();
+  expect(await page.evaluate(() => matchMedia("(pointer: coarse)").matches)).toBe(true);
+  for (const dir of ["up", "down"]) {
+    const box = await q.locator(".fm-order-item").nth(1).locator(`[data-dir="${dir}"]`).boundingBox();
+    expect(box?.height).toBeCloseTo(44, 0);
+  }
+  // a finger on the text scrolls the page; it does not lift the row
+  const start = await sourcesOf(q);
+  const text = await centre(q.locator(".fm-order-item").nth(0).locator(".fm-order-text"));
+  const target = await centre(q.locator(".fm-order-item").nth(2));
+  const cdp = await context.newCDPSession(page);
+  const touch = (type: "touchStart" | "touchMove" | "touchEnd", y: number) =>
+    cdp.send("Input.dispatchTouchEvent", { type, touchPoints: type === "touchEnd" ? [] : [{ x: text.x, y }] });
+  await touch("touchStart", text.y);
+  for (let i = 1; i <= 6; i++) await touch("touchMove", text.y + ((target.y + 10 - text.y) * i) / 6);
+  await expect(q.locator(".fm-order-slot")).toHaveCount(0);
+  await touch("touchEnd", 0);
+  expect(await sourcesOf(q)).toEqual(start);
+  expect(await stored(page, "o1")).toBeNull();
+  await context.close();
+});

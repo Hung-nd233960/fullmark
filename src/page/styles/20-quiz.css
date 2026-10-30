@@ -295,18 +295,16 @@
     gap: 6px;
   }
 
-  .fm-move {
-    display: inline-flex;
+  .fm-move.fm-button {
     gap: 6px;
-    align-items: center;
-    min-height: 32px;
+    height: 32px;
     padding: 0 10px;
     font-size: 0.85em;
   }
 
   @media (pointer: coarse) {
-    .fm-move {
-      min-height: 44px;
+    .fm-move.fm-button {
+      height: 44px;
     }
   }
 

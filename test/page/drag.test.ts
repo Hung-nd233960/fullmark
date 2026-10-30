@@ -1,5 +1,13 @@
 import { describe, expect, it } from "vitest";
-import { DRAG_SLOP, edgeScroll, grabOf, landingIndex, liveNumbers, moveItem, pulled } from "../../src/page/questions/drag";
+import {
+  DRAG_SLOP,
+  edgeScroll,
+  grabOf,
+  landingIndex,
+  liveNumbers,
+  moveItem,
+  pulled,
+} from "../../src/page/questions/drag";
 
 const rows = (heights: number[], gap = 6) => {
   let top = 100;

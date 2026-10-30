@@ -17,6 +17,7 @@ const TRY = {
   "example-survey": "a questionnaire with no score: scales, ordering, free text",
   mockup: "the boards' content: three parts, a 40-minute limit, a flag; the closest page to the mockup",
   map: "the question map: three parts, every result state after Submit",
+  oneq: "the part list: a part of one question is a single row (double-click or Enter on a heading jumps); single and multi look different",
   materials: "materials: the stacked sidebar, sheet chips, the Materials tab after Submit, Materials on the start screen",
   parts: "the part picker: take the whole quiz or one part",
   timed: "a 90-second limit: let it run out to see the automatic submit",
