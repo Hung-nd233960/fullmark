@@ -54,7 +54,7 @@ test("Submit opens the dialog with the summary; Keep answering has the focus; no
   await noViolations(page);
 });
 
-test("Esc, Enter on Keep answering and the button each cancel; the focus returns to Submit", async ({ page }) => {
+test("Esc, Enter on Keep answering, the button and a click outside each cancel; the focus returns to Submit", async ({ page }) => {
   await start(page);
   await bar(page).click();
   await expect(dialog(page)).toBeVisible();
@@ -72,6 +72,17 @@ test("Esc, Enter on Keep answering and the button each cancel; the focus returns
 
   await bar(page).click();
   await dialog(page).getByRole("button", { name: "Keep answering" }).click();
+  await expect(dialog(page)).toHaveCount(0);
+  await expect(bar(page)).toBeFocused();
+  expect(await phase(page)).toBe("answering");
+
+  // a click inside, on the padding beside the title, keeps it open; a click outside cancels
+  await bar(page).click();
+  const box = await dialog(page).boundingBox();
+  if (box === null) throw new Error("no dialog box");
+  await page.mouse.click(box.x + 6, box.y + 6);
+  await expect(dialog(page)).toBeVisible();
+  await page.mouse.click(4, 4);
   await expect(dialog(page)).toHaveCount(0);
   await expect(bar(page)).toBeFocused();
   expect(await phase(page)).toBe("answering");

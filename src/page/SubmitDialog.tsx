@@ -39,8 +39,8 @@ export function submitSummary(
 }
 
 /**
- * Submit asks first (TECHNICAL_DESIGN.md, section 8, row "Submit asks first"): a modal dialog with the summary. Esc, the
- * Keep answering button and Enter on it cancel and return the focus to Submit; only a press on Submit submits. Rendered
+ * Submit asks first (TECHNICAL_DESIGN.md, section 8, row "Submit asks first"): a modal dialog with the summary. Esc, a
+ * click outside, the Keep answering button and Enter on it cancel and return the focus to Submit; only a press on Submit submits. Rendered
  * only while it is open, so the summary is read when it opens and follows the clock while it stays.
  */
 export function SubmitDialog({
@@ -65,6 +65,15 @@ export function SubmitDialog({
     if (el === null) return;
     if (!el.open) el.showModal();
     keep.current?.focus();
+    // a click outside the dialog's box (on the backdrop) cancels, as on the Licences popup; the padding is inside the box
+    const outside = (event: MouseEvent): void => {
+      const box = el.getBoundingClientRect();
+      const inside =
+        event.clientX >= box.left && event.clientX <= box.right && event.clientY >= box.top && event.clientY <= box.bottom;
+      if (event.target === el && !inside) el.close();
+    };
+    el.addEventListener("click", outside);
+    return () => el.removeEventListener("click", outside);
   }, []);
   const id = state.page.id;
   return (
