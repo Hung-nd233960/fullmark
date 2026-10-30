@@ -3,7 +3,7 @@ import { copyFileSync, cpSync, mkdtempSync, readFileSync, writeFileSync } from "
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import AxeBuilder from "@axe-core/playwright";
-import { expect, type Page } from "@playwright/test";
+import { expect, type Locator, type Page } from "@playwright/test";
 
 export const root = resolve(import.meta.dirname, "..");
 const cli = join(root, "dist", "cli.js");
@@ -115,4 +115,15 @@ export function buildFolder(sourceDir: string, name = "quiz.md"): { dir: string;
   cpSync(join(root, sourceDir), dir, { recursive: true });
   run(dir, "build", name, "--built-at", "2026-10-28T10:00:00+07:00");
   return { dir, url: `file:///${join(dir, name.replace(/\.md$/, ".html")).replaceAll("\\", "/")}` };
+}
+
+/**
+ * Submit as a learner does (TECHNICAL_DESIGN.md, section 8, row "Submit asks first"): press Submit in the bar, then
+ * Submit in the dialog. A touch page taps. Specs never click the bar's Submit and expect results directly.
+ */
+export async function submitAttempt(page: Page): Promise<void> {
+  const touch = await page.evaluate(() => "ontouchstart" in window);
+  const press = (target: Locator) => (touch ? target.tap() : target.click());
+  await press(page.locator(".fm-topbar [data-action=submit]"));
+  await press(page.locator("dialog[data-submit-dialog] [data-action=confirm-submit]"));
 }

@@ -23,6 +23,30 @@ export type StatusInput = {
   fullscreenClock: string | null;
 };
 
+/** How far an attempt has got: the one count the status line and the Submit dialog both read. */
+export type Counts = {
+  total: number;
+  answered: number;
+  flagged: number;
+  /** the first question of the plan without an answer, and the first flagged one */
+  firstUnanswered: string | null;
+  firstFlagged: string | null;
+};
+
+/** Answered, flagged and the first of each, over the plan (a `feedback: instant` question is answered once checked). */
+export function attemptCounts(attempt: Pick<Attempt, "plan" | "state">): Counts {
+  const plan = attempt.plan.questions;
+  const answered = plan.filter((id) => attempt.state.answers[id] != null);
+  const flagged = plan.filter((id) => attempt.state.flagged.includes(id));
+  return {
+    total: plan.length,
+    answered: answered.length,
+    flagged: flagged.length,
+    firstUnanswered: plan.find((id) => attempt.state.answers[id] == null) ?? null,
+    firstFlagged: flagged[0] ?? null,
+  };
+}
+
 const pageText = (page: PageQuiz) => (page.uiLang === "vi" ? vi : en).page;
 
 /** `26 Oct, 14:32`'s parts from a zoneless stamp (`2026-10-26T14:32:00`), read as written: no `toLocaleString`. */
@@ -119,7 +143,7 @@ export function statusFor({
     segments.push({ kind: "question", text: t.questionOf(plan.indexOf(currentId) + 1, total) });
   }
 
-  const answered = plan.filter((id) => attempt.state.answers[id] != null).length;
+  const { answered, flagged: flags } = attemptCounts(attempt);
   segments.push({
     kind: "progress",
     text: t.answeredOf(answered, total),
@@ -128,7 +152,6 @@ export function statusFor({
     percent: total === 0 ? 0 : Math.round((answered / total) * 100),
   });
 
-  const flags = attempt.state.flagged.filter((id) => plan.includes(id)).length;
   if (flags > 0) segments.push({ kind: "flags", text: t.flaggedCount(flags) });
 
   if (fullscreenClock !== null) segments.push({ kind: "clock", text: t.focusClock(fullscreenClock) });

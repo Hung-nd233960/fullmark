@@ -1,5 +1,5 @@
 import type { ComponentChildren } from "preact";
-import { useEffect, useRef } from "preact/hooks";
+import { useEffect, useRef, useState } from "preact/hooks";
 import { AppearanceButton, AppearanceMenu, TextSize } from "./Appearance";
 import type { PageQuestion, PageQuiz, PageSection } from "./data";
 import { Icon, type IconName } from "./icons";
@@ -11,6 +11,7 @@ import { Html, messagesFor, type PageMessages } from "./questions/shared";
 import { ResultsCard } from "./ResultsCard";
 import { limitOf, missedIds, num } from "./results";
 import { Sidebar, SidebarButton } from "./Sidebar";
+import { SubmitDialog } from "./SubmitDialog";
 import { mixedPoints, quizCount, quizPoints, sectionPoints, wholeTime } from "./start";
 import { compactParts, stampParts, statusFor } from "./status";
 import { clockText, download, exportFor, type QuizState, type Store } from "./store";
@@ -418,6 +419,8 @@ function Dock({
   children?: ComponentChildren;
 }) {
   const answering = state.attempt.value.phase === "answering";
+  // Submit asks first; a deadline that passes submits with no dialog (the phase changes and the dialog goes)
+  const [asking, setAsking] = useState(false);
   const dock = useRef<HTMLDivElement>(null);
   // the sidebar and the cards' scroll margin sit below the docked block, whatever height it wraps to
   useEffect(() => {
@@ -467,7 +470,7 @@ function Dock({
           {phone ? null : <TextSize t={t} store={store} />}
           {store.look.locked && !phone ? null : <AppearanceButton t={t} store={store} />}
           {answering ? (
-            <button type="button" class="fm-button fm-primary" data-action="submit" onClick={() => api.submit()}>
+            <button type="button" class="fm-button fm-primary" data-action="submit" onClick={() => setAsking(true)}>
               {t.submit}
             </button>
           ) : null}
@@ -479,6 +482,18 @@ function Dock({
       </p>
       {children}
       {store.look.locked && !phone ? null : <AppearanceMenu t={t} store={store} />}
+      {answering && asking ? (
+        <SubmitDialog
+          t={t}
+          state={state}
+          store={store}
+          onClose={() => setAsking(false)}
+          onSubmit={() => {
+            setAsking(false);
+            api.submit();
+          }}
+        />
+      ) : null}
     </div>
   );
 }

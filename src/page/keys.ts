@@ -40,6 +40,8 @@ export function keyHandler(store: Store): (event: KeyLike) => void {
   return (event) => {
     if (event.ctrlKey || event.metaKey || event.altKey) return;
     if (typingIn(event.target)) return;
+    // a modal dialog is open: the page behind it is inert, and its own keys (Esc, Enter) are the dialog's
+    if (typeof document !== "undefined" && document.querySelector("dialog[open]") !== null) return;
     if (event.key === "Escape" && !event.defaultPrevented) {
       const shelf = [...store.quizzes.values()].find((s) => s.shelf.value);
       if (shelf !== undefined) {
