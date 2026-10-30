@@ -29,7 +29,11 @@ const TRY = {
   "chrome-vi": "the top bar and status line in Vietnamese",
   singles: "single-choice questions only",
   second: "a second, small quiz",
+  "vi-fonts": "built with --fonts all: Vietnamese text with stacked diacritics; Appearance > Font offers all four fonts; the Licences button lists their notices",
 };
+
+// extra `build` flags for a page
+const FLAGS = { "vi-fonts": ["--fonts", "all"] };
 
 // empty the folder rather than remove it: on Windows another program (Explorer, a browser) may hold the folder itself
 mkdirSync(OUT, { recursive: true });
@@ -47,7 +51,7 @@ const sources = [
 const built = [];
 for (const s of sources) {
   try {
-    execFileSync(process.execPath, [CLI, "build", s.file, "-o", join(OUT, `${s.name}.html`)], { stdio: "pipe" });
+    execFileSync(process.execPath, [CLI, "build", s.file, "-o", join(OUT, `${s.name}.html`), ...(FLAGS[s.name] ?? [])], { stdio: "pipe" });
     built.push(s);
   } catch (e) {
     console.error(`${s.file}: build failed\n${e.stderr?.toString() ?? e}`);
