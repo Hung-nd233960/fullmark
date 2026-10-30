@@ -351,18 +351,17 @@
 @layer components {
   .fm-foot {
     display: flex;
-    justify-content: center;
+    justify-content: flex-end;
     padding: 24px 16px 32px;
   }
 
   .fm-licences-button {
     display: inline-flex;
-    gap: 6px;
     align-items: center;
-    min-height: 44px;
-    padding: 6px 10px;
-    font: inherit;
-    font-size: 0.8em;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
     color: var(--muted);
     cursor: pointer;
     background: none;

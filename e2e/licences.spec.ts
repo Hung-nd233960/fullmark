@@ -13,7 +13,16 @@ const dialog = (page: import("@playwright/test").Page) => page.locator("dialog#f
 test("the button sits at the foot of the start screen and opens the popup with the notices", async ({ page }) => {
   await page.goto(quiz.url);
   await expect(button(page)).toBeVisible();
-  await expect(button(page)).toHaveText("Licences");
+  await expect(button(page)).toHaveAccessibleName("Licences");
+  await expect(button(page)).toHaveAttribute("title", "Licences");
+  await expect(button(page)).toHaveText("");
+  // a 44 px target at the bottom right of the foot
+  const box = await button(page).boundingBox();
+  expect(box?.width).toBe(44);
+  expect(box?.height).toBe(44);
+  // at the right end of the foot (which is the content column)
+  const foot = await button(page).evaluate((el) => (el.parentElement as HTMLElement).getBoundingClientRect().right);
+  expect(Math.abs((box?.x ?? 0) + 44 - (foot - 16))).toBeLessThan(1);
   await expect(dialog(page)).toBeHidden();
   // in the flow, not floating: scrolled to the bottom it is below the Start button
   const [b, s] = [await button(page).boundingBox(), await page.getByRole("button", { name: "Start" }).boundingBox()];

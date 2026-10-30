@@ -24,13 +24,19 @@ export function openLicences(): void {
   dialog.showModal();
 }
 
-/** The small muted button at the foot of the page. */
+/** The ⓘ icon at the foot of the page, bottom right; "Licences" is its accessible name and tooltip. */
 export function LicencesButton({ t }: { t: PageMessages }) {
   return (
     <footer class="fm-foot">
-      <button type="button" class="fm-licences-button" data-action="licences" onClick={openLicences}>
-        <Icon name="info" size={14} />
-        {t.licences}
+      <button
+        type="button"
+        class="fm-licences-button"
+        data-action="licences"
+        aria-label={t.licences}
+        title={t.licences}
+        onClick={openLicences}
+      >
+        <Icon name="info" size={18} />
       </button>
     </footer>
   );
