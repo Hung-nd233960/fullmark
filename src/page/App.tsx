@@ -3,6 +3,7 @@ import { useEffect, useRef } from "preact/hooks";
 import { AppearanceButton, AppearanceMenu, TextSize } from "./Appearance";
 import type { PageQuestion, PageQuiz, PageSection } from "./data";
 import { Icon, type IconName } from "./icons";
+import { LicencesButton } from "./Licences";
 import { MaterialsButton, MaterialsPanel } from "./Materials";
 import { sideForm } from "./map";
 import { type Api, QuestionCard } from "./questions/Card";
@@ -651,6 +652,9 @@ function QuizView({ state, api, store }: { state: QuizState; api: Api; store: St
   );
 }
 
+/** The page's own words (the foot's button): the first quiz's language. */
+const footMessages = (store: Store): PageMessages => messagesFor([...store.quizzes.values()][0]?.page as PageQuiz);
+
 export function App({ store }: { store: Store }) {
   return (
     <main class="fm-page">
@@ -670,6 +674,8 @@ export function App({ store }: { store: Store }) {
         };
         return <QuizView key={id} state={state} api={api} store={store} />;
       })}
+      {/* Focus mode shows nothing but the quiz: no button, so no tab stop, until it ends */}
+      {store.screen.fullscreen.value ? null : <LicencesButton t={footMessages(store)} />}
     </main>
   );
 }

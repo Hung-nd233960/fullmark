@@ -37,7 +37,8 @@ export function woff2Tables(file: Uint8Array): Map<string, Uint8Array> {
       at += 4;
     } else tag = KNOWN[index] as string;
     const original = base128();
-    const transformed = tag === "glyf" || tag === "loca" ? version !== 3 : tag === "hmtx" ? version === 1 : version !== 0;
+    const transformed =
+      tag === "glyf" || tag === "loca" ? version !== 3 : tag === "hmtx" ? version === 1 : version !== 0;
     entries.push({ tag, length: transformed ? base128() : original, transformed });
   }
   const data = brotliDecompressSync(file.subarray(at, at + compressed));
@@ -57,9 +58,15 @@ export function woff2CodePoints(file: Uint8Array): Set<number> {
   const v = new DataView(cmap.buffer, cmap.byteOffset, cmap.byteLength);
   const subtables: { platform: number; encoding: number; offset: number }[] = [];
   for (let i = 0; i < v.getUint16(2); i++) {
-    subtables.push({ platform: v.getUint16(4 + i * 8), encoding: v.getUint16(6 + i * 8), offset: v.getUint32(8 + i * 8) });
+    subtables.push({
+      platform: v.getUint16(4 + i * 8),
+      encoding: v.getUint16(6 + i * 8),
+      offset: v.getUint32(8 + i * 8),
+    });
   }
-  const unicode = subtables.filter((s) => s.platform === 0 || (s.platform === 3 && (s.encoding === 1 || s.encoding === 10)));
+  const unicode = subtables.filter(
+    (s) => s.platform === 0 || (s.platform === 3 && (s.encoding === 1 || s.encoding === 10)),
+  );
   const formatOf = (s: { offset: number }) => v.getUint16(s.offset);
   const chosen = unicode.find((s) => formatOf(s) === 12) ?? unicode.find((s) => formatOf(s) === 4);
   if (chosen === undefined) throw new Error("no Unicode cmap subtable of format 4 or 12");

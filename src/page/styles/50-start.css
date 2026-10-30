@@ -346,3 +346,133 @@
     }
   }
 }
+
+/* The Licences button at the page's foot, and its popup (TECHNICAL_DESIGN.md, section 3, "Licences") */
+@layer components {
+  .fm-foot {
+    display: flex;
+    justify-content: center;
+    padding: 24px 16px 32px;
+  }
+
+  .fm-licences-button {
+    display: inline-flex;
+    gap: 6px;
+    align-items: center;
+    padding: 6px 10px;
+    font: inherit;
+    font-size: 0.8em;
+    color: var(--muted);
+    cursor: pointer;
+    background: none;
+    border: 0;
+    border-radius: 8px;
+  }
+
+  .fm-licences-button:hover {
+    color: var(--text);
+  }
+
+  .fm-licences {
+    width: min(640px, calc(100vw - 32px));
+    max-height: min(80vh, 720px);
+    padding: 0;
+    color: var(--text);
+    background: var(--card);
+    border: 1px solid var(--line-strong);
+    border-radius: 14px;
+    box-shadow: 0 20px 60px rgb(0 0 0 / 30%);
+  }
+
+  .fm-licences::backdrop {
+    background: rgb(0 0 0 / 45%);
+  }
+
+  .fm-licences-box {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-height: min(80vh, 720px);
+    padding: 16px 20px 20px;
+    overflow: auto;
+  }
+
+  .fm-licences-head {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .fm-licences-head h2 {
+    margin: 0;
+    font-size: 1.2em;
+  }
+
+  .fm-licences-head form {
+    margin: 0;
+  }
+
+  .fm-licences-close {
+    display: inline-flex;
+    padding: 6px;
+    color: var(--muted);
+    cursor: pointer;
+    background: none;
+    border: 0;
+    border-radius: 8px;
+  }
+
+  .fm-licences-intro {
+    margin: 0;
+    font-size: 0.9em;
+    color: var(--muted);
+  }
+
+  .fm-licences-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 0;
+    margin: 0;
+    font-size: 0.9em;
+    list-style: none;
+  }
+
+  .fm-licences-list li {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px 10px;
+  }
+
+  .fm-licences-meta {
+    color: var(--muted);
+  }
+
+  .fm-licences-copy {
+    flex-basis: 100%;
+    font-size: 0.9em;
+    color: var(--muted);
+  }
+
+  .fm-licences-texts {
+    max-height: 220px;
+    padding: 10px 12px;
+    overflow: auto;
+    background: var(--sunken);
+    border-radius: 10px;
+  }
+
+  .fm-licences-texts h3 {
+    margin: 0 0 6px;
+    font-size: 0.95em;
+  }
+
+  .fm-licences-texts pre {
+    margin: 0 0 14px;
+    font: inherit;
+    font-size: 0.8em;
+    color: var(--muted);
+    white-space: pre-wrap;
+  }
+}

@@ -11,9 +11,12 @@ import { planFor } from "../core/plan";
 import { themeCss } from "../core/themes";
 import { App } from "../page/App";
 import type { KeyBlob, PageCriterion, PageData, PageItem, PageQuestion, PageQuiz, PageSection } from "../page/data";
+import { LicencesDialog } from "../page/Licences";
+import { messagesFor } from "../page/questions/shared";
 import { createStore } from "../page/store";
 import { fontDataUri } from "./fonts";
 import type { Highlight } from "./highlight";
+import { licencesFor } from "./licences";
 import { type Asset, createRenderer, type RenderTools } from "./render";
 import type { MathTools } from "./tex";
 
@@ -312,6 +315,12 @@ export function buildPage(quizzes: readonly BuildQuiz[], options: PageOptions): 
   const first = data.quizzes[0] as PageQuiz;
   // KaTeX's styles and fonts, once, and only for a page that has maths
   const mathCss = data.quizzes.some((q) => q.hasMath) ? (maths?.css() ?? null) : null;
+  const licencesHtml = renderToString(
+    h(LicencesDialog, {
+      t: messagesFor(first),
+      licences: licencesFor({ fonts: embedded, maths: mathCss !== null }),
+    }),
+  );
   const csp = [
     "default-src 'none'",
     `script-src ${sha256Source(options.runtime)}`,
@@ -337,6 +346,7 @@ export function buildPage(quizzes: readonly BuildQuiz[], options: PageOptions): 
     "</head>",
     "<body>",
     `<div id="fm-root">${tree}</div>`,
+    licencesHtml,
     `<script type="application/json" id="fm-data">${scriptJson(data)}</script>`,
     `<script>${options.runtime}</script>`,
     "</body>",
