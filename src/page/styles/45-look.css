@@ -85,6 +85,23 @@
     border-color: var(--accent);
   }
 
+  /* a font pill shows its name in its own font (the stacks repeat src/core/fonts.ts) */
+  .fm-pill.fm-font-system {
+    font-family: "Segoe UI", system-ui, -apple-system, Roboto, "Noto Sans", sans-serif;
+  }
+
+  .fm-pill.fm-font-sans {
+    font-family: "Be Vietnam Pro", system-ui, sans-serif;
+  }
+
+  .fm-pill.fm-font-serif {
+    font-family: "Source Serif 4", system-ui, serif;
+  }
+
+  .fm-pill.fm-font-readable {
+    font-family: "Lexend", system-ui, sans-serif;
+  }
+
   .fm-look-reset {
     min-height: 36px;
     margin-left: auto;

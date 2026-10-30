@@ -31,9 +31,16 @@ export function applyLook(store: Store, root: HTMLElement = document.documentEle
     if (size === DEFAULT_SIZE) root.removeAttribute("data-size");
     else root.setAttribute("data-size", String(size));
   });
+  // the font: `data-font` only when it is not the quiz's (the build wrote the quiz's font as the plain `:root` rule)
+  const stopFont = effect(() => {
+    const font = look.font.value;
+    if (font === look.quizFont) root.removeAttribute("data-font");
+    else root.setAttribute("data-font", font);
+  });
   return () => {
     stop();
     stopSize();
+    stopFont();
     for (const q of queries) q.removeEventListener("change", read);
   };
 }

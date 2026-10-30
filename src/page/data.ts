@@ -1,3 +1,4 @@
+import type { FontId } from "../core/fonts";
 import type { Quiz } from "../core/ir";
 import { decodeKey } from "../core/keyblob";
 import type { Choice } from "../core/themes";
@@ -92,6 +93,10 @@ export type PageData = {
   theme?: Choice;
   /** `free`: the Appearance menu; `locked`: no menu, and a stored look is ignored (absent: `free`) */
   look?: "free" | "locked";
+  /** the quiz's `font` (absent: `system`) */
+  font?: FontId;
+  /** the fonts the page offers in the Appearance menu, `system` first (absent: only `system`) */
+  fonts?: FontId[];
 };
 
 /**

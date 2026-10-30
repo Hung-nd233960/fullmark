@@ -304,6 +304,8 @@ export function buildPage(quizzes: readonly BuildQuiz[], options: PageOptions): 
     quizzes: quizzes.map((q) => pageQuizOf(q, undefined, { math: maths?.render, highlight: options.highlight })),
     theme: (quizzes[0] as BuildQuiz).quiz.frontMatter.theme,
     look: (quizzes[0] as BuildQuiz).quiz.frontMatter.look,
+    font: (quizzes[0] as BuildQuiz).quiz.frontMatter.font,
+    fonts: offeredFonts(options.fonts ?? "quiz", (quizzes[0] as BuildQuiz).quiz.frontMatter.font),
   };
   // the token CSS comes from the theme registry, with the quiz's theme as the plain `:root` rule; the rest is the page's
   const front = (quizzes[0] as BuildQuiz).quiz.frontMatter;

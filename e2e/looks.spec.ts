@@ -172,3 +172,78 @@ for (const name of THEME_NAMES) {
     await noViolations(page);
   });
 }
+
+/** The Font row: only the fonts the page offers; the pick sets `data-font` and the body's font-family. */
+const FONT_FIRST = { system: "Segoe UI", sans: "Be Vietnam Pro", serif: "Source Serif 4", readable: "Lexend" } as const;
+const fontPick = (page: Page, id: string) => page.locator(`[data-font-pick="${id}"]`);
+const family = (page: Page) => page.evaluate(() => getComputedStyle(document.body).fontFamily);
+const dataFont = (page: Page) => page.evaluate(() => document.documentElement.getAttribute("data-font"));
+const withFonts = (name: string, extra: string[] = []) => buildWith(SOURCE, `${name}.md`, extra, ["--fonts", "all"]);
+
+test("the Font row picks each font, keeps it across a reload, and Default look resets it", async ({ page }) => {
+  const quiz = withFonts("font-menu", ["theme: paper"]);
+  await page.goto(quiz.url);
+  await start(page);
+  await button(page).click();
+  await expect(page.locator("[data-font-row] .fm-pill")).toHaveText([
+    "System",
+    "Be Vietnam Pro",
+    "Source Serif 4",
+    "Lexend",
+  ]);
+  await expect(fontPick(page, "system")).toHaveAttribute("aria-pressed", "true");
+  expect(await family(page)).toContain("Segoe UI");
+  for (const id of ["sans", "serif", "readable"] as const) {
+    await fontPick(page, id).click();
+    await expect(fontPick(page, id)).toHaveAttribute("aria-pressed", "true");
+    expect(await family(page)).toMatch(new RegExp(`^"?${FONT_FIRST[id]}"?,`));
+    expect(await dataFont(page)).toBe(id);
+    // each pill shows its name in its own font
+    expect(await fontPick(page, id).evaluate((el) => getComputedStyle(el).fontFamily)).toContain(FONT_FIRST[id]);
+    await page.evaluate(() => document.fonts.ready);
+    expect(await page.evaluate((f) => document.fonts.check(`16px "${f}"`), FONT_FIRST[id])).toBe(true);
+  }
+  await fontPick(page, "serif").click();
+  await page.reload();
+  expect((await family(page)).startsWith('"Source Serif 4"')).toBe(true);
+  await resume(page);
+  await button(page).click();
+  await expect(fontPick(page, "serif")).toHaveAttribute("aria-pressed", "true");
+  await reset(page).click();
+  expect(await dataFont(page)).toBeNull();
+  expect(await family(page)).toContain("Segoe UI");
+  await page.reload();
+  expect(await family(page)).toContain("Segoe UI");
+});
+
+test("the Font row is left out with one font offered, and under look: locked", async ({ page }) => {
+  const one = buildWith(SOURCE, "font-one.md", ["theme: paper"], ["--fonts", "none"]);
+  await page.goto(one.url);
+  await start(page);
+  await button(page).click();
+  await expect(page.locator("[data-font-row]")).toHaveCount(0);
+  const locked = withFonts("font-locked", ["look: locked", "font: sans"]);
+  await page.goto(locked.url);
+  expect((await family(page)).startsWith('"Be Vietnam Pro"')).toBe(true);
+  const key = await page.evaluate(() => {
+    const data = JSON.parse(document.getElementById("fm-data")?.textContent ?? "") as {
+      quizzes: { id: string; hash: string }[];
+    };
+    const q = data.quizzes[0] as { id: string; hash: string };
+    return `fullmark:v1:${q.id}:${q.hash}:look`;
+  });
+  await page.evaluate((k) => localStorage.setItem(k, '{"font":"serif"}'), key);
+  await page.reload();
+  expect((await family(page)).startsWith('"Be Vietnam Pro"')).toBe(true);
+  await start(page);
+  await expect(page.locator("[data-font-row]")).toHaveCount(0);
+});
+
+test("axe finds nothing in the open Appearance menu with the Font row", async ({ page }) => {
+  const quiz = withFonts("font-axe");
+  await page.goto(quiz.url);
+  await start(page);
+  await button(page).click();
+  await fontPick(page, "readable").click();
+  await noViolations(page);
+});

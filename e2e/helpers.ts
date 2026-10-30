@@ -25,12 +25,17 @@ export function buildIn(source: string, name: string): { dir: string; url: strin
 }
 
 /** Like `buildIn`, for a fixture with lines added to its front matter (`theme: paper`, `look: locked`). */
-export function buildWith(source: string, name: string, extra: string[]): { dir: string; url: string } {
+export function buildWith(
+  source: string,
+  name: string,
+  extra: string[],
+  flags: string[] = [],
+): { dir: string; url: string } {
   const text = readFileSync(join(root, source), "utf8").replace(/^---\n/, `---\n${extra.join("\n")}\n`);
   const dir = mkdtempSync(join(tmpdir(), "fm-e2e-"));
   execFileSync(process.execPath, ["-e", `require("fs").mkdirSync(${JSON.stringify(join(dir, ".git"))})`]);
   writeFileSync(join(dir, name), text);
-  run(dir, "build", name, "--built-at", "2026-10-28T10:00:00+07:00");
+  run(dir, "build", name, "--built-at", "2026-10-28T10:00:00+07:00", ...flags);
   return { dir, url: `file:///${join(dir, name.replace(/\.md$/, ".html")).replaceAll("\\", "/")}` };
 }
 

@@ -331,3 +331,122 @@ describe("the text size", () => {
     expect(lockedPhone).not.toContain("data-theme-pick");
   });
 });
+
+describe("the font", () => {
+  const ALL = ["system", "sans", "serif", "readable"] as const;
+  const openFont = (
+    memory: Memory | null,
+    options: {
+      look?: "free" | "locked";
+      font?: "system" | "sans" | "serif" | "readable";
+      fonts?: readonly string[];
+    } = {},
+  ) => {
+    const page = pageQuizOf(build(QUIZ));
+    const store = createStore(
+      {
+        version: 1,
+        quizzes: [page],
+        theme: "paper",
+        look: options.look ?? "free",
+        font: options.font ?? "system",
+        fonts: [...(options.fonts ?? ALL)] as ("system" | "sans" | "serif" | "readable")[],
+      },
+      memory === null ? {} : { storage: () => memory as unknown as Storage },
+    );
+    return { store, key: lookKey(page) };
+  };
+
+  it("stores a pick in the look object beside the theme and the size, and reads it back", () => {
+    const memory = new Memory();
+    const a = openFont(memory);
+    a.store.restore();
+    a.store.look.pick("dark");
+    a.store.look.pickFont("serif");
+    a.store.look.step(1);
+    expect(JSON.parse(memory.items.get(a.key) as string)).toEqual({ theme: "dark", font: "serif", size: 19 });
+    const b = openFont(memory);
+    b.store.restore();
+    expect(b.store.look.font.value).toBe("serif");
+  });
+
+  it("opens in the quiz's font, and picking the quiz's own font drops the choice", () => {
+    const memory = new Memory();
+    const a = openFont(memory, { font: "sans" });
+    a.store.restore();
+    expect(a.store.look.font.value).toBe("sans");
+    a.store.look.pickFont("readable");
+    expect(a.store.look.font.value).toBe("readable");
+    a.store.look.pickFont("sans");
+    expect(a.store.look.chosenFont.value).toBeNull();
+    expect(memory.items.has(a.key)).toBe(false);
+  });
+
+  it("locked: ignores a stored font without deleting it, and a pick does nothing", () => {
+    const memory = new Memory();
+    const a = openFont(memory, { look: "locked", font: "sans" });
+    memory.items.set(a.key, '{"font":"serif"}');
+    a.store.restore();
+    expect(a.store.look.font.value).toBe("sans");
+    a.store.look.pickFont("readable");
+    expect(a.store.look.font.value).toBe("sans");
+    expect(memory.items.get(a.key)).toBe('{"font":"serif"}');
+  });
+
+  it("falls back to the quiz's font for a stored font the page no longer offers, and keeps it stored", () => {
+    const memory = new Memory();
+    const a = openFont(memory, { font: "sans", fonts: ["system", "sans"] });
+    memory.items.set(a.key, '{"font":"serif"}');
+    a.store.restore();
+    expect(a.store.look.font.value).toBe("sans");
+    expect(memory.items.get(a.key)).toBe('{"font":"serif"}');
+    memory.items.set(a.key, '{"font":"comic"}');
+    const b = openFont(memory);
+    b.store.restore();
+    expect(b.store.look.font.value).toBe("system");
+  });
+
+  it("Default look resets the font with the theme and the size", () => {
+    const memory = new Memory();
+    const a = openFont(memory);
+    a.store.restore();
+    a.store.look.pickFont("serif");
+    a.store.look.pick("dark");
+    a.store.look.reset();
+    expect(a.store.look.font.value).toBe("system");
+    expect(memory.items.has(a.key)).toBe(false);
+  });
+
+  it("works for the visit when storage throws", () => {
+    const throwing = () => {
+      throw new Error("blocked");
+    };
+    const broken = {
+      get length(): number {
+        return throwing();
+      },
+      getItem: throwing,
+      setItem: throwing,
+      removeItem: throwing,
+      key: throwing,
+    };
+    const a = openFont(broken as unknown as Memory);
+    a.store.restore();
+    a.store.look.pickFont("readable");
+    expect(a.store.look.font.value).toBe("readable");
+  });
+
+  it("draws a pill per offered font, none with one font, and none under locked", () => {
+    const render = (store: ReturnType<typeof openFont>["store"]) => {
+      store.look.menu.value = true;
+      store.start([...store.quizzes.keys()][0] as string);
+      return renderToString(h(App, { store }));
+    };
+    const html = render(openFont(new Memory()).store);
+    for (const id of ALL) expect(html).toContain(`data-font-pick="${id}"`);
+    expect(html).toContain("fm-font-serif");
+    expect(html).toContain(">Font<");
+    expect(render(openFont(new Memory(), { fonts: ["system"] }).store)).not.toContain("data-font-pick");
+    expect(render(openFont(new Memory(), { look: "locked" }).store)).not.toContain("data-font-pick");
+  });
+});

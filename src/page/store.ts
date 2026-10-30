@@ -1,6 +1,7 @@
 import { computed, type ReadonlySignal, type Signal, signal } from "@preact/signals";
 import type { Attempt, Plan } from "../core/attempt";
 import { resultsOf } from "../core/attempt/serialise";
+import { FONT_REGISTRY, type FontId } from "../core/fonts";
 import { type Graded, type GradedQuestion, grade } from "../core/grade";
 import { en, vi } from "../core/i18n";
 import { planFor } from "../core/plan";
@@ -95,6 +96,16 @@ export type Look = {
   menu: Signal<boolean>;
   /** the theme the page shows now */
   shown: ReadonlySignal<ThemeName>;
+  /** the quiz's `font` */
+  quizFont: FontId;
+  /** the fonts the page offers, `system` first; with one, the menu has no Font row */
+  fonts: readonly FontId[];
+  /** the learner's stored font; null: the quiz's. Always null when locked. */
+  chosenFont: Signal<FontId | null>;
+  /** the font the page shows now: the choice if the page still offers it, else the quiz's */
+  font: ReadonlySignal<FontId>;
+  /** the learner picks a font (the quiz's own, like null, drops the stored choice) */
+  pickFont(font: FontId | null): void;
   /** the text size in px (one of five; 17 is the default). Kept under both `free` and `locked`. */
   size: Signal<number>;
   /** one step smaller (-1) or larger (1); stays at the ends */
@@ -223,6 +234,9 @@ export function createStore(data: PageData, deps: Deps = {}): Store {
     const quiz = data.theme ?? "auto";
     const locked = data.look === "locked";
     const chosen = signal<Choice | null>(null);
+    const quizFont: FontId = data.font ?? "system";
+    const fonts: readonly FontId[] = data.fonts ?? ["system"];
+    const chosenFont = signal<FontId | null>(null);
     const device = signal({ dark: false, more: false });
     const size = signal(DEFAULT_SIZE);
     let loaded = false;
@@ -240,6 +254,12 @@ export function createStore(data: PageData, deps: Deps = {}): Store {
       chosen.value = choice;
       write({ theme: choice });
     };
+    const pickFont = (font: FontId | null): void => {
+      if (locked) return;
+      if (font === quizFont || (font !== null && !fonts.includes(font))) font = null;
+      chosenFont.value = font;
+      write({ font });
+    };
     const setSize = (next: number): void => {
       size.value = next;
       write({ size: next === DEFAULT_SIZE ? null : next });
@@ -250,6 +270,13 @@ export function createStore(data: PageData, deps: Deps = {}): Store {
       chosen,
       device,
       size,
+      quizFont,
+      fonts,
+      chosenFont,
+      font: computed(() =>
+        chosenFont.value !== null && fonts.includes(chosenFont.value) ? chosenFont.value : quizFont,
+      ),
+      pickFont,
       menu: signal(false),
       shown: computed(() => shownTheme(chosen.value ?? quiz, device.value)),
       load() {
@@ -259,11 +286,17 @@ export function createStore(data: PageData, deps: Deps = {}): Store {
         size.value = sizeOf(stored.size);
         // under `look: locked` the stored theme is ignored (not deleted); the size is applied
         if (!locked && isChoice(stored.theme)) chosen.value = stored.theme;
+        // a stored font the page no longer offers is ignored (the quiz's font stands in); kept in storage
+        if (!locked && typeof stored.font === "string" && stored.font in FONT_REGISTRY) {
+          const id = stored.font as FontId;
+          if (fonts.includes(id) && id !== quizFont) chosenFont.value = id;
+        }
       },
       pick,
       step: (direction) => setSize(stepSize(size.value, direction)),
       reset() {
         pick(null);
+        pickFont(null);
         setSize(DEFAULT_SIZE);
       },
     };

@@ -197,6 +197,8 @@ export const en = {
     appearance: "Appearance",
     themeLabel: "Theme",
     themeName: { auto: "Auto", light: "Light", dark: "Dark", oled: "OLED", white: "White", paper: "Paper" },
+    fontLabel: "Font",
+    fontName: { system: "System", sans: "Be Vietnam Pro", serif: "Source Serif 4", readable: "Lexend" },
     themeMarked: (name: string) => `${name} ·`,
     themeQuizLook: (name: string) => `${name}, the quiz's look`,
     resetLook: "Default look",

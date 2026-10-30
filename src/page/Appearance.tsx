@@ -1,4 +1,5 @@
 import { useEffect } from "preact/hooks";
+import type { FontId } from "../core/fonts";
 import { type Choice, THEME_NAMES } from "../core/themes";
 import { Icon } from "./icons";
 import { DEFAULT_SIZE, SIZES } from "./look";
@@ -85,7 +86,10 @@ export function AppearanceMenu({ t, store }: { t: PageMessages; store: Store }) 
   if (!open) return null;
   const current = look.chosen.value ?? look.quiz;
   const phone = store.screen.phone.value;
-  const changed = (look.chosen.value !== null && look.chosen.value !== look.quiz) || look.size.value !== DEFAULT_SIZE;
+  const changed =
+    (look.chosen.value !== null && look.chosen.value !== look.quiz) ||
+    look.chosenFont.value !== null ||
+    look.size.value !== DEFAULT_SIZE;
   return (
     <div class="fm-look-menu" data-look-menu>
       {phone ? (
@@ -114,6 +118,23 @@ export function AppearanceMenu({ t, store }: { t: PageMessages; store: Store }) 
               </button>
             );
           })}
+        </div>
+      )}
+      {look.locked || look.fonts.length < 2 ? null : (
+        <div class="fm-look-row" data-font-row>
+          <span class="fm-look-label">{t.fontLabel}</span>
+          {look.fonts.map((id: FontId) => (
+            <button
+              key={id}
+              type="button"
+              class={`fm-pill fm-font-${id}`}
+              data-font-pick={id}
+              aria-pressed={id === look.font.value}
+              onClick={() => look.pickFont(id)}
+            >
+              {t.fontName[id]}
+            </button>
+          ))}
         </div>
       )}
       {!look.locked && changed ? (
