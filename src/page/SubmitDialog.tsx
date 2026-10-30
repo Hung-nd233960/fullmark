@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "preact/hooks";
+import { useLayoutEffect, useRef } from "preact/hooks";
 import { jumpTo } from "./mapdom";
 import type { PageMessages } from "./questions/shared";
 import { limitOf } from "./results";
@@ -60,7 +60,7 @@ export function SubmitDialog({
   const keep = useRef<HTMLButtonElement>(null);
   /** where "Go to the first" is going; read when the dialog has closed */
   const going = useRef<string | null>(null);
-  useEffect(() => {
+  useLayoutEffect(() => {
     const el = dialog.current;
     if (el === null) return;
     if (!el.open) el.showModal();
