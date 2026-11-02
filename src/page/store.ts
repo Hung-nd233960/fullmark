@@ -370,7 +370,8 @@ export function createStore(data: PageData, deps: Deps = {}): Store {
   const grading = (state: QuizState, attempt: Attempt): void => {
     // the key is decoded only now: the page grades with the one grader, `core/grade`
     const key = keyOf(state);
-    state.graded.value = grade(key.quiz, attempt);
+    // a replay's grades file gives the essay and code marks; any other attempt has none
+    state.graded.value = grade(key.quiz, attempt, state.replay.value?.grades?.marks ?? {});
   };
 
   /** The result of each checked question, graded alone by core's `grade` on the attempt cut down to that question. */

@@ -70,8 +70,47 @@ export type PageReplay = {
   grades: PageGrades | null;
 };
 
-/** What the page needs of a checked grades file: when it was made (the grader's `at`), if it says. */
-export type PageGrades = { at: string | null };
+/** Who graded, as the grades file says (`model` only for an AI). */
+export type PageGrader = { kind: "ai" | "human"; name: string; model?: string; at?: string };
+
+/** One criterion of a graded answer: its text as HTML and what the grader gave (the cells the mode does not use are null). */
+export type PageGradedCriterion = {
+  html: string;
+  /** additive: the score; else null */
+  earned: number | null;
+  /** additive: the maximum; else null */
+  max: number | null;
+  /** banded: the band; else null */
+  band: number | null;
+  /** holistic: the verdict on the bullet, if given */
+  verdict: "met" | "partly" | "missed" | null;
+  note: string | null;
+};
+
+/** The grade of one essay or code answer, checked and worked out by `applyGrades` (the page does no arithmetic). */
+export type PageGradeDetail = {
+  id: string;
+  mode: "holistic" | "additive" | "banded";
+  points: number;
+  earned: number;
+  /** banded: the overall band, and the scale's top (`earned` is its points); else null */
+  band: number | null;
+  scaleMax: number | null;
+  grader: PageGrader;
+  criteria: PageGradedCriterion[];
+  justification: string | null;
+  improvement: string | null;
+};
+
+/**
+ * What the page needs of a checked grades file: when it was made (the file's grader's `at`), if it says, the marks to
+ * give `grade` (by question id) and each graded answer's table.
+ */
+export type PageGrades = {
+  at: string | null;
+  marks: Record<string, number>;
+  details: PageGradeDetail[];
+};
 
 export type PageQuiz = {
   /** the quiz's id (front matter `id`, else the file name): it scopes element ids and storage */

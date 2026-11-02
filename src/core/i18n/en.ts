@@ -185,6 +185,22 @@ export const en = {
     replayGradesFrom: (day: number, month: string) => `grades from the report of ${day} ${month}`,
     replayGradesGiven: "grades from the report",
     replayGradesPending: "grades pending",
+    /** the criterion tables of a graded essay or code answer, and the grader's line under them */
+    gradeCriterion: "Criterion",
+    gradeAwarded: "Awarded",
+    gradeMax: "Max",
+    gradeBand: "Band",
+    gradeVerdict: "Verdict",
+    gradeNote: "Note",
+    gradeVerdicts: { met: "Met", partly: "Partly met", missed: "Missed" },
+    gradeOverallBand: (band: string, top: string) => `Overall band ${band} of ${top}`,
+    gradeJustification: "Why this score",
+    gradeImprovement: "To improve",
+    gradedBy: (name: string, date: string | null, earned: string, points: string) =>
+      `Graded by ${name}${date === null ? "" : ` · ${date}`} · ${earned} / ${points} ${points === "1" ? "point" : "points"}`,
+    gradedOn: (day: number, month: string, year: number) => `${day} ${month} ${year}`,
+    unfinishedRetry: "You have a retry in progress",
+    continueRetry: "Continue your retry",
     monthsShort: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
     statusLabel: "Status",
     partTimeLeft: (n: number, of: number, title: string | null, clock: string) =>

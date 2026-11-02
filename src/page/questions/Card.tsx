@@ -103,6 +103,7 @@ export function QuestionCard({
     result,
     keyed: key?.quiz.sections.flatMap((s) => s.questions).find((q) => q.id === question.id),
     sample: key?.samples[question.id],
+    grade: submitted ? state.replay.value?.grades?.details.find((d) => d.id === question.id) : undefined,
     set: (answer: Answer | null) => api.dispatch({ type: "answer", question: question.id, answer }),
   };
   const Content = BODIES[question.type] as Body<PageQuestion["type"]>;

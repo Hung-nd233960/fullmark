@@ -2,7 +2,7 @@ import type { Answer } from "../../core/attempt";
 import type { GradedQuestion } from "../../core/grade";
 import { en, type Messages, vi } from "../../core/i18n";
 import type { Question } from "../../core/ir";
-import type { PageQuiz } from "../data";
+import type { PageGradeDetail, PageQuiz } from "../data";
 import { Icon } from "../icons";
 import { decimal, num } from "../results";
 
@@ -30,6 +30,8 @@ export type Ctx = {
   keyed: Question | undefined;
   /** the `sample_answer` of an essay or code question, as HTML, after Submit */
   sample: string | undefined;
+  /** what a grader gave this essay or code answer (a replay with a grades file) */
+  grade: PageGradeDetail | undefined;
   set(answer: Answer | null): void;
 };
 

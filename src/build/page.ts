@@ -10,9 +10,19 @@ import type { Question, Quiz, Rubric, Section } from "../core/ir";
 import { encodeKey, toBase64 } from "../core/keyblob";
 import { planFor } from "../core/plan";
 import type { AppliedGrades } from "../core/rubric/grades";
+import { resolveRubric } from "../core/rubric/model";
 import { themeCss } from "../core/themes";
 import { App } from "../page/App";
-import type { KeyBlob, PageCriterion, PageData, PageItem, PageQuestion, PageQuiz, PageSection } from "../page/data";
+import type {
+  KeyBlob,
+  PageCriterion,
+  PageData,
+  PageGrades,
+  PageItem,
+  PageQuestion,
+  PageQuiz,
+  PageSection,
+} from "../page/data";
 import { LicencesDialog } from "../page/Licences";
 import { messagesFor } from "../page/questions/shared";
 import { createStore } from "../page/store";
@@ -302,11 +312,44 @@ export function pageQuizOf(
           replay: {
             results: replay.results,
             name: replay.name,
-            grades: replay.applied === null ? null : { at: replay.applied.grader?.at ?? null },
+            grades: replay.applied === null ? null : gradesOf(replay.applied, quiz, md),
           },
         }
       : {}),
     ...(hasMath ? { hasMath: true as const } : {}),
+  };
+}
+
+/** The grades a replay page shows: the checked grades of `applyGrades`, their criteria rendered as HTML. */
+function gradesOf(applied: AppliedGrades, quiz: Quiz, md: Md): PageGrades {
+  const questions = new Map<string, Question>();
+  for (const s of quiz.sections) for (const q of s.questions) questions.set(q.id, q);
+  return {
+    at: applied.grader?.at ?? null,
+    marks: applied.manual,
+    details: applied.details.map((d) => {
+      const q = questions.get(d.id);
+      const rubric = q && (q.type === "essay" || q.type === "code") ? resolveRubric(q.rubric) : null;
+      return {
+        id: d.id,
+        mode: d.mode,
+        points: d.points,
+        earned: d.earned,
+        band: d.band,
+        scaleMax: rubric?.mode === "banded" ? rubric.scale.max : null,
+        grader: d.graded_by,
+        criteria: d.criteria.map((c) => ({
+          html: unwrap(md.block(c.text)),
+          earned: c.earned,
+          max: c.max,
+          band: c.band,
+          verdict: c.verdict,
+          note: c.note,
+        })),
+        justification: d.justification,
+        improvement: d.improvement,
+      };
+    }),
   };
 }
 

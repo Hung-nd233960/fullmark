@@ -408,6 +408,77 @@
     color: var(--muted);
   }
 
+  /* the grades of an essay or code answer on a replay: the board's criterion table under the learner's answer */
+  .fm-grade {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 12px;
+  }
+
+  .fm-grade-scroll {
+    overflow-x: auto;
+  }
+
+  .fm-grade-table {
+    width: 100%;
+    font-size: 0.9em;
+    border-collapse: collapse;
+    border-style: hidden;
+  }
+
+  .fm-grade-table th,
+  .fm-grade-table td {
+    padding: 8px 12px;
+    text-align: left;
+    vertical-align: top;
+    border-top: 1px solid var(--line-strong);
+    border-left: 1px solid var(--line);
+  }
+
+  .fm-grade-table th {
+    padding: 6px 12px;
+    color: var(--muted);
+    font-size: 0.85em;
+    font-weight: 700;
+    border-top: 0;
+    border-bottom: 2px solid var(--line-strong);
+  }
+
+  .fm-grade-table .fm-grade-num {
+    width: 80px;
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+  }
+
+  .fm-grade-table td.fm-grade-num {
+    font-weight: 700;
+  }
+
+  .fm-grade-name {
+    font-weight: 600;
+  }
+
+  .fm-grade-note {
+    color: var(--muted);
+  }
+
+  .fm-grade-band {
+    margin: 0;
+    font-weight: 700;
+  }
+
+  .fm-grade-words {
+    margin: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .fm-grader {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.85em;
+  }
+
   .fm-sample {
     margin-top: 12px;
     padding-top: 8px;

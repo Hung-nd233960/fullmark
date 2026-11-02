@@ -7,7 +7,7 @@ import { quizHash } from "../../src/core/hash";
 import type { Quiz } from "../../src/core/ir";
 import { parse } from "../../src/core/parse";
 import { App } from "../../src/page/App";
-import type { PageData } from "../../src/page/data";
+import type { PageData, PageGrades } from "../../src/page/data";
 import { createStore, exportFor, type QuizState, type Store } from "../../src/page/store";
 
 const SOURCE = [
@@ -67,7 +67,7 @@ class Memory {
   }
 }
 
-const dataOf = (replay?: { results: string; name: string; grades: { at: string | null } | null }): PageData => {
+const dataOf = (replay?: { results: string; name: string; grades: PageGrades | null }): PageData => {
   const q = quiz();
   const page = pageQuizOf({ ...q, assets: [] });
   return { version: 1, quizzes: [{ ...page, ...(replay ? { replay } : {}) }] };
@@ -94,7 +94,7 @@ function live(memory = new Memory()) {
   return { store, state, memory, file: exportFor(state, new Date(Date.UTC(2026, 9, 20, 3, 5, 1))) };
 }
 
-const replayOf = (text: string, grades: { at: string | null } | null = null) => {
+const replayOf = (text: string, grades: PageGrades | null = null) => {
   const store = createStore(dataOf({ results: text, name: "rp-results.json", grades }), {
     storage: () => memoryFor.value as unknown as Storage,
   });
@@ -143,7 +143,7 @@ describe("a replay page", () => {
     expect(banner.replaceAll(/<[^>]+>/g, "")).toBe(
       `ReplayAttempt of 20 Oct 2026 · version ${quiz().hash.slice(0, 4)} · grades pending`,
     );
-    const graded = html(replayOf(l.file.text, { at: "2026-10-21T09:00:00+07:00" }));
+    const graded = html(replayOf(l.file.text, { at: "2026-10-21T09:00:00+07:00", marks: {}, details: [] }));
     expect(graded).toContain("grades from the report of 21 Oct");
     expect(graded).not.toContain("grades pending");
   });
