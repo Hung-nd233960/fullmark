@@ -73,12 +73,26 @@ describe("build with several files", () => {
   });
 
   it("-o an existing file with several inputs exits 2 and builds nothing", async () => {
-    const dir = tree({ "a.md": quiz(), "b.md": quiz(), "page.html": "mine" });
+    const dir = tree({ "a.md": quiz(), "b.md": quiz(), "page.out": "mine" });
     const c = capture(dir);
-    expect(await runBuild(["a.md", "b.md"], { ...base, output: "page.html" }, c.io)).toBe(2);
-    expect(c.err.join("\n")).toContain("-o page.html is a file");
-    expect(read(dir, "page.html")).toBe("mine");
+    expect(await runBuild(["a.md", "b.md"], { ...base, output: "page.out" }, c.io)).toBe(2);
+    expect(c.err.join("\n")).toContain("-o page.out is a file");
+    expect(read(dir, "page.out")).toBe("mine");
     expect(existsSync(join(dir, "a.html"))).toBe(false);
+  });
+
+  it("-o ending in .html or .htm, any case, with several inputs exits 2 and builds nothing", async () => {
+    const dir = tree({ "a.md": quiz(), "b.md": quiz() });
+    for (const name of ["out.html", "OUT.HTM", "x/Pages.Html"]) {
+      const c = capture(dir);
+      expect(await runBuild(["a.md", "b.md"], { ...base, output: name }, c.io)).toBe(2);
+      expect(c.err).toEqual([`-o ${name} looks like a page, and building several files needs a folder`]);
+      expect(c.out).toEqual([]);
+    }
+    expect(readdirSync(dir).sort()).toEqual(["a.md", "b.md"]);
+    const d = capture(dir);
+    expect(await runBuild(["a.md", "missing.md"], { ...base, output: "out.html" }, d.io)).toBe(2);
+    expect(d.err.join("\n")).toContain("looks like a page");
   });
 
   it("-o with one input is still a file path", async () => {

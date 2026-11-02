@@ -299,7 +299,11 @@ export async function runBuild(patterns: readonly string[], opts: BuildOptions, 
   }
   const several = inputs.files.length + inputs.errors.length > 1;
   if (several && opts.output !== null) {
-    // before anything is built: a file in the way, or two pages with one name
+    // before anything is built: a page's name, a file in the way, or two pages with one name
+    if (/\.html?$/i.test(opts.output)) {
+      fail(io, opts.json, `-o ${opts.output} looks like a page, and building several files needs a folder`);
+      return EXIT.usage;
+    }
     const folder = resolve(io.cwd, opts.output);
     if (existsSync(folder) && !statSync(folder).isDirectory()) {
       fail(io, opts.json, `-o ${opts.output} is a file, and building several files needs a folder`);
