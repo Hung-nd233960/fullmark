@@ -158,6 +158,7 @@ Also raised on 2026-10-28 and kept outside v1: [proposals/rapid-response.md](../
 58. **2j2's brief approved by the owner (2026-11-02)** as drafted. **Next:** 2j2 with Sonnet.
 59. **The owner's change, 2026-11-02, while 2j2 ran:** the ⓘ button aligns to the page's right edge, outside the question column, still at the foot and in the flow (TECHNICAL_DESIGN.md section 3, "Licences"). Opus makes it in 2j2's review, after Sonnet's page changes land.
 60. Done: 2j2, all four tasks. Reviewed on 2026-11-02. Commits `2e3c4f9` (grades on a replay: additive, banded and holistic tables, "Why this score" and "To improve", the grader line with the points, the score with grades), `1432b34` (a Retry missed saved under `:replay:` offered back: "You have a retry in progress", Continue your retry / Start over; a submitted retry offered too), `8a8ad35` (the `vi` scans over a replay page, with and without grades; the replay line in `TRY`: 22 of 22 samples), `ec855ca` (screens, `docs/screens/2j2/`), `09ff1c3` (page goldens). Pushed before review, by Opus's mistake (a doc push while Sonnet worked); no harm found. Typecheck and Biome clean (checked in review, as reported); Vitest 1919 tests, 1915 pass, the same 4 environmental failures; Playwright in Chromium as reported. Then the ⓘ move (item 59). **Found in review:** on a phone the criterion table is cramped (one-word lines, the Note column cut at the box's edge). **Waiting for the owner:** how "Why this score" and "To improve" stand out, and whether hint and explanation share that look (mocked: A, one panel with an accent bar and small-capital labels; A+C, the same panel with label chips); the phone table (recommended: each criterion stacked as a small block under 520 px); Sonnet's design sentences for section 6, section 8 "Replay" and section 7 decision 2 (recommended: adopt).
+61. **Decided by the owner on 2026-11-02** (TECHNICAL_DESIGN.md section 6, row "Page after submit, and replay"; section 7, decision 2; section 8, the new row "Answer panels" and the row "Replay"): the explanation and the grader's feedback share one panel, a 3px left bar on an 8% wash of its colour; the explanation keeps its chip, the feedback's two parts get small-capital labels (the mock-ups: A, A+C, two callouts; A+C on the explanation alone, as Opus recommended); **the hint keeps its old style** (the owner turned down small capitals for it); on a phone each criterion is a small block, still a table to assistive technology; Sonnet's 2j2 sentences adopted. **Next:** 2j3, brief below, approved by the owner with this item; then Sonnet.
 
 ## Goal
 
@@ -1147,3 +1148,35 @@ Keep this slice near 150k tokens. If it runs long, stop after task 2 at a clean 
 
 - `npm run check` passes (or every part this container can run, with the rest said; Biome checked by running it, not assumed); `npm run samples` builds every page including the replay.
 - Report: commits, test counts, the golden count, the screens' paths and the differences from the board, every gap, what was decided differently and why, files read beyond the list.
+
+## Slice 2j3: the explanation and feedback panels, and the phone's criterion table
+
+The owner's changes after 2j2 (item 61): the explanation and the grader's feedback share one panel look, and on a phone each criterion of a grades table becomes a small block. The hint is unchanged. No CLI changes. The tests that matter: **the explanation and the feedback panels look as TECHNICAL_DESIGN.md section 8, row "Answer panels", says, in all five themes, with axe clean**; **on a 390 px phone no criterion table is cut or scrolls sideways, and a screen reader still reads a table**.
+
+Keep this slice near 100k tokens; it is small. If it runs long, stop after task 2 at a clean commit.
+
+### Read first
+
+- This brief, the Handoff's "Next steps" items 60 and 61, and the "Rules for every slice". **Build from the mockup:** the design row is the source for the panels (the owner chose from mock-ups, not a board); for everything else on the page, the boards as before. Screens go to `docs/screens/2j3/`.
+- TECHNICAL_DESIGN.md section 6, row "Page after submit, and replay"; section 8, rows "Answer panels" and "Hint, explanation label and current card" (for what stays).
+- Code: `src/page/questions/Card.tsx` (the explanation), `src/page/questions/Graded.tsx` (the table, "Why this score", "To improve", the grader line), `src/page/styles/30-question.css` (`.fm-explanation`, `.fm-explanation-label`, `.fm-hint-box`) and the grades table's styles; tests `test/page/replay-grades.test.ts`, `e2e/replay-grades.spec.ts`, the explanation's tests (find them by `fm-explanation`), `e2e/vi-scan.spec.ts`.
+
+### Decided for this slice
+
+- **1. The explanation.** A solid 3px left bar in `--info` on `color-mix(in srgb, var(--info) 8%, var(--card))`, corners 0 8px 8px 0, padding 12px 16px; its 2px full border goes. The chip stays as it is ("Explanation" on `--info`), on its own line above the text.
+- **2. The feedback.** "Why this score" and "To improve" move into one panel of the same shape in `--accent` (8% wash, 3px left bar), each a part with its label on its own line in small capitals (0.72em, bold, 0.06em letter spacing, uppercase, `--accent`) above its text, 12px between the parts. A grade with only one of them shows one part; with neither, no panel. The grader line stays under the panel, as now. The markup keeps the label and its text together (a `<p>` per part, or a `<dl>` if that reads better; say which) so a screen reader hears "Why this score: …".
+- **3. The hint** does not change: no style, markup or golden of the hint moves in this slice.
+- **4. The phone table.** Under 520 px each criterion row is a small block: the criterion's name (bold), then its marks ("0.5 / 0.5" additive, "Band 6" banded, the verdict holistic), then its note when there is one; the header row is hidden visually. It stays a table for assistive technology: if the CSS changes the cells' `display`, give the table, rows and cells their explicit roles (`table`, `row`, `columnheader`, `cell`) so the semantics survive, and keep the column headers readable to a screen reader. No sideways scroll. The overall band and the feedback panel follow as on a wide screen.
+- **5. Every theme.** The panels in all five themes from the tokens; axe's contrast check on the chip, the small-capital labels and the text, on a page with grades, in each theme.
+
+### Tasks
+
+1. **The two panels** (one commit): CSS and markup, unit tests for the markup (one part, two parts, none), Playwright: the computed bar, wash and label style, and axe in the five themes.
+2. **The phone table** (one commit): CSS and roles; Playwright at 390 px: no element wider than the card, each criterion's name, marks and note visible, the accessibility tree still a table (Playwright's `getByRole("table")`, `getByRole("row")`, `getByRole("cell")`).
+3. **Screens** (one commit): the explanation, the feedback panel and the hint (to show it unchanged), light and dark, desktop and phone; the graded replay on a phone. Report every difference from the design row.
+4. **Docs:** propose sentences for anything decided here the design does not state; do not edit the design docs.
+
+### Done when
+
+- `npm run check` passes (or every part this container can run, with the rest said; Biome and tsc run, not assumed); `npm run samples` builds every page.
+- Report: commits, test counts, the golden count, the screens' paths, every gap, what was decided differently and why, files read beyond the list.
