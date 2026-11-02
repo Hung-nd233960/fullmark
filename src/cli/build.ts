@@ -5,6 +5,7 @@ import { fileURLToPath } from "node:url";
 import { languagesUsed, loadHighlighter } from "../build/highlight";
 import { buildPage } from "../build/page";
 import { katexTools } from "../build/tex";
+import { ISO_TIME } from "../core/config/build-file";
 import type { ConfigError } from "../core/config/types";
 import { FONT_CHOICES, FONT_REGISTRY, type FontsChoice } from "../core/fonts";
 import type { Issue } from "../core/issue";
@@ -72,8 +73,6 @@ export function systemOpen(path: string): Promise<void> {
     });
   });
 }
-
-const ISO = /^\d{4}-\d\d-\d\dT\d\d:\d\d(:\d\d(\.\d+)?)?(Z|[+-]\d\d:\d\d)?$/;
 
 /** `dist/`: `page.js` and `page.css` sit beside `cli.js`. Run from the sources (tests), they are in `<repo>/dist`. */
 function runtimeFolder(): string {
@@ -280,7 +279,7 @@ export async function runBuild(patterns: readonly string[], opts: BuildOptions, 
     );
     return EXIT.usage;
   }
-  if (opts.builtAt !== null && !ISO.test(opts.builtAt)) {
+  if (opts.builtAt !== null && !ISO_TIME.test(opts.builtAt)) {
     fail(io, opts.json, `--built-at ${opts.builtAt} is not an ISO date and time, such as 2026-10-24T09:00:00+07:00`);
     return EXIT.usage;
   }
