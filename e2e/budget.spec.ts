@@ -40,7 +40,7 @@ const KINDS: ((n: number) => string)[] = [
 ];
 
 /** The quiz source: the first question is a `single`, so the first click has a choice to land on. */
-export function bigQuiz(count = COUNT): string {
+function bigQuiz(count = COUNT): string {
   const parts = ["---", "title: Three hundred questions", "id: big", "---", "", "# Everything", ""];
   for (let n = 1; n <= count; n++) {
     let q = (KINDS[(n - 1) % KINDS.length] as (n: number) => string)(n);
