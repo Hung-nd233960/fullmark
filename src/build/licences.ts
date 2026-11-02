@@ -39,6 +39,8 @@ export function infoFor(input: {
   fonts: readonly FontId[];
   maths: boolean;
   code: boolean;
+  theme: string;
+  look: string;
   given: { profile?: string | null; fonts?: FontsChoice | null; uiLang?: "en" | "vi" | null; strict?: boolean };
 }): BuildInfo {
   const names = [
@@ -53,13 +55,15 @@ export function infoFor(input: {
   });
   return {
     fullmark: input.version,
-    quiz: input.hash.slice(0, 8),
+    quiz: input.hash.slice(0, 4),
     builtAt: input.builtAt,
     packages,
     options: {
       profile: input.given.profile ?? null,
       fonts: input.given.fonts ?? null,
       uiLang: input.given.uiLang ?? null,
+      theme: input.theme,
+      look: input.look,
       strict: input.given.strict ?? false,
     },
   };

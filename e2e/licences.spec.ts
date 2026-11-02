@@ -123,9 +123,9 @@ test("Information lists build inputs only: versions, the options as given, the q
   const rows = await dialog(page)
     .locator(".fm-info-row")
     .evaluateAll((els) => els.map((e) => [...e.children].map((c) => c.textContent ?? "").join(" ")));
-  expect(rows).toHaveLength(8);
+  expect(rows).toHaveLength(10);
   expect(rows[0]).toMatch(/^fullmark 1\./);
-  expect(rows[1]).toMatch(/^Quiz version [0-9a-f]{8}$/);
+  expect(rows[1]).toMatch(/^Quiz version [0-9a-f]{4}$/);
   expect(rows[2]).toMatch(/^Built at\s*\d{4}-\d\d-\d\dT/);
   expect(rows[3]).toMatch(/Preact 1\d\.\d+\.\d+/);
   expect(rows[3]).toContain("Source Serif 4");
@@ -134,6 +134,8 @@ test("Information lists build inputs only: versions, the options as given, the q
     "Profile default",
     "Fonts default",
     "Interface language default",
+    "Theme auto (default)",
+    "Look free (default)",
     "Strict off (default)",
   ]);
   // never the machine: no Node version, system or path

@@ -270,6 +270,8 @@ export const vi = {
     infoProfile: "Hồ sơ kiểm tra",
     infoFonts: "Phông chữ",
     infoUiLang: "Ngôn ngữ giao diện",
+    infoTheme: "Nền",
+    infoLook: "Giao diện của bài",
     infoStrict: "Chế độ nghiêm ngặt",
     infoDefault: "mặc định",
     infoOn: "bật",

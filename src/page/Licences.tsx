@@ -17,12 +17,12 @@ export type Licences = {
  */
 export type BuildInfo = {
   fullmark: string;
-  /** the short quiz hash */
+  /** the short version: the first 4 characters of the quiz hash */
   quiz: string;
   builtAt: string;
   /** what shapes the page: Preact, KaTeX with maths, Shiki with highlighted code, each embedded font */
   packages: readonly { name: string; version: string }[];
-  options: { profile: string | null; fonts: string | null; uiLang: string | null; strict: boolean };
+  options: { profile: string | null; fonts: string | null; uiLang: string | null; theme: string; look: string; strict: boolean };
 };
 
 /** The id of the popup, which the build writes after the page's root. */
@@ -86,6 +86,8 @@ const Row = ({ label, value }: { label: string; value: string }) => (
 
 /** The Information tab: the build inputs, as a list of names and values. */
 function InfoPanel({ t, info }: { t: PageMessages; info: BuildInfo }) {
+  const orDefault = (value: string, fallback: string): string =>
+    value === fallback ? `${value} (${t.infoDefault})` : value;
   const given = (value: string | null): string => value ?? t.infoDefault;
   return (
     <div id="fm-info-panel" role="tabpanel" aria-labelledby="fm-info-tab" data-info-panel="info">
@@ -98,6 +100,8 @@ function InfoPanel({ t, info }: { t: PageMessages; info: BuildInfo }) {
         <Row label={t.infoProfile} value={given(info.options.profile)} />
         <Row label={t.infoFonts} value={given(info.options.fonts)} />
         <Row label={t.infoUiLang} value={given(info.options.uiLang)} />
+        <Row label={t.infoTheme} value={orDefault(info.options.theme, "auto")} />
+        <Row label={t.infoLook} value={orDefault(info.options.look, "free")} />
         <Row label={t.infoStrict} value={info.options.strict ? t.infoOn : `${t.infoOff} (${t.infoDefault})`} />
       </dl>
     </div>

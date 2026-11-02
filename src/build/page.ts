@@ -342,6 +342,8 @@ export function buildPage(quizzes: readonly BuildQuiz[], options: PageOptions): 
         fonts: embedded,
         maths: mathCss !== null,
         code: coloured,
+        theme: front.theme,
+        look: front.look,
         given: options.given ?? {},
       }),
     }),

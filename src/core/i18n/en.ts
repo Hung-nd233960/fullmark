@@ -208,6 +208,8 @@ export const en = {
     infoProfile: "Profile",
     infoFonts: "Fonts",
     infoUiLang: "Interface language",
+    infoTheme: "Theme",
+    infoLook: "Look",
     infoStrict: "Strict",
     infoDefault: "default",
     infoOn: "on",

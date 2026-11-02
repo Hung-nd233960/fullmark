@@ -110,7 +110,9 @@ describe("the Information tab", () => {
     const html = buildPage([quiz], options);
     const t = text(html);
     expect(t).toContain("fullmark 1.0.0-test");
-    expect(t).toContain(`Quiz version ${quiz.hash.slice(0, 8)}`);
+    expect(t).toContain(`Quiz version ${quiz.hash.slice(0, 4)} `);
+    expect(t).toContain("Theme auto (default)");
+    expect(t).toContain("Look free (default)");
     expect(t).toContain("Built at 2026-10-28T10:00:00+07:00");
     expect(t).toContain("Profile default");
     expect(t).toContain("Fonts default");
@@ -131,6 +133,18 @@ describe("the Information tab", () => {
     expect(t).toContain("Phiên bản bài kiểm tra");
   });
 
+  it("shows the theme and the look the page was built with", () => {
+    const q = quizOf("test/fixtures/page/singles.md");
+    const quiz = {
+      ...q,
+      quiz: { ...q.quiz, frontMatter: { ...q.quiz.frontMatter, theme: "dark" as const, look: "locked" as const } },
+    };
+    const t = text(buildPage([quiz], options));
+    expect(t).toContain("Theme dark");
+    expect(t).not.toContain("Theme dark (default)");
+    expect(t).toContain("Look locked");
+  });
+
   it("names KaTeX and each embedded font with its version, and Shiki when code is coloured", () => {
     const sync = infoFor({
       version: "1.0.0-test",
@@ -139,11 +153,14 @@ describe("the Information tab", () => {
       fonts: ["serif", "readable"],
       maths: true,
       code: true,
+      theme: "dark",
+      look: "locked",
       given: {},
     });
     expect(sync.packages.map((p) => p.name)).toEqual(["Preact", "KaTeX", "Shiki", "Source Serif 4", "Lexend"]);
     for (const p of sync.packages) expect(p.version).toMatch(/^\d+\.\d+\.\d+/);
-    expect(sync.quiz).toBe("01234567");
+    expect(sync.quiz).toBe("0123");
+    expect(sync.options).toMatchObject({ theme: "dark", look: "locked" });
   });
 
   it("holds nothing of the machine: no Node version, system, path or user", () => {
