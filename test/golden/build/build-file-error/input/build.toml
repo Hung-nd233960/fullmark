@@ -1,0 +1,4 @@
+[[build]]
+files = ["q/good.md"]
+ui-lang = "xx"
+print = true

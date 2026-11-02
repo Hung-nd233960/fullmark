@@ -12,6 +12,7 @@ export const base: BuildOptions = {
   plain: true,
   json: false,
   open: false,
+  buildFile: null,
   later: [],
   version: "1.0.0-test",
 };

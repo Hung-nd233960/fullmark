@@ -154,20 +154,23 @@ export function buildProgram(outcome: Outcome = { exit: EXIT.done }, io: Io = te
       },
     );
 
-  const LATER = ["build-file", "print", "answers", "answer-sheet", "seed", "watch", "serve", "port"] as const;
+  const LATER = ["print", "answers", "answer-sheet", "seed", "watch", "serve", "port"] as const;
   program
     .command("build")
     .description("check a quiz, then write it as one offline HTML page")
-    .argument("<files...>", "quiz .md files (globs are expanded)")
-    .option("-o, --output <out>", "the page to write (default: the quiz file with .html); with several files, a folder")
+    .argument("[files...]", "quiz .md files (globs are expanded); with --build-file, only those of its entries")
+    .option(
+      "-o, --output <out>",
+      "the page to write (default: the quiz file with .html); with several files or a build file, a folder",
+    )
     .option("--profile <name>", "the check profile; overrides the quiz's profile")
     .option("--config <toml>", "use this config file instead of the nearest fullmark.toml")
     .option("--strict", "warnings count as errors, and nothing is written")
     .option("--built-at <iso>", "pin the build time, so a build is byte-identical across runs (default: now)")
-    // these arrive with later slices; they are accepted so that the refusal is a plain message
-    .option("--build-file <build>", "(not available yet)")
+    .option("--build-file <build>", "build what a build file lists (TOML): its [[build]] entries, in order")
     .option("--json", "print one JSON object per file on stdout")
     .option("--open", "open the page after building (one file)")
+    // these arrive with later slices; they are accepted so that the refusal is a plain message
     .option("--print", "(not available yet)")
     .option("--answers <mode>", "(not available yet)")
     .option("--answer-sheet", "(not available yet)")
@@ -190,6 +193,7 @@ export function buildProgram(outcome: Outcome = { exit: EXIT.done }, io: Io = te
         builtAt: (options.builtAt as string | undefined) ?? null,
         plain: Boolean(options.plain) || noColor(),
         json: Boolean(options.json),
+        buildFile: (options.buildFile as string | undefined) ?? null,
         open: Boolean(options.open),
         uiLang: (options.uiLang as string | undefined) ?? null,
         later: LATER.filter(

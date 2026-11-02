@@ -1,0 +1,10 @@
+built-at = "2026-10-28T10:00:00+07:00"
+out = "pages"
+
+[[build]]
+files = ["q/*.md"]
+
+[[build]]
+files = ["q/good.md"]
+out = "vi"
+ui-lang = "vi"

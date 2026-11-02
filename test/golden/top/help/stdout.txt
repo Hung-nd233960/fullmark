@@ -16,6 +16,6 @@ Commands:
   grade [options] <results...>  re-grade attempts and write a report: score,
                                 wrong answers, and the essays laid out for a
                                 grader
-  build [options] <files...>    check a quiz, then write it as one offline HTML
+  build [options] [files...]    check a quiz, then write it as one offline HTML
                                 page
   help [command]                help for a command

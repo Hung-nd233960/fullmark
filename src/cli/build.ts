@@ -10,6 +10,7 @@ import type { ConfigError } from "../core/config/types";
 import { FONT_CHOICES, FONT_REGISTRY, type FontsChoice } from "../core/fonts";
 import type { Issue } from "../core/issue";
 import { type WriteError, writeFileAtomic } from "./atomic";
+import { type Job, type PlanItem, planBuildFile } from "./build-file";
 import {
   batchSummary,
   type CheckIo,
@@ -41,6 +42,8 @@ export type BuildOptions = {
   plain: boolean;
   /** `--json`: one object per file on stdout, nothing else */
   json: boolean;
+  /** `--build-file BUILD`: the entries of this file say what to build, with the `FILE`s as a filter */
+  buildFile: string | null;
   /** `--open`: open the page after a single successful build */
   open: boolean;
   /** the options that arrive with later slices; any of them set is "not available yet" */
@@ -101,7 +104,7 @@ type FileResult = {
   configErrors?: ConfigError[];
 };
 
-type RunContext = { opts: BuildOptions; io: BuildIo; several: boolean; builtAt: string; runtime: () => Runtime | null };
+type RunContext = { io: BuildIo; several: boolean; builtAt: string; runtime: () => Runtime | null };
 type Runtime = { runtime: string; css: string };
 
 /** Where a file's page goes: `-o` (a file for one input, a folder for several), else beside the source. */
@@ -134,8 +137,9 @@ function jsonLine(r: FileResult, several: boolean): Record<string, unknown> {
 }
 
 /** One file, checked and built exactly as alone (COMMANDS.md, "Several files"). Nothing is printed here. */
-async function buildOne(file: string, c: RunContext): Promise<FileResult> {
-  const { opts, io } = c;
+async function buildOne(job: Job, c: RunContext): Promise<FileResult> {
+  const { file, opts } = job;
+  const { io } = c;
   const issues: Issue[] = [];
   const failedWith = (out: string[]): FileResult => ({
     file,
@@ -220,7 +224,7 @@ async function buildOne(file: string, c: RunContext): Promise<FileResult> {
       {
         runtime: runtime.runtime,
         css: runtime.css,
-        builtAt: c.builtAt,
+        builtAt: opts.builtAt ?? c.builtAt,
         version: opts.version,
         math: katexTools(),
         highlight,
@@ -256,7 +260,7 @@ async function buildOne(file: string, c: RunContext): Promise<FileResult> {
   }
 
   const source = resolve(io.cwd, file);
-  const target = targetOf(file, opts, io, c.several);
+  const target = job.target;
   try {
     await writeFileAtomic(target, page);
   } catch (error) {
@@ -291,35 +295,66 @@ export async function runBuild(patterns: readonly string[], opts: BuildOptions, 
     fail(io, opts.json, `--ui-lang ${opts.uiLang} is not one of en, vi`);
     return EXIT.usage;
   }
-  const inputs = expandInputs(patterns, io.cwd);
-  if (inputs.files.length === 0 && inputs.errors.length === 0) {
-    fail(io, opts.json, "nothing to work on: give a quiz file");
-    return EXIT.usage;
-  }
-  const several = inputs.files.length + inputs.errors.length > 1;
-  if (several && opts.output !== null) {
-    // before anything is built: a page's name, a file in the way, or two pages with one name
-    if (/\.html?$/i.test(opts.output)) {
-      fail(io, opts.json, `-o ${opts.output} looks like a page, and building several files needs a folder`);
+  let items: PlanItem[];
+  if (opts.buildFile !== null) {
+    // the entries of the build file become the same list `build FILE...` works through
+    const plan = planBuildFile(opts.buildFile, patterns, opts, io.cwd);
+    if (!plan.ok) {
+      fail(
+        io,
+        opts.json,
+        plan.message,
+        { ...(plan.file ? { file: plan.file } : {}), ...(plan.errors ? { errors: plan.errors } : {}) },
+        plan.details,
+      );
       return EXIT.usage;
     }
-    const folder = resolve(io.cwd, opts.output);
-    if (existsSync(folder) && !statSync(folder).isDirectory()) {
-      fail(io, opts.json, `-o ${opts.output} is a file, and building several files needs a folder`);
+    items = plan.items;
+  } else {
+    const inputs = expandInputs(patterns, io.cwd);
+    if (inputs.files.length === 0 && inputs.errors.length === 0) {
+      fail(io, opts.json, "nothing to work on: give a quiz file");
       return EXIT.usage;
     }
-    const names = new Map<string, string>();
-    for (const file of inputs.files) {
-      const name = basename(targetOf(file, opts, io, true));
-      const key = process.platform === "win32" ? name.toLowerCase() : name;
-      const other = names.get(key);
-      if (other !== undefined) {
-        fail(io, opts.json, `${other} and ${file} would both be written to ${shownPath(join(folder, name), io.cwd)}`);
+    if (inputs.files.length + inputs.errors.length > 1 && opts.output !== null) {
+      // before anything is built: a page's name, a file in the way, or two pages with one name
+      if (/\.html?$/i.test(opts.output)) {
+        fail(io, opts.json, `-o ${opts.output} looks like a page, and building several files needs a folder`);
         return EXIT.usage;
       }
-      names.set(key, file);
+      const folder = resolve(io.cwd, opts.output);
+      if (existsSync(folder) && !statSync(folder).isDirectory()) {
+        fail(io, opts.json, `-o ${opts.output} is a file, and building several files needs a folder`);
+        return EXIT.usage;
+      }
+      const names = new Map<string, string>();
+      for (const file of inputs.files) {
+        const name = basename(targetOf(file, opts, io, true));
+        const key = process.platform === "win32" ? name.toLowerCase() : name;
+        const other = names.get(key);
+        if (other !== undefined) {
+          fail(io, opts.json, `${other} and ${file} would both be written to ${shownPath(join(folder, name), io.cwd)}`);
+          return EXIT.usage;
+        }
+        names.set(key, file);
+      }
     }
+    const manyInputs = inputs.files.length + inputs.errors.length > 1;
+    items = inputs.items.map((item) =>
+      "error" in item
+        ? item
+        : {
+            job: {
+              file: item.file,
+              abs: resolve(io.cwd, item.file),
+              opts,
+              target: targetOf(item.file, opts, io, manyInputs),
+            },
+          },
+    );
   }
+  const several = items.length > 1;
+  const jobCount = items.filter((i) => "job" in i).length;
 
   // the runtime is read once per run, when the first file needs it
   let loaded: Runtime | null | undefined;
@@ -337,21 +372,20 @@ export async function runBuild(patterns: readonly string[], opts: BuildOptions, 
     return loaded;
   };
   const context: RunContext = {
-    opts,
     io,
     several,
     builtAt: opts.builtAt ?? (io.now?.() ?? new Date()).toISOString(),
     runtime,
   };
 
-  const progress = !opts.json && !opts.plain && io.tty && inputs.files.length > 1;
+  const progress = !opts.json && !opts.plain && io.tty && jobCount > 1;
   let exit: ExitCode = EXIT.done;
   let ok = 0;
   let failed = 0;
   let n = 0;
   let opened: string | null = null;
   // one after another, in the order given: an unusable input fails in its place
-  for (const item of inputs.items) {
+  for (const item of items) {
     if ("error" in item) {
       fail(io, opts.json, item.error.message, { file: item.error.input });
       failed++;
@@ -359,8 +393,8 @@ export async function runBuild(patterns: readonly string[], opts: BuildOptions, 
       continue;
     }
     n++;
-    if (progress) showProgress(io, n, inputs.files.length, item.file);
-    const r = await buildOne(item.file, context);
+    if (progress) showProgress(io, n, jobCount, item.job.file);
+    const r = await buildOne(item.job, context);
     if (progress) clearProgress(io);
     if (opts.json) {
       io.out(JSON.stringify(jsonLine(r, several)));

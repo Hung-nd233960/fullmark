@@ -1,0 +1,4 @@
+q/good.md: wrote pages/good.html
+q/second.md: wrote pages/second.html
+q/good.md: wrote vi/good.html
+3 done, 0 failed

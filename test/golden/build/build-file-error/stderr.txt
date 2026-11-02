@@ -1,0 +1,3 @@
+build.toml: the build file has errors
+build.toml:3: ui-lang xx is not one of en, vi
+build.toml:4: `print` is not available yet: it arrives in a later release
