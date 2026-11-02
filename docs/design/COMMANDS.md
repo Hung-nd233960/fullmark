@@ -32,7 +32,7 @@ The program is `quiz`. `fullmark` runs the same program, for systems where anoth
 | `--timeout SECONDS` | How long a one-shot server waits for a submit. `0` waits forever. Default `1800`, except `library take` (`0`) |
 | `-h`, `--help` | Help for the command |
 | `--version` | Print `fullmark X.Y.Z` (top level only) |
-| `--acknowledgements` | Print fullmark's MIT licence, then every third-party component shipped in the CLI or in its pages, with version, licence and the notice its licence requires (top level only). See [TECHNICAL_DESIGN.md](TECHNICAL_DESIGN.md), section 3, "Licences" |
+| `--acknowledgements` | Print fullmark's MIT licence, then every third-party component shipped in the CLI or in its pages, with version, licence and the notice its licence requires (top level only). The text is `THIRD_PARTY_NOTICES.md`, each distinct licence text printed once; it loads nothing else. See [TECHNICAL_DESIGN.md](TECHNICAL_DESIGN.md), section 3, "Licences" |
 | `--profile P` | The check profile, on every command that runs `check` (`check`, `build`, `serve`, `review`, `inspect`, `rules`, `library register`). Overrides the quiz's `profile:` |
 | `--config TOML` | Use this config file instead of looking for the nearest `fullmark.toml`. Same commands as `--profile` |
 | `--fonts quiz\|all\|none` | Which fonts the page embeds, on every command that writes a page (`build`, `replay`, `serve`, `library take`, `library replay`, `library share`, `library publish`). `quiz`: the quiz's own font; `all`: every font, about 0.5 MB, so a learner can switch freely; `none`: no embedded font, the smallest page. Default: `fonts` in `config.toml`, else `quiz`. `publish` remembers its value in the shelf manifest. See [TECHNICAL_DESIGN.md](TECHNICAL_DESIGN.md), section 8 |
