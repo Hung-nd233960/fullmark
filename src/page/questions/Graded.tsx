@@ -70,15 +70,19 @@ export function GradeTable({ grade, c }: { grade: PageGradeDetail; c: Ctx }) {
       {banded && grade.band !== null && grade.scaleMax !== null ? (
         <p class="fm-grade-band">{t.gradeOverallBand(num(grade.band, lang), num(grade.scaleMax, lang))}</p>
       ) : null}
-      {grade.justification !== null ? (
-        <p class="fm-grade-words">
-          <strong>{t.gradeJustification}</strong> {grade.justification}
-        </p>
-      ) : null}
-      {grade.improvement !== null ? (
-        <p class="fm-grade-words">
-          <strong>{t.gradeImprovement}</strong> {grade.improvement}
-        </p>
+      {grade.justification !== null || grade.improvement !== null ? (
+        <div class="fm-feedback" data-feedback>
+          {grade.justification !== null ? (
+            <p class="fm-feedback-part">
+              <strong class="fm-feedback-label">{t.gradeJustification}</strong> {grade.justification}
+            </p>
+          ) : null}
+          {grade.improvement !== null ? (
+            <p class="fm-feedback-part">
+              <strong class="fm-feedback-label">{t.gradeImprovement}</strong> {grade.improvement}
+            </p>
+          ) : null}
+        </div>
       ) : null}
       <p class="fm-grader" data-grader>
         {t.gradedBy(grade.grader.name, date, num(grade.earned, lang), num(grade.points, lang))}

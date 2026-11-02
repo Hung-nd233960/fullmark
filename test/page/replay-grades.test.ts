@@ -117,6 +117,31 @@ describe("grades on a replay page", () => {
     expect(add).not.toContain("2026 ·");
   });
 
+  it("puts the grader's two parts in one feedback panel, one part when only one is given, none when neither", () => {
+    const both = card(pageOf((g) => g, "en", "fb-both").html, "add");
+    expect(both.match(/class="fm-feedback"/g)).toHaveLength(1);
+    expect(both).toContain('<p class="fm-feedback-part"><strong class="fm-feedback-label">Why this score</strong>');
+    expect(both).toContain('<p class="fm-feedback-part"><strong class="fm-feedback-label">To improve</strong>');
+    expect(both.indexOf("fm-feedback")).toBeLessThan(both.indexOf("data-grader"));
+    const edit =
+      (keep: "justification" | "improvement" | null): Edit =>
+      (g) => {
+        const one = g.grades.add as Record<string, unknown>;
+        if (keep !== "justification") one.justification = null;
+        if (keep !== "improvement") one.improvement = null;
+      };
+    const first = card(pageOf(edit("justification"), "en", "fb-one").html, "add");
+    expect(first.match(/fm-feedback-part/g)).toHaveLength(1);
+    expect(first).toContain("Why this score");
+    expect(first).not.toContain("To improve");
+    const second = card(pageOf(edit("improvement"), "en", "fb-two").html, "add");
+    expect(second.match(/fm-feedback-part/g)).toHaveLength(1);
+    expect(second).toContain("To improve");
+    const none = card(pageOf(edit(null), "en", "fb-none").html, "add");
+    expect(none).not.toContain("fm-feedback");
+    expect(none).toContain("data-grader");
+  });
+
   it("without grades the essays and code stay pending, with no table", () => {
     const { html, state } = pageOf(null, "en", "none");
     expect(state.graded.value?.questions.filter((q) => q.status === "pending").map((q) => q.id)).toEqual([
