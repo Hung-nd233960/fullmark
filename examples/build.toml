@@ -1,0 +1,31 @@
+# Builds every example: quiz build --build-file examples/build.toml
+# Paths are relative to this file. Each entry has its own `out`, because every example is called quiz.md.
+
+# the settings at the top apply to every entry unless it says otherwise
+ui-lang = "en"                      # the page's own words (en or vi)
+built-at = "2026-10-24T09:00:00+07:00"  # pinned and quoted, so a rebuild is byte-identical
+
+[[build]]
+files = ["calculus/quiz.md"]        # maths
+out = "site/calculus"               # always a folder: the page is site/calculus/quiz.html
+
+[[build]]
+files = ["exam/quiz.md"]
+out = "site/exam"
+
+[[build]]
+files = ["ielts/quiz.md"]           # sheets and an image
+out = "site/ielts"
+
+[[build]]
+files = ["medical/quiz.md"]
+out = "site/medical"
+
+[[build]]
+files = ["rust/quiz.md"]            # highlighted code
+out = "site/rust"
+
+[[build]]
+files = ["survey/quiz.md"]
+out = "site/survey"
+ui-lang = "vi"                      # one entry overrides the top

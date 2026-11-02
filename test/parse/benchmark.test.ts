@@ -1,4 +1,4 @@
-import { readdirSync, readFileSync, statSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 import { parse } from "../../src/core/parse";
@@ -7,7 +7,9 @@ const examples = resolve(import.meta.dirname, "..", "..", "examples");
 
 describe("parse speed", () => {
   it("parses the largest example in well under 50 ms (a generous limit, to catch accidents)", () => {
-    const files = readdirSync(examples).map((n) => join(examples, n, "quiz.md"));
+    const files = readdirSync(examples)
+      .filter((n) => existsSync(join(examples, n, "quiz.md")))
+      .map((n) => join(examples, n, "quiz.md"));
     const largest = files.reduce((a, b) => (statSync(a).size >= statSync(b).size ? a : b));
     const text = readFileSync(largest, "utf8");
     parse(text, largest); // warm up: the first call compiles the parser

@@ -1,4 +1,4 @@
-import { cpSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync } from "node:fs";
+import { cpSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { afterAll, describe, expect, it } from "vitest";
@@ -17,11 +17,13 @@ const work = mkdtempSync(join(tmpdir(), "fullmark-vi-scan-"));
 afterAll(() => rmSync(work, { recursive: true, force: true }));
 
 const sources: { name: string; dir: string; file: string }[] = [
-  ...readdirSync(join(root, "examples")).map((n) => ({
-    name: `example ${n}`,
-    dir: join(root, "examples", n),
-    file: "quiz.md",
-  })),
+  ...readdirSync(join(root, "examples"))
+    .filter((n) => existsSync(join(root, "examples", n, "quiz.md")))
+    .map((n) => ({
+      name: `example ${n}`,
+      dir: join(root, "examples", n),
+      file: "quiz.md",
+    })),
   ...readdirSync(join(root, "test", "fixtures", "page"))
     .filter((f) => f.endsWith(".md"))
     .map((f) => ({ name: `fixture ${f}`, dir: join(root, "test", "fixtures", "page"), file: f })),

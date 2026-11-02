@@ -312,7 +312,9 @@ describe("a build file rebuilds a course byte-identically, and each page equals 
   it("every example: two runs are identical, and each page equals `build FILE` with the same flags", async () => {
     const dir = mkdtempSync(join(tmpdir(), "fullmark-buildfile-"));
     trees.push({ done: () => rmSync(dir, { recursive: true, force: true }) });
-    const names = readdirSync(join(root, "examples"));
+    const names = readdirSync(join(root, "examples"), { withFileTypes: true })
+      .filter((e) => e.isDirectory() && e.name !== "site")
+      .map((e) => e.name);
     for (const n of names) cpSync(join(root, "examples", n), join(dir, n), { recursive: true });
     mkdirSync(join(dir, ".git"));
     // the last example is built with other flags: no fonts, a Vietnamese interface
@@ -348,5 +350,34 @@ ui-lang = "vi"
     }
     // the last entry's flags did something: its page differs from a build without them
     expect(first.get(last)).toContain('<html lang="vi"');
+  });
+});
+
+describe("examples/build.toml", () => {
+  it("builds every example, each page byte-identical to `quiz build FILE` with the same flags", async () => {
+    const out = join(root, "examples", "site");
+    rmSync(out, { recursive: true, force: true });
+    try {
+      const c = capture(root);
+      const code = await runBuild([], { ...base, builtAt: null, buildFile: "examples/build.toml" }, c.io);
+      expect(code).toBe(0);
+      const names = ["calculus", "exam", "ielts", "medical", "rust", "survey"];
+      expect(readdirSync(out).sort()).toEqual(names);
+      for (const name of names) {
+        const one = tempTree({});
+        trees.push(one);
+        const target = join(one.dir, `${name}.html`);
+        const r = capture(root);
+        const rc = await runBuild(
+          [`examples/${name}/quiz.md`],
+          { ...base, builtAt: AT, uiLang: name === "survey" ? "vi" : "en", output: target },
+          r.io,
+        );
+        expect(rc).toBe(0);
+        expect(read(out, name, "quiz.html"), name).toBe(readFileSync(target, "utf8"));
+      }
+    } finally {
+      rmSync(out, { recursive: true, force: true });
+    }
   });
 });

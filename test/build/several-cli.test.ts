@@ -147,7 +147,7 @@ describe("a folder of quizzes builds in one command", () => {
   it("every example: the batch page is byte-identical to the page built alone", async () => {
     const dir = mkdtempSync(join(tmpdir(), "fullmark-batch-"));
     trees.push({ done: () => rmSync(dir, { recursive: true, force: true }) });
-    const names = readdirSync(join(root, "examples"));
+    const names = readdirSync(join(root, "examples")).filter((n) => existsSync(join(root, "examples", n, "quiz.md")));
     for (const n of names) cpSync(join(root, "examples", n), join(dir, n), { recursive: true });
     mkdirSync(join(dir, ".git"));
     const batch = capture(dir);

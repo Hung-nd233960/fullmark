@@ -17,3 +17,4 @@ playwright-report/
 docs/mockup/*.zip
 docs/mockup/*.pdf
 /samples/
+examples/site/

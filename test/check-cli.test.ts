@@ -1,5 +1,5 @@
 import { execFileSync, spawnSync } from "node:child_process";
-import { readdirSync } from "node:fs";
+import { existsSync, readdirSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
 import { type CheckOptions, listContent, runCheck } from "../src/cli/check";
@@ -30,7 +30,9 @@ const tree = (files: Record<string, string>) => {
 const json = (lines: string[]) => lines.map((l) => JSON.parse(l) as Record<string, unknown>);
 
 describe("every example checks clean under its profile", () => {
-  const examples = readdirSync(join(root, "examples")).map((n) => join(root, "examples", n, "quiz.md"));
+  const examples = readdirSync(join(root, "examples"))
+    .filter((n) => existsSync(join(root, "examples", n, "quiz.md")))
+    .map((n) => join(root, "examples", n, "quiz.md"));
   for (const file of examples) {
     it(file.slice(root.length + 1).replaceAll("\\", "/"), () => {
       const c = capture(root);

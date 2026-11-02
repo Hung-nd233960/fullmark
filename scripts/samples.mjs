@@ -1,7 +1,7 @@
 // Builds every example and every page fixture into samples/, with an index, for trying the page by hand.
 // Run with `npm run samples` (it builds dist first). samples/ is git-ignored: regenerate it, never commit it.
 import { execFileSync } from "node:child_process";
-import { mkdirSync, readdirSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
 const OUT = "samples";
@@ -41,7 +41,7 @@ for (const name of readdirSync(OUT)) rmSync(join(OUT, name), { recursive: true, 
 
 const sources = [
   ...readdirSync("examples", { withFileTypes: true })
-    .filter((d) => d.isDirectory())
+    .filter((d) => d.isDirectory() && existsSync(join("examples", d.name, "quiz.md")))
     .map((d) => ({ name: `example-${d.name}`, file: join("examples", d.name, "quiz.md") })),
   ...readdirSync(join("test", "fixtures", "page"))
     .filter((f) => f.endsWith(".md"))

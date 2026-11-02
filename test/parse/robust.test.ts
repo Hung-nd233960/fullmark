@@ -1,4 +1,4 @@
-import { readdirSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 import { planIds } from "../../src/core/ids";
@@ -10,6 +10,7 @@ function samples(): { name: string; text: string }[] {
   const out: { name: string; text: string }[] = [];
   for (const dir of ["examples", "templates"]) {
     for (const n of readdirSync(join(root, dir))) {
+      if (!existsSync(join(root, dir, n, "quiz.md"))) continue;
       out.push({ name: `${dir}/${n}`, text: readFileSync(join(root, dir, n, "quiz.md"), "utf8") });
     }
   }
