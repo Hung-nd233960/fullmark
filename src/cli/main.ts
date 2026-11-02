@@ -170,8 +170,8 @@ export function buildProgram(outcome: Outcome = { exit: EXIT.done }, io: Io = te
   program
     .command("build")
     .description("check a quiz, then write it as one offline HTML page")
-    .argument("<files...>", "quiz .md file (one, for now)")
-    .option("-o, --output <out>", "the page to write (default: the quiz file with .html)")
+    .argument("<files...>", "quiz .md files (globs are expanded)")
+    .option("-o, --output <out>", "the page to write (default: the quiz file with .html); with several files, a folder")
     .option("--profile <name>", "the check profile; overrides the quiz's profile")
     .option("--config <toml>", "use this config file instead of the nearest fullmark.toml")
     .option("--strict", "warnings count as errors, and nothing is written")
@@ -189,6 +189,7 @@ export function buildProgram(outcome: Outcome = { exit: EXIT.done }, io: Io = te
       "--fonts <which>",
       "which fonts the page embeds: quiz (the quiz's own), all or none (default: fonts in config.toml, else quiz)",
     )
+    .option("--plain", "no colours and no progress line, even in a terminal")
     .option("--watch", "(not available yet)")
     .option("--serve", "(not available yet)")
     .option("--port <n>", "(not available yet)")
@@ -199,6 +200,7 @@ export function buildProgram(outcome: Outcome = { exit: EXIT.done }, io: Io = te
         strict: Boolean(options.strict),
         output: (options.output as string | undefined) ?? null,
         builtAt: (options.builtAt as string | undefined) ?? null,
+        plain: Boolean(options.plain) || noColor(),
         later: LATER.filter(
           (name) => options[name.replace(/-(\w)/g, (_m, c: string) => c.toUpperCase())] !== undefined,
         ),

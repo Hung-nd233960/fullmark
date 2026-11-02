@@ -1,0 +1,3 @@
+good.md: wrote pages/good.html
+second.md: wrote pages/second.html
+2 done, 0 failed

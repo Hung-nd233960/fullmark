@@ -50,6 +50,8 @@ export type FileOutcome =
       ignored: { rule: string; line: number; because: string }[];
       /** the first line of human output */
       header: string;
+      /** the profile as resolved, for the rules `build` measures (`build.size`) */
+      resolved: ResolvedProfile;
       /** the quiz as loaded, for the commands that go on to use it (`build`) */
       loaded: LoadedQuiz;
     }
@@ -191,9 +193,20 @@ export function checkFile(file: string, opts: CheckOptions, io: CheckIo): FileOu
     issues: result.issues,
     ignored: result.ignored,
     header: describeProfile(resolved.profile, choice, config.files),
+    resolved: resolved.profile,
     loaded,
   };
 }
+
+/** An issue as `--json` gives it, in `check` and in `build`. */
+export const issueJson = ({ rule, level, file, line, message, fix }: Issue) => ({
+  rule,
+  level,
+  file,
+  line,
+  message,
+  fix: fix ?? null,
+});
 
 const plural = (n: number, word: string) => `${n} ${word}${n === 1 ? "" : "s"}`;
 
@@ -223,10 +236,20 @@ export function describeOutcome(r: FileOutcome, several: boolean, color: boolean
   return out;
 }
 
-function worst(a: ExitCode, b: ExitCode): ExitCode {
+export function worst(a: ExitCode, b: ExitCode): ExitCode {
   const rank = (c: ExitCode) => (c === EXIT.usage ? 2 : c === EXIT.problems ? 1 : 0);
   return rank(b) > rank(a) ? b : a;
 }
+
+/** The updating line on a terminal, `[3/12] signals.md`, and its removal (COMMANDS.md, "Several files"). */
+export function showProgress(io: Io, n: number, total: number, file: string): void {
+  io.errRaw(`\r[${n}/${total}] ${file}`);
+}
+export function clearProgress(io: Io): void {
+  io.errRaw("\r\u001b[K");
+}
+/** The summary of a batch: `10 done, 2 failed`. */
+export const batchSummary = (ok: number, failed: number): string => `${ok} done, ${failed} failed`;
 
 /** `quiz check FILE...` (COMMANDS.md). Every input is attempted; the exit code is the worst one. */
 export function runCheck(patterns: readonly string[], opts: CheckOptions, io: CheckIo): ExitCode {
@@ -263,7 +286,7 @@ export function runCheck(patterns: readonly string[], opts: CheckOptions, io: Ch
         );
         for (const line of describeOutcome(r, several, false)) io.err(line);
       } else {
-        const { header: _header, ...rest } = r;
+        const { header: _header, resolved: _resolved, ...rest } = r;
         io.out(
           JSON.stringify({
             status: rest.status,
@@ -272,14 +295,7 @@ export function runCheck(patterns: readonly string[], opts: CheckOptions, io: Ch
             config: rest.config,
             errors: rest.errors,
             warnings: rest.warnings,
-            issues: rest.issues.map(({ rule, level, file, line, message, fix }) => ({
-              rule,
-              level,
-              file,
-              line,
-              message,
-              fix: fix ?? null,
-            })),
+            issues: rest.issues.map(issueJson),
             ignored: rest.ignored,
           }),
         );
@@ -299,9 +315,9 @@ export function runCheck(patterns: readonly string[], opts: CheckOptions, io: Ch
     }
     const file = item.file;
     n++;
-    if (progress) io.errRaw(`\r[${n}/${inputs.files.length}] ${file}`);
+    if (progress) showProgress(io, n, inputs.files.length, file);
     const result = checkFile(file, opts, io);
-    if (progress) io.errRaw("\r\u001b[K");
+    if (progress) clearProgress(io);
     emit(result);
     if (result.status === "error") {
       failed++;
@@ -313,7 +329,7 @@ export function runCheck(patterns: readonly string[], opts: CheckOptions, io: Ch
   }
   if (several) {
     if (opts.json) io.out(JSON.stringify({ status: "done", ok, failed }));
-    else io.out(`${ok} done, ${failed} failed`);
+    else io.out(batchSummary(ok, failed));
   }
   return exit;
 }
