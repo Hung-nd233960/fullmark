@@ -104,12 +104,20 @@ export function GradeTable({ grade, c }: { grade: PageGradeDetail; c: Ctx }) {
         <div class="fm-feedback" data-feedback>
           {grade.justification !== null ? (
             <p class="fm-feedback-part">
-              <strong class="fm-feedback-label">{t.gradeJustification}</strong> {grade.justification}
+              <strong class="fm-feedback-label">
+                {t.gradeJustification}
+                <span class="fm-sr">:</span>
+              </strong>{" "}
+              {grade.justification}
             </p>
           ) : null}
           {grade.improvement !== null ? (
             <p class="fm-feedback-part">
-              <strong class="fm-feedback-label">{t.gradeImprovement}</strong> {grade.improvement}
+              <strong class="fm-feedback-label">
+                {t.gradeImprovement}
+                <span class="fm-sr">:</span>
+              </strong>{" "}
+              {grade.improvement}
             </p>
           ) : null}
         </div>

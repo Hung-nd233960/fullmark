@@ -120,8 +120,12 @@ describe("grades on a replay page", () => {
   it("puts the grader's two parts in one feedback panel, one part when only one is given, none when neither", () => {
     const both = card(pageOf((g) => g, "en", "fb-both").html, "add");
     expect(both.match(/class="fm-feedback"/g)).toHaveLength(1);
-    expect(both).toContain('<p class="fm-feedback-part"><strong class="fm-feedback-label">Why this score</strong>');
-    expect(both).toContain('<p class="fm-feedback-part"><strong class="fm-feedback-label">To improve</strong>');
+    expect(both).toContain(
+      '<p class="fm-feedback-part"><strong class="fm-feedback-label">Why this score<span class="fm-sr">:</span></strong>',
+    );
+    expect(both).toContain(
+      '<p class="fm-feedback-part"><strong class="fm-feedback-label">To improve<span class="fm-sr">:</span></strong>',
+    );
     expect(both.indexOf("fm-feedback")).toBeLessThan(both.indexOf("data-grader"));
     const edit =
       (keep: "justification" | "improvement" | null): Edit =>
