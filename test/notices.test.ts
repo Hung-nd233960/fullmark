@@ -1,4 +1,5 @@
 import { spawnSync } from "node:child_process";
+import { createHash } from "node:crypto";
 import { readdirSync, readFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { describe, expect, it } from "vitest";
@@ -82,6 +83,18 @@ describe("every component has a licence file and a licence on the allow-list", (
       "bare 3.0.0: no licence text found in its package",
     ]);
     expect(ALLOWED).toEqual(["MIT", "ISC", "BSD-2-Clause", "BSD-3-Clause", "Apache-2.0", "OFL-1.1"]);
+  });
+});
+
+describe("Source Serif 4's copyright line", () => {
+  // The package's licence file names only Google; Adobe's line is set by hand in scripts/notices.mjs.
+  it("is checked again when that package's licence file changes", () => {
+    const file = join(root, "node_modules/@fontsource-variable/source-serif-4/LICENSE");
+    const hash = createHash("sha256").update(readFileSync(file)).digest("hex");
+    expect(
+      hash,
+      "the licence file of @fontsource-variable/source-serif-4 changed: check the hand-set copyright line in scripts/notices.mjs, then update this hash",
+    ).toBe("18aabf190848725e2576eefb5c29ba06aac1029d02132252a7f312eac2e50cf3");
   });
 });
 

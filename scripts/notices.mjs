@@ -32,7 +32,7 @@ const TITLES = {
   "@noble/hashes": "Noble Hashes",
   zod: "Zod",
 };
-/** A copyright line the package's licence file does not carry (Source Serif's file names only its publisher). */
+/** A copyright line the package's licence file does not carry (Source Serif's file names only its publisher). test/notices.test.ts pins that file's SHA-256 and fails when it changes, so this line is checked again. */
 const COPYRIGHT = {
   "@fontsource-variable/source-serif-4":
     "Copyright 2014-2021 Adobe Systems Incorporated (http://www.adobe.com/), with Reserved Font Name 'Source'.",
