@@ -2,10 +2,12 @@ import { h } from "preact";
 import { renderToString } from "preact-render-to-string";
 import { describe, expect, it } from "vitest";
 import { pageQuizOf } from "../../src/build/page";
+import { en } from "../../src/core/i18n/en";
+import { vi } from "../../src/core/i18n/vi";
 import type { Choice } from "../../src/core/themes";
 import { App } from "../../src/page/App";
 import { keyHandler } from "../../src/page/keys";
-import { SIZES, sizePercent } from "../../src/page/look";
+import { SIZES, sizeFactor } from "../../src/page/look";
 import { messagesFor } from "../../src/page/questions/shared";
 import { lookKey } from "../../src/page/saved";
 import { createStore } from "../../src/page/store";
@@ -207,10 +209,12 @@ describe("the Appearance menu", () => {
 
 describe("the text size", () => {
   it("shows the size as a percentage of the default, rounded", () => {
-    expect(SIZES.map(sizePercent)).toEqual([88, 100, 112, 124, 135]);
+    expect(SIZES.map(sizeFactor)).toEqual([0.88, 1, 1.12, 1.24, 1.35]);
+    expect(vi.page.textSizeValue(1.12)).toBe("1,12×");
+    expect(en.page.textSizeValue(1)).toBe("1×");
   });
 
-  it("the middle button is inert at 100%, and resets (stored) at any other size", () => {
+  it("the middle button is inert at 1×, and resets (stored) at any other size", () => {
     const memory = new Memory();
     const a = open(memory);
     a.store.restore();
@@ -220,11 +224,11 @@ describe("the text size", () => {
     };
     let h1 = html();
     expect(h1).toMatch(
-      /data-action="reset-size" aria-label="Text size 100%" aria-disabled="true" title="Text size 100%">100%</,
+      /data-action="reset-size" aria-label="Text size 1×" aria-disabled="true" title="Text size 1×">1×</,
     );
     a.store.look.step(1);
     h1 = html();
-    expect(h1).toMatch(/aria-label="Text size 112%, reset to 100%" aria-disabled="false" title="Back to 100%">112%</);
+    expect(h1).toMatch(/aria-label="Text size 1.12×, reset to 1×" aria-disabled="false" title="Back to 1×">1.12×</);
     a.store.look.resetSize();
     expect(a.store.look.size.value).toBe(17);
     expect(memory.items.get(a.key) ?? "").not.toContain("size");
@@ -232,8 +236,8 @@ describe("the text size", () => {
 
   it("says it in Vietnamese", () => {
     const m = messagesFor({ lang: "vi", uiLang: "vi" } as never);
-    expect(m.textSizeResets(112)).toBe("Cỡ chữ 112%, về 100%");
-    expect(m.textSizeNow(100)).toBe("Cỡ chữ 100%");
+    expect(m.textSizeResets(m.textSizeValue(1.12))).toBe("Cỡ chữ 1,12×, về 1×");
+    expect(m.textSizeNow(m.textSizeValue(1))).toBe("Cỡ chữ 1×");
   });
 
   const throwing = () => {

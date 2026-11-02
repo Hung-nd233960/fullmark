@@ -145,39 +145,39 @@ for (const look of ["free", "locked"]) {
 const reset = (page: Page) => page.locator("[data-action=reset-size]");
 
 for (const look of ["free", "locked"]) {
-  test(`the middle button shows the size as a percentage: inert at 100%, resets otherwise and is stored (look: ${look})`, async ({
+  test(`the middle button shows the size as a factor (1×, 1.12×): inert at 1×, resets otherwise and is stored (look: ${look})`, async ({
     page,
   }) => {
     const quiz = open([`look: ${look}`], `size-pct-${look}`);
     await page.goto(quiz.url);
     await start(page);
     const box = await reset(page).boundingBox();
-    expect(box?.width).toBeCloseTo(46, 0);
+    expect(box?.width).toBeCloseTo(56.1, 0); // 3.3em: room for 1.35× at the buttons' size (owner, 2026-11-02)
     expect(box?.height).toBe(44);
-    await expect(reset(page)).toHaveText("100%");
+    await expect(reset(page)).toHaveText("1×");
     await expect(reset(page)).toHaveAttribute("aria-disabled", "true");
-    await expect(reset(page)).toHaveAccessibleName("Text size 100%");
-    await expect(reset(page)).toHaveAttribute("title", "Text size 100%");
+    await expect(reset(page)).toHaveAccessibleName("Text size 1×");
+    await expect(reset(page)).toHaveAttribute("title", "Text size 1×");
     await reset(page).click({ force: true });
     expect(await rootSize(page)).toBe(17);
     const inert = await reset(page).evaluate((el) => getComputedStyle(el).color);
 
     await larger(page).click();
     expect(await rootSize(page)).toBe(19);
-    await expect(reset(page)).toHaveText("112%");
+    await expect(reset(page)).toHaveText("1.12×");
     await expect(reset(page)).toHaveAttribute("aria-disabled", "false");
-    await expect(reset(page)).toHaveAccessibleName("Text size 112%, reset to 100%");
-    await expect(reset(page)).toHaveAttribute("title", "Back to 100%");
+    await expect(reset(page)).toHaveAccessibleName("Text size 1.12×, reset to 1×");
+    await expect(reset(page)).toHaveAttribute("title", "Back to 1×");
     expect(await reset(page).evaluate((el) => getComputedStyle(el).color)).not.toBe(inert);
     await larger(page).click();
-    await expect(reset(page)).toHaveText("124%");
+    await expect(reset(page)).toHaveText("1.24×");
     await larger(page).click();
-    await expect(reset(page)).toHaveText("135%");
+    await expect(reset(page)).toHaveText("1.35×");
     await reset(page).click({ force: true });
     expect(await rootSize(page)).toBe(17);
-    await expect(reset(page)).toHaveText("100%");
+    await expect(reset(page)).toHaveText("1×");
     await smaller(page).click();
-    await expect(reset(page)).toHaveText("88%");
+    await expect(reset(page)).toHaveText("0.88×");
     await page.reload();
     expect(await rootSize(page)).toBe(15);
     await resume(page);
@@ -195,9 +195,9 @@ for (const look of ["free", "locked"]) {
     await start(page);
     await page.locator(".fm-topbar").getByRole("button", { name: "Appearance" }).click();
     const row = page.locator("[data-look-menu]");
-    await expect(row.locator("[data-action=reset-size]")).toHaveText("100%");
+    await expect(row.locator("[data-action=reset-size]")).toHaveText("1×");
     await larger(page).click();
-    await expect(row.locator("[data-action=reset-size]")).toHaveText("112%");
+    await expect(row.locator("[data-action=reset-size]")).toHaveText("1.12×");
     await row.locator("[data-action=reset-size]").click();
     expect(await rootSize(page)).toBe(17);
     await larger(page).click();
@@ -205,7 +205,7 @@ for (const look of ["free", "locked"]) {
     await resume(page);
     expect(await rootSize(page)).toBe(19);
     await page.locator(".fm-topbar").getByRole("button", { name: "Appearance" }).click();
-    await expect(page.locator("[data-look-menu] [data-action=reset-size]")).toHaveText("112%");
+    await expect(page.locator("[data-look-menu] [data-action=reset-size]")).toHaveText("1.12×");
     expect(await shortButtons(page)).toEqual([]);
     await noViolations(page);
   });

@@ -2,7 +2,7 @@ import { useEffect } from "preact/hooks";
 import type { FontId } from "../core/fonts";
 import { type Choice, THEME_NAMES } from "../core/themes";
 import { Icon } from "./icons";
-import { DEFAULT_SIZE, SIZES, sizePercent } from "./look";
+import { DEFAULT_SIZE, SIZES, sizeFactor } from "./look";
 import type { PageMessages } from "./questions/shared";
 import type { Store } from "./store";
 
@@ -37,7 +37,7 @@ export function TextSize({ t, store }: { t: PageMessages; store: Store }) {
   const size = store.look.size.value;
   const smallest = size <= (SIZES[0] as number);
   const largest = size >= (SIZES.at(-1) as number);
-  const percent = sizePercent(size);
+  const value = t.textSizeValue(sizeFactor(size));
   const plain = size === DEFAULT_SIZE;
   return (
     <div class="fm-textsize" data-textsize>
@@ -57,14 +57,14 @@ export function TextSize({ t, store }: { t: PageMessages; store: Store }) {
         type="button"
         class="fm-textsize-reset"
         data-action="reset-size"
-        aria-label={plain ? t.textSizeNow(percent) : t.textSizeResets(percent)}
+        aria-label={plain ? t.textSizeNow(value) : t.textSizeResets(value)}
         aria-disabled={plain}
-        title={plain ? t.textSizeNow(percent) : t.textSizeBack}
+        title={plain ? t.textSizeNow(value) : t.textSizeBack}
         onClick={() => {
           if (!plain) store.look.resetSize();
         }}
       >
-        {t.textSizeValue(percent)}
+        {value}
       </button>
       <button
         type="button"

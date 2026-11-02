@@ -49,8 +49,8 @@ export function applyLook(store: Store, root: HTMLElement = document.documentEle
 export const SIZES = [15, 17, 19, 21, 23] as const;
 export const DEFAULT_SIZE = 17;
 
-/** A size as a percentage of the default, rounded: 88, 100, 112, 124, 135. */
-export const sizePercent = (size: number): number => Math.round((size / DEFAULT_SIZE) * 100);
+/** A size as a factor of the default, to two places: 0.88, 1, 1.12, 1.24, 1.35 (shown as `1.12×`, `1×` at the default). */
+export const sizeFactor = (size: number): number => Math.round((size / DEFAULT_SIZE) * 100) / 100;
 
 /** The stored `size`: one of the five, else the default. */
 export const sizeOf = (stored: unknown): number =>
