@@ -180,10 +180,9 @@ async function buildOne(job: Job, c: RunContext): Promise<FileResult> {
 
   // `--fonts`, else the machine config's `fonts`, else the quiz's own font
   const machine = io.machine ?? { ...realMachine(), cwd: io.cwd };
-  const fonts: FontsChoice =
-    (opts.fonts as FontsChoice | null) ??
-    loadConfig(machine, dirname(resolve(io.cwd, file)), opts.config).layers.user?.fonts ??
-    "quiz";
+  const machineFonts = loadConfig(machine, dirname(resolve(io.cwd, file)), opts.config).layers.user?.fonts;
+  const fonts: FontsChoice = (opts.fonts as FontsChoice | null) ?? machineFonts ?? "quiz";
+  const fontsGiven = opts.fonts !== null || machineFonts !== undefined;
   const front = result.loaded.quiz.frontMatter;
   if (fonts === "none" && front.look === "locked" && front.font !== "system") {
     const family = FONT_REGISTRY[front.font].family;
@@ -229,6 +228,13 @@ async function buildOne(job: Job, c: RunContext): Promise<FileResult> {
         math: katexTools(),
         highlight,
         fonts,
+        // the Information tab shows what was given, and a default as the default
+        given: {
+          profile: opts.profile,
+          fonts: fontsGiven ? fonts : null,
+          uiLang: shown,
+          strict: opts.strict,
+        },
       },
     ),
   );

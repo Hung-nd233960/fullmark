@@ -16,7 +16,7 @@ import { messagesFor } from "../page/questions/shared";
 import { createStore } from "../page/store";
 import { fontDataUri } from "./fonts";
 import type { Highlight } from "./highlight";
-import { licencesFor } from "./licences";
+import { infoFor, licencesFor } from "./licences";
 import { type Asset, createRenderer, type RenderTools } from "./render";
 import type { MathTools } from "./tex";
 
@@ -44,6 +44,8 @@ export type PageOptions = {
   highlight?: Highlight | null;
   /** `--fonts`: which fonts the page embeds (`quiz` when absent) */
   fonts?: FontsChoice;
+  /** the build options as given, for the Information tab; absent or `null` is the default (build inputs only) */
+  given?: { profile?: string | null; fonts?: FontsChoice | null; uiLang?: "en" | "vi" | null; strict?: boolean };
   /** turns a registry font file's package path into a `data:` URI; absent: read from the npm package */
   fontData?: (path: string) => string;
 };
@@ -302,9 +304,18 @@ export function buildPage(quizzes: readonly BuildQuiz[], options: PageOptions): 
   if (quizzes.length === 0) throw new Error("a page needs at least one quiz");
   if (options.runtime.toLowerCase().includes("</script")) throw new Error("the runtime holds a closing script tag");
   const maths = options.math?.start();
+  // the Information tab names Shiki only when some code was coloured
+  let coloured = false;
+  const highlight: Highlight | null | undefined = options.highlight
+    ? (code, lang) => {
+        const html = (options.highlight as Highlight)(code, lang);
+        if (html !== null) coloured = true;
+        return html;
+      }
+    : options.highlight;
   const data: PageData = {
     version: 1,
-    quizzes: quizzes.map((q) => pageQuizOf(q, undefined, { math: maths?.render, highlight: options.highlight })),
+    quizzes: quizzes.map((q) => pageQuizOf(q, undefined, { math: maths?.render, highlight })),
     theme: (quizzes[0] as BuildQuiz).quiz.frontMatter.theme,
     look: (quizzes[0] as BuildQuiz).quiz.frontMatter.look,
     font: (quizzes[0] as BuildQuiz).quiz.frontMatter.font,
@@ -324,6 +335,15 @@ export function buildPage(quizzes: readonly BuildQuiz[], options: PageOptions): 
     h(LicencesDialog, {
       t: messagesFor(first),
       licences: licencesFor({ fonts: embedded, maths: mathCss !== null }),
+      info: infoFor({
+        version: options.version,
+        builtAt: options.builtAt,
+        hash: first.hash,
+        fonts: embedded,
+        maths: mathCss !== null,
+        code: coloured,
+        given: options.given ?? {},
+      }),
     }),
   );
   const csp = [

@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { describe, expect, it } from "vitest";
-import { licencesFor } from "../../src/build/licences";
+import { infoFor, licencesFor } from "../../src/build/licences";
 import { NOTICE_PACKAGES } from "../../src/build/notices-data";
 import { type BuildQuiz, buildPage, type PageOptions } from "../../src/build/page";
 import { loadQuiz } from "../../src/cli/load";
@@ -95,5 +95,69 @@ describe("the page", () => {
   it("is in the page's language", () => {
     const vi = buildPage([quizOf("examples/medical/quiz.md")], options);
     expect(vi).toContain('data-action="licences"');
+  });
+});
+
+describe("the Information tab", () => {
+  const infoOf = (html: string) => /<div id="fm-info-panel"[\s\S]*?<\/dl>/.exec(html)?.[0] ?? "";
+  const text = (html: string) =>
+    infoOf(html)
+      .replace(/<[^>]+>/g, " ")
+      .replace(/\s+/g, " ");
+
+  it("lists the build inputs, a default as the default, and the quiz's short hash", () => {
+    const quiz = quizOf("test/fixtures/page/singles.md");
+    const html = buildPage([quiz], options);
+    const t = text(html);
+    expect(t).toContain("fullmark 1.0.0-test");
+    expect(t).toContain(`Quiz version ${quiz.hash.slice(0, 8)}`);
+    expect(t).toContain("Built at 2026-10-28T10:00:00+07:00");
+    expect(t).toContain("Profile default");
+    expect(t).toContain("Fonts default");
+    expect(t).toContain("Interface language default");
+    expect(t).toContain("Strict off (default)");
+    expect(t).toMatch(/Made with Preact \d+\.\d+\.\d+/);
+    expect(t).not.toContain("KaTeX");
+    expect(t).not.toContain("Shiki");
+  });
+
+  it("shows an option as given, in the page's language", () => {
+    const given = { profile: "strict-exam", fonts: "none" as const, uiLang: "vi" as const, strict: true };
+    const t = text(buildPage([{ ...quizOf("examples/medical/quiz.md"), uiLang: "vi" }], { ...options, given }));
+    expect(t).toContain("Hồ sơ kiểm tra strict-exam");
+    expect(t).toContain("Phông chữ none");
+    expect(t).toContain("Ngôn ngữ giao diện vi");
+    expect(t).toContain("Chế độ nghiêm ngặt bật");
+    expect(t).toContain("Phiên bản bài kiểm tra");
+  });
+
+  it("names KaTeX and each embedded font with its version, and Shiki when code is coloured", () => {
+    const sync = infoFor({
+      version: "1.0.0-test",
+      builtAt: "x",
+      hash: "0123456789abcdef",
+      fonts: ["serif", "readable"],
+      maths: true,
+      code: true,
+      given: {},
+    });
+    expect(sync.packages.map((p) => p.name)).toEqual(["Preact", "KaTeX", "Shiki", "Source Serif 4", "Lexend"]);
+    for (const p of sync.packages) expect(p.version).toMatch(/^\d+\.\d+\.\d+/);
+    expect(sync.quiz).toBe("01234567");
+  });
+
+  it("holds nothing of the machine: no Node version, system, path or user", () => {
+    const html = buildPage([quizOf("test/fixtures/page/singles.md")], options);
+    const t = infoOf(html);
+    expect(t).not.toContain(process.version);
+    expect(t).not.toContain(process.platform);
+    expect(t).not.toContain(root);
+    expect(t).not.toContain(process.env.USER ?? "\u0000");
+  });
+
+  it("two builds of one quiz are byte-identical with the tab in the page", () => {
+    const quiz = quizOf("test/fixtures/page/singles.md");
+    expect(buildPage([quiz], options)).toBe(buildPage([quiz], options));
+    expect(buildPage([quiz], options)).toContain('data-info-tab="info"');
   });
 });

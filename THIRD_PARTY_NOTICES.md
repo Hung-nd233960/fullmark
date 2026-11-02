@@ -48,6 +48,7 @@ SOFTWARE.
 - **preact** 11.1.0, MIT. Copyright (c) 2015-present Jason Miller (in: the CLI, every page)
 - **preact-render-to-string** 6.8.2, MIT. Copyright (c) 2015 Jason Miller (in: the CLI)
 - **punycode.js** 2.3.1, MIT. Copyright Mathias Bynens <https://mathiasbynens.be/> (in: the CLI)
+- **shiki** 4.5.0, MIT. Copyright (c) 2021 Pine Wu (in: pages with highlighted code)
 - **smol-toml** 1.9.1, BSD-3-Clause. Copyright (c) Squirrel Chat et al., All rights reserved. (in: the CLI)
 - **uc.micro** 3.0.0, MIT. Copyright Mathias Bynens <https://mathiasbynens.be/> (in: the CLI)
 - **yaml** 2.9.1, ISC. Copyright Eemeli Aro <eemeli@gmail.com> (in: the CLI)
@@ -173,7 +174,7 @@ THE SOFTWARE.
 
 ### MIT
 
-Applies to: @preact/signals, @preact/signals-core, katex, linkify-it, markdown-it, markdown-it-container, preact, preact-render-to-string, punycode.js, uc.micro, zod.
+Applies to: @preact/signals, @preact/signals-core, katex, linkify-it, markdown-it, markdown-it-container, preact, preact-render-to-string, punycode.js, shiki, uc.micro, zod.
 
 ```text
 Permission is hereby granted, free of charge, to any person obtaining a copy

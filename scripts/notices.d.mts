@@ -7,7 +7,7 @@ export type NoticeData = {
     licence: string;
     copyright: string;
     text: number;
-    where: ("cli" | "page" | "maths" | "font")[];
+    where: ("cli" | "page" | "maths" | "code" | "font")[];
   }[];
   texts: { licence: string; body: string }[];
 };

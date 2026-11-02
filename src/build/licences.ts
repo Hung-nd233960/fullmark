@@ -1,6 +1,5 @@
-import type { FontId } from "../core/fonts";
-import { FONT_REGISTRY } from "../core/fonts";
-import type { Licences, Notice } from "../page/Licences";
+import { FONT_REGISTRY, type FontId, type FontsChoice } from "../core/fonts";
+import type { BuildInfo, Licences, Notice } from "../page/Licences";
 import { NOTICE_PACKAGES, NOTICE_TEXTS } from "./notices-data";
 
 /**
@@ -27,4 +26,41 @@ export function licencesFor(options: { fonts: readonly FontId[]; maths: boolean 
     if (t !== undefined) texts.push({ licence: t.licence, body: t.body });
   }
   return { notices, texts };
+}
+
+/**
+ * The Information tab's list (TECHNICAL_DESIGN.md, section 3, "Licences"): build inputs only, so two builds of one quiz
+ * stay byte-identical. The versions of what shapes the page come from `notices-data.ts`, as the notices do.
+ */
+export function infoFor(input: {
+  version: string;
+  builtAt: string;
+  hash: string;
+  fonts: readonly FontId[];
+  maths: boolean;
+  code: boolean;
+  given: { profile?: string | null; fonts?: FontsChoice | null; uiLang?: "en" | "vi" | null; strict?: boolean };
+}): BuildInfo {
+  const names = [
+    "preact",
+    ...(input.maths ? ["katex"] : []),
+    ...(input.code ? ["shiki"] : []),
+    ...input.fonts.map((id) => FONT_REGISTRY[id].package ?? ""),
+  ];
+  const packages = names.flatMap((name) => {
+    const p = NOTICE_PACKAGES.find((n) => n.name === name);
+    return p === undefined ? [] : [{ name: p.title, version: p.version }];
+  });
+  return {
+    fullmark: input.version,
+    quiz: input.hash.slice(0, 8),
+    builtAt: input.builtAt,
+    packages,
+    options: {
+      profile: input.given.profile ?? null,
+      fonts: input.given.fonts ?? null,
+      uiLang: input.given.uiLang ?? null,
+      strict: input.given.strict ?? false,
+    },
+  };
 }

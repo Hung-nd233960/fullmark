@@ -51,7 +51,7 @@ describe("every component has a licence file and a licence on the allow-list", (
           licence: "MIT",
           copyright: "Copyright (c) A",
           text: 0,
-          where: ["cli"] as ("cli" | "page" | "maths" | "font")[],
+          where: ["cli"] as ("cli" | "page" | "maths" | "code" | "font")[],
         },
         {
           name: "odd",
@@ -60,7 +60,7 @@ describe("every component has a licence file and a licence on the allow-list", (
           licence: "GPL-3.0",
           copyright: "Copyright (c) B",
           text: 0,
-          where: ["cli"] as ("cli" | "page" | "maths" | "font")[],
+          where: ["cli"] as ("cli" | "page" | "maths" | "code" | "font")[],
         },
         {
           name: "bare",
@@ -69,7 +69,7 @@ describe("every component has a licence file and a licence on the allow-list", (
           licence: "ISC",
           copyright: "Copyright (c) C",
           text: 1,
-          where: ["page"] as ("cli" | "page" | "maths" | "font")[],
+          where: ["page"] as ("cli" | "page" | "maths" | "code" | "font")[],
         },
       ],
       texts: [

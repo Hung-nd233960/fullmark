@@ -18,6 +18,8 @@ export const ALLOWED = ["MIT", "ISC", "BSD-2-Clause", "BSD-3-Clause", "Apache-2.
 /** Packages a page embeds without bundling them: KaTeX's CSS and fonts, and the font files. */
 const EMBEDDED = [
   { name: "katex", where: "maths", title: "KaTeX" },
+  // not bundled and nothing of it is embedded: the page's colours come from its grammars; the Information tab names it
+  { name: "shiki", where: "code", title: "Shiki" },
   { name: "@fontsource/be-vietnam-pro", where: "font", title: "Be Vietnam Pro" },
   { name: "@fontsource-variable/source-serif-4", where: "font", title: "Source Serif 4" },
   { name: "@fontsource-variable/lexend", where: "font", title: "Lexend" },
@@ -126,7 +128,7 @@ export async function collect() {
         licence: p.licence,
         copyright: p.copyright,
         text: index,
-        where: ["cli", "page", "maths", "font"].filter((x) => w.where.includes(x)),
+        where: ["cli", "page", "maths", "code", "font"].filter((x) => w.where.includes(x)),
       };
     });
   return { packages, texts: texts.map(({ licence, body }) => ({ licence, body })) };
@@ -143,7 +145,7 @@ export function problems({ packages, texts }) {
   return out;
 }
 
-const WHERE = { cli: "the CLI", page: "every page", maths: "pages with maths", font: "pages that embed the font" };
+const WHERE = { cli: "the CLI", page: "every page", maths: "pages with maths", code: "pages with highlighted code", font: "pages that embed the font" };
 
 /** The text `quiz --acknowledgements` prints and THIRD_PARTY_NOTICES.md holds. */
 export function render({ packages, texts }, own) {
@@ -188,7 +190,7 @@ export type NoticePackage = {
   copyright: string;
   /** the index in NOTICE_TEXTS */
   text: number;
-  where: readonly ("cli" | "page" | "maths" | "font")[];
+  where: readonly ("cli" | "page" | "maths" | "code" | "font")[];
 };
 
 export const NOTICE_PACKAGES: readonly NoticePackage[] = ${JSON.stringify(packages, null, 2)};

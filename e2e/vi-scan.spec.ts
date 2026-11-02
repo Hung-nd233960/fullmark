@@ -49,7 +49,9 @@ async function onScreen(page: Page): Promise<string> {
 }
 
 for (const s of subjects) {
-  test(`no English chrome in a vi page, from Start to the Licences popup: ${s.name}`, async ({ page }) => {
+  test(`no English chrome in a vi page, from Start to the Information & Licences popup: ${s.name}`, async ({
+    page,
+  }) => {
     await page.setViewportSize({ width: 1280, height: 940 });
     await page.goto(s.url);
     const mine = own(s.dir);
@@ -85,7 +87,9 @@ for (const s of subjects) {
     await page.keyboard.press("Escape");
     await page.locator("[data-action=licences]").click();
     await expect(page.locator("dialog#fm-licences")).toBeVisible();
-    await look("the Licences popup");
+    await look("the Information tab");
+    await page.locator("dialog#fm-licences [data-info-tab=licences]").click();
+    await look("the Licences tab");
 
     const leaks = seen.flatMap(([step, text]) => leaksIn(text, mine).map((l) => `${step}: ${l}`));
     expect(leaks, `${s.name}: English chrome in a vi page`).toEqual([]);

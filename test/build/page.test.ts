@@ -40,11 +40,12 @@ describe("build page: determinism", () => {
     expect(buildPage([singles], options)).toBe(buildPage([singles], options));
   });
 
-  it("the build time is in the generator meta and nowhere else", () => {
+  it("the build time is in the generator meta and the Information tab, and nowhere else", () => {
     const a = buildPage([singles], options);
     const b = buildPage([singles], { ...options, builtAt: "2026-10-29T10:00:00+07:00" });
     expect(a).toContain('<meta name="generator" content="fullmark 1.0.0-test; built 2026-10-28T10:00:00+07:00">');
-    expect(a.replace("2026-10-28", "2026-10-29")).toBe(b);
+    expect(a.replaceAll("2026-10-28", "2026-10-29")).toBe(b);
+    expect(a.split("2026-10-28")).toHaveLength(3);
   });
 });
 

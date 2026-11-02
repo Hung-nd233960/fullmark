@@ -313,8 +313,11 @@ describe("build --ui-lang", () => {
     expect(data(forced).quizzes[0]?.uiLang).toBe("en");
   });
 
-  it("the value of the flag equal to the quiz's own changes nothing", async () => {
-    expect((await build("title: T", "en")).html).toBe((await build("title: T", null)).html);
+  it("the value of the flag equal to the quiz's own changes only the Information tab's row", async () => {
+    const row = "<dd>en</dd></div><div";
+    const given = (await build("title: T", "en")).html ?? "";
+    expect(given).toContain(`Interface language</dt>${row}`);
+    expect(given.replace(row, "<dd>default</dd></div><div")).toBe((await build("title: T", null)).html);
   });
 
   it("the same --ui-lang gives the same bytes", async () => {
