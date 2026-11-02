@@ -3,6 +3,7 @@ import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { afterAll, describe, expect, it } from "vitest";
 import { runBuild } from "../../src/cli/build";
+import { runReplay } from "../../src/cli/replay-command";
 import { base } from "../helpers/build";
 import { capture } from "../helpers/cli";
 import { catalogStrings, leaksIn, own, visibleText } from "../helpers/vi-scan";
@@ -54,6 +55,40 @@ describe("the vi scan", () => {
       const mine = own(dir);
       const leaks = leaksIn(text, mine);
       expect(leaks, `${s.name}: English chrome in a vi page`).toEqual([]);
+    });
+  }
+
+  // a replay page (slice 2j2): the banner, the status segment, the criterion tables and the grader's line
+  for (const graded of [true, false]) {
+    it(`a replay page ${graded ? "with" : "without"} a grades file`, async () => {
+      const dir = join(work, graded ? "replay-graded" : "replay-pending");
+      mkdirSync(join(dir, ".git"), { recursive: true });
+      cpSync(join(root, "test", "fixtures", "replay"), dir, { recursive: true });
+      if (!graded) rmSync(join(dir, "essay-results-grades.json"));
+      const c = capture(dir);
+      const options = {
+        quiz: "essay.md",
+        grades: null,
+        output: "page.html",
+        builtAt: base.builtAt,
+        uiLang: "vi",
+        fonts: null,
+        plain: true,
+        json: false,
+        open: false,
+        noOpen: true,
+        version: "1.0.0-test",
+      };
+      expect(await runReplay(["essay-results.json"], options, c.io), c.out.join("\n")).toBe(0);
+      const text = visibleText(readFileSync(join(dir, "page.html"), "utf8"));
+      expect(text).toContain("Xem lại");
+      if (graded) {
+        expect(text).toContain("Chấm bởi");
+        expect(text).toContain("Tiêu chí");
+      }
+      // the grader's own words (notes, justification) are the author's, like the quiz: they may be English
+      const words = graded ? readFileSync(join(dir, "essay-results-grades.json"), "utf8").toLowerCase() : "";
+      expect(leaksIn(text, own(dir) + words), "English chrome in a vi replay page").toEqual([]);
     });
   }
 });

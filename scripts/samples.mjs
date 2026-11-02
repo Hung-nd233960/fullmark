@@ -29,6 +29,8 @@ const TRY = {
   "chrome-vi": "the top bar and status line in Vietnamese",
   singles: "single-choice questions only",
   second: "a second, small quiz",
+  replay:
+    "quiz replay: the essay fixture's attempt, already submitted, with its grades file (criterion tables, the grader's line); try Retry missed, reload, and Continue your retry",
   "vi-fonts": "built with --fonts all: Vietnamese text with stacked diacritics; Appearance > Font offers all four fonts; the Licences button lists their notices",
 };
 
@@ -59,6 +61,28 @@ for (const s of sources) {
   }
 }
 
+// pages made by `quiz replay`: the quiz, the results file (a grades file beside it is read too) and the page's name
+const replays = [
+  {
+    name: "replay",
+    quiz: join("test", "fixtures", "replay", "essay.md"),
+    results: join("test", "fixtures", "replay", "essay-results.json"),
+  },
+];
+for (const r of replays) {
+  try {
+    execFileSync(
+      process.execPath,
+      [CLI, "replay", r.results, "--quiz", r.quiz, "--no-open", "-o", join(OUT, `${r.name}.html`)],
+      { stdio: "pipe" },
+    );
+    built.push({ name: r.name, file: r.results });
+  } catch (e) {
+    console.error(`${r.results}: replay failed\n${e.stderr?.toString() ?? e}`);
+    process.exitCode = 1;
+  }
+}
+
 const esc = (t) => t.replace(/&/g, "&amp;").replace(/</g, "&lt;");
 const rows = built
   .map((s) => `<li><a href="${s.name}.html">${s.name}</a> <span>${esc(TRY[s.name] ?? "")}</span> <code>${esc(s.file)}</code></li>`)
@@ -74,4 +98,4 @@ ${rows}
 </ul>
 `,
 );
-console.log(`samples: ${built.length} of ${sources.length} pages in ${OUT}/ (open ${join(OUT, "index.html")})`);
+console.log(`samples: ${built.length} of ${sources.length + replays.length} pages in ${OUT}/ (open ${join(OUT, "index.html")})`);

@@ -1,4 +1,4 @@
-import { cpSync, mkdirSync, mkdtempSync } from "node:fs";
+import { cpSync, mkdirSync, mkdtempSync, readFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { expect, type Page, test } from "@playwright/test";
@@ -94,3 +94,42 @@ for (const s of subjects) {
     expect(leaks, `${s.name}: English chrome in a vi page`).toEqual([]);
   });
 }
+
+/**
+ * A replay page built with `--ui-lang vi` (slice 2j2): the banner, the status segment, the criterion tables and the
+ * grader's line, then a Retry missed left in progress and offered back through the resume banner, and its dialog.
+ */
+test("no English chrome in a vi replay page, with grades and with a retry left in progress", async ({ page }) => {
+  const dir = mkdtempSync(join(tmpdir(), "fm-e2e-vi-replay-"));
+  mkdirSync(join(dir, ".git"));
+  cpSync(join(root, "test", "fixtures", "replay"), dir, { recursive: true });
+  run(dir, "replay", "essay-results.json", "--quiz", "essay.md", "--no-open", "--built-at", AT, "--ui-lang", "vi");
+  await page.setViewportSize({ width: 1280, height: 940 });
+  await page.goto(`file:///${join(dir, "essay-results-replay.html").replaceAll("\\", "/")}`);
+  // the grader's own words are the author's, like the quiz: they may be English
+  const mine = own(dir) + readFileSync(join(dir, "essay-results-grades.json"), "utf8").toLowerCase();
+  const seen: [string, string][] = [];
+  const look = async (step: string) => seen.push([step, await onScreen(page)]);
+
+  await expect(page.locator("[data-replay-banner]")).toBeVisible();
+  await expect(page.locator(".fm-grade-table").first()).toBeVisible();
+  await look("the replay");
+  expect(seen[0]?.[1]).toContain("Chấm bởi");
+  expect(seen[0]?.[1]).toContain("Tiêu chí");
+  await page.locator("[data-action=retry-missed]").click();
+  await look("the Retry missed dialog");
+  await page.locator("[data-action=confirm-retry]").click();
+  await page.locator("article.fm-question:not([hidden]) textarea").first().fill("Một câu trả lời khác.");
+  await page.reload();
+  await expect(page.locator("[data-resume-banner]")).toBeVisible();
+  await look("the retry offered back");
+  await page.locator("[data-resume-banner] [data-action=start-over]").click();
+  await look("the Start over dialog");
+  await page.keyboard.press("Escape");
+  await page.locator("[data-resume-banner] [data-action=continue]").click();
+  await expect(page.locator(".fm-quiz")).toHaveAttribute("data-phase", "answering");
+  await look("the retry continued");
+
+  const leaks = seen.flatMap(([step, text]) => leaksIn(text, mine).map((l) => `${step}: ${l}`));
+  expect(leaks, "English chrome in a vi replay page").toEqual([]);
+});
