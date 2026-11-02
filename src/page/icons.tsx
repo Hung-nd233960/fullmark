@@ -18,6 +18,8 @@ const PATHS = {
     </>
   ),
   retry: <path d="M3 12a9 9 0 1 0 3-6.7M3 4v5h5" />,
+  /** the replay banner's: a clock running back */
+  replay: <path d="M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5M12 7v5l3 2" />,
   download: <path d="M12 4v11m-5-4l5 5 5-5M5 20h14" />,
   appearance: (
     <>

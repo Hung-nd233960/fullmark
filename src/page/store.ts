@@ -6,17 +6,20 @@ import { type Graded, type GradedQuestion, grade } from "../core/grade";
 import { en, vi } from "../core/i18n";
 import { planFor } from "../core/plan";
 import { type Choice, isChoice, shownTheme, type ThemeName } from "../core/themes";
-import { type KeyBlob, openKey, type PageData, type PageQuiz } from "./data";
+import { type KeyBlob, openKey, type PageData, type PageQuiz, type PageReplay } from "./data";
 import { createEvents, type Events } from "./events";
 import { DEFAULT_SIZE, sizeOf, stepSize } from "./look";
 import { type Action, newAttempt, reduce } from "./reducer";
+import { replayAttempt } from "./replay";
 import { limitOf, missedIds } from "./results";
 import {
   attemptKey,
+  isReplayKey,
   lookKey,
   quizPrefix,
   readLook,
   readSaved,
+  replayAttemptKey,
   type Saver,
   saverOver,
   saveText,
@@ -48,6 +51,8 @@ export type QuizState = {
   said: Signal<string>;
   /** `feedback: instant`: the result of each checked question, by id */
   checks: Signal<Record<string, GradedQuestion>>;
+  /** `quiz replay`: the attempt on show is the replayed one (null on a built page, and after Retry missed) */
+  replay: Signal<PageReplay | null>;
   /** the review filter under the results card; not stored */
   filter: Signal<"all" | "missed" | "flagged">;
   /** the question the learner last focused or answered; null before any (the status line then names the first) */
@@ -321,6 +326,7 @@ export function createStore(data: PageData, deps: Deps = {}): Store {
       // before Start the plan is a stand-in: every question, in the data's order
       attempt: signal(newAttempt(page.hash, { source: "full", questions: ids })),
       graded: signal(null),
+      replay: signal(null),
       key: signal(null),
       startedAt: null,
       part: signal(null),
@@ -350,10 +356,15 @@ export function createStore(data: PageData, deps: Deps = {}): Store {
     return state.key.value;
   };
 
+  /** where this quiz's attempt is saved: a replay page keeps its own, apart from the page built from the source */
+  const attemptKeyOf = (state: QuizState): string =>
+    state.page.replay === undefined ? attemptKey(state.page) : replayAttemptKey(state.page);
+
   const save = (state: QuizState): void => {
     const attempt = state.attempt.value;
-    if (saver === null || attempt.phase === "start") return;
-    saver.set(attemptKey(state.page), saveText(state.startedAt, attempt));
+    // the replayed attempt is never saved: it is already a file
+    if (saver === null || attempt.phase === "start" || state.replay.value !== null) return;
+    saver.set(attemptKeyOf(state), saveText(state.startedAt, attempt));
   };
 
   const grading = (state: QuizState, attempt: Attempt): void => {
@@ -481,10 +492,11 @@ export function createStore(data: PageData, deps: Deps = {}): Store {
 
   /** Back to an attempt that has not started: the saved one is removed, and the plan is a stand-in again. */
   const resetState = (state: QuizState): void => {
-    saver?.remove(attemptKey(state.page));
+    saver?.remove(attemptKeyOf(state));
     const ids = state.page.sections.flatMap((s) => s.questions.map((q) => q.id));
     runs.delete(state.page.id);
     state.attempt.value = newAttempt(state.page.hash, { source: "full", questions: ids });
+    state.replay.value = null;
     state.graded.value = null;
     state.key.value = null;
     state.startedAt = null;
@@ -498,6 +510,18 @@ export function createStore(data: PageData, deps: Deps = {}): Store {
     state.sectionSeconds.value = {};
     state.mapOpen.value = {};
   };
+
+  // a replay page opens on its attempt, submitted and graded: no Start screen, no clock
+  for (const state of quizzes.values()) {
+    const replay = state.page.replay;
+    if (replay === undefined) continue;
+    const attempt = replayAttempt(replay);
+    state.attempt.value = attempt;
+    state.replay.value = replay;
+    state.sectionSeconds.value = { ...attempt.state.sectionTime };
+    state.elapsed.value = attempt.state.timeUsed;
+    grading(state, attempt);
+  }
 
   const store: Store = {
     look,
@@ -608,11 +632,14 @@ export function createStore(data: PageData, deps: Deps = {}): Store {
       const at = now();
       for (const state of quizzes.values()) {
         const page = state.page;
+        // a replay page opens on its file, whatever is stored, and touches no key but its own
+        if (page.replay !== undefined) continue;
         const mine = attemptKey(page);
         const side = sidebarKey(page);
         const looks = lookKey(page);
         for (const key of saver.keys(quizPrefix(page.id))) {
-          if (key !== mine && key !== side && key !== looks) saver.remove(key);
+          // the keys of a replay page (`…:replay:…`) are not this page's to clean
+          if (key !== mine && key !== side && key !== looks && !isReplayKey(key)) saver.remove(key);
         }
         const text = saver.get(mine);
         const saved = readSaved(text, page);
@@ -658,7 +685,7 @@ export function createStore(data: PageData, deps: Deps = {}): Store {
     },
     startOver(quizId) {
       const state = need(quizId);
-      saver?.remove(attemptKey(state.page));
+      saver?.remove(attemptKeyOf(state));
       state.resume.value = null;
     },
     newAttempt(quizId) {
@@ -735,6 +762,9 @@ const announcement = (page: PageQuiz, minutes: number): string =>
 
 /** The export: `<quiz id>-results-<stamp>.json` and its text (`results-v2`). */
 export function exportFor(state: QuizState, now: Date): { name: string; text: string } {
+  // a replay gives back the results file it was made from, byte for byte; after Retry missed, the new attempt
+  const replay = state.replay.value;
+  if (replay !== null) return { name: replay.name, text: replay.results };
   return {
     name: `${state.page.id}-results-${localStamp(now)}.json`,
     text: `${JSON.stringify(resultsOf(state.attempt.value), null, 2)}\n`,

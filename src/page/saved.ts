@@ -84,6 +84,16 @@ export function saverOver(find: () => Storage | null | undefined, onFail: () => 
 export const quizPrefix = (quizId: string): string => `fullmark:v1:${quizId}:`;
 export const attemptKey = (quiz: Pick<PageQuiz, "id" | "hash">): string => `${quizPrefix(quiz.id)}${quiz.hash}:attempt`;
 
+/**
+ * `fullmark:v1:<quiz id>:<quiz hash>:replay:attempt`: the attempt a replay page's Retry missed starts. A replay never
+ * saves under the key of the page built from the source, so it never overwrites an attempt in progress there.
+ */
+export const replayAttemptKey = (quiz: Pick<PageQuiz, "id" | "hash">): string =>
+  `${quizPrefix(quiz.id)}${quiz.hash}:replay:attempt`;
+
+/** Whether a stored key belongs to a replay page (`…:<quiz hash>:replay:…`): the built page leaves it alone. */
+export const isReplayKey = (key: string): boolean => /:[0-9a-f]{64}:replay:/.test(key);
+
 /** `fullmark:v1:<quiz id>:<quiz hash>:sidebar`: `"open"` or `"closed"`. */
 export const sidebarKey = (quiz: Pick<PageQuiz, "id" | "hash">): string => `${quizPrefix(quiz.id)}${quiz.hash}:sidebar`;
 

@@ -69,6 +69,7 @@ export function ResultsCard({
   onDownload,
   onNew,
   onRetry,
+  replaying = false,
 }: {
   page: PageQuiz;
   state: Pick<QuizState, "attempt">;
@@ -76,6 +77,8 @@ export function ResultsCard({
   onDownload(): void;
   onNew(): void;
   onRetry(): void;
+  /** a replay (`quiz replay`) has no Start screen to go back to: no New attempt */
+  replaying?: boolean;
 }) {
   const t: PageMessages = messagesFor(page);
   const attempt = state.attempt.value;
@@ -183,9 +186,11 @@ export function ResultsCard({
           <Icon name="download" size={18} />
           {t.download}
         </button>
-        <button type="button" class="fm-button" data-action="new-attempt" onClick={onNew}>
-          {t.newAttempt}
-        </button>
+        {replaying ? null : (
+          <button type="button" class="fm-button" data-action="new-attempt" onClick={onNew}>
+            {t.newAttempt}
+          </button>
+        )}
       </div>
       <dialog ref={dialog} class="fm-dialog" aria-labelledby={`${id}/retry-title`}>
         <h2 id={`${id}/retry-title`}>{t.retryQuestion}</h2>

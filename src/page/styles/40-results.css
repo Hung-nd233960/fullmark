@@ -256,6 +256,39 @@
     color: var(--ok);
   }
 
+  /* the banner of a replay (`quiz replay`), a band of its own between the status line and the filter */
+  .fm-replay-banner {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    padding: 10px 28px;
+    font-size: 0.92em;
+    color: var(--text);
+    background: var(--info-wash);
+    border-bottom: 2px solid var(--info);
+  }
+
+  .fm-replay-banner + .fm-filter {
+    border-top: 0;
+  }
+
+  .fm-replay-banner .fm-svg {
+    flex-shrink: 0;
+    color: var(--info);
+  }
+
+  .fm-replay-label {
+    color: var(--info);
+  }
+
+  .fm-replay-banner code {
+    padding: 1px 6px;
+    font-family: var(--mono);
+    font-size: 0.9em;
+    background: var(--card);
+    border-radius: 4px;
+  }
+
   /* the review filter: a segmented control, in a band of its own under the top bar */
   .fm-filter {
     display: flex;

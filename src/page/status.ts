@@ -21,6 +21,8 @@ export type StatusInput = {
   current: string | null;
   /** the local time `14:05`, when the page is fullscreen; null otherwise */
   fullscreenClock: string | null;
+  /** the page shows a replay (`quiz replay`): the first segment says so */
+  replay?: boolean;
 };
 
 /** How far an attempt has got: the one count the status line and the Submit dialog both read. */
@@ -67,6 +69,7 @@ export function statusFor({
   sectionSeconds,
   current,
   fullscreenClock,
+  replay = false,
 }: StatusInput): Segment[] {
   const t = pageText(page);
   const plan = attempt.plan.questions;
@@ -79,7 +82,11 @@ export function statusFor({
     if (stamp !== null) {
       segments.push({
         kind: "submitted",
-        text: t.submittedOn(stamp.day, t.monthsShort[stamp.month - 1] ?? "", stamp.time),
+        text: (replay ? t.replaySubmittedOn : t.submittedOn)(
+          stamp.day,
+          t.monthsShort[stamp.month - 1] ?? "",
+          stamp.time,
+        ),
       });
     }
     const count = t.questionsCount(total);

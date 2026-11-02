@@ -237,7 +237,7 @@ function pageQuestion(
  * lists them in the right order; tests replace it. Without it, the plan is the one the quiz's short version gives.
  */
 export function pageQuizOf(
-  { quiz, hash, assets, sheets, uiLang: chosenUiLang }: BuildQuiz,
+  { quiz, hash, assets, sheets, uiLang: chosenUiLang, replay }: BuildQuiz,
   plan?: ReturnType<typeof planFor>,
   tools: Pick<RenderTools, "math" | "highlight"> = {},
 ): PageQuiz {
@@ -297,6 +297,15 @@ export function pageQuizOf(
     key: encodeKey(keyOf(quiz, explanations, samples, dataOrder), hash),
     // only when there is something: a quiz without sheets or maths keeps the data it had
     ...(materials.length > 0 ? { materials } : {}),
+    ...(replay
+      ? {
+          replay: {
+            results: replay.results,
+            name: replay.name,
+            grades: replay.applied === null ? null : { at: replay.applied.grader?.at ?? null },
+          },
+        }
+      : {}),
     ...(hasMath ? { hasMath: true as const } : {}),
   };
 }

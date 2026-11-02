@@ -9,6 +9,7 @@ import { currentOf, sideForm } from "./map";
 import { type Api, QuestionCard } from "./questions/Card";
 import { Html, messagesFor, type PageMessages } from "./questions/shared";
 import { ResultsCard } from "./ResultsCard";
+import { dayOf } from "./replay";
 import { limitOf, missedIds, num } from "./results";
 import { Sidebar, SidebarButton } from "./Sidebar";
 import { SubmitDialog } from "./SubmitDialog";
@@ -336,6 +337,7 @@ function StatusLine({ t, state, store }: { t: PageMessages; state: QuizState; st
     sectionSeconds: state.sectionSeconds.value,
     current: state.current.value,
     fullscreenClock: screen.fullscreen.value ? screen.clock.value : null,
+    replay: state.replay.value !== null,
   });
   return (
     <ul class="fm-status" aria-label={t.statusLabel}>
@@ -444,6 +446,7 @@ function Dock({
         sectionSeconds: state.sectionSeconds.value,
         current: state.current.value,
         fullscreenClock: screen.fullscreen.value ? screen.clock.value : null,
+        replay: state.replay.value !== null,
       })
     : [];
   return (
@@ -494,6 +497,36 @@ function Dock({
           }}
         />
       ) : null}
+    </div>
+  );
+}
+
+/**
+ * The banner of a replay (`quiz replay`), under the status line: "Replay · Attempt of 20 Oct 2026 · version a3f9 ·
+ * grades from the report of 21 Oct", or "grades pending" when the page has none.
+ */
+function ReplayBanner({ t, state }: { t: PageMessages; state: QuizState }) {
+  const replay = state.replay.value;
+  if (replay === null) return null;
+  const { startedAt, submittedAt } = state.attempt.value.state;
+  const attemptDay = dayOf(startedAt ?? submittedAt);
+  const gradesDay = dayOf(replay.grades?.at);
+  const month = (n: number): string => t.monthsShort[n - 1] ?? "";
+  return (
+    <div class="fm-replay-banner" data-replay-banner>
+      <Icon name="replay" size={18} />
+      <strong class="fm-replay-label">{t.replayLabel}</strong>
+      <span class="fm-replay-line">
+        {attemptDay === null ? null : (
+          <>{t.replayAttemptOf(attemptDay.day, month(attemptDay.month), attemptDay.year)} · </>
+        )}
+        {t.replayVersion} <code>{state.page.hash.slice(0, 4)}</code> ·{" "}
+        {replay.grades === null
+          ? t.replayGradesPending
+          : gradesDay === null
+            ? t.replayGradesGiven
+            : t.replayGradesFrom(gradesDay.day, month(gradesDay.month))}
+      </span>
     </div>
   );
 }
@@ -563,6 +596,7 @@ function QuizView({ state, api, store, last }: { state: QuizState; api: Api; sto
     <section class="fm-quiz" id={page.id} data-phase={attempt.phase} data-quiz={page.id}>
       {started ? (
         <Dock t={t} state={state} store={store} api={api}>
+          {state.replay.value !== null ? <ReplayBanner t={t} state={state} /> : null}
           {attempt.phase === "submitted" ? (
             <Filter t={t} state={state} missed={missed.size} flagged={flaggedIds.size} />
           ) : null}
@@ -627,6 +661,7 @@ function QuizView({ state, api, store, last }: { state: QuizState; api: Api; sto
                   }}
                   onNew={() => store.newAttempt(page.id)}
                   onRetry={() => store.retry(page.id)}
+                  replaying={state.replay.value !== null}
                 />
               ) : null}
             </>

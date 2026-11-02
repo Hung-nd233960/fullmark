@@ -176,6 +176,15 @@ export const en = {
     pointsCell: "Points",
     timeUsedCell: "Time used",
     submittedOn: (day: number, month: string, time: string) => `Submitted ${day} ${month}, ${time}`,
+    /** a replay's status line (`quiz replay`) and its banner */
+    replaySubmittedOn: (day: number, month: string, time: string) =>
+      `Replay of the attempt submitted ${day} ${month}, ${time}`,
+    replayLabel: "Replay",
+    replayAttemptOf: (day: number, month: string, year: number) => `Attempt of ${day} ${month} ${year}`,
+    replayVersion: "version",
+    replayGradesFrom: (day: number, month: string) => `grades from the report of ${day} ${month}`,
+    replayGradesGiven: "grades from the report",
+    replayGradesPending: "grades pending",
     monthsShort: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
     statusLabel: "Status",
     partTimeLeft: (n: number, of: number, title: string | null, clock: string) =>

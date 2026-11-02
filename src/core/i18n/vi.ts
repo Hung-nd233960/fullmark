@@ -175,6 +175,14 @@ export const vi = {
     pointsCell: "Điểm",
     timeUsedCell: "Thời gian đã dùng",
     submittedOn: (day: number, month: string, time: string) => `Đã nộp ${day} ${month}, ${time}`,
+    replaySubmittedOn: (day: number, month: string, time: string) =>
+      `Xem lại lần làm bài đã nộp ${day} ${month}, ${time}`,
+    replayLabel: "Xem lại",
+    replayAttemptOf: (day: number, month: string, year: number) => `Lần làm bài ngày ${day} ${month} ${year}`,
+    replayVersion: "phiên bản",
+    replayGradesFrom: (day: number, month: string) => `điểm chấm từ báo cáo ngày ${day} ${month}`,
+    replayGradesGiven: "điểm chấm từ báo cáo",
+    replayGradesPending: "chưa có điểm chấm",
     monthsShort: [
       "thg 1",
       "thg 2",

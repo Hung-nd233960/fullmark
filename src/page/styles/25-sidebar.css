@@ -680,6 +680,11 @@
       padding: 10px 16px;
     }
 
+    .fm-dock .fm-replay-banner {
+      align-items: flex-start;
+      padding: 10px 16px;
+    }
+
     .fm-dock .fm-filter-group {
       flex: 1 1 auto;
       flex-wrap: nowrap;

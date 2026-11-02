@@ -58,6 +58,21 @@ export type PageSection = {
   time?: number;
 };
 
+/**
+ * `quiz replay`: the page opens on this attempt, already submitted. `results` is the results file exactly as it was
+ * read, so that Download results gives it back byte for byte; the page reads the attempt out of it.
+ */
+export type PageReplay = {
+  results: string;
+  /** the results file's own name, which Download results keeps */
+  name: string;
+  /** the grades for essay and code answers, when the replay has any */
+  grades: PageGrades | null;
+};
+
+/** What the page needs of a checked grades file: when it was made (the grader's `at`), if it says. */
+export type PageGrades = { at: string | null };
+
 export type PageQuiz = {
   /** the quiz's id (front matter `id`, else the file name): it scopes element ids and storage */
   id: string;
@@ -80,6 +95,8 @@ export type PageQuiz = {
   key: string;
   /** the materials sheets in the order listed, as HTML; absent when the quiz has none */
   materials?: { name: string; html: string }[];
+  /** `quiz replay`: absent on a page built from the source */
+  replay?: PageReplay;
   /** present (true) when the quiz has maths: the page then carries KaTeX's styles and fonts */
   hasMath?: true;
 };

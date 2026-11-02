@@ -1,3 +1,3 @@
-{"status":"built","file":"good.md","output":"good.html","bytes":230228,"errors":[],"warnings":[]}
+{"status":"built","file":"good.md","output":"good.html","bytes":233181,"errors":[],"warnings":[]}
 {"status":"failed","file":"broken.md","output":null,"bytes":null,"errors":[{"rule":"choice.correct-count","level":"error","file":"broken.md","line":5,"message":"a single-answer question needs exactly one [x], not 0","fix":"mark one choice, or use type=multi"},{"rule":"question.type-missing","level":"error","file":"broken.md","line":10,"message":"the question has no `type`","fix":"add type=... : one of single, multi, truefalse, numeric, short, blanks, fields, ordering, matching, essay, code, scale"}],"warnings":[]}
 {"status":"done","ok":1,"failed":1}
