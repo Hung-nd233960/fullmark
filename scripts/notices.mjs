@@ -9,6 +9,7 @@ import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import { build } from "esbuild";
+import { CLI_BUNDLE, CLI_EXTERNAL, PAGE_BUNDLE } from "./bundles.mjs";
 
 const root = resolve(import.meta.dirname, "..");
 
@@ -58,25 +59,15 @@ const packagesOf = (metafile) => {
   return found;
 };
 
-/** The packages bundled into the CLI and into the page runtime: the options mirror tsup.config.ts and build-page.mjs. */
+/** The packages bundled into the CLI and into the page runtime, from the options they ship with (scripts/bundles.mjs). */
 async function bundled() {
-  const shared = { bundle: true, write: false, metafile: true, jsx: "automatic", jsxImportSource: "preact", logLevel: "error" };
-  const page = await build({
-    ...shared,
-    entryPoints: [join(root, "src/page/main.tsx")],
-    format: "iife",
-    platform: "browser",
-    outdir: join(root, "dist-notices"),
-  });
+  const shared = { bundle: true, write: false, metafile: true, logLevel: "error", outdir: join(root, "dist-notices") };
+  const page = await build({ ...PAGE_BUNDLE, ...shared, entryPoints: [join(root, "src/page/main.tsx")] });
   const cli = await build({
+    ...CLI_BUNDLE,
     ...shared,
     entryPoints: { cli: join(root, "src/cli/bin.ts"), main: join(root, "src/cli/main.ts") },
-    format: "esm",
-    splitting: true,
-    platform: "node",
-    outdir: join(root, "dist-notices"),
-    // KaTeX and Shiki stay in node_modules and load only when a quiz uses them
-    external: ["katex", "shiki", "shiki/*", "@shikijs/*"],
+    external: CLI_EXTERNAL,
   });
   return { cli: packagesOf(cli.metafile), page: packagesOf(page.metafile) };
 }

@@ -3,21 +3,15 @@
 import { readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { build } from "esbuild";
+import { PAGE_BUNDLE } from "./bundles.mjs";
 import { minifyCss } from "./minify-css.mjs";
 
 const root = resolve(import.meta.dirname, "..");
 
 await build({
+  ...PAGE_BUNDLE,
   entryPoints: [join(root, "src/page/main.tsx")],
   outfile: join(root, "dist/page.js"),
-  bundle: true,
-  minify: true,
-  format: "iife",
-  platform: "browser",
-  target: "es2022",
-  jsx: "automatic",
-  jsxImportSource: "preact",
-  legalComments: "none",
   logLevel: "warning",
 });
 

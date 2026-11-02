@@ -2,7 +2,9 @@ import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { readdirSync, readFileSync } from "node:fs";
 import { join, resolve } from "node:path";
+import { build } from "esbuild";
 import { describe, expect, it } from "vitest";
+import { PAGE_BUNDLE } from "../scripts/bundles.mjs";
 import { ALLOWED, generate, problems } from "../scripts/notices.mjs";
 import { ACKNOWLEDGEMENTS, NOTICE_PACKAGES } from "../src/build/notices-data";
 
@@ -83,6 +85,30 @@ describe("every component has a licence file and a licence on the allow-list", (
       "bare 3.0.0: no licence text found in its package",
     ]);
     expect(ALLOWED).toEqual(["MIT", "ISC", "BSD-2-Clause", "BSD-3-Clause", "Apache-2.0", "OFL-1.1"]);
+  });
+});
+
+describe("the page runtime", () => {
+  it("has a notice, marked for the page, for every package its bundle names", async () => {
+    // the same options the shipped dist/page.js is built with (scripts/bundles.mjs)
+    const built = await build({
+      ...PAGE_BUNDLE,
+      entryPoints: [join(root, "src/page/main.tsx")],
+      write: false,
+      metafile: true,
+      outdir: join(root, "dist-notices"),
+      logLevel: "error",
+    });
+    const named = new Set<string>();
+    for (const input of Object.keys(built.metafile.inputs)) {
+      const at = input.lastIndexOf("node_modules/");
+      if (at < 0) continue;
+      const parts = input.slice(at + "node_modules/".length).split("/");
+      named.add(parts[0]?.startsWith("@") ? `${parts[0]}/${parts[1]}` : (parts[0] as string));
+    }
+    expect(named.size).toBeGreaterThan(3);
+    const noticed = new Set(NOTICE_PACKAGES.filter((p) => p.where.includes("page")).map((p) => p.name));
+    expect([...named].filter((name) => !noticed.has(name))).toEqual([]);
   });
 });
 
