@@ -4,6 +4,9 @@ Markdown in, one offline HTML quiz out.
 
 Options:
   --version                     print the version
+  --acknowledgements            print fullmark's licence and every third-party
+                                component shipped in the CLI or in its pages
+                                (top level only)
   -h, --help                    help for the command
 
 Commands:

@@ -38,8 +38,6 @@ export type FontFile = {
   range: string;
 };
 
-export type FontNotice = { name: string; version: string; licence: "OFL-1.1"; copyright: string };
-
 export type FontEntry = {
   id: FontId;
   /** the family name, also the pill's text */
@@ -49,7 +47,8 @@ export type FontEntry = {
   /** `size-adjust` in percent, so this font's x-height matches the system font's (0.5 em); `null`: none */
   sizeAdjust: number | null;
   files: readonly FontFile[];
-  notice: FontNotice | null;
+  /** the npm package the files come from: its notice is in src/build/notices-data.ts, made by `npm run notices` */
+  package: string | null;
 };
 
 const staticFiles = (pkg: string, weights: readonly string[]): FontFile[] =>
@@ -85,19 +84,14 @@ const variableFiles = (
 const stackOf = (family: string): string => `"${family}",${SYSTEM_STACK}`;
 
 export const FONT_REGISTRY: Readonly<Record<FontId, FontEntry>> = {
-  system: { id: "system", family: null, stack: SYSTEM_STACK, sizeAdjust: null, files: [], notice: null },
+  system: { id: "system", family: null, stack: SYSTEM_STACK, sizeAdjust: null, files: [], package: null },
   sans: {
     id: "sans",
     family: "Be Vietnam Pro",
     stack: stackOf("Be Vietnam Pro"),
     sizeAdjust: 94.3,
     files: staticFiles("@fontsource/be-vietnam-pro", ["400", "700"]),
-    notice: {
-      name: "Be Vietnam Pro",
-      version: "5.3.0",
-      licence: "OFL-1.1",
-      copyright: "Copyright 2021 The Be Vietnam Pro Project Authors (https://github.com/bettergui/BeVietnamPro)",
-    },
+    package: "@fontsource/be-vietnam-pro",
   },
   serif: {
     id: "serif",
@@ -111,13 +105,7 @@ export const FONT_REGISTRY: Readonly<Record<FontId, FontEntry>> = {
       ["normal", "italic"],
       SERIF_LATIN_EXT,
     ),
-    notice: {
-      name: "Source Serif 4",
-      version: "5.3.1",
-      licence: "OFL-1.1",
-      copyright:
-        "Copyright 2014-2021 Adobe Systems Incorporated (http://www.adobe.com/), with Reserved Font Name 'Source'.",
-    },
+    package: "@fontsource-variable/source-serif-4",
   },
   readable: {
     id: "readable",
@@ -125,12 +113,7 @@ export const FONT_REGISTRY: Readonly<Record<FontId, FontEntry>> = {
     stack: stackOf("Lexend"),
     sizeAdjust: 95.2,
     files: variableFiles("@fontsource-variable/lexend", "lexend", "100 900", ["normal"], RANGE["latin-ext"]),
-    notice: {
-      name: "Lexend",
-      version: "5.3.0",
-      licence: "OFL-1.1",
-      copyright: "Copyright 2019 The Lexend Project Authors (https://github.com/googlefonts/lexend)",
-    },
+    package: "@fontsource-variable/lexend",
   },
 };
 

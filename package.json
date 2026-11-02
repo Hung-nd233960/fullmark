@@ -12,7 +12,8 @@
     "fullmark": "dist/cli.js"
   },
   "files": [
-    "dist"
+    "dist",
+    "THIRD_PARTY_NOTICES.md"
   ],
   "scripts": {
     "build": "tsup && node scripts/build-page.mjs",
@@ -20,6 +21,7 @@
     "typecheck": "tsc --noEmit",
     "lint": "biome check",
     "samples": "npm run build && node scripts/samples.mjs",
+    "notices": "node scripts/notices.mjs",
     "golden:update": "node scripts/golden-update.mjs",
     "check": "npm run typecheck && npm run lint && npm run test && npm run test:e2e",
     "test:e2e": "npm run build && playwright test"

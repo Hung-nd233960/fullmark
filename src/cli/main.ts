@@ -30,6 +30,10 @@ export function buildProgram(outcome: Outcome = { exit: EXIT.done }, io: Io = te
     .name("quiz")
     .description("Markdown in, one offline HTML quiz out.")
     .version(`fullmark ${VERSION}`, "--version", "print the version")
+    .option(
+      "--acknowledgements",
+      "print fullmark's licence and every third-party component shipped in the CLI or in its pages (top level only)",
+    )
     .helpOption("-h, --help", "help for the command")
     .helpCommand("help [command]", "help for a command")
     .exitOverride();
@@ -212,6 +216,11 @@ async function main(argv: string[]): Promise<number> {
   try {
     const program = buildProgram(outcome);
     // no command: the help goes to stderr and the exit code is 2 (COMMANDS.md, Exit codes)
+    // the notices sit in their own chunk, so no other command pays for them (test/cli-graph.test.ts)
+    if (argv[2] === "--acknowledgements") {
+      process.stdout.write((await import("./acknowledgements")).acknowledgements());
+      return EXIT.done;
+    }
     if (argv.length <= 2) {
       program.outputHelp({ error: true });
       return EXIT.usage;

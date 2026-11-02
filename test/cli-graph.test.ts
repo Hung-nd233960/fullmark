@@ -5,7 +5,7 @@ import { describe, expect, it } from "vitest";
 /**
  * A command loads only what it uses (TECHNICAL_DESIGN.md, section 7, "CLI startup"). tsup splits `dist/` into chunks
  * with the commands' lazy `import()` as the boundaries; this reads the chunks' static `import` lines (the ones Node
- * runs at load) and checks that `--version`, `check`, `rules`, `ids` and `grade` never reach the page builder, the
+ * runs at load) and checks that `--version`, `--acknowledgements`, `check`, `rules`, `ids` and `grade` never reach the page builder, the
  * page renderer (Preact and the components) or the Markdown-to-HTML path of `build`.
  */
 const dist = resolve(import.meta.dirname, "..", "dist");
@@ -56,7 +56,7 @@ describe("what each command loads", () => {
     for (const marker of BUILD_ONLY) expect(text, marker).toContain(marker);
   });
 
-  for (const name of ["main", "check", "rules", "ids", "grade"]) {
+  for (const name of ["main", "check", "rules", "ids", "grade", "acknowledgements"]) {
     it(`${name} never reaches the page builder, the renderer or the build's Markdown-to-HTML path`, () => {
       const list = closure(entry(name));
       expect(list.some((f) => f.startsWith("build-"))).toBe(false);

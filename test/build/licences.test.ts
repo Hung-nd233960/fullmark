@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 import { licencesFor } from "../../src/build/licences";
+import { NOTICE_PACKAGES } from "../../src/build/notices-data";
 import { type BuildQuiz, buildPage, type PageOptions } from "../../src/build/page";
 import { loadQuiz } from "../../src/cli/load";
 import { FONT_REGISTRY, type FontId } from "../../src/core/fonts";
@@ -18,44 +19,44 @@ const names = (o: { fonts: FontId[]; maths: boolean }) => licencesFor(o).notices
 describe("which notices a page gets", () => {
   it("the runtime's packages always, nothing else without maths or fonts", () => {
     expect(names({ fonts: [], maths: false })).toEqual([
-      "Preact",
+      "Noble Hashes",
       "Preact Signals",
       "Preact Signals Core",
-      "Noble Hashes",
+      "Preact",
       "Zod",
     ]);
-    expect(licencesFor({ fonts: [], maths: false }).ofl).toBeNull();
+    expect(licencesFor({ fonts: [], maths: false }).texts.map((t) => t.licence)).toEqual(["MIT", "MIT"]);
   });
   it("KaTeX only with maths", () => {
     expect(names({ fonts: [], maths: true })).toContain("KaTeX");
     expect(names({ fonts: [], maths: false })).not.toContain("KaTeX");
   });
-  it("a font's notice only when it is embedded, and the OFL text with the first", () => {
+  it("a font's notice only when it is embedded, and the OFL text once, with the first", () => {
     const some = licencesFor({ fonts: ["serif"], maths: false });
     expect(some.notices.map((n) => n.name)).toContain("Source Serif 4");
     expect(some.notices.map((n) => n.name)).not.toContain("Lexend");
-    expect(some.ofl).toMatch(/^SIL OPEN FONT LICENSE Version 1\.1/);
+    expect(some.texts.filter((t) => t.licence === "OFL-1.1")).toHaveLength(1);
     const all = licencesFor({ fonts: ["sans", "serif", "readable"], maths: false });
     expect(all.notices.filter((n) => n.licence === "OFL-1.1")).toHaveLength(3);
-    expect(all.ofl?.match(/SIL OPEN FONT LICENSE Version 1\.1/g)).toHaveLength(1);
+    expect(all.texts.filter((t) => t.licence === "OFL-1.1")).toHaveLength(1);
+    expect(all.texts.find((t) => t.licence === "OFL-1.1")?.body).toMatch(/^SIL OPEN FONT LICENSE Version 1\.1/);
   });
-  it("each notice has a version, a licence and a copyright line; the MIT text is there once", () => {
+  it("each notice has a version, a licence and a copyright line; no licence text is listed twice", () => {
     const l = licencesFor({ fonts: ["sans"], maths: true });
     for (const n of l.notices) {
       expect(n.version).toMatch(/^\d+\.\d+\.\d+/);
       expect(n.licence).toMatch(/^(MIT|OFL-1\.1)$/);
       expect(n.copyright).toMatch(/Copyright|©/);
     }
-    expect(l.mit.match(/Permission is hereby granted/g)).toHaveLength(1);
+    expect(new Set(l.texts.map((t) => t.body)).size).toBe(l.texts.length);
   });
-  it("the registry's font versions are the installed packages' versions", () => {
+  it("the registry's font packages are in the notices, at the installed version", () => {
     for (const id of ["sans", "serif", "readable"] as const) {
-      const entry = FONT_REGISTRY[id];
-      const pkg = entry.files[0]?.path.split("/").slice(0, 2).join("/") ?? "";
+      const pkg = FONT_REGISTRY[id].package ?? "";
       const installed = JSON.parse(readFileSync(join(root, "node_modules", pkg, "package.json"), "utf8")) as {
         version: string;
       };
-      expect(entry.notice?.version).toBe(installed.version);
+      expect(NOTICE_PACKAGES.find((p) => p.name === pkg)?.version).toBe(installed.version);
     }
   });
 });

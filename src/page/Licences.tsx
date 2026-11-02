@@ -1,10 +1,14 @@
+import { Fragment } from "preact";
 import { Icon } from "./icons";
 import type { PageMessages } from "./questions/shared";
 
 /** One package or font the page embeds. */
 export type Notice = { name: string; version: string; licence: string; copyright: string };
 /** What a page embeds and the licence texts it must carry (TECHNICAL_DESIGN.md, section 3, "Licences"). */
-export type Licences = { notices: readonly Notice[]; mit: string; ofl: string | null };
+export type Licences = {
+  notices: readonly Notice[];
+  texts: readonly { licence: string; body: string }[];
+};
 
 /** The id of the popup, which the build writes after the page's root. */
 export const LICENCES_ID = "fm-licences";
@@ -42,7 +46,7 @@ export function LicencesButton({ t }: { t: PageMessages }) {
   );
 }
 
-/** The popup: each notice, then the MIT and OFL texts once each in a scrolling area. Rendered at build, no script needed. */
+/** The popup: each notice, then each distinct licence text once in a scrolling area. Rendered at build, no script needed. */
 export function LicencesDialog({ t, licences }: { t: PageMessages; licences: Licences }) {
   return (
     <dialog id={LICENCES_ID} class="fm-licences" aria-labelledby="fm-licences-title">
@@ -67,14 +71,18 @@ export function LicencesDialog({ t, licences }: { t: PageMessages; licences: Lic
         </ul>
         {/* biome-ignore lint/a11y/noNoninteractiveTabindex: a scrolling area must be reachable from the keyboard */}
         <section class="fm-licences-texts" aria-label={t.licencesTexts} tabIndex={0}>
-          <h3>{t.licenceMitHeading}</h3>
-          <pre>{licences.mit}</pre>
-          {licences.ofl === null ? null : (
-            <>
-              <h3>{t.licenceOflHeading}</h3>
-              <pre>{licences.ofl}</pre>
-            </>
-          )}
+          {licences.texts.map((text) => (
+            <Fragment key={text.body}>
+              <h3>
+                {text.licence === "MIT"
+                  ? t.licenceMitHeading
+                  : text.licence === "OFL-1.1"
+                    ? t.licenceOflHeading
+                    : text.licence}
+              </h3>
+              <pre>{text.body}</pre>
+            </Fragment>
+          ))}
         </section>
       </div>
     </dialog>
