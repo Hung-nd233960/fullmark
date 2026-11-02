@@ -154,6 +154,7 @@ Also raised on 2026-10-28 and kept outside v1: [proposals/rapid-response.md](../
 54. **2j's brief approved by the owner (2026-11-02)**, both points as recommended: `quiz replay` writes beside the results file (the temporary folder is `library replay`'s), and a replay's Retry missed autosaves under its own `:replay:` namespace. Written into TECHNICAL_DESIGN.md section 7. **Next:** 2j with Sonnet.
 55. Done: 2j, tasks 1 to 3 and the screens; it stopped there as the brief allowed, so **task 4 (the grades on the page) moves to a slice of its own, 2j2**, with the `vi` scan of a replay page and the replay line in `TRY`. Reviewed on 2026-11-02. Commits `46b492d` (`quiz replay`: `src/cli/replay.ts` reads and checks a results file as `grade` does and already reads and applies grades; `src/cli/replay-command.ts` goes through `runBuild`'s one job loop), `0a95f17` (the page boots submitted from the embedded results; the banner; Retry missed's `:replay:` key and Download's original bytes), `ab614b4` (their Playwright tests), `a2c36ec` (screens, `docs/screens/2j/`). In review: Sonnet reported Biome clean, but it was not (seven `useDomNodeTextContent`, two `[^]` in a test regex, one descending specificity): fixed in `1424ee9` and `d7d34fd`; `useDomNodeTextContent` is off for `e2e/`, since a Playwright locator's `innerText()` is what the user sees, and the linter's `textContent()` broke the banner test. Vitest 1900 tests, 1896 pass, the same 4 environmental failures (the startup test passes alone). 301 goldens, 2 new. Playwright, replay and results specs: 11 passed in Chromium. **Gaps waiting for the owner**, with recommendations: (1) a Retry missed in progress on a replay page is lost on reload (the page always opens on the replay): offer it back with the resume banner, the page still opening on the replay; (2) no New attempt button while the replay is shown: accept; (3) `--json`'s `attempt` is `{quizHash, phase, startedAt, submittedAt}`: accept; (4) an attempt never submitted is shown as submitted, with a warning: accept; (5) the version mismatch names both short versions: accept; (6) replay uses `build.size`'s defaults, not the config's: accept; (7) a question id not in the quiz exits 1, stricter than `grade`: accept, the page cannot show it.
 56. **The owner's design changes, 2026-11-02, after the 2j screens:** (1) the score bars of the results card (By part) have square corners while the time bar is round: all round (the bars are SVG, and `border-radius` on the `<svg>` does not clip; a `clip-path` does); (2) the text-size value under A− / A+ is smaller than the buttons (0.75em) and reads `100%`: match the buttons' type and box, and show the size as a decimal with two places, `1.00` (Opus recommended `1.00×`; see the owner's answer).
+57. **Decided and built on 2026-11-02** (commits after `d7d34fd`; TECHNICAL_DESIGN.md section 8, row "Text size reset"): the score bars round at both ends through a `clip-path`; the text size reads `1×` at the default and `0.88×` to `1.35×` otherwise (a decimal comma in `vi`), in the buttons' type, in one 3.3em box; its accessible name and tooltip use the same text (axe caught "Text size 112%" on a button showing `1.12×`); a single click resets (double-click weighed and dropped: keyboard and touch would still need one press); no reset icon (mocked, dropped); off the default the box takes a 12% wash of the accent (three looks mocked; the ring and glow were clipped by the group's outline). **2j's gaps decided** as recommended: a Retry missed in progress on a replay page is offered back through the resume banner; the other six accepted. **Next:** the 2j2 brief below is a draft for the owner to approve; then Sonnet.
 
 ## Goal
 
@@ -1110,3 +1111,36 @@ Keep this slice near 150k tokens. If it runs long, stop after task 3 at a clean 
 
 - `npm run check` passes (or every part this container can run, with the rest said); `npm run samples` builds every page and adds a replay to `TRY`; two replays of one results file are byte-identical.
 - Report: commits, test counts, the golden count, the CLI startup (`replay --help` does not load the page builder), the screens' paths and the differences from the board, every gap, what was decided differently and why, files read beyond the list.
+
+## Slice 2j2: the grades on a replay, the Retry restore, and the replay's loose ends (DRAFT, not yet approved by the owner)
+
+What 2j left (items 55 and 57): the grades on a replay page, a Retry missed in progress offered back, the `vi` scans over a replay page, and the replay line in `TRY`. No CLI changes beyond what the page needs: `src/cli/replay.ts` already reads, checks and applies grades. The test that matters: **a replay with a grades file shows each graded essay and code answer exactly as the grades file says, and the score includes them.**
+
+Keep this slice near 150k tokens. If it runs long, stop after task 2 at a clean commit.
+
+### Read first
+
+- This brief, the Handoff's "Next steps" items 55 to 57, and the "Rules for every slice". **Build from the mockup** applies: the board `ResultsReplay` (the criterion tables under the essay and the "Graded by … · 21 Oct 2026" line); screens go to `docs/screens/2j2/`.
+- TECHNICAL_DESIGN.md section 6, the rubric and grades rows, especially "Page after submit, and replay"; section 7, decision 2 (the `:replay:` namespace); section 8, rows "Results" and "Replay".
+- Code: `src/cli/replay.ts` and `src/cli/replay-command.ts` (what grades already reach the page), `src/core/rubric/grades.ts` (`applyGrades`, `AppliedGrades`), `src/page/replay.ts`, `src/page/store.ts` (`replayAttemptKey`, the resume banner's state), `src/page/App.tsx` (the resume banner), the results question card for essay and code; tests `test/replay-cli.test.ts`, `test/page/replay.test.ts`, `e2e/replay.spec.ts`, `e2e/vi-scan.spec.ts`, `test/build/vi-scan.test.ts`; `scripts/samples.mjs` (`TRY`).
+
+### Decided for this slice
+
+- **1. Grades on the page.** The page receives the applied grades in the data block, not only `at`: per graded question, each criterion's awarded and maximum points and note (or, for `banded`, the band per criterion, the overall band and the points), and the grader and date. Each graded essay or code answer shows its criterion table and the line "Graded by NAME · 21 Oct 2026" ("Chấm bởi …"), as section 6 says; its result and points count in the score, the parts, the filter counts and the map, as a graded answer does. Without grades, pending as now. A grades file without a date shows the grader line without one. Both catalogs.
+- **2. The Retry restore** (owner, 2026-11-02): a replay page still opens on the replay, but when a Retry missed is saved under its `:replay:` key it offers it back with the resume banner ("Continue your retry" / Start over, as the banner is built), and Continue opens the retry where it was left. Start over asks first, as now, and removes the saved retry. The built page's keys stay untouched.
+- **3. The `vi` scans** cover a replay page: the banner, the status segment, the criterion tables and the grader line, built with `--ui-lang vi`, unit and Playwright.
+- **4. Samples:** `scripts/samples.mjs` gains a replay line in `TRY` (a replay of the essay fixture with a grades file), and `npm run samples` builds it.
+- **5. Determinism:** the same results, quiz, grades and flags give a byte-identical replay.
+
+### Tasks
+
+1. **Grades on the page** (one commit): the data block, the tables and grader line, the score with grades, unit tests; Playwright with the `essay` and `code` fixtures (graded, banded, without a date, pending).
+2. **The Retry restore** (one commit): the banner on a replay with a saved retry, Continue, Start over; Playwright including a reload.
+3. **The `vi` scans and samples** (one commit).
+4. **Screens** (one commit): against the `ResultsReplay` board, light and dark, phone; report every difference left.
+5. **Docs:** propose sentences for anything decided here the design does not state; do not edit the design docs.
+
+### Done when
+
+- `npm run check` passes (or every part this container can run, with the rest said; Biome checked by running it, not assumed); `npm run samples` builds every page including the replay.
+- Report: commits, test counts, the golden count, the screens' paths and the differences from the board, every gap, what was decided differently and why, files read beyond the list.
