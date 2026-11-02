@@ -22,7 +22,14 @@ export type BuildInfo = {
   builtAt: string;
   /** what shapes the page: Preact, KaTeX with maths, Shiki with highlighted code, each embedded font */
   packages: readonly { name: string; version: string }[];
-  options: { profile: string | null; fonts: string | null; uiLang: string | null; theme: string; look: string; strict: boolean };
+  options: {
+    profile: string | null;
+    fonts: string | null;
+    uiLang: string | null;
+    theme: string;
+    look: string;
+    strict: boolean;
+  };
 };
 
 /** The id of the popup, which the build writes after the page's root. */

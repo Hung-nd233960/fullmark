@@ -20,9 +20,9 @@ describe("which notices a page gets", () => {
   it("the runtime's packages always, nothing else without maths or fonts", () => {
     expect(names({ fonts: [], maths: false })).toEqual([
       "Noble Hashes",
+      "Preact",
       "Preact Signals",
       "Preact Signals Core",
-      "Preact",
       "Zod",
     ]);
     expect(licencesFor({ fonts: [], maths: false }).texts.map((t) => t.licence)).toEqual(["MIT", "MIT"]);
@@ -71,6 +71,17 @@ function quizOf(file: string, font: FontId = "system"): BuildQuiz {
     sheets: loaded.sheets,
   };
 }
+
+describe("the order of the notices", () => {
+  it("is by the name shown, case-insensitively, software first and then the fonts", () => {
+    const names = licencesFor({ fonts: ["serif", "sans", "readable"], maths: true }).notices.map((n) => n.name);
+    const soft = names.slice(0, names.indexOf("Be Vietnam Pro"));
+    expect(soft).toEqual([...soft].sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase())));
+    expect(soft).toContain("Noble Hashes");
+    expect(soft.indexOf("Noble Hashes")).toBeGreaterThan(soft.indexOf("KaTeX"));
+    expect(names.slice(soft.length)).toEqual(["Be Vietnam Pro", "Lexend", "Source Serif 4"]);
+  });
+});
 
 describe("the page", () => {
   const dialogOf = (html: string) => /<dialog id="fm-licences"[\s\S]*?<\/dialog>/.exec(html)?.[0] ?? "";

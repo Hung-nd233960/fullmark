@@ -547,6 +547,11 @@
     list-style: none;
   }
 
+  /* the gap below the intro is the gap between the items */
+  .fm-licences-intro + .fm-licences-list {
+    margin-top: 10px;
+  }
+
   .fm-licences-list li {
     display: flex;
     flex-wrap: wrap;

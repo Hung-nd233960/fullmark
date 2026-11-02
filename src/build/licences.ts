@@ -1,6 +1,6 @@
 import { FONT_REGISTRY, type FontId, type FontsChoice } from "../core/fonts";
 import type { BuildInfo, Licences, Notice } from "../page/Licences";
-import { NOTICE_PACKAGES, NOTICE_TEXTS } from "./notices-data";
+import { NOTICE_PACKAGES, NOTICE_TEXTS, type NoticePackage } from "./notices-data";
 
 /**
  * The notices of what a page embeds and nothing else (TECHNICAL_DESIGN.md, section 3, "Licences"): the runtime's
@@ -10,9 +10,13 @@ import { NOTICE_PACKAGES, NOTICE_TEXTS } from "./notices-data";
  */
 export function licencesFor(options: { fonts: readonly FontId[]; maths: boolean }): Licences {
   const fonts = options.fonts.map((id) => FONT_REGISTRY[id].package);
+  // listed by the name shown, case-insensitively: the software first, then the fonts (owner, 2026-11-02)
+  const byTitle = (a: NoticePackage, b: NoticePackage): number =>
+    a.title.localeCompare(b.title, "en", { sensitivity: "base" });
+  const software = NOTICE_PACKAGES.filter((p) => p.where.includes("page") || (options.maths && p.name === "katex"));
   const used = [
-    ...NOTICE_PACKAGES.filter((p) => p.where.includes("page") || (options.maths && p.name === "katex")),
-    ...fonts.flatMap((name) => NOTICE_PACKAGES.filter((p) => p.name === name)),
+    ...software.sort(byTitle),
+    ...fonts.flatMap((name) => NOTICE_PACKAGES.filter((p) => p.name === name)).sort(byTitle),
   ];
   const notices: Notice[] = used.map((p) => ({
     name: p.title,
