@@ -128,8 +128,8 @@ describe("a replay page", () => {
     const store = replayOf(l.file.text);
     const pick = (page: string) => [
       /data-earned="[^"]*" data-points="[^"]*" data-pending="[^"]*"/.exec(page)?.[0],
-      /data-cell="points"[^]*?<\/dd>/.exec(page)?.[0],
-      [...page.matchAll(/data-filter="(\w+)"[^]*?fm-filter-count">(\d+)</g)].map((m) => `${m[1]}${m[2]}`),
+      /data-cell="points"[\s\S]*?<\/dd>/.exec(page)?.[0],
+      [...page.matchAll(/data-filter="(\w+)"[\s\S]*?fm-filter-count">(\d+)</g)].map((m) => `${m[1]}${m[2]}`),
     ];
     expect(pick(html(store))).toEqual(pick(html(l.store)));
   });
@@ -139,7 +139,7 @@ describe("a replay page", () => {
     memoryFor.value = new Memory();
     const page = html(replayOf(l.file.text));
     expect(page).toContain("Replay of the attempt submitted 20 Oct, ");
-    const banner = /<div class="fm-replay-banner"[^]*?<\/div>/.exec(page)?.[0] ?? "";
+    const banner = /<div class="fm-replay-banner"[\s\S]*?<\/div>/.exec(page)?.[0] ?? "";
     expect(banner.replaceAll(/<[^>]+>/g, "")).toBe(
       `ReplayAttempt of 20 Oct 2026 · version ${quiz().hash.slice(0, 4)} · grades pending`,
     );

@@ -268,10 +268,6 @@
     border-bottom: 2px solid var(--info);
   }
 
-  .fm-replay-banner + .fm-filter {
-    border-top: 0;
-  }
-
   .fm-replay-banner .fm-svg {
     flex-shrink: 0;
     color: var(--info);
@@ -296,6 +292,10 @@
     margin: 0;
     padding: 0;
     border: 0;
+  }
+
+  .fm-replay-banner + .fm-filter {
+    border-top: 0;
   }
 
   .fm-dock .fm-filter {
