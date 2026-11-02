@@ -91,3 +91,81 @@ for (const theme of THEME_NAMES) {
     await noViolations(page);
   });
 }
+
+/** A row as drawn: each cell's generated text ("/ ", "Band ") and its own, joined by spaces. */
+const drawn = async (row: import("@playwright/test").Locator): Promise<string> =>
+  (
+    await row.locator("td").evaluateAll((tds) =>
+      tds.map((td) => {
+        const before = getComputedStyle(td, "::before").content;
+        const made = before === "none" || before === "normal" ? "" : before.slice(1, -1);
+        return `${made}${td.textContent ?? ""}`;
+      }),
+    )
+  )
+    .join(" ")
+    .replaceAll(/\s+/g, " ")
+    .trim();
+
+test.describe("the criterion table on a 390 px phone", () => {
+  test.use({ viewport: { width: 390, height: 844 } });
+
+  test("each criterion is a block, nothing is cut or scrolls sideways, and it is still a table", async ({ page }) => {
+    await page.goto(replayOf([], "phone"));
+    const add = page.locator('article[data-qid="add"]');
+    await add.scrollIntoViewIfNeeded();
+    // nothing wider than the card; the page does not scroll sideways; the table's own box does not scroll
+    const wide = await page.evaluate(() => {
+      const box = document.querySelector('article[data-qid="add"]')?.getBoundingClientRect();
+      const over = [...document.querySelectorAll("article[data-qid] .fm-grade *")].filter(
+        (el) => el.getBoundingClientRect().right > (box?.right ?? 0) + 0.5,
+      );
+      const scroller = document.querySelector('article[data-qid="add"] .fm-grade-scroll') as HTMLElement;
+      return {
+        page: document.documentElement.scrollWidth > window.innerWidth,
+        over: over.map((el) => el.className || el.tagName),
+        scroller: scroller.scrollWidth > scroller.clientWidth,
+      };
+    });
+    expect(wide).toEqual({ page: false, over: [], scroller: false });
+    // the header row is clipped, and a row is a block: name, then marks, then note, one under the other
+    const rows = add.locator(".fm-grade-table tbody tr");
+    const derive = rows.nth(1);
+    const boxes = await derive.locator("td").evaluateAll((tds) =>
+      tds.map((td) => {
+        const r = td.getBoundingClientRect();
+        return { top: Math.round(r.top), left: Math.round(r.left), visible: r.width > 0 && r.height > 0 };
+      }),
+    );
+    expect(boxes.every((b) => b.visible)).toBe(true);
+    const [name, awarded, max, note] = boxes as [
+      (typeof boxes)[0],
+      (typeof boxes)[0],
+      (typeof boxes)[0],
+      (typeof boxes)[0],
+    ];
+    expect(awarded.top).toBeGreaterThan(name.top);
+    expect(max.top).toBe(awarded.top);
+    expect(max.left).toBeGreaterThan(awarded.left);
+    expect(note.top).toBeGreaterThan(awarded.top);
+    await expect(derive).toContainText("Derive the result");
+    expect(await drawn(derive)).toBe("Derive the result 1.25 / 1.5 Skips the zero initial-conditions assumption.");
+    expect(
+      await page.locator('article[data-qid="add"] thead').evaluate((el) => el.getBoundingClientRect().width),
+    ).toBeLessThanOrEqual(1);
+    // banded: "Band 6"; holistic: the verdict
+    const ielts = page.locator('article[data-qid="ielts"]');
+    expect(await drawn(ielts.locator("tbody tr").first())).toMatch(/^Task Response Band 6\b/);
+    expect(await drawn(page.locator('article[data-qid="holistic"] tbody tr').first())).toMatch(
+      /\S+ (Met|Partly met|Missed)$/,
+    );
+    // still a table to assistive technology
+    const table = add.getByRole("table");
+    await expect(table).toHaveCount(1);
+    await expect(table.getByRole("columnheader")).toHaveText(["Criterion", "Awarded", "Max", "Note"]);
+    await expect(table.getByRole("row")).toHaveCount(4);
+    await expect(table.getByRole("cell")).toHaveCount(12);
+    await expect(table.getByRole("cell", { name: "Define the terms" })).toBeVisible();
+    await noViolations(page);
+  });
+});
