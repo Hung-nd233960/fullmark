@@ -92,4 +92,60 @@ test.describe("replay", () => {
     expect(await stored()).toEqual(before);
     expect(await page.evaluate(() => Object.keys(localStorage).filter((k) => k.includes(":replay:")))).toEqual([]);
   });
+
+  test("Download results gives back the original results.json byte for byte", async ({ page }) => {
+    const name = await attempt(page, "results-results-4.json");
+    run(built.dir, "replay", name, "--quiz", "results.md", "--no-open", "--built-at", "2026-10-28T10:00:00+07:00");
+    await page.goto(`file:///${join(built.dir, "results-results-4-replay.html").replaceAll("\\", "/")}`);
+    const download = page.waitForEvent("download");
+    await page.getByRole("button", { name: "Download results" }).click();
+    const file = await download;
+    expect(file.suggestedFilename()).toBe(name);
+    await file.saveAs(join(built.dir, "again.json"));
+    expect(readFileSync(join(built.dir, "again.json")).equals(readFileSync(join(built.dir, name)))).toBe(true);
+  });
+
+  test("Retry missed starts a fresh attempt under its own storage key; the built page's attempt stays", async ({
+    page,
+  }) => {
+    const name = await attempt(page, "results-results-5.json");
+    const stored = () =>
+      page.evaluate(() => Object.fromEntries(Object.entries(localStorage).filter(([k]) => k.includes(":attempt"))));
+    const builtKeys = await stored();
+    expect(Object.keys(builtKeys)).toHaveLength(1);
+    run(built.dir, "replay", name, "--quiz", "results.md", "--no-open", "--built-at", "2026-10-28T10:00:00+07:00");
+    await page.goto(`file:///${join(built.dir, "results-results-5-replay.html").replaceAll("\\", "/")}`);
+    const missed = Number(await page.locator('[data-filter="missed"] .fm-filter-count').innerText());
+    expect(missed).toBeGreaterThan(0);
+    await page.locator("[data-action=retry-missed]").click();
+    await page.locator("[data-action=confirm-retry]").click();
+    // a fresh attempt in the browser, as on a live page: only the missed questions, no banner, a running clock
+    await expect(page.locator(".fm-quiz")).toHaveAttribute("data-phase", "answering");
+    await expect(page.locator("[data-replay-banner]")).toHaveCount(0);
+    await expect(page.locator("article.fm-question:not([hidden])")).toHaveCount(missed);
+    await right(page, "r2");
+    const now = await stored();
+    const replayKey = Object.keys(now).find((k) => k.endsWith(":replay:attempt"));
+    expect(replayKey).toBeDefined();
+    // the built page's own key is exactly as it was
+    for (const [key, value] of Object.entries(builtKeys)) expect(now[key]).toBe(value);
+    // Submit: Download results now gives the new attempt, as any page exports it
+    await submitAttempt(page);
+    const download = page.waitForEvent("download");
+    await page.getByRole("button", { name: "Download results" }).click();
+    const file = await download;
+    expect(file.suggestedFilename()).toMatch(/^results-results-\d{8}-\d{6}\.json$/);
+    await file.saveAs(join(built.dir, "retry.json"));
+    const retry = JSON.parse(readFileSync(join(built.dir, "retry.json"), "utf8"));
+    expect(retry.plan.source).toBe("retry");
+    expect(retry.plan.questions).toHaveLength(missed);
+    expect(retry.phase).toBe("submitted");
+    // the built page still opens on its own submitted attempt
+    await page.goto(built.url);
+    await expect(page.locator(".fm-quiz")).toHaveAttribute("data-phase", "submitted");
+    await expect(page.locator("[data-replay-banner]")).toHaveCount(0);
+    // and the replay page opens on the replay again, whatever the Retry left in storage
+    await page.goto(`file:///${join(built.dir, "results-results-5-replay.html").replaceAll("\\", "/")}`);
+    await expect(page.locator("[data-replay-banner]")).toBeVisible();
+  });
 });
