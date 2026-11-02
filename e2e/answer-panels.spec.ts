@@ -1,34 +1,12 @@
-import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
-import { join } from "node:path";
 import { expect, test } from "@playwright/test";
-import { quizHash } from "../src/core/hash";
-import { resultsHash } from "../src/core/rubric/grades";
 import { THEME_NAMES } from "../src/core/themes";
-import { noViolations, root, run } from "./helpers";
+import { noViolations, replayOf } from "./helpers";
 
 /**
  * The explanation and feedback panels, and the phone's criterion table (STEP2.md, slice 2j3; TECHNICAL_DESIGN.md,
  * section 8, row "Answer panels"). The fixture is the replay of the `essay` quiz with its grades, built with `extra`
  * front matter lines (the lines change the hash, so the results and grades files are re-keyed to it).
  */
-const FIXTURE = join(root, "test", "fixtures", "replay");
-
-export function replayOf(extra: string[], name: string): string {
-  const dir = mkdtempSync(join(tmpdir(), "fm-panels-"));
-  mkdirSync(join(dir, ".git"));
-  const source = readFileSync(join(FIXTURE, "essay.md"), "utf8").replace(/^---\n/, `---\n${extra.join("\n")}\n`);
-  writeFileSync(join(dir, "essay.md"), source);
-  const results = JSON.parse(readFileSync(join(FIXTURE, "essay-results.json"), "utf8"));
-  results.quizHash = quizHash(source, []);
-  writeFileSync(join(dir, `${name}.json`), `${JSON.stringify(results, null, 2)}\n`);
-  const grades = JSON.parse(readFileSync(join(FIXTURE, "essay-results-grades.json"), "utf8"));
-  grades.results_hash = resultsHash(results);
-  writeFileSync(join(dir, `${name}-grades.json`), JSON.stringify(grades));
-  run(dir, "replay", `${name}.json`, "--quiz", "essay.md", "--no-open", "--built-at", "2026-10-28T10:00:00+07:00");
-  return `file:///${join(dir, `${name}-replay.html`).replaceAll("\\", "/")}`;
-}
-
 const style = (page: import("@playwright/test").Page, selector: string, props: string[]) =>
   page
     .locator(selector)

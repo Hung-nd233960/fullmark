@@ -1,9 +1,11 @@
 import { execFileSync } from "node:child_process";
-import { copyFileSync, cpSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
+import { copyFileSync, cpSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import AxeBuilder from "@axe-core/playwright";
 import { expect, type Locator, type Page } from "@playwright/test";
+import { quizHash } from "../src/core/hash";
+import { resultsHash } from "../src/core/rubric/grades";
 
 export const root = resolve(import.meta.dirname, "..");
 const cli = join(root, "dist", "cli.js");
@@ -126,4 +128,26 @@ export async function submitAttempt(page: Page): Promise<void> {
   const press = (target: Locator) => (touch ? target.tap() : target.click());
   await press(page.locator(".fm-topbar [data-action=submit]"));
   await press(page.locator("dialog[data-submit-dialog] [data-action=confirm-submit]"));
+}
+
+const FIXTURE = join(root, "test", "fixtures", "replay");
+
+/**
+ * The replay of the `essay` fixture (a quiz of one single, essays of each rubric mode and a code question, with its
+ * results and grades files) built with `extra` front matter lines; the lines change the quiz's hash, so the results
+ * and grades files are re-keyed to it. Returns the page's `file://` URL.
+ */
+export function replayOf(extra: string[], name: string): string {
+  const dir = mkdtempSync(join(tmpdir(), "fm-panels-"));
+  mkdirSync(join(dir, ".git"));
+  const source = readFileSync(join(FIXTURE, "essay.md"), "utf8").replace(/^---\n/, `---\n${extra.join("\n")}\n`);
+  writeFileSync(join(dir, "essay.md"), source);
+  const results = JSON.parse(readFileSync(join(FIXTURE, "essay-results.json"), "utf8"));
+  results.quizHash = quizHash(source, []);
+  writeFileSync(join(dir, `${name}.json`), `${JSON.stringify(results, null, 2)}\n`);
+  const grades = JSON.parse(readFileSync(join(FIXTURE, "essay-results-grades.json"), "utf8"));
+  grades.results_hash = resultsHash(results);
+  writeFileSync(join(dir, `${name}-grades.json`), JSON.stringify(grades));
+  run(dir, "replay", `${name}.json`, "--quiz", "essay.md", "--no-open", "--built-at", "2026-10-28T10:00:00+07:00");
+  return `file:///${join(dir, `${name}-replay.html`).replaceAll("\\", "/")}`;
 }
