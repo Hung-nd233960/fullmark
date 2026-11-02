@@ -1,0 +1,5 @@
+out = "site"
+[[build]]
+files = ["q/good.md"]
+[[build]]
+files = ["q/good.md"]

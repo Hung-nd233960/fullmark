@@ -124,6 +124,10 @@ export function parseBuildFile(text: string, file: string): BuildFileParse {
         if (v !== null && v !== "en" && v !== "vi") fail(at, `ui-lang ${v} is not one of en, vi`);
         else ok = v;
       } else if (key === "built-at") {
+        if (value instanceof Date) {
+          fail(at, "`built-at` must be in quotes", 'built-at = "2026-10-24T09:00:00+07:00"');
+          continue;
+        }
         const v = text("a date and time, such as 2026-10-24T09:00:00+07:00");
         if (v !== null && !ISO_TIME.test(v))
           fail(at, `built-at ${v} is not an ISO date and time, such as 2026-10-24T09:00:00+07:00`);

@@ -136,9 +136,10 @@ ui-lang = "en"
     );
     expect(errs('[[build]]\nfiles = ["a.md"]\nconfig = 1\n')[0]).toContain("`config` must be a path");
     // a TOML date written without quotes is not the text the flag takes
-    expect(errs('[[build]]\nfiles = ["a.md"]\nbuilt-at = 2026-10-24T09:00:00+07:00\n')[0]).toContain(
-      "`built-at` must be",
-    );
+    const unquoted = read('[[build]]\nfiles = ["a.md"]\nbuilt-at = 2026-10-24T09:00:00+07:00\n').errors;
+    expect(unquoted.map((e) => [e.line, e.message, e.fix])).toEqual([
+      [3, "`built-at` must be in quotes", 'built-at = "2026-10-24T09:00:00+07:00"'],
+    ]);
   });
 
   it("files: required, a non-empty list of strings, and not at the top level", () => {

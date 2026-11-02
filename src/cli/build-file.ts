@@ -112,7 +112,9 @@ export function planBuildFile(buildFile: string, fileArgs: readonly string[], op
           ? `the entry at ${shown}:${entry.line} would write`
           : `the entries at ${shown}:${other.line} and ${shown}:${entry.line} would both write`;
       const twice = other.line === entry.line ? " twice" : "";
-      return refuse(`${where} ${shownPath(job.target, cwd)}${twice} (from ${other.file} and ${job.file})`);
+      return refuse(`${where} ${shownPath(job.target, cwd)}${twice} (from ${other.file} and ${job.file})`, [
+        "fix: give each entry its own out",
+      ]);
     }
     written.set(key, { line: entry.line, file: job.file });
   }

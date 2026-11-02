@@ -195,6 +195,7 @@ describe("build --build-file: refusals before anything is built", () => {
     expect(same.code).toBe(2);
     expect(same.c.err).toEqual([
       "the entries at build.toml:2 and build.toml:4 would both write site/a.html (from a.md and a.md)",
+      "fix: give each entry its own out",
     ]);
     expect(same.html).toEqual([]);
     const names = await refused({
@@ -202,7 +203,10 @@ describe("build --build-file: refusals before anything is built", () => {
       "x/s.md": quiz(),
       "y/s.md": quiz(),
     });
-    expect(names.c.err).toEqual(["the entry at build.toml:2 would write site/s.html twice (from x/s.md and y/s.md)"]);
+    expect(names.c.err).toEqual([
+      "the entry at build.toml:2 would write site/s.html twice (from x/s.md and y/s.md)",
+      "fix: give each entry its own out",
+    ]);
     expect(names.html).toEqual([]);
     // different folders for the two entries are fine
     const apart = await refused({

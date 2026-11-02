@@ -1,0 +1,2 @@
+the entries at build.toml:2 and build.toml:4 would both write site/good.html (from q/good.md and q/good.md)
+fix: give each entry its own out
