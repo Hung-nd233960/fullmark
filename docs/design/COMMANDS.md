@@ -46,8 +46,8 @@ Commands that handle each input on its own take `FILE...`: `check`, `build`, `id
 - **Inputs.** Globs (`signals/*.md`) are expanded by fullmark, since PowerShell does not expand them. They are sorted and repeated names are dropped. A folder is refused, so a `README.md` is never processed by accident.
 - **Order and exit.** One after another, in the order given. Every input is attempted, and the exit code is the worst one (`2` over `1` over `0`). `library register` is the exception: it is all or nothing, because it changes the library.
 - **Options that name one thing** (`--review`, `--grades`, `--web`, `--serve`, `-n`, `--update`) exit 2 with several inputs. `--quiz` is one quiz for all the results of `grade`; a results file taken on another version fails on its own and the others go on.
-- **Output.** `-o` names a folder (created if missing) and each output keeps its input's name. If `-o` names an existing file, the command exits 2 before handling any input. If two inputs have the same name in different folders, their outputs would collide: the command exits 2 before handling any input, naming both. Without `-o`, each output goes beside its input as for a single file.
-- **Progress.** On a terminal, stderr shows one updating line, `[3/12] signals.md`, then each failure in full and a summary (`10 done, 2 failed`). Nothing is shown with `--json`, `--plain` or when stderr is not a terminal. There is no progress-bar dependency: one file takes milliseconds.
+- **Output.** `-o` names a folder (created if missing) and each output keeps its input's name. If `-o` names an existing file, the command exits 2 before handling any input. An `-o` ending in `.html` or `.htm` (any letter case) looks like a page, not a folder: the command exits 2 before handling any input. Inputs count as several when more than one is given, usable or not, so `good.md missing.md -o out` makes the folder `out`. If two inputs have the same name in different folders, their outputs would collide: the command exits 2 before handling any input, naming both. Without `-o`, each output goes beside its input as for a single file.
+- **Progress.** On a terminal, stderr shows one updating line, `[3/12] signals.md`, and each failure in full. The line is not shown with `--json`, `--plain` or when stderr is not a terminal. After the last input, stdout shows a summary (`10 done, 2 failed`), on a terminal or not; not with `--json`. There is no progress-bar dependency: one file takes milliseconds.
 - **`--json`.** One line per input, the command's usual object with `"file"` added, then `{"status": "done", "ok", "failed"}`.
 
 ### Paths in output
@@ -156,20 +156,22 @@ Checks the quiz (under the profile, as `check` does), then writes one self-conta
 | `-o`, `--output OUT` | Output path. Default: `FILE` with `.html`. With several files, `OUT` is a folder (created if missing) and each page keeps its source's name; a file path exits 2 |
 | `--build-file BUILD` | Build what a build file lists (below). `FILE`s given as well build only those of its entries |
 | `--strict` | Fail on warnings and write nothing |
-| `--open` | Open the page after building, with the system's opener, without waiting. A failed build opens nothing. If the opener cannot start, a warning goes to stderr and the exit stays `0`: the page was built |
+| `--open` | Open the page after building, with the system's opener, without waiting. A failed build opens nothing. If the opener cannot start, `warning: cannot open the page: REASON` goes to stderr and the exit stays `0`: the page was built |
 | `--print` | Write a static printable paper instead of the interactive page (TECHNICAL_DESIGN.md, section 8). Default output: `FILE` with `-print.html`. Print it, or save it as PDF from the browser |
 | `--answers` | With `--print`: `none` (default, an exam paper), `key` (an answer key on a new page after the paper) or `inline` (answers and explanations under each question) |
 | `--answer-sheet` | With `--print`: after the header, a grid of boxes, one per single-choice and true/false question, where the student writes the letter; the key then lists those answers in the same grid. Other question types are answered in place |
 | `--seed S` | With `--print`: shuffle questions and options reproducibly, so different seeds give different versions of the same exam, each with a matching key. `S` is 1 to 8 letters or digits (else exit 2) and is printed as the paper's code, "Mã đề" or "Paper code" (TECHNICAL_DESIGN.md, Printable paper) |
 | `--materials none` | With `--print`: leave out the materials page that otherwise follows the last question when the quiz has `materials` (TECHNICAL_DESIGN.md, Printable paper). `none` is the only value |
 | `--built-at ISO` | Pin the build time, so a build is byte-identical across runs. Default: now |
-| `--ui-lang en\|vi` | Language of the interface for this build, overriding the quiz's `ui_lang`. The questions are not translated, and grading still follows the quiz's `lang` |
+| `--ui-lang en\|vi` | Language of the interface for this build, overriding the quiz's `ui_lang`. The questions are not translated, and grading still follows the quiz's `lang`: the key and the quiz's version are unchanged, so a results file from the page grades as before |
 | `--watch` | Rebuild whenever `FILE` or its `assets/` change. Keeps the last good page when a save has errors. Runs until Ctrl+C |
 | `--serve` | With `--watch`: serve on 127.0.0.1 and reload the browser after each rebuild. Only the served copy gets the reload code |
-| `--json` | `{"status", "output", "bytes", "errors", "warnings"}`: `status` is `"built"` or `"failed"`, `output` the page's path or null, `errors` and `warnings` the issues in `check --json`'s shape. With `--watch`, one JSON line per rebuild. With several files, one such line per file (with `"file"`), then `{"status": "done", "ok", "failed"}` |
+| `--json` | `{"status", "output", "bytes", "errors", "warnings"}`: `status` is `"built"` or `"failed"`, `output` the page's path or null, `errors` and `warnings` the issues in `check --json`'s shape. A failed build has `output` and `bytes` null; a file that cannot be read or written gives `{"status": "error", "file", "message"}`, as `check --json` does. With `--watch`, one JSON line per rebuild. With several files, one such line per file (with `"file"`), then `{"status": "done", "ok", "failed"}` |
 | `--plain` | As everywhere: no colours, no progress line |
 
 Exit: `0` built, `1` check errors, `2` I/O error. With several files: every file is still checked and built, and the exit is the worst one.
+
+**Size.** The finished page is checked against `build.size` before it is written: over `warn-mb` (20 MB, 1 MB being 1,000,000 bytes) is a warning at the profile's level (an error with `--strict`), over `max-mb` (100 MB) an error whatever the profile, and nothing is written. Without `--built-at`, the pages of one run share one build time.
 
 **Several files.** As in [Several files](#several-files), with these for `build`:
 
