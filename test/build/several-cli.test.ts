@@ -12,6 +12,7 @@ export const base: BuildOptions = {
   output: null,
   builtAt: "2026-10-28T10:00:00+07:00",
   fonts: null,
+  uiLang: null,
   plain: true,
   json: false,
   open: false,
@@ -283,5 +284,56 @@ describe("build --open", () => {
     expect(await runBuild(["a.md"], { ...base, open: true }, rejected.io)).toBe(0);
     expect(rejected.err).toEqual(["warning: cannot open the page: the system's opener was not found"]);
     expect(existsSync(join(dir, "a.html"))).toBe(true);
+  });
+});
+
+describe("build --ui-lang", () => {
+  const build = async (front: string, uiLang: string | null) => {
+    const dir = tree({ "a.md": quiz("- [x] a\n- [ ] b", front) });
+    const c = capture(dir);
+    const code = await runBuild(["a.md"], { ...base, uiLang }, c.io);
+    return { code, err: c.err, html: existsSync(join(dir, "a.html")) ? read(dir, "a.html") : null };
+  };
+  const data = (html: string) =>
+    JSON.parse(/<script type="application\/json" id="fm-data">([\s\S]*?)<\/script>/.exec(html)?.[1] ?? "{}") as {
+      quizzes: { uiLang: string; lang: string; hash: string; key: string }[];
+    };
+
+  it("vi over an English quiz: the chrome, <html lang> and the catalog change; en over a vi quiz likewise", async () => {
+    const en = (await build("title: T", null)).html ?? "";
+    const vi = (await build("title: T", "vi")).html ?? "";
+    expect(en).toContain('<html lang="en">');
+    expect(vi).toContain('<html lang="vi">');
+    expect(data(vi).quizzes[0]?.uiLang).toBe("vi");
+    expect(vi).not.toBe(en);
+    const viQuiz = (await build("title: T\nlang: vi", null)).html ?? "";
+    const forced = (await build("title: T\nlang: vi", "en")).html ?? "";
+    expect(viQuiz).toContain('<html lang="vi">');
+    expect(forced).toContain('<html lang="en">');
+    expect(data(forced).quizzes[0]?.uiLang).toBe("en");
+  });
+
+  it("the value of the flag equal to the quiz's own changes nothing", async () => {
+    expect((await build("title: T", "en")).html).toBe((await build("title: T", null)).html);
+  });
+
+  it("the same --ui-lang gives the same bytes", async () => {
+    expect((await build("title: T", "vi")).html).toBe((await build("title: T", "vi")).html);
+  });
+
+  it("grading is unchanged: the hash, the key and the quiz's lang are the same in both pages", async () => {
+    const a = data((await build("title: T", "en")).html ?? "").quizzes[0];
+    const b = data((await build("title: T", "vi")).html ?? "").quizzes[0];
+    expect(b?.hash).toBe(a?.hash);
+    expect(b?.lang).toBe(a?.lang);
+    expect(b?.key).toBe(a?.key);
+    expect(a?.key).toBeTruthy();
+  });
+
+  it("any other value exits 2 and writes nothing", async () => {
+    const r = await build("title: T", "xx");
+    expect(r.code).toBe(2);
+    expect(r.err).toEqual(["--ui-lang xx is not one of en, vi"]);
+    expect(r.html).toBeNull();
   });
 });

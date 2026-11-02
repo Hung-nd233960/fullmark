@@ -27,6 +27,8 @@ export type BuildQuiz = {
   assets: readonly Asset[];
   /** the materials sheets in the order listed, rendered into `PageQuiz.materials` (the sidebar of 2f shows them) */
   sheets?: readonly { path: string; name: string; source: string }[];
+  /** `build --ui-lang`: the language of the page's chrome, over the quiz's `ui_lang`; the key and the grading are the quiz's own */
+  uiLang?: "en" | "vi";
 };
 
 export type PageOptions = {
@@ -218,7 +220,7 @@ function pageQuestion(
  * lists them in the right order; tests replace it. Without it, the plan is the one the quiz's short version gives.
  */
 export function pageQuizOf(
-  { quiz, hash, assets, sheets }: BuildQuiz,
+  { quiz, hash, assets, sheets, uiLang: chosenUiLang }: BuildQuiz,
   plan?: ReturnType<typeof planFor>,
   tools: Pick<RenderTools, "math" | "highlight"> = {},
 ): PageQuiz {
@@ -237,7 +239,8 @@ export function pageQuizOf(
   };
   const md = createRenderer(assets, used);
   const labels = createRenderer(assets);
-  const t = quiz.frontMatter.uiLang === "vi" ? vi.page : en.page;
+  const uiLang = chosenUiLang ?? quiz.frontMatter.uiLang;
+  const t = uiLang === "vi" ? vi.page : en.page;
   plan ??= planFor(quiz, { source: "full", quizHash: hash });
   const explanations: Record<string, string> = {};
   const samples: Record<string, string> = {};
@@ -271,7 +274,7 @@ export function pageQuizOf(
     ...(quiz.frontMatter.timeLimit !== null ? { timeLimit: quiz.frontMatter.timeLimit } : {}),
     ...(quiz.frontMatter.passMark !== null ? { passMark: quiz.frontMatter.passMark } : {}),
     ...(quiz.frontMatter.feedback === "instant" ? { feedback: "instant" as const } : {}),
-    uiLang: quiz.frontMatter.uiLang,
+    uiLang,
     lang: quiz.frontMatter.lang,
     sections,
     key: encodeKey(keyOf(quiz, explanations, samples, dataOrder), hash),

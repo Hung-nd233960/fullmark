@@ -11,6 +11,7 @@ const base: BuildOptions = {
   output: null,
   builtAt: "2026-10-28T10:00:00+07:00",
   fonts: null,
+  uiLang: null,
   plain: true,
   json: false,
   open: false,

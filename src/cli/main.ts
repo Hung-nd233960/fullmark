@@ -154,17 +154,7 @@ export function buildProgram(outcome: Outcome = { exit: EXIT.done }, io: Io = te
       },
     );
 
-  const LATER = [
-    "build-file",
-    "print",
-    "answers",
-    "answer-sheet",
-    "seed",
-    "ui-lang",
-    "watch",
-    "serve",
-    "port",
-  ] as const;
+  const LATER = ["build-file", "print", "answers", "answer-sheet", "seed", "watch", "serve", "port"] as const;
   program
     .command("build")
     .description("check a quiz, then write it as one offline HTML page")
@@ -182,7 +172,7 @@ export function buildProgram(outcome: Outcome = { exit: EXIT.done }, io: Io = te
     .option("--answers <mode>", "(not available yet)")
     .option("--answer-sheet", "(not available yet)")
     .option("--seed <s>", "(not available yet)")
-    .option("--ui-lang <lang>", "(not available yet)")
+    .option("--ui-lang <lang>", "the page's language for this build, en or vi (default: the quiz's ui_lang)")
     .option(
       "--fonts <which>",
       "which fonts the page embeds: quiz (the quiz's own), all or none (default: fonts in config.toml, else quiz)",
@@ -201,6 +191,7 @@ export function buildProgram(outcome: Outcome = { exit: EXIT.done }, io: Io = te
         plain: Boolean(options.plain) || noColor(),
         json: Boolean(options.json),
         open: Boolean(options.open),
+        uiLang: (options.uiLang as string | undefined) ?? null,
         later: LATER.filter(
           (name) => options[name.replace(/-(\w)/g, (_m, c: string) => c.toUpperCase())] !== undefined,
         ),

@@ -32,6 +32,8 @@ export type BuildOptions = {
   strict: boolean;
   output: string | null;
   builtAt: string | null;
+  /** `--ui-lang en|vi`: the page's language for this build, over the quiz's `ui_lang` */
+  uiLang: string | null;
   /** `--fonts`; null: `fonts` in the machine config, else `quiz` */
   fonts: string | null;
   /** `--plain`: no colours and no progress line */
@@ -200,11 +202,14 @@ async function buildOne(file: string, c: RunContext): Promise<FileResult> {
 
   // Shiki loads only if the quiz or a sheet has a fence of a known language; KaTeX only when a span is rendered
   const highlight = await loadHighlighter(languagesUsed(result.loaded.quiz, result.loaded.sheets));
+  // `--ui-lang` changes the page's language only: the hash and the key's `lang` (grading) are the quiz's own
+  const shown: "en" | "vi" | null = opts.uiLang === "vi" ? "vi" : opts.uiLang === "en" ? "en" : null;
   const page = new TextEncoder().encode(
     buildPage(
       [
         {
           quiz: result.loaded.quiz,
+          ...(shown === null ? {} : { uiLang: shown }),
           hash: result.loaded.hash ?? "",
           assets: result.loaded.assets,
           sheets: result.loaded.sheets,
@@ -252,6 +257,10 @@ export async function runBuild(patterns: readonly string[], opts: BuildOptions, 
   }
   if (opts.fonts !== null && !(FONT_CHOICES as readonly string[]).includes(opts.fonts)) {
     fail(io, opts.json, `--fonts ${opts.fonts} is not one of quiz, all, none`);
+    return EXIT.usage;
+  }
+  if (opts.uiLang !== null && opts.uiLang !== "en" && opts.uiLang !== "vi") {
+    fail(io, opts.json, `--ui-lang ${opts.uiLang} is not one of en, vi`);
     return EXIT.usage;
   }
   const inputs = expandInputs(patterns, io.cwd);
