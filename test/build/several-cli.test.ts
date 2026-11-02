@@ -13,6 +13,7 @@ export const base: BuildOptions = {
   builtAt: "2026-10-28T10:00:00+07:00",
   fonts: null,
   plain: true,
+  json: false,
   later: [],
   version: "1.0.0-test",
 };
@@ -160,5 +161,71 @@ describe("a folder of quizzes builds in one command", () => {
       expect(await runBuild([`${n}/quiz.md`], { ...base, output: `alone/${n}.html` }, alone.io)).toBe(0);
       expect(read(dir, n, "quiz.html") === read(dir, "alone", `${n}.html`), n).toBe(true);
     }
+  });
+});
+
+describe("build --json", () => {
+  const parse = (lines: string[]) => lines.map((l) => JSON.parse(l) as Record<string, unknown>);
+
+  it("one file built: status, output, bytes, errors and warnings, and nothing else on stdout", async () => {
+    const dir = tree({ "a.md": quiz() });
+    const c = capture(dir);
+    expect(await runBuild(["a.md"], { ...base, json: true }, c.io)).toBe(0);
+    const [line, ...rest] = parse(c.out);
+    expect(rest).toEqual([]);
+    expect(line).toEqual({
+      status: "built",
+      output: "a.html",
+      bytes: readFileSync(join(dir, "a.html")).length,
+      errors: [],
+      warnings: [],
+    });
+    expect(c.err).toEqual([]);
+  });
+
+  it("one file failed: the check errors in check --json's shape, no output, nothing written", async () => {
+    const dir = tree({ "a.md": bad });
+    const c = capture(dir);
+    expect(await runBuild(["a.md"], { ...base, json: true }, c.io)).toBe(1);
+    const [line] = parse(c.out);
+    expect(c.out).toHaveLength(1);
+    expect(line).toMatchObject({ status: "failed", output: null, bytes: null, warnings: [] });
+    const errors = line?.errors as Record<string, unknown>[];
+    expect(Object.keys(errors[0] ?? {})).toEqual(["rule", "level", "file", "line", "message", "fix"]);
+    expect(errors[0]).toMatchObject({ level: "error", file: "a.md", line: 5 });
+
+    expect(existsSync(join(dir, "a.html"))).toBe(false);
+  });
+
+  it("warnings of a built page are in warnings", async () => {
+    const dir = tree({ "a.md": quiz("- [x] a\n- [ ] b", "title: T\nfont: serif\nlook: locked") });
+    const c = capture(dir);
+    expect(await runBuild(["a.md"], { ...base, json: true, fonts: "none" }, c.io)).toBe(0);
+    const [line] = parse(c.out);
+    expect(line?.status).toBe("built");
+    expect((line?.warnings as { rule: string }[]).map((w) => w.rule)).toEqual(["build.font-not-embedded"]);
+  });
+
+  it("several files: one line per file with file, then the done line", async () => {
+    const dir = tree({ "a.md": quiz(), "b.md": bad, "c.md": quiz() });
+    const c = capture(dir);
+    expect(await runBuild(["a.md", "b.md", "c.md", "none.md"], { ...base, json: true }, c.io)).toBe(2);
+    const lines = parse(c.out);
+    expect(lines.map((l) => [l.status, l.file])).toEqual([
+      ["built", "a.md"],
+      ["failed", "b.md"],
+      ["built", "c.md"],
+      ["error", "none.md"],
+      ["done", undefined],
+    ]);
+    expect(lines.at(-1)).toEqual({ status: "done", ok: 2, failed: 2 });
+    expect(c.err).toEqual(["none.md: no such file"]);
+  });
+
+  it("a usage error is a JSON error line, and there is no progress line", async () => {
+    const dir = tree({ "a.md": quiz() });
+    const c = capture(dir);
+    expect(await runBuild(["a.md"], { ...base, json: true, fonts: "some" }, c.io)).toBe(2);
+    expect(parse(c.out)).toEqual([{ status: "error", message: "--fonts some is not one of quiz, all, none" }]);
   });
 });

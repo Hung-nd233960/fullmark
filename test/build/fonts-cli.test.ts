@@ -12,6 +12,7 @@ const base: BuildOptions = {
   builtAt: "2026-10-28T10:00:00+07:00",
   fonts: null,
   plain: true,
+  json: false,
   later: [],
   version: "1.0.0-test",
 };
