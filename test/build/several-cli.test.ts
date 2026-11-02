@@ -1,8 +1,8 @@
-import { cpSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync } from "node:fs";
+import { cpSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
-import { type BuildIo, runBuild } from "../../src/cli/build";
+import { type BuildIo, type BuildOptions, runBuild } from "../../src/cli/build";
 import { base } from "../helpers/build";
 import { capture, quiz, tempTree } from "../helpers/cli";
 
@@ -321,5 +321,73 @@ describe("build --ui-lang", () => {
     expect(r.code).toBe(2);
     expect(r.err).toEqual(["--ui-lang xx is not one of en, vi"]);
     expect(r.html).toBeNull();
+  });
+});
+
+describe("build.size", () => {
+  const profile = (rule: string) => `[profiles.p]\nextends = "default"\nrules."build.size" = ${rule}\n`;
+  const run = async (rule: string, opts: Partial<BuildOptions> = {}, json = false) => {
+    const dir = tree({ "a.md": quiz(), "fullmark.toml": profile(rule) });
+    const c = capture(dir);
+    const code = await runBuild(["a.md"], { ...base, profile: "p", json, ...opts }, c.io);
+    return { code, dir, out: c.out, written: existsSync(join(dir, "a.html")) };
+  };
+
+  it("under warn-mb says nothing", async () => {
+    const r = await run("{ level = 'warning' }");
+    expect(r.code).toBe(0);
+    expect(r.out).toEqual(["a.md: wrote a.html"]);
+  });
+
+  it("over warn-mb is a warning that names the size and the limit, and the page is written", async () => {
+    const r = await run("{ level = 'warning', warn-mb = 0.1 }");
+    expect(r.code).toBe(0);
+    expect(r.written).toBe(true);
+    expect(r.out[0]).toMatch(
+      /^a\.md:1: warning build\.size: the page is \d+\.\d MB \(1 MB is 1,000,000 bytes\), over warn-mb 0\.1 MB$/,
+    );
+    expect(r.out[1]).toContain("fix: use smaller or fewer images");
+  });
+
+  it("--strict turns the warning into an error and writes nothing", async () => {
+    const r = await run("{ level = 'warning', warn-mb = 0.1 }", { strict: true });
+    expect(r.code).toBe(1);
+    expect(r.written).toBe(false);
+    expect(r.out[0]).toContain(": error build.size:");
+  });
+
+  it("the profile's level is honoured: error fails, off is silent", async () => {
+    expect((await run("{ level = 'error', warn-mb = 0.1 }")).code).toBe(1);
+    const off = await run("{ level = 'off', warn-mb = 0.1 }");
+    expect(off.code).toBe(0);
+    expect(off.out).toEqual(["a.md: wrote a.html"]);
+  });
+
+  it("over max-mb is an error whatever the profile, and nothing is written", async () => {
+    const r = await run("{ level = 'off', warn-mb = 0.1, max-mb = 0.2 }");
+    expect(r.code).toBe(1);
+    expect(r.written).toBe(false);
+    expect(r.out[0]).toMatch(
+      /: error build\.size: the page is \d+\.\d MB .*over max-mb 0\.2 MB, so nothing was written$/,
+    );
+  });
+
+  it("is in --json's warnings and errors", async () => {
+    const w = JSON.parse((await run("{ level = 'warning', warn-mb = 0.1 }", {}, true)).out[0] ?? "{}");
+    expect(w.status).toBe("built");
+    expect(w.warnings.map((i: { rule: string }) => i.rule)).toEqual(["build.size"]);
+    const e = JSON.parse((await run("{ level = 'warning', warn-mb = 0.1, max-mb = 0.2 }", {}, true)).out[0] ?? "{}");
+    expect(e.status).toBe("failed");
+    expect(e.errors.map((i: { rule: string }) => i.rule)).toEqual(["build.size"]);
+  });
+
+  it("a page made big by an inline asset crosses the default 20 MB", async () => {
+    const png = Buffer.concat([Buffer.from("89504e470d0a1a0a", "hex"), Buffer.alloc(8_000_000, 7)]);
+    const dir = tree({ "a.md": quiz("![big](assets/big.png)\n\n- [x] a\n- [ ] b") });
+    mkdirSync(join(dir, "assets"));
+    writeFileSync(join(dir, "assets", "big.png"), png);
+    const c = capture(dir);
+    expect(await runBuild(["a.md"], base, c.io)).toBe(0);
+    expect(c.out[0]).toMatch(/warning build\.size: the page is 2\d\.\d MB .*over warn-mb 20 MB$/);
   });
 });

@@ -81,6 +81,9 @@ function runtimeFolder(): string {
   return existsSync(join(here, "page.js")) ? here : resolve(here, "..", "..", "dist");
 }
 
+/** `21.4 MB`: one decimal, MB being 1,000,000 bytes. */
+const megabytes = (bytes: number): string => `${(bytes / 1e6).toFixed(1)} MB`;
+
 /** What one file came to: its exit code and the lines it prints, in order. */
 type FileResult = {
   file: string;
@@ -226,6 +229,32 @@ async function buildOne(file: string, c: RunContext): Promise<FileResult> {
       },
     ),
   );
+
+  // the page's size, which `check` cannot know: `build.size` (warn-mb, max-mb; MB is 1,000,000 bytes)
+  const sizeRule = result.resolved.rules.get("build.size");
+  const warnMb = Number(sizeRule?.options["warn-mb"] ?? 20);
+  const maxMb = Number(sizeRule?.options["max-mb"] ?? 100);
+  const sized = (limit: string, level: Issue["level"], tail = ""): Issue => ({
+    rule: "build.size",
+    level,
+    file,
+    line: 1,
+    message: `the page is ${megabytes(page.length)} (1 MB is 1,000,000 bytes), over ${limit}${tail}`,
+    fix: "use smaller or fewer images, or build with `--fonts quiz` or `--fonts none`",
+  });
+  if (page.length > maxMb * 1e6) {
+    const issue = sized(`max-mb ${maxMb} MB`, "error", ", so nothing was written");
+    issues.push(issue);
+    out.push(...humanIssue(issue, false));
+    return failedWith(out);
+  }
+  if (page.length > warnMb * 1e6 && sizeRule !== undefined && sizeRule.level !== "off") {
+    const level = opts.strict && sizeRule.level === "warning" ? "error" : sizeRule.level;
+    const issue = sized(`warn-mb ${warnMb} MB`, level);
+    issues.push(issue);
+    out.push(...humanIssue(issue, false));
+    if (level === "error") return failedWith(out);
+  }
 
   const source = resolve(io.cwd, file);
   const target = targetOf(file, opts, io, c.several);
