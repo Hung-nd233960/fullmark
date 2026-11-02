@@ -39,7 +39,6 @@ async function onScreen(page: Page): Promise<string> {
     const names = [...document.querySelectorAll("[aria-label],[title],[placeholder]")].flatMap((el) =>
       ["aria-label", "title", "placeholder"].map((a) => el.getAttribute(a) ?? ""),
     );
-    // biome-ignore lint/performance/useDomNodeTextContent: the text as rendered is what the scan is about
     const rendered = (el: HTMLElement): string => el.innerText;
     const notices = [...document.querySelectorAll<HTMLElement>(".fm-licences-texts pre, .fm-licences-copy")];
     let text = rendered(document.body);
