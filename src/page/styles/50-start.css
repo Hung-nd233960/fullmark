@@ -53,6 +53,11 @@
     border-radius: 10px;
   }
 
+  /* on a replay page the banner sits under the filter bar, which has no gap of its own */
+  .fm-resume-banner[data-resume-banner] {
+    margin-top: 16px;
+  }
+
   .fm-resume-text {
     display: flex;
     flex: 1;
