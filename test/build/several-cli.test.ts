@@ -191,7 +191,7 @@ describe("build --json", () => {
     expect(await runBuild(["a.md"], { ...base, json: true, fonts: "none" }, c.io)).toBe(0);
     const [line] = parse(c.out);
     expect(line?.status).toBe("built");
-    expect((line?.warnings as { rule: string }[]).map((w) => w.rule)).toEqual(["build.font-not-embedded"]);
+    expect(((line?.warnings ?? []) as { rule: string }[]).map((w) => w.rule)).toEqual(["build.font-not-embedded"]);
   });
 
   it("several files: one line per file with file, then the done line", async () => {
