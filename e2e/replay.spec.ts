@@ -148,4 +148,47 @@ test.describe("replay", () => {
     await page.goto(`file:///${join(built.dir, "results-results-5-replay.html").replaceAll("\\", "/")}`);
     await expect(page.locator("[data-replay-banner]")).toBeVisible();
   });
+
+  test("a Retry missed in progress is offered back after a reload: Continue, and Start over", async ({ page }) => {
+    const name = await attempt(page, "results-results-6.json");
+    run(built.dir, "replay", name, "--quiz", "results.md", "--no-open", "--built-at", "2026-10-28T10:00:00+07:00");
+    const url = `file:///${join(built.dir, "results-results-6-replay.html").replaceAll("\\", "/")}`;
+    const stored = () =>
+      page.evaluate(() => Object.fromEntries(Object.entries(localStorage).filter(([k]) => k.includes(":attempt"))));
+    const builtKeys = Object.fromEntries(Object.entries(await stored()).filter(([k]) => !k.includes(":replay:")));
+    await page.goto(url);
+    await expect(page.locator("[data-resume-banner]")).toHaveCount(0);
+    await page.locator("[data-action=retry-missed]").click();
+    await page.locator("[data-action=confirm-retry]").click();
+    await right(page, "r2");
+    await expect(page.locator("article.fm-question:not([hidden])").first()).toBeVisible();
+    // reload: the page opens on the replay, the retry offered back through the resume banner
+    await page.reload();
+    await expect(page.locator(".fm-quiz")).toHaveAttribute("data-phase", "submitted");
+    await expect(page.locator("[data-replay-banner]")).toBeVisible();
+    const banner = page.locator("[data-resume-banner]");
+    await expect(banner).toContainText("You have a retry in progress");
+    await expect(banner.locator("[data-resume]")).toContainText("1 of");
+    await expect(banner.locator("[data-action=continue]")).toHaveText("Continue your retry");
+    // Continue opens the retry where it was left
+    await banner.locator("[data-action=continue]").click();
+    await expect(page.locator(".fm-quiz")).toHaveAttribute("data-phase", "answering");
+    await expect(page.locator("[data-replay-banner]")).toHaveCount(0);
+    await expect(page.getByLabel("right r2")).toBeChecked();
+    // and it is still saved: reload again, then Start over, which asks first and removes it
+    await page.reload();
+    await expect(page.locator("[data-resume-banner]")).toBeVisible();
+    await page.locator("[data-resume-banner] [data-action=start-over]").click();
+    await expect(page.locator("[data-resume-banner]")).toBeVisible();
+    await page.locator("[data-action=confirm-start-over]").click();
+    await expect(page.locator("[data-resume-banner]")).toHaveCount(0);
+    await expect(page.locator(".fm-quiz")).toHaveAttribute("data-phase", "submitted");
+    await expect(page.locator("[data-replay-banner]")).toBeVisible();
+    expect(await page.evaluate(() => Object.keys(localStorage).filter((k) => k.includes(":replay:")))).toEqual([]);
+    await page.reload();
+    await expect(page.locator("[data-resume-banner]")).toHaveCount(0);
+    await expect(page.locator("[data-replay-banner]")).toBeVisible();
+    // the built page's own saved attempt was never touched
+    expect(await stored()).toEqual(builtKeys);
+  });
 });

@@ -439,6 +439,16 @@ export function createStore(data: PageData, deps: Deps = {}): Store {
     });
   };
 
+  /** What the resume banner says of a saved attempt: how far it got and the clock (a timed one counts from its start). */
+  const resumeOf = (page: PageQuiz, attempt: Attempt, startMs: number): NonNullable<QuizState["resume"]["value"]> => {
+    const plan = attempt.plan.questions;
+    const limit = limitOf(page, attempt);
+    const answered = plan.filter((id) => attempt.state.answers[id] != null).length;
+    const used =
+      limit !== undefined ? Math.min(limit, Math.floor((now() - startMs) / 1000)) : Math.floor(attempt.state.timeUsed);
+    return { attempt, startMs, answered, total: plan.length, used };
+  };
+
   const beginRun = (state: QuizState, startMs: number, at: number): void => {
     const attempt = state.attempt.value;
     const limit = limitOf(state.page, state.attempt.value);
@@ -633,8 +643,16 @@ export function createStore(data: PageData, deps: Deps = {}): Store {
       const at = now();
       for (const state of quizzes.values()) {
         const page = state.page;
-        // a replay page opens on its file, whatever is stored, and touches no key but its own
-        if (page.replay !== undefined) continue;
+        // a replay page opens on its file, whatever is stored, and touches no key but its own: a Retry missed
+        // saved under its `:replay:` key is offered back through the resume banner
+        if (page.replay !== undefined) {
+          const own = saver.get(replayAttemptKey(page));
+          const kept = readSaved(own, page);
+          if (kept === null) {
+            if (own !== null) saver.remove(replayAttemptKey(page));
+          } else state.resume.value = resumeOf(page, kept.attempt, kept.startMs ?? at);
+          continue;
+        }
         const mine = attemptKey(page);
         const side = sidebarKey(page);
         const looks = lookKey(page);
@@ -665,21 +683,32 @@ export function createStore(data: PageData, deps: Deps = {}): Store {
           finish(state, at, true);
           continue;
         }
-        const plan = attempt.plan.questions;
-        const answered = plan.filter((id) => attempt.state.answers[id] != null).length;
-        const used =
-          limit !== undefined ? Math.min(limit, Math.floor((at - started) / 1000)) : Math.floor(attempt.state.timeUsed);
-        state.resume.value = { attempt, startMs: started, answered, total: plan.length, used };
+        state.resume.value = resumeOf(page, attempt, started);
       }
     },
     continueAttempt(quizId) {
       const state = need(quizId);
       const resume = state.resume.value;
-      if (resume === null || state.attempt.value.phase !== "start") return;
+      if (resume === null || (state.attempt.value.phase !== "start" && state.replay.value === null)) return;
       const at = now();
       state.resume.value = null;
+      // a replay page leaves the replay for the retry that was saved: its grades belong to the replayed attempt only
+      const leaving = state.replay.value !== null;
+      state.replay.value = null;
       state.attempt.value = resume.attempt;
       keyOf(state);
+      if (leaving) {
+        state.filter.value = "all";
+        state.current.value = null;
+        state.mapOpen.value = {};
+      }
+      if (resume.attempt.phase === "submitted") {
+        state.startedAt = resume.startMs;
+        state.sectionSeconds.value = { ...resume.attempt.state.sectionTime };
+        state.elapsed.value = resume.attempt.state.timeUsed;
+        grading(state, resume.attempt);
+        return;
+      }
       gradeChecks(state);
       beginRun(state, resume.startMs ?? at, at);
       store.tick(at);

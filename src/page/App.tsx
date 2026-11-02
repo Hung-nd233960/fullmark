@@ -266,10 +266,12 @@ function Resume({ t, state, store }: { t: PageMessages; state: QuizState; store:
   const dialog = useRef<HTMLDialogElement>(null);
   if (resume === null) return null;
   const id = state.page.id;
+  // on a replay page the saved attempt is a Retry missed: the page still opens on the replay and offers it back
+  const replaying = state.replay.value !== null;
   return (
-    <div class="fm-resume-banner">
+    <div class="fm-resume-banner" data-resume-banner={replaying ? "retry" : undefined}>
       <div class="fm-resume-text">
-        <strong>{t.unfinishedAttempt}</strong>
+        <strong>{replaying ? t.unfinishedRetry : t.unfinishedAttempt}</strong>
         <span class="fm-resume-line" data-resume>
           {resumeLine(t, state.page, resume)}
         </span>
@@ -284,7 +286,7 @@ function Resume({ t, state, store }: { t: PageMessages; state: QuizState; store:
           data-action="continue"
           onClick={() => store.continueAttempt(id)}
         >
-          {t.continue}
+          {replaying ? t.continueRetry : t.continue}
         </button>
       </div>
       <dialog ref={dialog} class="fm-dialog" aria-labelledby={`${id}/over-title`}>
@@ -613,7 +615,9 @@ function QuizView({ state, api, store, last }: { state: QuizState; api: Api; sto
           inert={covered}
           aria-hidden={covered ? "true" : undefined}
         >
-          {attempt.phase === "start" ? <Resume t={t} state={state} store={store} /> : null}
+          {attempt.phase === "start" || state.replay.value !== null ? (
+            <Resume t={t} state={state} store={store} />
+          ) : null}
           {!started ? (
             <header class="fm-header">
               <h1>{page.title}</h1>

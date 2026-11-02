@@ -242,3 +242,129 @@ describe("a replay page", () => {
     expect(state.attempt.value as Attempt).toMatchObject({ phase: "submitted" });
   });
 });
+
+describe("a Retry missed left on a replay page", () => {
+  /** A replay page, a Retry missed started on it and one answer given: what is left in the browser. */
+  function left() {
+    const l = live();
+    memoryFor.value = l.memory;
+    const first = replayOf(l.file.text);
+    first.restore();
+    first.retry("rp", "retry123");
+    const answered = stateOf(first).attempt.value.plan.questions[0] as string;
+    first.dispatch("rp", { type: "answer", question: answered, answer: { choice: 1 } });
+    return { l, answered, text: l.file.text };
+  }
+  /** The page opened again: a new store over the same storage. */
+  const reopened = (text: string) => {
+    const store = replayOf(text);
+    store.restore();
+    return store;
+  };
+
+  it("opens on the replay and offers the retry back through the resume banner", () => {
+    const { text } = left();
+    const store = reopened(text);
+    const state = stateOf(store);
+    expect(state.attempt.value.phase).toBe("submitted");
+    expect(state.replay.value).not.toBeNull();
+    expect(state.resume.value).toMatchObject({ answered: 1 });
+    const page = html(store);
+    expect(page).toContain("data-replay-banner");
+    expect(page).toContain('data-resume-banner="retry"');
+    expect(page).toContain("You have a retry in progress");
+    expect(page).toContain("Continue your retry");
+    expect(page).toContain("Start over");
+    // the replay is what the page shows: its results card is still there
+    expect(page).toContain("data-results");
+  });
+
+  it("says the same in Vietnamese", () => {
+    const { text } = left();
+    const q = quiz();
+    const page = pageQuizOf({ ...q, assets: [], uiLang: "vi" });
+    const store = createStore(
+      { version: 1, quizzes: [{ ...page, replay: { results: text, name: "rp-results.json", grades: null } }] },
+      { storage: () => memoryFor.value as unknown as Storage },
+    );
+    store.restore();
+    const out = html(store);
+    expect(out).toContain("Bạn có một lượt làm lại chưa xong");
+    expect(out).toContain("Tiếp tục lượt làm lại");
+  });
+
+  it("Continue opens the retry where it was left", () => {
+    const { text, answered } = left();
+    const store = reopened(text);
+    store.continueAttempt("rp");
+    const state = stateOf(store);
+    expect(state.attempt.value.phase).toBe("answering");
+    expect(state.attempt.value.plan.source).toBe("retry");
+    expect(state.attempt.value.plan.seed).toBe("retry123");
+    expect(state.attempt.value.state.answers[answered]).toEqual({ choice: 1 });
+    expect(state.replay.value).toBeNull();
+    expect(state.resume.value).toBeNull();
+    expect(html(store)).not.toContain("data-replay-banner");
+    // and it saves again, under the same key
+    store.dispatch("rp", { type: "answer", question: answered, answer: { choice: 2 } });
+    expect(JSON.parse(memoryFor.value.getItem(replayKey()) as string).attempt.state.answers[answered]).toEqual({
+      choice: 2,
+    });
+  });
+
+  const replayKey = () => [...memoryFor.value.items.keys()].find((k) => k.endsWith(":replay:attempt")) as string;
+
+  it("a retry already submitted comes back submitted, graded as a retry", () => {
+    const { l, text } = left();
+    const store = replayOf(text);
+    store.restore();
+    store.continueAttempt("rp");
+    store.submit("rp", new Date(Date.UTC(2026, 9, 21, 3, 0, 0)));
+    const done = stateOf(store).graded.value;
+    const again = reopened(text);
+    expect(stateOf(again).resume.value).not.toBeNull();
+    again.continueAttempt("rp");
+    expect(stateOf(again).attempt.value.phase).toBe("submitted");
+    expect(stateOf(again).graded.value).toEqual(done);
+    expect(stateOf(again).attempt.value.plan.source).toBe("retry");
+    expect(l.memory.items.size).toBeGreaterThan(0);
+  });
+
+  it("Start over removes the saved retry and leaves the replay", () => {
+    const { text } = left();
+    const store = reopened(text);
+    store.startOver("rp");
+    expect(stateOf(store).resume.value).toBeNull();
+    expect(stateOf(store).replay.value).not.toBeNull();
+    expect(replayKey()).toBeUndefined();
+    expect(html(reopened(text))).not.toContain("data-resume-banner");
+  });
+
+  it("a Retry missed started over the offered one replaces it", () => {
+    const { text } = left();
+    const store = reopened(text);
+    store.retry("rp", "another1");
+    expect(stateOf(store).resume.value).toBeNull();
+    expect(stateOf(store).attempt.value.plan.seed).toBe("another1");
+  });
+
+  it("leaves the built page's keys untouched and ignores a saved attempt for another quiz version", () => {
+    const { l, text } = left();
+    const builtKeys = [...l.memory.items.entries()].filter(([k]) => !k.includes(":replay:"));
+    const store = reopened(text);
+    store.continueAttempt("rp");
+    expect([...l.memory.items.entries()].filter(([k]) => !k.includes(":replay:") && !k.endsWith(":sidebar"))).toEqual(
+      builtKeys.filter(([k]) => !k.endsWith(":sidebar")),
+    );
+    l.memory.items.set(replayKey(), "not a saved attempt");
+    const other = reopened(text);
+    expect(stateOf(other).resume.value).toBeNull();
+    expect(replayKey()).toBeUndefined();
+  });
+
+  it("a replay with nothing saved shows no banner", () => {
+    const l = live();
+    memoryFor.value = new Memory();
+    expect(html(reopened(l.file.text))).not.toContain("data-resume-banner");
+  });
+});
