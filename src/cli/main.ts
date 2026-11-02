@@ -4,6 +4,7 @@ import type { CheckOptions } from "./check";
 import { EXIT, type ExitCode } from "./exit-codes";
 import type { GradeOptions } from "./grade";
 import type { IdsOptions, Io } from "./ids";
+import type { ReplayCommandOptions } from "./replay-command";
 import type { RulesOptions } from "./rules";
 import { seededIds } from "./seed";
 
@@ -207,6 +208,40 @@ export function buildProgram(outcome: Outcome = { exit: EXIT.done }, io: Io = te
         version: VERSION,
       };
       outcome.exit = await (await import("./build")).runBuild(files, opts, io);
+    });
+
+  program
+    .command("replay")
+    .description("write an attempt as a page already submitted: the answers, the explanations and the grades")
+    .argument("<results...>", "results files (globs are expanded)")
+    .requiredOption("--quiz <file>", "the quiz the attempts were taken on (read, not checked)")
+    .option("--grades <file>", "show these grades for essays and code (default: RESULTS-grades.json beside it, if any)")
+    .option(
+      "-o, --output <out>",
+      "the page to write (default: RESULTS with -replay.html); with several files, a folder",
+    )
+    .option("--built-at <iso>", "pin the build time, so a page is byte-identical across runs (default: now)")
+    .option("--ui-lang <lang>", "the page's language, en or vi (default: the quiz's ui_lang)")
+    .option("--fonts <which>", "which fonts the page embeds: quiz (the quiz's own), all or none")
+    .option("--open", "open the page after writing it (the default for one file)")
+    .option("--no-open", "do not open the page")
+    .option("--json", "print one JSON object per file on stdout")
+    .option("--plain", "no colours and no progress line, even in a terminal")
+    .action(async (results: string[], options: Record<string, unknown>) => {
+      const opts: ReplayCommandOptions = {
+        quiz: (options.quiz as string | undefined) ?? null,
+        grades: (options.grades as string | undefined) ?? null,
+        output: (options.output as string | undefined) ?? null,
+        builtAt: (options.builtAt as string | undefined) ?? null,
+        uiLang: (options.uiLang as string | undefined) ?? null,
+        fonts: (options.fonts as string | undefined) ?? null,
+        plain: Boolean(options.plain) || noColor(),
+        json: Boolean(options.json),
+        open: options.open === true,
+        noOpen: options.open === false,
+        version: VERSION,
+      };
+      outcome.exit = await (await import("./replay-command")).runReplay(results, opts, io);
     });
   return program;
 }

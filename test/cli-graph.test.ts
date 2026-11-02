@@ -56,6 +56,11 @@ describe("what each command loads", () => {
     for (const marker of BUILD_ONLY) expect(text, marker).toContain(marker);
   });
 
+  it("the replay command holds the page builder, and `replay --help` (main) does not", () => {
+    const text = textOf(closure(entry("replay-command")));
+    for (const marker of BUILD_ONLY) expect(text, marker).toContain(marker);
+  });
+
   for (const name of ["main", "check", "rules", "ids", "grade", "acknowledgements"]) {
     it(`${name} never reaches the page builder, the renderer or the build's Markdown-to-HTML path`, () => {
       const list = closure(entry(name));

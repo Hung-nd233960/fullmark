@@ -3,11 +3,13 @@ import { existsSync, readFileSync, statSync } from "node:fs";
 import { basename, dirname, extname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { languagesUsed, loadHighlighter } from "../build/highlight";
-import { buildPage } from "../build/page";
+import { buildPage, type ReplayData } from "../build/page";
 import { katexTools } from "../build/tex";
 import { ISO_TIME } from "../core/config/build-file";
+import type { ResolvedProfile } from "../core/config/resolve";
 import type { ConfigError } from "../core/config/types";
 import { FONT_CHOICES, FONT_REGISTRY, type FontsChoice } from "../core/fonts";
+import type { Quiz } from "../core/ir";
 import type { Issue } from "../core/issue";
 import { type WriteError, writeFileAtomic } from "./atomic";
 import { type Job, type PlanItem, planBuildFile } from "./build-file";
@@ -26,7 +28,9 @@ import { loadConfig, realMachine } from "./config";
 import { EXIT, type ExitCode } from "./exit-codes";
 import { fail } from "./fail";
 import { expandInputs } from "./files";
+import type { LoadedQuiz } from "./load";
 import { shownPath } from "./paths";
+import { type ReplayOptions, readReplay } from "./replay";
 
 export type BuildOptions = {
   profile: string | null;
@@ -46,6 +50,8 @@ export type BuildOptions = {
   buildFile: string | null;
   /** `--open`: open the page after a single successful build */
   open: boolean;
+  /** `quiz replay`: the files are results files, and each is written as the page already submitted */
+  replay?: ReplayOptions;
   /** the options that arrive with later slices; any of them set is "not available yet" */
   later: string[];
   version: string;
@@ -102,6 +108,8 @@ type FileResult = {
   message?: string;
   errFile?: string;
   configErrors?: ConfigError[];
+  /** a replay's `--json`: the attempt, and whether grades are on the page */
+  replay?: { attempt: Record<string, unknown>; graded: boolean };
 };
 
 type RunContext = { io: BuildIo; several: boolean; builtAt: string; runtime: () => Runtime | null };
@@ -110,13 +118,16 @@ type Runtime = { runtime: string; css: string };
 /** Where a file's page goes: `-o` (a file for one input, a folder for several), else beside the source. */
 function targetOf(file: string, opts: BuildOptions, io: BuildIo, several: boolean): string {
   const source = resolve(io.cwd, file);
-  const name = `${basename(source, extname(source))}.html`;
+  // a replay is named for its results file and never overwrites a page built from the source
+  const name = opts.replay
+    ? `${basename(source).replace(/\.json$/i, "")}-replay.html`
+    : `${basename(source, extname(source))}.html`;
   if (opts.output === null) return join(dirname(source), name);
   return several ? join(resolve(io.cwd, opts.output), name) : resolve(io.cwd, opts.output);
 }
 
 /** A file's `--json` line: `check --json`'s issues, split into `errors` and `warnings`. */
-function jsonLine(r: FileResult, several: boolean): Record<string, unknown> {
+function jsonLine(r: FileResult, several: boolean, replay: boolean): Record<string, unknown> {
   const file = several ? { file: r.file } : {};
   if (r.status === "error") {
     return {
@@ -124,6 +135,15 @@ function jsonLine(r: FileResult, several: boolean): Record<string, unknown> {
       ...(r.errFile !== undefined ? { file: r.errFile } : file),
       message: r.message,
       ...(r.configErrors ? { errors: r.configErrors } : {}),
+    };
+  }
+  if (replay) {
+    return {
+      status: r.status,
+      ...file,
+      output: r.output,
+      bytes: r.bytes,
+      ...(r.replay ? r.replay : { message: r.message }),
     };
   }
   return {
@@ -163,33 +183,56 @@ async function buildOne(job: Job, c: RunContext): Promise<FileResult> {
     message,
     ...(errFile === undefined ? {} : { errFile }),
   });
-  const result = checkFile(file, { ...opts, review: null, json: false, plain: true }, io);
-  if (result.status === "error") {
-    return {
-      ...errorWith(result.message, describeOutcome(result, false, false)),
-      ...(result.configErrors ? { configErrors: result.configErrors } : {}),
-    };
-  }
-  issues.push(...result.issues);
-  if (result.status === "failed" || result.loaded.quiz === null) {
-    // nothing is written; the issues are printed as `check` prints them
-    return failedWith(describeOutcome(result, c.several, false));
-  }
+  let loaded: LoadedQuiz;
+  let rules: ResolvedProfile["rules"] | null = null;
+  let replay: ReplayData | undefined;
   const out: string[] = [];
-  for (const issue of result.issues) out.push(...humanIssue(issue, false));
+  const quizFile = opts.replay ? opts.replay.quiz : file;
+  if (opts.replay) {
+    // the quiz is read, not checked: the attempt already happened on this text
+    const read = readReplay(file, opts.replay, io);
+    if (!read.ok) {
+      const lines =
+        read.problems.length === 1
+          ? [`${file}: ${read.problems[0]}`]
+          : [`${file}: ${read.message}`, ...read.problems.map((p) => `  ${p}`)];
+      const failure = read.exit === EXIT.usage ? errorWith(read.message, lines) : failedWith([]);
+      return { ...failure, err: lines, message: read.message };
+    }
+    replay = read.replay;
+    loaded = opts.replay.loaded;
+    for (const w of read.warnings) out.push(`${file}: warning: ${w}`);
+  } else {
+    const result = checkFile(file, { ...opts, review: null, json: false, plain: true }, io);
+    if (result.status === "error") {
+      return {
+        ...errorWith(result.message, describeOutcome(result, false, false)),
+        ...(result.configErrors ? { configErrors: result.configErrors } : {}),
+      };
+    }
+    issues.push(...result.issues);
+    if (result.status === "failed" || result.loaded.quiz === null) {
+      // nothing is written; the issues are printed as `check` prints them
+      return failedWith(describeOutcome(result, c.several, false));
+    }
+    for (const issue of result.issues) out.push(...humanIssue(issue, false));
+    loaded = result.loaded;
+    rules = result.resolved.rules;
+  }
+  const quiz = loaded.quiz as Quiz;
 
   // `--fonts`, else the machine config's `fonts`, else the quiz's own font
   const machine = io.machine ?? { ...realMachine(), cwd: io.cwd };
-  const machineFonts = loadConfig(machine, dirname(resolve(io.cwd, file)), opts.config).layers.user?.fonts;
+  const machineFonts = loadConfig(machine, dirname(resolve(io.cwd, quizFile)), opts.config).layers.user?.fonts;
   const fonts: FontsChoice = (opts.fonts as FontsChoice | null) ?? machineFonts ?? "quiz";
   const fontsGiven = opts.fonts !== null || machineFonts !== undefined;
-  const front = result.loaded.quiz.frontMatter;
+  const front = quiz.frontMatter;
   if (fonts === "none" && front.look === "locked" && front.font !== "system") {
     const family = FONT_REGISTRY[front.font].family;
     const issue: Issue = {
       rule: "build.font-not-embedded",
       level: opts.strict ? "error" : "warning",
-      file,
+      file: quizFile,
       line: 1,
       message: `the quiz is locked to the font ${family}, which this page does not embed: the system font will stand in unless ${family} is installed`,
       fix: "build without `--fonts none`, or give the quiz `font: system`",
@@ -206,18 +249,19 @@ async function buildOne(job: Job, c: RunContext): Promise<FileResult> {
   }
 
   // Shiki loads only if the quiz or a sheet has a fence of a known language; KaTeX only when a span is rendered
-  const highlight = await loadHighlighter(languagesUsed(result.loaded.quiz, result.loaded.sheets));
+  const highlight = await loadHighlighter(languagesUsed(quiz, loaded.sheets));
   // `--ui-lang` changes the page's language only: the hash and the key's `lang` (grading) are the quiz's own
   const shown: "en" | "vi" | null = opts.uiLang === "vi" ? "vi" : opts.uiLang === "en" ? "en" : null;
   const page = new TextEncoder().encode(
     buildPage(
       [
         {
-          quiz: result.loaded.quiz,
+          quiz,
           ...(shown === null ? {} : { uiLang: shown }),
-          hash: result.loaded.hash ?? "",
-          assets: result.loaded.assets,
-          sheets: result.loaded.sheets,
+          hash: loaded.hash ?? "",
+          assets: loaded.assets,
+          sheets: loaded.sheets,
+          ...(replay ? { replay } : {}),
         },
       ],
       {
@@ -240,7 +284,7 @@ async function buildOne(job: Job, c: RunContext): Promise<FileResult> {
   );
 
   // the page's size, which `check` cannot know: `build.size` (warn-mb, max-mb; MB is 1,000,000 bytes)
-  const sizeRule = result.resolved.rules.get("build.size");
+  const sizeRule = rules?.get("build.size");
   const warnMb = Number(sizeRule?.options["warn-mb"] ?? 20);
   const maxMb = Number(sizeRule?.options["max-mb"] ?? 100);
   const sized = (limit: string, level: Issue["level"], tail = ""): Issue => ({
@@ -276,7 +320,24 @@ async function buildOne(job: Job, c: RunContext): Promise<FileResult> {
   }
   const output = shownPath(target, io.cwd);
   out.push(`${shownPath(source, io.cwd)}: wrote ${output}`);
-  return { file, exit: EXIT.done, status: "built", issues, output, bytes: page.length, out, err: [] };
+  const written: FileResult = {
+    file,
+    exit: EXIT.done,
+    status: "built",
+    issues,
+    output,
+    bytes: page.length,
+    out,
+    err: [],
+  };
+  if (replay) {
+    const a = replay.attempt;
+    written.replay = {
+      attempt: { quizHash: a.quizHash, phase: a.phase, startedAt: a.state.startedAt, submittedAt: a.state.submittedAt },
+      graded: replay.applied !== null && replay.applied.details.length > 0,
+    };
+  }
+  return written;
 }
 
 /** `quiz build FILE...` (COMMANDS.md): each file is checked as `check` does, then written as one page; nothing on errors. */
@@ -319,7 +380,7 @@ export async function runBuild(patterns: readonly string[], opts: BuildOptions, 
   } else {
     const inputs = expandInputs(patterns, io.cwd);
     if (inputs.files.length === 0 && inputs.errors.length === 0) {
-      fail(io, opts.json, "nothing to work on: give a quiz file");
+      fail(io, opts.json, `nothing to work on: give ${opts.replay ? "a results file" : "a quiz file"}`);
       return EXIT.usage;
     }
     if (inputs.files.length + inputs.errors.length > 1 && opts.output !== null) {
@@ -403,7 +464,7 @@ export async function runBuild(patterns: readonly string[], opts: BuildOptions, 
     const r = await buildOne(item.job, context);
     if (progress) clearProgress(io);
     if (opts.json) {
-      io.out(JSON.stringify(jsonLine(r, several)));
+      io.out(JSON.stringify(jsonLine(r, several, opts.replay !== undefined)));
       for (const line of r.err) io.err(line);
     } else {
       for (const line of r.out) io.out(line);
@@ -414,7 +475,9 @@ export async function runBuild(patterns: readonly string[], opts: BuildOptions, 
     exit = worst(exit, r.exit);
     if (r.status === "built" && r.output !== null) opened = resolve(io.cwd, r.output);
   }
-  if (opts.open) {
+  // a replay opens its page by default when there is one file; `build` only when asked
+  const explicit = opts.replay ? opts.replay.open === "yes" : opts.open;
+  if (explicit || (opts.replay?.open === "default" && !several)) {
     if (several) io.err(`--open opens one page; built ${ok}`);
     else if (opened !== null) {
       try {

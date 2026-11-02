@@ -1,0 +1,30 @@
+{
+  "format": "fullmark-results",
+  "version": 2,
+  "quizHash": "a3f9eb6aae41613ad33b17133b3815038b7ec722f9b3193f578c92b802324d8a",
+  "plan": {
+    "source": "full",
+    "questions": [
+      "prime",
+      "capital"
+    ]
+  },
+  "state": {
+    "answers": {
+      "prime": {
+        "choice": 0
+      },
+      "capital": {
+        "choice": 1
+      }
+    },
+    "startedAt": "2026-10-20T10:00:00",
+    "submittedAt": "2026-10-20T10:05:00",
+    "timeUsed": 300,
+    "sectionTime": {},
+    "flagged": [],
+    "checked": [],
+    "timedOut": false
+  },
+  "phase": "submitted"
+}

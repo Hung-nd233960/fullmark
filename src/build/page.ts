@@ -2,12 +2,14 @@ import { sha256 } from "@noble/hashes/sha2.js";
 import { utf8ToBytes } from "@noble/hashes/utils.js";
 import { h } from "preact";
 import { renderToString } from "preact-render-to-string";
+import type { Attempt } from "../core/attempt";
 import { canonicalJson } from "../core/canonical";
 import { embeddedFonts, type FontsChoice, fontFaceCss, offeredFonts } from "../core/fonts";
 import { en, type Messages, vi } from "../core/i18n";
 import type { Question, Quiz, Rubric, Section } from "../core/ir";
 import { encodeKey, toBase64 } from "../core/keyblob";
 import { planFor } from "../core/plan";
+import type { AppliedGrades } from "../core/rubric/grades";
 import { themeCss } from "../core/themes";
 import { App } from "../page/App";
 import type { KeyBlob, PageCriterion, PageData, PageItem, PageQuestion, PageQuiz, PageSection } from "../page/data";
@@ -20,6 +22,17 @@ import { infoFor, licencesFor } from "./licences";
 import { type Asset, createRenderer, type RenderTools } from "./render";
 import type { MathTools } from "./tex";
 
+/** An attempt to show already submitted (`quiz replay`): the results file as read, the attempt in it and the grades. */
+export type ReplayData = {
+  /** the results file's text, exactly as read: Download results gives it back */
+  results: string;
+  /** the results file's name, which Download results keeps */
+  name: string;
+  attempt: Attempt;
+  /** the grades for essay and code answers, checked; null: pending */
+  applied: AppliedGrades | null;
+};
+
 /** One quiz to put on a page: the IR the check passed, its hash, and the files it refers to. */
 export type BuildQuiz = {
   quiz: Quiz;
@@ -29,6 +42,8 @@ export type BuildQuiz = {
   sheets?: readonly { path: string; name: string; source: string }[];
   /** `build --ui-lang`: the language of the page's chrome, over the quiz's `ui_lang`; the key and the grading are the quiz's own */
   uiLang?: "en" | "vi";
+  /** `quiz replay`: the page opens on this attempt, submitted */
+  replay?: ReplayData;
 };
 
 export type PageOptions = {

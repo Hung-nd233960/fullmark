@@ -3,22 +3,24 @@ Usage: quiz [options] [command]
 Markdown in, one offline HTML quiz out.
 
 Options:
-  --version                     print the version
-  --acknowledgements            print fullmark's licence and every third-party
-                                component shipped in the CLI or in its pages
-                                (top level only)
-  -h, --help                    help for the command
+  --version                      print the version
+  --acknowledgements             print fullmark's licence and every third-party
+                                 component shipped in the CLI or in its pages
+                                 (top level only)
+  -h, --help                     help for the command
 
 Commands:
-  check [options] <files...>    check quizzes under a profile: syntax errors,
-                                quality warnings, the brief beside the quiz
-  rules [options] [rule]        the rule catalogue: what a profile checks and
-                                why a quiz was held to a rule
-  ids [options] <files...>      give every question without an id a random one,
-                                and change nothing else
-  grade [options] <results...>  re-grade attempts and write a report: score,
-                                wrong answers, and the essays laid out for a
-                                grader
-  build [options] [files...]    check a quiz, then write it as one offline HTML
-                                page
-  help [command]                help for a command
+  check [options] <files...>     check quizzes under a profile: syntax errors,
+                                 quality warnings, the brief beside the quiz
+  rules [options] [rule]         the rule catalogue: what a profile checks and
+                                 why a quiz was held to a rule
+  ids [options] <files...>       give every question without an id a random one,
+                                 and change nothing else
+  grade [options] <results...>   re-grade attempts and write a report: score,
+                                 wrong answers, and the essays laid out for a
+                                 grader
+  build [options] [files...]     check a quiz, then write it as one offline HTML
+                                 page
+  replay [options] <results...>  write an attempt as a page already submitted:
+                                 the answers, the explanations and the grades
+  help [command]                 help for a command
