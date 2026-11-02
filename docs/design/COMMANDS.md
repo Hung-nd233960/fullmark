@@ -184,7 +184,7 @@ Exit: `0` built, `1` check errors, `2` I/O error. With several files: every file
 # build.toml
 out = "site"                          # default folder for every entry
 built-at = "2026-10-24T09:00:00+07:00" # pins the build time: byte-identical rebuilds
-lang = "vi"
+ui-lang = "vi"
 
 [[build]]
 files = ["signals/*.md", "systems/intro.md"]
@@ -194,11 +194,18 @@ files = ["exam/final.md"]
 print = true
 answers = "key"
 seed = 7
-lang = "en"                           # overrides the top level
+ui-lang = "en"                        # overrides the top level
 ```
 
 - **Keys are `build` flag names**, top level as defaults, each `[[build]]` entry overriding them: `out`, `profile`, `config`, `strict`, `fonts`, `ui-lang`, `built-at`, `print`, `answers`, `seed`, `materials`. `files` is required in each entry. A flag on the command line beats both.
 - **Not allowed:** `attempt`, `grades`, `watch`, `serve`, `open`, `port`: they are about one run, not about what to build. These and unknown keys exit 2 with `file:line`, as a malformed config does.
+- **`out` is always a folder**, even for one file, so adding a file to an entry never changes where pages go. `-o DIR` replaces it for every entry; without either, a page goes beside its source. `out` and `-o` are refused as in [Several files](#several-files): a name ending in `.html` or `.htm`, or an existing file, exits 2.
+- **Clashes are found first.** Before anything is built, every page any entry would write is worked out. Two that would write the same path (the same file in two entries, or files of the same name into one folder) exit 2, naming both entries' lines, with the fix "give each entry its own `out`".
+- **`FILE`s given with `--build-file`** build only the entries' files that match them (by resolved path), each with its own entry's options. A `FILE` in no entry exits 2 naming it, before anything is built.
+- **`built-at` is quoted text**, as the flag takes it. An unquoted TOML date is refused with `` `built-at` must be in quotes ``: TOML rewrites dates when it reads them, and the page keeps the text as written.
+- **`print`, `answers`, `seed` and `materials`** exit 2 with `BUILD:line` and `not available yet` until the printed paper is built.
+- **Errors.** Every problem is listed, each with `BUILD:line`: unknown keys, keys about one run, wrong types and values (the flag's own message), an empty or missing `files`, a file with no `[[build]]`. Nothing is built. With `--json` the result is one line, `{"status": "error", "file", "message", "errors": [...]}`.
+- **An example.** [examples/build.toml](../../examples/build.toml) builds every example, each into its own folder.
 - **`library register --build-file`** reads the same file and registers its `files`.
 - `--watch` with a build file also watches the build file.
 
