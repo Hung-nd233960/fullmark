@@ -161,6 +161,9 @@ for (const look of ["free", "locked"]) {
     await reset(page).click({ force: true });
     expect(await rootSize(page)).toBe(17);
     const inert = await reset(page).evaluate((el) => getComputedStyle(el).color);
+    const bg = (el: Element) => getComputedStyle(el).backgroundColor;
+    const plainBg = await reset(page).evaluate(bg);
+    expect(plainBg).toBe(await larger(page).evaluate(bg)); // at 1× the box is as A+
 
     await larger(page).click();
     expect(await rootSize(page)).toBe(19);
@@ -169,6 +172,7 @@ for (const look of ["free", "locked"]) {
     await expect(reset(page)).toHaveAccessibleName("Text size 1.12×, reset to 1×");
     await expect(reset(page)).toHaveAttribute("title", "Back to 1×");
     expect(await reset(page).evaluate((el) => getComputedStyle(el).color)).not.toBe(inert);
+    expect(await reset(page).evaluate(bg)).not.toBe(plainBg); // off the default, the accent's wash
     await larger(page).click();
     await expect(reset(page)).toHaveText("1.24×");
     await larger(page).click();
@@ -176,6 +180,7 @@ for (const look of ["free", "locked"]) {
     await reset(page).click({ force: true });
     expect(await rootSize(page)).toBe(17);
     await expect(reset(page)).toHaveText("1×");
+    expect(await reset(page).evaluate(bg)).toBe(plainBg);
     await smaller(page).click();
     await expect(reset(page)).toHaveText("0.88×");
     await page.reload();

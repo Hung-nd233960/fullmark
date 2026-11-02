@@ -52,6 +52,11 @@
     border-left: 1px solid var(--line);
   }
 
+  /* off the default, a soft wash of the accent says the size is set (owner, 2026-11-02) */
+  .fm-textsize-reset[aria-disabled="false"] {
+    background: color-mix(in srgb, var(--accent) 12%, var(--card));
+  }
+
   .fm-textsize-reset[aria-disabled="true"] {
     color: var(--muted);
     cursor: default;
