@@ -31,7 +31,7 @@ test("the marked card is the one the status line names, as the learner answers a
 
   await page.locator("aside.fm-side [data-part-head]").nth(1).click();
   await page.locator("aside.fm-side [data-cell]").nth(8).click();
-  const n = (await question(page).innerText()).match(/Question (\d+) of/)?.[1];
+  const n = (await question(page).textContent())?.match(/Question (\d+) of/)?.[1];
   await expect(card(page, `m${n}`)).toHaveAttribute("data-current", "true");
   await expect(marked(page)).toHaveCount(1);
 });

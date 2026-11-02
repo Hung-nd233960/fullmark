@@ -32,7 +32,7 @@ test("the button sits at the foot of the start screen and opens the popup with t
   );
   await button(page).click();
   await expect(dialog(page)).toBeVisible();
-  const text = (await dialog(page).innerText()).replace(/\s+/g, " ");
+  const text = ((await dialog(page).textContent()) ?? "").replace(/\s+/g, " ");
   for (const name of ["Preact", "Zod", "Source Serif 4", "MIT License", "SIL Open Font License"]) {
     expect(text).toContain(name);
   }

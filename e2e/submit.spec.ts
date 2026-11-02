@@ -54,7 +54,9 @@ test("Submit opens the dialog with the summary; Keep answering has the focus; no
   await noViolations(page);
 });
 
-test("Esc, Enter on Keep answering, the button and a click outside each cancel; the focus returns to Submit", async ({ page }) => {
+test("Esc, Enter on Keep answering, the button and a click outside each cancel; the focus returns to Submit", async ({
+  page,
+}) => {
   await start(page);
   await bar(page).click();
   await expect(dialog(page)).toBeVisible();

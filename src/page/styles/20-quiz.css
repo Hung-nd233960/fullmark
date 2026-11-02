@@ -320,6 +320,12 @@
     user-select: none;
   }
 
+  .fm-move:disabled {
+    color: var(--muted);
+    cursor: default;
+    opacity: 1;
+  }
+
   .fm-order-item .fm-move {
     cursor: pointer;
   }
@@ -330,12 +336,6 @@
 
   .fm-order-list[data-dragging] .fm-order-item {
     cursor: grabbing;
-  }
-
-  .fm-move:disabled {
-    color: var(--muted);
-    cursor: default;
-    opacity: 1;
   }
 
   .fm-order-mark {

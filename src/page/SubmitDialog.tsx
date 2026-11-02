@@ -69,7 +69,10 @@ export function SubmitDialog({
     const outside = (event: MouseEvent): void => {
       const box = el.getBoundingClientRect();
       const inside =
-        event.clientX >= box.left && event.clientX <= box.right && event.clientY >= box.top && event.clientY <= box.bottom;
+        event.clientX >= box.left &&
+        event.clientX <= box.right &&
+        event.clientY >= box.top &&
+        event.clientY <= box.bottom;
       if (event.target === el && !inside) el.close();
     };
     el.addEventListener("click", outside);

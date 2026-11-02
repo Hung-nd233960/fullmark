@@ -14,8 +14,14 @@ const idsOn = (page: Page): Promise<string[]> =>
 /** Answers a `single` question of the fixtures by its right choice. */
 const right = (page: Page, id: string) => page.getByLabel(`right ${id}`).check();
 
+/** The parts of an export these tests read. */
+type ExportedFile = {
+  plan: { source: string; section: string; questions: string[]; seed: string; optionOrder: Record<string, number[]> };
+  state: { timedOut: boolean; timeUsed: number; answers: Record<string, unknown>; sectionTime: Record<string, number> };
+};
+
 /** Saves the export and returns the parsed file. */
-async function exported(page: Page, dir: string): Promise<{ name: string; file: Record<string, any> }> {
+async function exported(page: Page, dir: string): Promise<{ name: string; file: ExportedFile }> {
   const download = page.waitForEvent("download");
   await page.getByRole("button", { name: "Download results" }).click();
   const file = await download;
@@ -238,7 +244,7 @@ test("an untimed quiz counts only the time the page is visible", async ({ page }
   expect(file.state.timeUsed).toBe(15);
   expect(file.state.timedOut).toBe(false);
   // the seconds went to a section that was on screen
-  const spent = Object.values(file.state.sectionTime as Record<string, number>).reduce((a, b) => a + b, 0);
+  const spent = Object.values(file.state.sectionTime).reduce((a, b) => a + b, 0);
   expect(spent).toBe(15);
 });
 
@@ -277,6 +283,6 @@ test("the page shows the items in the order the plan drew, and the export record
   expect(shown).not.toEqual(source);
   await submitAttempt(page);
   const { file } = await exported(page, types.dir);
-  const order = file.plan.optionOrder.o1 as number[];
+  const order = file.plan.optionOrder.o1 ?? [];
   expect(order.map((i) => source[i])).toEqual(shown);
 });
