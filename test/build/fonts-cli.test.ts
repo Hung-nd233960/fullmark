@@ -13,6 +13,7 @@ const base: BuildOptions = {
   fonts: null,
   plain: true,
   json: false,
+  open: false,
   later: [],
   version: "1.0.0-test",
 };

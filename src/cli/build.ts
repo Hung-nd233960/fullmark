@@ -1,3 +1,4 @@
+import { spawn } from "node:child_process";
 import { existsSync, readFileSync, statSync } from "node:fs";
 import { basename, dirname, extname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -37,13 +38,38 @@ export type BuildOptions = {
   plain: boolean;
   /** `--json`: one object per file on stdout, nothing else */
   json: boolean;
+  /** `--open`: open the page after a single successful build */
+  open: boolean;
   /** the options that arrive with later slices; any of them set is "not available yet" */
   later: string[];
   version: string;
 };
 
 /** An `Io` plus where the page runtime is and what time it is, which tests control; the defaults are the real ones. */
-export type BuildIo = CheckIo & { runtimeDir?: string; now?: () => Date };
+export type BuildIo = CheckIo & {
+  runtimeDir?: string;
+  now?: () => Date;
+  /** opens a page with the system's opener, without waiting for it; rejects or throws when it cannot start */
+  open?: (path: string) => void | Promise<void>;
+};
+
+/** The system's opener (COMMANDS.md, `--open`): `start` through `cmd` on Windows, `open` on macOS, else `xdg-open`. */
+export function systemOpen(path: string): Promise<void> {
+  const [command, args]: [string, string[]] =
+    process.platform === "win32"
+      ? ["cmd", ["/c", "start", '""', `"${path}"`]]
+      : process.platform === "darwin"
+        ? ["open", [path]]
+        : ["xdg-open", [path]];
+  return new Promise((done, fail) => {
+    const child = spawn(command, args, { detached: true, stdio: "ignore", windowsVerbatimArguments: true });
+    child.once("error", fail);
+    child.once("spawn", () => {
+      child.unref();
+      done();
+    });
+  });
+}
 
 const ISO = /^\d{4}-\d\d-\d\dT\d\d:\d\d(:\d\d(\.\d+)?)?(Z|[+-]\d\d:\d\d)?$/;
 
@@ -282,6 +308,7 @@ export async function runBuild(patterns: readonly string[], opts: BuildOptions, 
   let ok = 0;
   let failed = 0;
   let n = 0;
+  let opened: string | null = null;
   // one after another, in the order given: an unusable input fails in its place
   for (const item of inputs.items) {
     if ("error" in item) {
@@ -304,6 +331,20 @@ export async function runBuild(patterns: readonly string[], opts: BuildOptions, 
     if (r.exit === EXIT.done) ok++;
     else failed++;
     exit = worst(exit, r.exit);
+    if (r.status === "built" && r.output !== null) opened = resolve(io.cwd, r.output);
+  }
+  if (opts.open) {
+    if (several) io.err(`--open opens one page; built ${ok}`);
+    else if (opened !== null) {
+      try {
+        await (io.open ?? systemOpen)(opened);
+      } catch (error) {
+        const e = error as { code?: string; message?: string };
+        io.err(
+          `warning: cannot open the page: ${e.code === "ENOENT" ? "the system's opener was not found" : (e.message ?? "unknown error")}`,
+        );
+      }
+    }
   }
   if (several) io.out(opts.json ? JSON.stringify({ status: "done", ok, failed }) : batchSummary(ok, failed));
   return exit;

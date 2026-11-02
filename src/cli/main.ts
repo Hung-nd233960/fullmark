@@ -156,7 +156,6 @@ export function buildProgram(outcome: Outcome = { exit: EXIT.done }, io: Io = te
 
   const LATER = [
     "build-file",
-    "open",
     "print",
     "answers",
     "answer-sheet",
@@ -178,7 +177,7 @@ export function buildProgram(outcome: Outcome = { exit: EXIT.done }, io: Io = te
     // these arrive with later slices; they are accepted so that the refusal is a plain message
     .option("--build-file <build>", "(not available yet)")
     .option("--json", "print one JSON object per file on stdout")
-    .option("--open", "(not available yet)")
+    .option("--open", "open the page after building (one file)")
     .option("--print", "(not available yet)")
     .option("--answers <mode>", "(not available yet)")
     .option("--answer-sheet", "(not available yet)")
@@ -201,6 +200,7 @@ export function buildProgram(outcome: Outcome = { exit: EXIT.done }, io: Io = te
         builtAt: (options.builtAt as string | undefined) ?? null,
         plain: Boolean(options.plain) || noColor(),
         json: Boolean(options.json),
+        open: Boolean(options.open),
         later: LATER.filter(
           (name) => options[name.replace(/-(\w)/g, (_m, c: string) => c.toUpperCase())] !== undefined,
         ),

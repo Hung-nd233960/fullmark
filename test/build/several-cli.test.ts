@@ -2,7 +2,7 @@ import { cpSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, 
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
-import { type BuildOptions, runBuild } from "../../src/cli/build";
+import { type BuildIo, type BuildOptions, runBuild } from "../../src/cli/build";
 import { capture, quiz, tempTree } from "../helpers/cli";
 
 export const base: BuildOptions = {
@@ -14,6 +14,7 @@ export const base: BuildOptions = {
   fonts: null,
   plain: true,
   json: false,
+  open: false,
   later: [],
   version: "1.0.0-test",
 };
@@ -227,5 +228,60 @@ describe("build --json", () => {
     const c = capture(dir);
     expect(await runBuild(["a.md"], { ...base, json: true, fonts: "some" }, c.io)).toBe(2);
     expect(parse(c.out)).toEqual([{ status: "error", message: "--fonts some is not one of quiz, all, none" }]);
+  });
+});
+
+describe("build --open", () => {
+  const withOpener = (dir: string, open: (p: string) => void | Promise<void>) => {
+    const c = capture(dir);
+    (c.io as BuildIo).open = open;
+    return c;
+  };
+
+  it("one file built is opened once, by its full path", async () => {
+    const dir = tree({ "a.md": quiz() });
+    const opened: string[] = [];
+    const c = withOpener(dir, (p) => void opened.push(p));
+    expect(await runBuild(["a.md"], { ...base, open: true }, c.io)).toBe(0);
+    expect(opened).toEqual([join(dir, "a.html")]);
+    expect(c.err).toEqual([]);
+  });
+
+  it("opens nothing without --open", async () => {
+    const dir = tree({ "a.md": quiz() });
+    const opened: string[] = [];
+    const c = withOpener(dir, (p) => void opened.push(p));
+    await runBuild(["a.md"], base, c.io);
+    expect(opened).toEqual([]);
+  });
+
+  it("several files open nothing and say how many were built; the exit is unaffected", async () => {
+    const dir = tree({ "a.md": quiz(), "b.md": quiz(), "c.md": bad });
+    const opened: string[] = [];
+    const c = withOpener(dir, (p) => void opened.push(p));
+    expect(await runBuild(["a.md", "b.md", "c.md"], { ...base, open: true }, c.io)).toBe(1);
+    expect(opened).toEqual([]);
+    expect(c.err).toEqual(["--open opens one page; built 2"]);
+  });
+
+  it("a failed build opens nothing", async () => {
+    const dir = tree({ "a.md": bad });
+    const opened: string[] = [];
+    const c = withOpener(dir, (p) => void opened.push(p));
+    expect(await runBuild(["a.md"], { ...base, open: true }, c.io)).toBe(1);
+    expect(opened).toEqual([]);
+  });
+
+  it("an opener that throws, or rejects, is a warning and the exit stays 0", async () => {
+    const dir = tree({ "a.md": quiz() });
+    const thrown = withOpener(dir, () => {
+      throw new Error("no opener");
+    });
+    expect(await runBuild(["a.md"], { ...base, open: true }, thrown.io)).toBe(0);
+    expect(thrown.err).toEqual(["warning: cannot open the page: no opener"]);
+    const rejected = withOpener(dir, () => Promise.reject(Object.assign(new Error("x"), { code: "ENOENT" })));
+    expect(await runBuild(["a.md"], { ...base, open: true }, rejected.io)).toBe(0);
+    expect(rejected.err).toEqual(["warning: cannot open the page: the system's opener was not found"]);
+    expect(existsSync(join(dir, "a.html"))).toBe(true);
   });
 });
