@@ -418,6 +418,14 @@
     padding: 24px 16px 32px;
   }
 
+  /* the foot spans the main area, not the question column: the button sits at the page's right edge (left of an open
+     sidebar), away from the test (owner, 2026-11-02) */
+  .fm-body .fm-main > .fm-foot,
+  .fm-quiz[data-phase="start"] .fm-main > .fm-foot {
+    width: auto;
+    margin-inline: 0;
+  }
+
   .fm-licences-button {
     display: inline-flex;
     align-items: center;

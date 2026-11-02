@@ -20,9 +20,19 @@ test("the button sits at the foot of the start screen and opens the popup with t
   const box = await button(page).boundingBox();
   expect(box?.width).toBe(44);
   expect(box?.height).toBe(44);
-  // at the right end of the foot (which is the content column)
+  // at the right end of the foot, which spans the main area, not the content column (owner, 2026-11-02)
   const foot = await button(page).evaluate((el) => (el.parentElement as HTMLElement).getBoundingClientRect().right);
   expect(Math.abs((box?.x ?? 0) + 44 - (foot - 16))).toBeLessThan(1);
+  const main = await page
+    .locator(".fm-main")
+    .first()
+    .evaluate((el) => el.getBoundingClientRect().right);
+  expect(Math.abs(foot - main)).toBeLessThan(1);
+  const column = await page
+    .locator(".fm-header")
+    .first()
+    .evaluate((el) => el.getBoundingClientRect().right);
+  expect((box?.x ?? 0) > column).toBe(true); // clear of the column, away from the test
   await expect(dialog(page)).toBeHidden();
   // in the flow, not floating: scrolled to the bottom it is below the Start button
   const [b, s] = [await button(page).boundingBox(), await page.getByRole("button", { name: "Start" }).boundingBox()];
