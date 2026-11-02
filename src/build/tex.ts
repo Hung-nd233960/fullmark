@@ -55,6 +55,8 @@ export function katexTools(load: () => Katex = loadKatex): MathTools {
   return {
     start() {
       const classes = new Map<string, string>();
+      // the classes of the maths rendered so far: they decide which of KaTeX's fonts the page embeds
+      const used = new Set<string>();
       const classOf = (style: string): string => {
         let name = classes.get(style);
         if (name === undefined) {
@@ -67,6 +69,7 @@ export function katexTools(load: () => Katex = loadKatex): MathTools {
         render(tex, display) {
           katex ??= load();
           const html = katex.renderToString(tex, { displayMode: display, throwOnError: true, output: "htmlAndMathml" });
+          classesOf(html, used);
           return html.replace(OPEN_TAG, (tag) => {
             const name = classOf(/\sstyle="([^"]*)"/.exec(tag)?.[1] ?? "");
             const bare = tag.replace(/\sstyle="[^"]*"/, "");
@@ -84,25 +87,90 @@ export function katexTools(load: () => Katex = loadKatex): MathTools {
               .map((d) => `${d} !important`);
             return `.katex .${name}{${declarations.join(";")}}`;
           });
-          return `${katexCss()}\n${rules.join("\n")}`;
+          return `${katexCss(used)}\n${rules.join("\n")}`;
         },
       };
     },
   };
 }
 
+/** The distinct class lists of the elements in some HTML, each as a sorted, space-joined string. */
+export function classesOf(html: string, into: Set<string> = new Set()): Set<string> {
+  for (const m of html.matchAll(/\sclass="([^"]*)"/g)) {
+    const names = (m[1] ?? "").split(/\s+/).filter((name) => name !== "");
+    if (names.length > 0) into.add([...new Set(names)].sort().join(" "));
+  }
+  return into;
+}
+
+/** One font face of KaTeX: its family, weight and style, as the `@font-face` rule and the style rules name them. */
+const faceKey = (family: string, weight: string, style: string): string => `${family}|${weight}|${style}`;
+const unquote = (family: string): string => family.replace(/["']/g, "");
+const weightOf = (value: string): string => (value === "bold" ? "700" : value === "normal" ? "400" : value);
+
+/**
+ * The font faces the maths of a page uses, from the class lists of the elements its HTML carries. Each style rule of KaTeX's stylesheet that
+ * names a `KaTeX_*` family counts when one of its selectors is met by the page's elements; the rule's own weight and
+ * style are kept, and where it states none the face is normal or, when a rule that only sets bold or italic (`\textbf`, `\textit`) is
+ * used too, bold or italic as well (they nest). The page's root, `.katex`, is always set in Main. A face is kept only if the stylesheet
+ * declares it.
+ */
+function usedFaces(rules: string, elements: ReadonlySet<string>): Set<string> {
+  const lists = [...elements].map((e) => new Set(e.split(" ")));
+  // a compound selector (`.delimsizing.size3`) is met when one element carries all its classes
+  const met = (compound: string): boolean => {
+    const names = (compound.match(/\.[A-Za-z][\w-]*/g) ?? []).map((c) => c.slice(1)).filter((c) => c !== "katex");
+    return names.length === 0 || lists.some((list) => names.every((n) => list.has(n)));
+  };
+  const matched: { families: string[]; weight: string | null; style: string | null }[] = [];
+  for (const m of rules.matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
+    const [, selectors = "", body = ""] = m;
+    const used = selectors.split(",").some((selector) => selector.split(/[\s>+~]+/).every(met));
+    if (!used) continue;
+    const family = /font-family:([^;]+)/.exec(body)?.[1];
+    const weight = /font-weight:([^;]+)/.exec(body)?.[1];
+    const style = /font-style:([^;]+)/.exec(body)?.[1];
+    matched.push({
+      families: (family?.split(",").map((f) => unquote(f.trim())) ?? []).filter((f) => f.startsWith("KaTeX_")),
+      weight: weight === undefined ? null : weightOf(weight.trim()),
+      style: style === undefined ? null : style.trim(),
+    });
+  }
+  const bold = matched.some((r) => r.families.length === 0 && r.weight === "700");
+  const italic = matched.some((r) => r.families.length === 0 && r.style === "italic");
+  const faces = new Set<string>();
+  const add = (family: string, weight: string | null, style: string | null): void => {
+    for (const w of weight === null ? ["400", ...(bold ? ["700"] : [])] : [weight])
+      for (const st of style === null ? ["normal", ...(italic ? ["italic"] : [])] : [style])
+        faces.add(faceKey(family, w, st));
+  };
+  add("KaTeX_Main", null, null);
+  for (const r of matched) for (const family of r.families) add(family, r.weight, r.style);
+  return faces;
+}
+
 /**
  * KaTeX's stylesheet with its fonts as WOFF2 `data:` URIs, and no other source: every browser that opens a page
- * reads WOFF2, and the `woff` and `ttf` copies would only make the page three times larger.
+ * reads WOFF2, and the `woff` and `ttf` copies would only make the page three times larger. Only the `@font-face`
+ * rules for the faces the page's maths uses are kept (`elements`: the class lists of its rendered maths), so a page that
+ * never sets `\mathcal` does not carry Caligraphic.
  */
-export function katexCss(): string {
+export function katexCss(elements: ReadonlySet<string>): string {
   const dist = dirname(nodeRequire.resolve("katex"));
   const css = readFileSync(join(dist, "katex.min.css"), "utf8");
+  const faceRule = /@font-face\{[^}]*\}/g;
+  const wanted = usedFaces(css.replace(faceRule, ""), elements);
   const sources =
     /src:url\((fonts\/[^)]+\.woff2)\) format\("woff2"\),url\([^)]+\) format\("woff"\),url\([^)]+\) format\("truetype"\)/g;
-  const out = css.replace(sources, (_m, path: string) => {
-    const bytes = readFileSync(join(dist, path));
-    return `src:url(data:font/woff2;base64,${bytes.toString("base64")}) format("woff2")`;
+  const out = css.replace(faceRule, (rule) => {
+    const family = unquote(/font-family:([^;]+)/.exec(rule)?.[1] ?? "");
+    const style = /font-style:([^;]+)/.exec(rule)?.[1] ?? "normal";
+    const weight = /font-weight:([^;]+)/.exec(rule)?.[1] ?? "400";
+    if (!wanted.has(faceKey(family, weightOf(weight), style))) return "";
+    return rule.replace(sources, (_m, path: string) => {
+      const bytes = readFileSync(join(dist, path));
+      return `src:url(data:font/woff2;base64,${bytes.toString("base64")}) format("woff2")`;
+    });
   });
   if (out.includes("fonts/")) throw new Error("KaTeX's stylesheet has a font source this build does not know");
   return out;

@@ -186,3 +186,47 @@ describe("blanks inside highlighted code", () => {
     expect(html).not.toMatch(/[]/);
   });
 });
+
+describe("KaTeX fonts by use", () => {
+  /** The faces the stylesheet of a session that rendered these spans declares, as `Family weight style`. */
+  const facesOf = (...spans: string[]): string[] => {
+    const session = katexTools().start();
+    for (const tex of spans) session.render(tex, false);
+    return [...session.css().matchAll(/@font-face\{[^}]*\}/g)].map((m) => {
+      const rule = m[0];
+      const family = /font-family:"?([^";]+)"?/.exec(rule)?.[1];
+      return `${family} ${/font-weight:(\d+)/.exec(rule)?.[1]} ${/font-style:(\w+)/.exec(rule)?.[1]}`;
+    });
+  };
+
+  it("plain maths embeds the main fonts and not the script, fraktur or typewriter ones", () => {
+    const faces = facesOf("x^2 + \\frac{a}{b} = \\sqrt{c}");
+    expect(faces).toContain("KaTeX_Main 400 normal");
+    expect(faces).toContain("KaTeX_Math 400 italic");
+    for (const absent of ["KaTeX_Script", "KaTeX_Fraktur", "KaTeX_Typewriter", "KaTeX_Caligraphic", "KaTeX_AMS"]) {
+      expect(faces.filter((f) => f.startsWith(absent))).toEqual([]);
+    }
+    expect(faces.length).toBeLessThan(6);
+  });
+
+  it("\\mathcal brings Caligraphic in, \\mathbb the AMS font, \\mathbf bold Main, and nothing else changes", () => {
+    expect(facesOf("\\mathcal{L}")).toContain("KaTeX_Caligraphic 400 normal");
+    expect(facesOf("x")).not.toContain("KaTeX_Caligraphic 400 normal");
+    expect(facesOf("\\mathbb{R}")).toContain("KaTeX_AMS 400 normal");
+    expect(facesOf("\\mathbf{v}")).toContain("KaTeX_Main 700 normal");
+    expect(facesOf("\\mathfrak{g}", "\\mathscr{A}", "\\mathtt{t}")).toEqual(
+      expect.arrayContaining(["KaTeX_Fraktur 400 normal", "KaTeX_Script 400 normal", "KaTeX_Typewriter 400 normal"]),
+    );
+    expect(facesOf("\\textbf{bold}")).toContain("KaTeX_Main 700 normal");
+    expect(facesOf("\\left( \\sum_{i} x \\right)").some((f) => f.startsWith("KaTeX_Size"))).toBe(true);
+  });
+
+  it("is only WOFF2 data URIs, and the rules for the styles stay", () => {
+    const session = katexTools().start();
+    session.render("\\mathcal{L} + \\frac{1}{2}", false);
+    const out = session.css();
+    expect(out).not.toMatch(/url\(fonts\//);
+    expect(out).not.toContain('format("woff")');
+    expect(out).toContain(".katex .fm-s0{");
+  });
+});
