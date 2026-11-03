@@ -23,6 +23,7 @@
   "questions": [
     {
       "id": "where",
+      "hash": "e8ce515bfa51ed4d67c27e63b291ebac65526d5fc7bd6bce2a1cc9b1b42f0db0",
       "section": "how-you-study",
       "type": "single",
       "tags": [],
@@ -37,6 +38,7 @@
     },
     {
       "id": "prepare",
+      "hash": "9df747acd1692173fb8620bfbfa5acca686f5376a0391f57f86a3274cc692c65",
       "section": "how-you-study",
       "type": "single",
       "tags": [],
@@ -51,6 +53,7 @@
     },
     {
       "id": "tools",
+      "hash": "8e6a22f35a29712a69346965aae94a81808085e5a614cff4b6d8c55c47a33550",
       "section": "how-you-study",
       "type": "multi",
       "tags": [],
@@ -65,6 +68,7 @@
     },
     {
       "id": "rank",
+      "hash": "11e7fc08e160dc0889a2ba4093027deef6c5701ddf6e0a6ac27295add276afd7",
       "section": "how-you-study",
       "type": "ordering",
       "tags": [],
@@ -79,6 +83,7 @@
     },
     {
       "id": "confidence",
+      "hash": "f1982e5aa92820f0a42bc86070a20cf7db846618adec03f718f0aff6c0f05201",
       "section": "how-it-feels",
       "type": "scale",
       "tags": [],
@@ -93,6 +98,7 @@
     },
     {
       "id": "days",
+      "hash": "deb59f5ac5a19a480868d61f45e6c1a7df2283fd1db291308a86813d4bf515ca",
       "section": "how-it-feels",
       "type": "scale",
       "tags": [],
@@ -107,6 +113,7 @@
     },
     {
       "id": "routine",
+      "hash": "e99a9f3f7e9c223d4f1d57328864aade2e4a976dd8c48bb3347c839271b0f884",
       "section": "how-it-feels",
       "type": "fields",
       "tags": [],
@@ -121,6 +128,7 @@
     },
     {
       "id": "ideas",
+      "hash": "cddadcd64c39adc55fb5fe104463050d38fe6c3d8e1bd1fd830040c45a2271ae",
       "section": "how-it-feels",
       "type": "essay",
       "tags": [],

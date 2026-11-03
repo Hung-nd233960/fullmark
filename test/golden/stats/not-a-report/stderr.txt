@@ -1,0 +1,1 @@
+other.json: neither a report (`quiz grade --json`) nor a results file

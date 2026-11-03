@@ -26,6 +26,9 @@ Commands:
   inspect [options] <file>       summarise a quiz: question types, points,
                                  sections, tags, banks and where the right
                                  answers sit
+  stats [options] <files...>     progress across attempts at one quiz: score by
+                                 date, tags, weakest tags, questions missed,
+                                 criteria
   new [options] [args...]        start a quiz from a template (quiz template
                                  list) or from an existing quiz
   template                       the templates you start quizzes from: built-in

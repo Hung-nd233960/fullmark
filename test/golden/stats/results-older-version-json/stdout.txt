@@ -1,0 +1,1 @@
+{"status":"failed","message":"files stats cannot use","problems":[{"file":"results/a1-v1.json","message":"a results file taken on version 2a73a837, but quiz-v2.md is version 14322b0c; grade it with that version first: `quiz grade FILE --quiz OLD.md --json`"}]}

@@ -1,0 +1,284 @@
+{
+  "format": "fullmark-report",
+  "version": 2,
+  "quiz": {
+    "title": "Study fixture",
+    "id": "study",
+    "hash": "2a73a8379e8ec30092396aaf83fe1ffea7101f02f132be7d3cecde0298634fec",
+    "kind": "quiz",
+    "lang": "en"
+  },
+  "attempt": {
+    "phase": "submitted",
+    "source": "section",
+    "questions": 2,
+    "started": "2026-10-10T09:50:00",
+    "submitted": "2026-10-10T10:00:00",
+    "time_used": 600,
+    "timed_out": false
+  },
+  "score": {
+    "earned": 8,
+    "points": 12,
+    "percent": 66.67,
+    "pending": 0,
+    "pass": {
+      "mark": 50,
+      "passed": true
+    }
+  },
+  "sections": [
+    {
+      "id": "part-two",
+      "title": "Part two",
+      "earned": 8,
+      "points": 12,
+      "percent": 66.67,
+      "pending": 0,
+      "questions": 2
+    }
+  ],
+  "tags": [
+    {
+      "id": "writing",
+      "title": null,
+      "earned": 8,
+      "points": 12,
+      "percent": 66.67,
+      "pending": 0,
+      "questions": 2
+    }
+  ],
+  "questions": [
+    {
+      "id": "add",
+      "hash": "df29744a7164dc6f5fe30bc30c90a90287330f32e46c4d63d2159924b34414e2",
+      "section": "part-two",
+      "type": "essay",
+      "tags": [
+        "writing"
+      ],
+      "points": 3,
+      "earned": 2,
+      "status": "partial",
+      "prompt": "Describe the process.",
+      "answer": "The transform maps a signal to the frequency domain; we apply it to input and output and divide.",
+      "key": null,
+      "explanation": null,
+      "words": 18
+    },
+    {
+      "id": "ielts",
+      "hash": "8e4778bbbaa53828bb76a8891514eea27fed8685bb8db5285079fa875b98b2a3",
+      "section": "part-two",
+      "type": "essay",
+      "tags": [
+        "writing"
+      ],
+      "points": 9,
+      "earned": 6,
+      "status": "partial",
+      "prompt": "To what extent do you agree?",
+      "answer": "I agree to a large extent. Cities that invest in cycling routes see less traffic and cleaner air.",
+      "key": null,
+      "explanation": null,
+      "words": 18
+    }
+  ],
+  "wrong": [
+    "add",
+    "ielts"
+  ],
+  "open": [
+    {
+      "id": "add",
+      "type": "essay",
+      "points": 3,
+      "prompt": "Describe the process.",
+      "answer": "The transform maps a signal to the frequency domain; we apply it to input and output and divide.",
+      "words": 18,
+      "language": null,
+      "rubric": {
+        "mode": "additive",
+        "step": 0.25,
+        "criteria": [
+          {
+            "id": "defs",
+            "text": "Define the terms",
+            "max": 0.5
+          },
+          {
+            "id": "derive",
+            "text": "Derive the result",
+            "max": 1.5
+          },
+          {
+            "id": "interp",
+            "text": "Interpret it",
+            "max": 1
+          }
+        ]
+      },
+      "sample_answer": null,
+      "pending": false,
+      "grade": {
+        "id": "add",
+        "mode": "additive",
+        "points": 3,
+        "earned": 2,
+        "band": null,
+        "rubric_current": true,
+        "justification": "Fixture justification.",
+        "improvement": "Fixture improvement.",
+        "criteria": [
+          {
+            "id": "defs",
+            "text": "Define the terms",
+            "earned": 0.5,
+            "max": 0.5,
+            "weight": null,
+            "band": null,
+            "note": "Fixture note.",
+            "verdict": null
+          },
+          {
+            "id": "derive",
+            "text": "Derive the result",
+            "earned": 1,
+            "max": 1.5,
+            "weight": null,
+            "band": null,
+            "note": "Fixture note.",
+            "verdict": null
+          },
+          {
+            "id": "interp",
+            "text": "Interpret it",
+            "earned": 0.5,
+            "max": 1,
+            "weight": null,
+            "band": null,
+            "note": "Fixture note.",
+            "verdict": null
+          }
+        ],
+        "graded_by": {
+          "kind": "human",
+          "name": "Fixture grader",
+          "at": "2026-10-10T18:00:00"
+        },
+        "status": "partial"
+      }
+    },
+    {
+      "id": "ielts",
+      "type": "essay",
+      "points": 9,
+      "prompt": "To what extent do you agree?",
+      "answer": "I agree to a large extent. Cities that invest in cycling routes see less traffic and cleaner air.",
+      "words": 18,
+      "language": null,
+      "rubric": {
+        "mode": "banded",
+        "scale": {
+          "min": 0,
+          "max": 9,
+          "step": 0.5
+        },
+        "round": "ielts",
+        "preset": "ielts-writing-task2",
+        "criteria": [
+          {
+            "id": "TR",
+            "text": "Task Response",
+            "weight": 1
+          },
+          {
+            "id": "CC",
+            "text": "Coherence and Cohesion",
+            "weight": 1
+          },
+          {
+            "id": "LR",
+            "text": "Lexical Resource",
+            "weight": 1
+          },
+          {
+            "id": "GRA",
+            "text": "Grammatical Range and Accuracy",
+            "weight": 1
+          }
+        ]
+      },
+      "sample_answer": null,
+      "pending": false,
+      "grade": {
+        "id": "ielts",
+        "mode": "banded",
+        "points": 9,
+        "earned": 6,
+        "band": 6,
+        "rubric_current": true,
+        "justification": "Fixture justification.",
+        "improvement": "Fixture improvement.",
+        "criteria": [
+          {
+            "id": "TR",
+            "text": "Task Response",
+            "earned": null,
+            "max": null,
+            "weight": 1,
+            "band": 6,
+            "note": "Fixture note.",
+            "verdict": null
+          },
+          {
+            "id": "CC",
+            "text": "Coherence and Cohesion",
+            "earned": null,
+            "max": null,
+            "weight": 1,
+            "band": 5.5,
+            "note": "Fixture note.",
+            "verdict": null
+          },
+          {
+            "id": "LR",
+            "text": "Lexical Resource",
+            "earned": null,
+            "max": null,
+            "weight": 1,
+            "band": 6,
+            "note": "Fixture note.",
+            "verdict": null
+          },
+          {
+            "id": "GRA",
+            "text": "Grammatical Range and Accuracy",
+            "earned": null,
+            "max": null,
+            "weight": 1,
+            "band": 5.5,
+            "note": "Fixture note.",
+            "verdict": null
+          }
+        ],
+        "graded_by": {
+          "kind": "human",
+          "name": "Fixture grader",
+          "at": "2026-10-10T18:00:00"
+        },
+        "status": "partial"
+      }
+    }
+  ],
+  "grades": {
+    "grader": {
+      "kind": "human",
+      "name": "Fixture grader",
+      "at": "2026-10-10T18:00:00"
+    },
+    "warnings": []
+  },
+  "unknown": []
+}

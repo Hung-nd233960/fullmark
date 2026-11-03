@@ -276,6 +276,17 @@ export function buildProgram(outcome: Outcome = { exit: EXIT.done }, io: Io = te
     });
 
   program
+    .command("stats")
+    .description("progress across attempts at one quiz: score by date, tags, weakest tags, questions missed, criteria")
+    .argument("<files...>", "two or more reports (*-report.json) or results files (globs are expanded)")
+    .option("--quiz <file>", "the current quiz: names questions and tags, and grades results files of its version")
+    .option("--json", "print the summary as one JSON object")
+    .action(async (files: string[], options: { quiz?: string; json?: boolean }) => {
+      const opts = { quiz: options.quiz ?? null, json: Boolean(options.json) };
+      outcome.exit = (await import("./stats")).runStats(files, opts, io);
+    });
+
+  program
     .command("new")
     .description("start a quiz from a template (quiz template list) or from an existing quiz")
     .argument("[args...]", "TEMPLATE [PATH], or with --from only the PATH (default: the current folder)")

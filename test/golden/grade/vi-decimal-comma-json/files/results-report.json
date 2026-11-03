@@ -61,6 +61,7 @@
   "questions": [
     {
       "id": "nua",
+      "hash": "c8bae78c6e8899fcf273127fd9e17d52303aab0ab961b8b65173fef205da6af5",
       "section": "phan-mot",
       "type": "numeric",
       "tags": [
@@ -77,6 +78,7 @@
     },
     {
       "id": "thudo",
+      "hash": "11a61068c31a4821c9d74dccd01c03efcede51ac4faafd162f0780499911a12e",
       "section": "phan-mot",
       "type": "short",
       "tags": [
@@ -93,6 +95,7 @@
     },
     {
       "id": "nguyento",
+      "hash": "c2d8f912c66083ba30258f2e4c17341e450382e7292a1f1ce20a8fd5f7d06baa",
       "section": "phan-mot",
       "type": "single",
       "tags": [

@@ -1,0 +1,46 @@
+{
+  "format": "fullmark-results",
+  "version": 2,
+  "quizHash": "2a73a8379e8ec30092396aaf83fe1ffea7101f02f132be7d3cecde0298634fec",
+  "plan": {
+    "source": "full",
+    "questions": [
+      "prime",
+      "even",
+      "syll",
+      "odd",
+      "add",
+      "ielts"
+    ]
+  },
+  "state": {
+    "answers": {
+      "prime": {
+        "choice": 0
+      },
+      "even": {
+        "value": true
+      },
+      "syll": {
+        "choice": 1
+      },
+      "odd": {
+        "choice": 0
+      },
+      "add": {
+        "text": "The transform maps a signal to the frequency domain; we apply it to input and output and divide."
+      },
+      "ielts": {
+        "text": "I agree to a large extent. Cities that invest in cycling routes see less traffic and cleaner air."
+      }
+    },
+    "startedAt": "2026-10-03T09:50:00",
+    "submittedAt": "2026-10-03T10:00:00",
+    "timeUsed": 600,
+    "sectionTime": {},
+    "flagged": [],
+    "checked": [],
+    "timedOut": false
+  },
+  "phase": "submitted"
+}

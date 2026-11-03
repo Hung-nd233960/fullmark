@@ -1,0 +1,4 @@
+test/fixtures/stats/reports => reports
+test/fixtures/stats/results => results
+test/fixtures/stats/quiz-v1.md => quiz-v1.md
+test/fixtures/stats/quiz-v2.md => quiz-v2.md

@@ -70,6 +70,7 @@
   "questions": [
     {
       "id": "sa-node",
+      "hash": "de816e383b634e7534d0278130bd8cc8ff9395ca5aebf911323a5e6391265860",
       "section": "structure-and-conduction",
       "type": "single",
       "tags": [
@@ -86,6 +87,7 @@
     },
     {
       "id": "co",
+      "hash": "ad457cd6ae29627fd8e38fabc4a2558e6d5f67083283835fe2eac8f1c07c7001",
       "section": "haemodynamics",
       "type": "numeric",
       "tags": [

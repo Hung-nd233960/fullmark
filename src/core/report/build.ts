@@ -29,6 +29,8 @@ export type ReportGroup = {
 
 export type ReportQuestion = {
   id: string;
+  /** the question hash: the version of this question, which `stats` compares across versions (foundation 1) */
+  hash: string;
   section: string;
   type: Question["type"];
   tags: string[];
@@ -123,6 +125,7 @@ export function buildReport(input: ReportInput, m: Messages["report"]): Report {
     return [
       {
         id: g.id,
+        hash: q.hash,
         section: g.section,
         type: g.type,
         tags: g.tags,

@@ -1,0 +1,74 @@
+{
+  "format": "fullmark-report",
+  "version": 2,
+  "quiz": {
+    "title": "Study habits check-in",
+    "id": "study-habits",
+    "hash": "eac5e065639d73e40bfe16a2836407aecb13e657a0186dbbf05054cd93ba8f83",
+    "kind": "survey",
+    "lang": "en"
+  },
+  "attempt": {
+    "phase": "submitted",
+    "source": "full",
+    "questions": 3,
+    "started": "2026-10-05T09:50:00",
+    "submitted": "2026-10-05T10:00:00",
+    "time_used": 600,
+    "timed_out": false
+  },
+  "score": null,
+  "sections": [],
+  "tags": [],
+  "questions": [
+    {
+      "id": "where",
+      "hash": "e8ce515bfa51ed4d67c27e63b291ebac65526d5fc7bd6bce2a1cc9b1b42f0db0",
+      "section": "how-you-study",
+      "type": "single",
+      "tags": [],
+      "points": 0,
+      "earned": null,
+      "status": "ungraded",
+      "prompt": "Where do you usually study?",
+      "answer": "In the library",
+      "key": null,
+      "explanation": "It helps decide which rooms stay open in the evening.",
+      "words": null
+    },
+    {
+      "id": "prepare",
+      "hash": "9df747acd1692173fb8620bfbfa5acca686f5376a0391f57f86a3274cc692c65",
+      "section": "how-you-study",
+      "type": "single",
+      "tags": [],
+      "points": 0,
+      "earned": null,
+      "status": "ungraded",
+      "prompt": "How do you usually prepare for an exam?",
+      "answer": "I start several weeks before",
+      "key": null,
+      "explanation": null,
+      "words": null
+    },
+    {
+      "id": "tools",
+      "hash": "8e6a22f35a29712a69346965aae94a81808085e5a614cff4b6d8c55c47a33550",
+      "section": "how-you-study",
+      "type": "multi",
+      "tags": [],
+      "points": 0,
+      "earned": null,
+      "status": "ungraded",
+      "prompt": "Which of these do you use?",
+      "answer": "Past papers; Flashcards",
+      "key": null,
+      "explanation": null,
+      "words": null
+    }
+  ],
+  "wrong": [],
+  "open": [],
+  "grades": null,
+  "unknown": []
+}

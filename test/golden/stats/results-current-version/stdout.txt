@@ -1,0 +1,5 @@
+study · Study fixture · 3 attempts, 1 version
+Attempts   17 Oct 60% (12 points pending) · 24 Oct 60% (12 points pending) · 31 Oct 100% (retry)
+Tags       numbers 50% (3 of 6 points) · logic 83% · no tag 100%
+Weakest    numbers, logic
+Missed     prime "Which of these numbers is pri…" wrong in 2 of 3 · even "Zero is even." wrong in 1 of 3 · late "Which statement is a fallacy?" wrong in 1 of 3

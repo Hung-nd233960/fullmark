@@ -1,0 +1,396 @@
+{
+  "format": "fullmark-report",
+  "version": 2,
+  "quiz": {
+    "title": "Study fixture",
+    "id": "study",
+    "hash": "14322b0c919512f0f84098337d612ce6fc0a2d0e3e652505e8ff121b6329c0ae",
+    "kind": "quiz",
+    "lang": "en"
+  },
+  "attempt": {
+    "phase": "submitted",
+    "source": "full",
+    "questions": 7,
+    "started": "2026-10-17T09:50:00",
+    "submitted": "2026-10-17T10:00:00",
+    "time_used": 600,
+    "timed_out": false
+  },
+  "score": {
+    "earned": 11.25,
+    "points": 17,
+    "percent": 66.18,
+    "pending": 0,
+    "pass": {
+      "mark": 50,
+      "passed": true
+    }
+  },
+  "sections": [
+    {
+      "id": "part-one",
+      "title": "Part one",
+      "earned": 3,
+      "points": 5,
+      "percent": 60,
+      "pending": 0,
+      "questions": 5
+    },
+    {
+      "id": "part-two",
+      "title": "Part two",
+      "earned": 8.25,
+      "points": 12,
+      "percent": 68.75,
+      "pending": 0,
+      "questions": 2
+    }
+  ],
+  "tags": [
+    {
+      "id": "logic",
+      "title": null,
+      "earned": 1,
+      "points": 2,
+      "percent": 50,
+      "pending": 0,
+      "questions": 2
+    },
+    {
+      "id": "numbers",
+      "title": null,
+      "earned": 1,
+      "points": 2,
+      "percent": 50,
+      "pending": 0,
+      "questions": 2
+    },
+    {
+      "id": "writing",
+      "title": null,
+      "earned": 8.25,
+      "points": 12,
+      "percent": 68.75,
+      "pending": 0,
+      "questions": 2
+    }
+  ],
+  "questions": [
+    {
+      "id": "prime",
+      "hash": "7f5f6c34060ddff4e9f99f6e91fe4a81a3c1905e82e92805f236e3b305012eb8",
+      "section": "part-one",
+      "type": "single",
+      "tags": [
+        "numbers"
+      ],
+      "points": 1,
+      "earned": 0,
+      "status": "incorrect",
+      "prompt": "Which of these numbers is prime?",
+      "answer": "Four",
+      "key": "Seven",
+      "explanation": null,
+      "words": null
+    },
+    {
+      "id": "even",
+      "hash": "88e21593ba795948033eed419325dff5ef5473d3da73be39b5b8bf975855cede",
+      "section": "part-one",
+      "type": "truefalse",
+      "tags": [
+        "numbers"
+      ],
+      "points": 1,
+      "earned": 1,
+      "status": "correct",
+      "prompt": "Zero is even.",
+      "answer": "true",
+      "key": "true",
+      "explanation": null,
+      "words": null
+    },
+    {
+      "id": "syll",
+      "hash": "bedb6f1a9f53304f5bbb0062c025e6ef43c85a819b428df52d5156e6915dde74",
+      "section": "part-one",
+      "type": "single",
+      "tags": [
+        "logic"
+      ],
+      "points": 1,
+      "earned": 1,
+      "status": "correct",
+      "prompt": "Which one is a syllogism?",
+      "answer": "All men are mortal; Socrates is a man; so Socrates is mortal",
+      "key": "All men are mortal; Socrates is a man; so Socrates is mortal",
+      "explanation": null,
+      "words": null
+    },
+    {
+      "id": "odd",
+      "hash": "50a16e496ea0395515919880817fa486e3cdf0e563341d65045b3826e595cb65",
+      "section": "part-one",
+      "type": "single",
+      "tags": [],
+      "points": 1,
+      "earned": 1,
+      "status": "correct",
+      "prompt": "Pick the odd one out.",
+      "answer": "Square",
+      "key": "Square",
+      "explanation": null,
+      "words": null
+    },
+    {
+      "id": "late",
+      "hash": "f2310350d6503036159a813972a24b3d096578e5797c2dbfdd774ce91bbaf69d",
+      "section": "part-one",
+      "type": "single",
+      "tags": [
+        "logic"
+      ],
+      "points": 1,
+      "earned": 0,
+      "status": "incorrect",
+      "prompt": "Which statement is a fallacy?",
+      "answer": "Modus ponens",
+      "key": "Affirming the consequent",
+      "explanation": null,
+      "words": null
+    },
+    {
+      "id": "add",
+      "hash": "df29744a7164dc6f5fe30bc30c90a90287330f32e46c4d63d2159924b34414e2",
+      "section": "part-two",
+      "type": "essay",
+      "tags": [
+        "writing"
+      ],
+      "points": 3,
+      "earned": 2.25,
+      "status": "partial",
+      "prompt": "Describe the process.",
+      "answer": "The transform maps a signal to the frequency domain; we apply it to input and output and divide.",
+      "key": null,
+      "explanation": null,
+      "words": 18
+    },
+    {
+      "id": "ielts",
+      "hash": "8e4778bbbaa53828bb76a8891514eea27fed8685bb8db5285079fa875b98b2a3",
+      "section": "part-two",
+      "type": "essay",
+      "tags": [
+        "writing"
+      ],
+      "points": 9,
+      "earned": 6,
+      "status": "partial",
+      "prompt": "To what extent do you agree?",
+      "answer": "I agree to a large extent. Cities that invest in cycling routes see less traffic and cleaner air.",
+      "key": null,
+      "explanation": null,
+      "words": 18
+    }
+  ],
+  "wrong": [
+    "prime",
+    "late",
+    "add",
+    "ielts"
+  ],
+  "open": [
+    {
+      "id": "add",
+      "type": "essay",
+      "points": 3,
+      "prompt": "Describe the process.",
+      "answer": "The transform maps a signal to the frequency domain; we apply it to input and output and divide.",
+      "words": 18,
+      "language": null,
+      "rubric": {
+        "mode": "additive",
+        "step": 0.25,
+        "criteria": [
+          {
+            "id": "defs",
+            "text": "Define the terms",
+            "max": 0.5
+          },
+          {
+            "id": "derive",
+            "text": "Derive the result",
+            "max": 1.5
+          },
+          {
+            "id": "interp",
+            "text": "Interpret it",
+            "max": 1
+          }
+        ]
+      },
+      "sample_answer": null,
+      "pending": false,
+      "grade": {
+        "id": "add",
+        "mode": "additive",
+        "points": 3,
+        "earned": 2.25,
+        "band": null,
+        "rubric_current": true,
+        "justification": "Fixture justification.",
+        "improvement": "Fixture improvement.",
+        "criteria": [
+          {
+            "id": "defs",
+            "text": "Define the terms",
+            "earned": 0.5,
+            "max": 0.5,
+            "weight": null,
+            "band": null,
+            "note": "Fixture note.",
+            "verdict": null
+          },
+          {
+            "id": "derive",
+            "text": "Derive the result",
+            "earned": 1.25,
+            "max": 1.5,
+            "weight": null,
+            "band": null,
+            "note": "Fixture note.",
+            "verdict": null
+          },
+          {
+            "id": "interp",
+            "text": "Interpret it",
+            "earned": 0.5,
+            "max": 1,
+            "weight": null,
+            "band": null,
+            "note": "Fixture note.",
+            "verdict": null
+          }
+        ],
+        "graded_by": {
+          "kind": "human",
+          "name": "Fixture grader",
+          "at": "2026-10-17T18:00:00"
+        },
+        "status": "partial"
+      }
+    },
+    {
+      "id": "ielts",
+      "type": "essay",
+      "points": 9,
+      "prompt": "To what extent do you agree?",
+      "answer": "I agree to a large extent. Cities that invest in cycling routes see less traffic and cleaner air.",
+      "words": 18,
+      "language": null,
+      "rubric": {
+        "mode": "banded",
+        "scale": {
+          "min": 0,
+          "max": 9,
+          "step": 0.5
+        },
+        "round": "ielts",
+        "preset": "ielts-writing-task2",
+        "criteria": [
+          {
+            "id": "TR",
+            "text": "Task Response",
+            "weight": 1
+          },
+          {
+            "id": "CC",
+            "text": "Coherence and Cohesion",
+            "weight": 1
+          },
+          {
+            "id": "LR",
+            "text": "Lexical Resource",
+            "weight": 1
+          },
+          {
+            "id": "GRA",
+            "text": "Grammatical Range and Accuracy",
+            "weight": 1
+          }
+        ]
+      },
+      "sample_answer": null,
+      "pending": false,
+      "grade": {
+        "id": "ielts",
+        "mode": "banded",
+        "points": 9,
+        "earned": 6,
+        "band": 6,
+        "rubric_current": true,
+        "justification": "Fixture justification.",
+        "improvement": "Fixture improvement.",
+        "criteria": [
+          {
+            "id": "TR",
+            "text": "Task Response",
+            "earned": null,
+            "max": null,
+            "weight": 1,
+            "band": 6,
+            "note": "Fixture note.",
+            "verdict": null
+          },
+          {
+            "id": "CC",
+            "text": "Coherence and Cohesion",
+            "earned": null,
+            "max": null,
+            "weight": 1,
+            "band": 6,
+            "note": "Fixture note.",
+            "verdict": null
+          },
+          {
+            "id": "LR",
+            "text": "Lexical Resource",
+            "earned": null,
+            "max": null,
+            "weight": 1,
+            "band": 6,
+            "note": "Fixture note.",
+            "verdict": null
+          },
+          {
+            "id": "GRA",
+            "text": "Grammatical Range and Accuracy",
+            "earned": null,
+            "max": null,
+            "weight": 1,
+            "band": 6.5,
+            "note": "Fixture note.",
+            "verdict": null
+          }
+        ],
+        "graded_by": {
+          "kind": "human",
+          "name": "Fixture grader",
+          "at": "2026-10-17T18:00:00"
+        },
+        "status": "partial"
+      }
+    }
+  ],
+  "grades": {
+    "grader": {
+      "kind": "human",
+      "name": "Fixture grader",
+      "at": "2026-10-17T18:00:00"
+    },
+    "warnings": []
+  },
+  "unknown": []
+}

@@ -1,0 +1,3 @@
+these files belong to different quizzes; stats compares attempts at one quiz
+  study: reports/a1-v1-report.json
+  study-habits: reports/s1-survey-report.json

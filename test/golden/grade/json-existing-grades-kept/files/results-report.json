@@ -97,6 +97,7 @@
   "questions": [
     {
       "id": "sa-node",
+      "hash": "de816e383b634e7534d0278130bd8cc8ff9395ca5aebf911323a5e6391265860",
       "section": "structure-and-conduction",
       "type": "single",
       "tags": [
@@ -113,6 +114,7 @@
     },
     {
       "id": "pathway",
+      "hash": "620628f27434839ce0c3a78dca1b5703533329c53449211ca38609003eff8359",
       "section": "structure-and-conduction",
       "type": "ordering",
       "tags": [
@@ -129,6 +131,7 @@
     },
     {
       "id": "ecg-match",
+      "hash": "f4e5803fe2d5f578c6d37d5343ee985c10e11400c43de3a5a337e46cbf26cb4e",
       "section": "structure-and-conduction",
       "type": "matching",
       "tags": [
@@ -146,6 +149,7 @@
     },
     {
       "id": "mitral",
+      "hash": "5524e921b5e16edf0f335564bfc0cea765a42e6a1bbdfbe3983f8acffdbf051b",
       "section": "structure-and-conduction",
       "type": "blanks",
       "tags": [
@@ -162,6 +166,7 @@
     },
     {
       "id": "co",
+      "hash": "ad457cd6ae29627fd8e38fabc4a2558e6d5f67083283835fe2eac8f1c07c7001",
       "section": "haemodynamics",
       "type": "numeric",
       "tags": [
@@ -178,6 +183,7 @@
     },
     {
       "id": "hr",
+      "hash": "5ecc7538f27faa3eaf1d0d83772aa722c6e13e65578046c4c7d6f2d63139bc35",
       "section": "haemodynamics",
       "type": "numeric",
       "tags": [
@@ -194,6 +200,7 @@
     },
     {
       "id": "sv",
+      "hash": "be9a49fd5cf188c7d8de0fc836d769389725c61b8255a40f2eac665009fd0e55",
       "section": "haemodynamics",
       "type": "multi",
       "tags": [
@@ -210,6 +217,7 @@
     },
     {
       "id": "map-true",
+      "hash": "e37821d9e52a87a9a4ad0e670f579ef7d93dac19624fdb573dc4c5c61b5c470a",
       "section": "haemodynamics",
       "type": "truefalse",
       "tags": [
@@ -226,6 +234,7 @@
     },
     {
       "id": "bp-fields",
+      "hash": "7e58055605479df3eebdc732edc5d5f99ade6cfc905ffc32f0425ddc8572d57c",
       "section": "haemodynamics",
       "type": "fields",
       "tags": [
@@ -242,6 +251,7 @@
     },
     {
       "id": "frank-starling",
+      "hash": "92b2ccdcb9b98c9ef2a14a883f47a32dc57816221e30aa4f3210d20006332c36",
       "section": "written-answer",
       "type": "essay",
       "tags": [

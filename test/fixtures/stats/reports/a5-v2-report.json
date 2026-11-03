@@ -1,0 +1,135 @@
+{
+  "format": "fullmark-report",
+  "version": 2,
+  "quiz": {
+    "title": "Study fixture",
+    "id": "study",
+    "hash": "14322b0c919512f0f84098337d612ce6fc0a2d0e3e652505e8ff121b6329c0ae",
+    "kind": "quiz",
+    "lang": "en"
+  },
+  "attempt": {
+    "phase": "submitted",
+    "source": "retry",
+    "questions": 4,
+    "started": "2026-10-31T09:50:00",
+    "submitted": "2026-10-31T10:00:00",
+    "time_used": 600,
+    "timed_out": false
+  },
+  "score": {
+    "earned": 4,
+    "points": 4,
+    "percent": 100,
+    "pending": 0,
+    "pass": {
+      "mark": 50,
+      "passed": true
+    }
+  },
+  "sections": [
+    {
+      "id": "part-one",
+      "title": "Part one",
+      "earned": 4,
+      "points": 4,
+      "percent": 100,
+      "pending": 0,
+      "questions": 4
+    }
+  ],
+  "tags": [
+    {
+      "id": "logic",
+      "title": null,
+      "earned": 2,
+      "points": 2,
+      "percent": 100,
+      "pending": 0,
+      "questions": 2
+    },
+    {
+      "id": "numbers",
+      "title": null,
+      "earned": 2,
+      "points": 2,
+      "percent": 100,
+      "pending": 0,
+      "questions": 2
+    }
+  ],
+  "questions": [
+    {
+      "id": "prime",
+      "hash": "7f5f6c34060ddff4e9f99f6e91fe4a81a3c1905e82e92805f236e3b305012eb8",
+      "section": "part-one",
+      "type": "single",
+      "tags": [
+        "numbers"
+      ],
+      "points": 1,
+      "earned": 1,
+      "status": "correct",
+      "prompt": "Which of these numbers is prime?",
+      "answer": "Seven",
+      "key": "Seven",
+      "explanation": null,
+      "words": null
+    },
+    {
+      "id": "even",
+      "hash": "88e21593ba795948033eed419325dff5ef5473d3da73be39b5b8bf975855cede",
+      "section": "part-one",
+      "type": "truefalse",
+      "tags": [
+        "numbers"
+      ],
+      "points": 1,
+      "earned": 1,
+      "status": "correct",
+      "prompt": "Zero is even.",
+      "answer": "true",
+      "key": "true",
+      "explanation": null,
+      "words": null
+    },
+    {
+      "id": "syll",
+      "hash": "bedb6f1a9f53304f5bbb0062c025e6ef43c85a819b428df52d5156e6915dde74",
+      "section": "part-one",
+      "type": "single",
+      "tags": [
+        "logic"
+      ],
+      "points": 1,
+      "earned": 1,
+      "status": "correct",
+      "prompt": "Which one is a syllogism?",
+      "answer": "All men are mortal; Socrates is a man; so Socrates is mortal",
+      "key": "All men are mortal; Socrates is a man; so Socrates is mortal",
+      "explanation": null,
+      "words": null
+    },
+    {
+      "id": "late",
+      "hash": "f2310350d6503036159a813972a24b3d096578e5797c2dbfdd774ce91bbaf69d",
+      "section": "part-one",
+      "type": "single",
+      "tags": [
+        "logic"
+      ],
+      "points": 1,
+      "earned": 1,
+      "status": "correct",
+      "prompt": "Which statement is a fallacy?",
+      "answer": "Affirming the consequent",
+      "key": "Affirming the consequent",
+      "explanation": null,
+      "words": null
+    }
+  ],
+  "wrong": [],
+  "open": [],
+  "grades": null,
+  "unknown": []
+}
