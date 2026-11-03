@@ -1,0 +1,4 @@
+profile default (built-in) from the default; config: none
+q/brief.yaml:1: warning brief.invalid: brief.yaml has no `commitment`: it holds every key, so the quiz was not held against it
+    fix: add the key: `quiz brief` writes them all, and can write the file again
+q/quiz.md: 0 errors, 1 warning

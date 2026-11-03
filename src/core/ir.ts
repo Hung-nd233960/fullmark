@@ -294,6 +294,8 @@ export const BriefSchema = z
     difficulty: z.enum(["warm-up", "like-the-exam", "harder"]),
     mode: z.enum(["each-question", "at-the-end", "timed-exam"]),
     weak_topics: z.boolean(),
+    /** the score the learner commits to, a percent from 1 to 100; 0 for none */
+    commitment: z.number().int().min(0).max(100),
     /** topics to stress, filled from earlier results when `weak_topics` is true; empty otherwise */
     focus_tags: z.array(z.string()),
     language: z.enum(["en", "vi"]),

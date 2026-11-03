@@ -104,7 +104,7 @@ describe("reading brief.yaml", () => {
   });
 
   it("a missing key is brief.invalid like an unknown one, at the line of its mapping", () => {
-    for (const key of ["scope", "count", "decided_by", "profile", "focus_tags"] as const) {
+    for (const key of ["scope", "count", "decided_by", "profile", "focus_tags", "commitment"] as const) {
       const { brief, issues } = readBrief(briefYaml({ [key]: undefined }), "brief.yaml");
       expect(brief, key).toBeNull();
       expect(
@@ -122,7 +122,16 @@ describe("reading brief.yaml", () => {
   it("a null profile is a bad value: the profile is a string", () => {
     const { brief, issues } = readBrief(briefYaml({ profile: null as never }), "brief.yaml");
     expect(brief).toBeNull();
-    expect(issues.map((i) => [i.rule, i.line])).toEqual([["brief.invalid", 16]]);
+    expect(issues.map((i) => [i.rule, i.line])).toEqual([["brief.invalid", 17]]);
+  });
+
+  it("commitment is a whole percent from 0 to 100", () => {
+    for (const bad of [-1, 101, 2.5, "80"]) {
+      const { brief, issues } = readBrief(briefYaml({ commitment: bad as never }), "brief.yaml");
+      expect(brief, String(bad)).toBeNull();
+      expect(issues[0]?.message, String(bad)).toContain("commitment");
+    }
+    expect(readBrief(briefYaml({ commitment: 80 }), "brief.yaml").brief?.commitment).toBe(80);
   });
 
   it("reports a bad value as brief.invalid on the line of its key", () => {
