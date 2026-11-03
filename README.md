@@ -56,7 +56,7 @@ This runs the typecheck, Biome, Vitest and Playwright. Playwright uses Chromium 
 - [QUIZ_SYNTAX.md](docs/design/QUIZ_SYNTAX.md): how a quiz is written.
 - [COMMANDS.md](docs/design/COMMANDS.md): every command, flag, output and exit code.
 - [TECHNICAL_DESIGN.md](docs/design/TECHNICAL_DESIGN.md): how it's built, and the order of work.
-- [docs/plans/](docs/plans/): how it's being built, step by step. Start at the Handoff in the current step's plan.
+- [docs/plans/](docs/plans/): how it's being built, step by step. Start at the Handoff in the current step's plan; [CLAUDE.md](CLAUDE.md) gives the working rules for agents.
 
 ## Licence
 
