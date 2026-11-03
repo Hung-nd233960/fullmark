@@ -380,21 +380,34 @@ Exit: `0` written, `1` the attempt's `quizHash` does not match `FILE` (the outpu
 
 ### quiz stats
 
-**changed**: scores per question and per tag, so partial attempts (section, missed) count correctly.
+**changed**: scores per question and per tag, so partial attempts (section, missed) count correctly; reads reports, so any version counts (owner, 2026-11-03).
 
 ```text
-quiz stats RESULTS... [--quiz FILE] [--json]
+quiz stats FILE... [--quiz QUIZ] [--json]
 ```
 
-Progress across several attempts at one quiz: score by date, percent per tag, the weakest tags, the questions missed most often, and for graded essays and code the percent (or average band) per rubric criterion. For surveys, an "Answers over time" table.
+Progress across several attempts at one quiz: score by date, percent per tag, the weakest tags, the questions missed most often, and for graded essays and code the percent (or average band) per rubric criterion. For surveys, an "Answers over time" table instead.
 
 | Argument or option | Meaning |
 |---|---|
-| `RESULTS...` | Two or more results files of the same quiz (any versions). Questions are matched across versions by id; a question without one is matched by its question hash, so it is counted per version and marked "no id" |
-| `--quiz FILE` | The current source, to name questions and tags |
-| `--json` | `{"attempts": [...], "tags": [...], "weakest": [...], "questions": [...]}` |
+| `FILE...` | Two or more attempts at the same quiz: JSON reports (`*-report.json`, from `grade --json`) of any version, each graded against the version it was taken on; or results files whose version is `--quiz`'s, graded on the spot as `grade` would. A results file of another version exits 1 naming it, with the fix "grade it with that version first: `quiz grade FILE --quiz OLD.md --json`". Questions are matched across versions by id; a question without one by its question hash, counted per version and marked "no id" |
+| `--quiz QUIZ` | The current source, to name questions and tags, and to grade results files. Without it, names come from the newest report |
+| `--json` | `{"status": "done", "quiz": {"id", "title"}, "attempts": [{"file", "submitted", "version", "plan", "earned", "points", "percent", "pending"}], "tags": [{"tag", "earned", "points", "percent", "attempts"}], "weakest": [tag], "questions": [{"id", "hash", "title", "seen", "missed", "earned", "points", "changed"}], "criteria": [{"question", "criterion", "earned", "max", "percent", "band"}]}` |
 
-Exit: `0` done, `2` the files belong to different quizzes.
+```text
+rust-basics · Rust basics · 5 attempts, 2 versions
+Attempts   3 Oct 62% · 10 Oct 71% (section ownership) · 17 Oct 80%
+Tags       borrowing 54% (13 of 24 points) · traits 70% · ownership 88% · no tag 75%
+Weakest    borrowing, traits
+Missed     q-k7m2qx "Which borrow…" wrong in 4 of 5 · q-a1b2c3 3 of 5
+Criteria   interp 60% over 4 attempts · LR band 5.5 average
+```
+
+- **Each attempt counts only the questions it had** (`plan.questions`), so a section or retry attempt is never a low score on the whole quiz. Pending grades count as not yet scored.
+- **Weakest:** up to three tags with the lowest percent, among those seen in at least two attempts.
+- **Missed:** wrong or partly right, most often first, then by id; at most ten in the human output, all in JSON.
+
+Exit: `0` done, `1` a results file of another version than `--quiz`'s, or a file that is neither a report nor results; `2` the files belong to different quizzes (by the reports' quiz id), fewer than two files, or an I/O error.
 
 ### quiz inspect
 
