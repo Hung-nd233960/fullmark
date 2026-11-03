@@ -12,7 +12,7 @@ As in step 2 ([STEP2.md](STEP2.md), Handoff): Opus writes a slice's full brief h
 
 | Slice | State | Commits |
 |---|---|---|
-| plan | **drafted, waiting for the owner**: the gaps below (G1 to G4, G6, G7 and G11 decided; G5, G8, G9, G10 and G12 open) and 3a's brief; the slice order approved | this file |
+| plan | approved: the gaps below G1 to G4, G6, G7, G9, G10 and G11 decided; G5, G8 and G12 open; the slice order and 3a's brief approved | this file |
 
 Step 2 is closed (STEP2.md, item 75): every "Done when" criterion passes in Chromium and Firefox; Vitest 2059 of 2059, the 2 startup tests, Playwright and axe. What step 3 inherits:
 
@@ -25,7 +25,7 @@ Step 2 is closed (STEP2.md, item 75): every "Done when" criterion passes in Chro
 
 ### Next steps, in order
 
-1. **The owner decides G9 and G10** (3a needs them) and approves 3a's brief (below). Then 3a with Sonnet. G5 is needed by 3b, G8 by 3c, G12 by 3i.
+1. **3a with Sonnet** (brief approved 2026-11-03). G5 is needed by 3b, G8 by 3c, G12 by 3i.
 2. **Whenever the owner is ready:** the form boards on the Design canvas (3v, G7), as 2v did for the page. Only 3e, 3f and 3h wait for them.
 
 ### Open proposals carried over from step 2
@@ -70,9 +70,9 @@ The design docs leave these open. Each needs the owner's yes before the slice th
 
 **G8. `--json` and the human output of `inspect` and `stats`** (3c, 3d). COMMANDS.md gives `stats`'s top-level keys only and `inspect` none. **Recommend:** the shapes are proposed in each slice's brief and approved by the owner with it, then written into COMMANDS.md before Sonnet starts.
 
-**G9. Interrupted and refused submits** (3a). **Recommend:** Ctrl+C on a one-shot server prints `{"status": "interrupted"}` as the second `--json` line and exits 2; a POST that fails validation (wrong quiz id, a body that is not a valid attempt for this quiz) gets HTTP 400, the page says "could not save, use Export", and the server keeps waiting. A second submit after the first is never accepted (the server is closing).
+**G9. Interrupted and refused submits** (3a). **Decided by the owner on 2026-11-03, as recommended**, and written into the design docs. **Recommend:** Ctrl+C on a one-shot server prints `{"status": "interrupted"}` as the second `--json` line and exits 2; a POST that fails validation (wrong quiz id, a body that is not a valid attempt for this quiz) gets HTTP 400, the page says "could not save, use Export", and the server keeps waiting. A second submit after the first is never accepted (the server is closing).
 
-**G10. Where the browser module and the forms live in the bundle** (3a). **Recommend:** `dist/serve.js`, a second esbuild IIFE beside `dist/page.js`, built by `scripts/build-page.mjs` and read by `src/serve/` at run time, so `build` never reads it; its own entry in `scripts/bundles.mjs` and in the notices test. The forms are their own Preact entries (`dist/review.js`, `dist/grade-form.js`, `dist/brief-form.js`) sharing the page's components and styles, each under the 60 KB budget.
+**G10. Where the browser module and the forms live in the bundle** (3a). **Decided by the owner on 2026-11-03, as recommended**, and written into the design docs. **Recommend:** `dist/serve.js`, a second esbuild IIFE beside `dist/page.js`, built by `scripts/build-page.mjs` and read by `src/serve/` at run time, so `build` never reads it; its own entry in `scripts/bundles.mjs` and in the notices test. The forms are their own Preact entries (`dist/review.js`, `dist/grade-form.js`, `dist/brief-form.js`) sharing the page's components and styles, each under the 60 KB budget.
 
 **G11. The brief question file** (3g). Section 7 names it as YAML that people write; nothing gives its shape. **Decided by the owner on 2026-11-03, as recommended (YAML)**, and written into COMMANDS.md, `quiz brief`. **Recommend:** `src/brief/questions.yaml`, shipped in the bundle as data, one entry per brief key: `key`, `kind` (`choice`, `multi`, `text`, `number`), `label`, `help`, `choices` with a `hint` each, `min-words` with `example`, `follow-up` (for `other`), `human-only`, `default`, and `section` (the steps of `--tui`); every text in `en` and `vi`. A zod schema checks it in a unit test; the flags' `--help` text, the web form and the TUI all read it, so they cannot drift.
 
@@ -99,7 +99,7 @@ The order (owner, 2026-11-03) puts the server first, since four commands stand o
 
 ## Slice 3a: the one-shot server and `quiz serve`
 
-**Draft, for the owner to approve** (with G9 and G10).
+**Approved by the owner on 2026-11-03**, with G9 and G10.
 
 ### Read first
 

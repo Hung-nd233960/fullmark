@@ -229,9 +229,11 @@ Serves the page on 127.0.0.1. When the learner presses **Submit** (or **Finish**
 | `--focus` | Tick **Focus mode** on the start screen, so pressing Start enters fullscreen with the sidebar closed (TECHNICAL_DESIGN.md, section 8). A page cannot go fullscreen without a click |
 | `--section S` | Serve only this section. Results record `plan.source: "section"` |
 | `--autosave PROGRESS` | Keep the attempt in progress in this file, so it resumes after the server or the browser closes. Deleted on submit |
-| `--json` | Two JSON lines. As soon as the server is up: `{"status": "listening", "url", "port", "pid"}`. At the end: `{"status": "submitted" \| "timeout", "results", "score"}`. A caller running `serve` in the background reads the URL from the first line |
+| `--json` | Two JSON lines. As soon as the server is up: `{"status": "listening", "url", "port", "pid"}`. At the end: `{"status": "submitted", "results", "score"}`, or `{"status": "timeout"}` or `{"status": "interrupted"}` (Ctrl+C), with nothing written. A caller running `serve` in the background reads the URL from the first line |
 
 Exit: `0` submitted, `1` check errors in `FILE`, `2` timeout, interrupted (Ctrl+C), a `.html` given, or usage error.
+
+**One submit, and only a valid one** (owner, 2026-11-03). A submit the server cannot accept (another quiz id, a body that is not a valid attempt at this quiz's version) gets HTTP 400; the page says it could not save and to use **Export**, and the server keeps waiting. Once a submit is accepted the server is closing and takes no other. The same holds for every one-shot server command.
 
 **Why only the source.** Shared pages carry no server code ([TECHNICAL_DESIGN.md](TECHNICAL_DESIGN.md), section 7, foundation 9): a built page has no submit code, no `connect-src` and a CSP hash fixed at build, so serving it would mean injecting code into finished HTML. `serve` builds the page in memory from the source, which is also what `--section` and the check errors of exit 1 need. `library take` builds from the stored source and `bundle serve` takes `BUNDLE.yaml`, so neither needs a built page.
 
