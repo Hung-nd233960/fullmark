@@ -18,7 +18,8 @@ As in step 2 ([STEP2.md](STEP2.md), Handoff): Opus writes a slice's full brief h
 | 3c `inspect`, `new`, `template` | done, reviewed, gaps decided | `e71ce68`..`3602a3d` |
 | 3d 3c's fixes, `stats` | done, reviewed, gaps decided | `fd466d1`, `2dfd341` |
 | 3g 3d's fixes, `brief` through flags | done, reviewed, gaps decided | `27a61a4`..`2e6b449` |
-| 3i 3g's fixes, `brief --tui` | done, reviewed; **its gaps for the owner** (G26 to G29) | `fb5ed78`..`546ccc0` |
+| 3i 3g's fixes, `brief --tui` | done, reviewed, gaps decided | `fb5ed78`..`546ccc0` |
+| 3j 3i's fixes, `build --watch` and `--serve` | **brief drafted; G30 to G33 for the owner** | |
 
 Step 2 is closed (STEP2.md, item 75): every "Done when" criterion passes in Chromium and Firefox; Vitest 2059 of 2059, the 2 startup tests, Playwright and axe. What step 3 inherits:
 
@@ -57,7 +58,7 @@ Step 2 is closed (STEP2.md, item 75): every "Done when" criterion passes in Chro
 
 **3i's review (2026-11-03).** Typecheck, Biome and Vitest clean: 98 files, **2466 of 2466**, the 2 startup tests. Playwright in Chromium: **193 passed**, 128 skipped, none failed (run in review). Goldens: 19 changed (17 `rules/*` for the `brief.vague` row, once; `brief/tui` for the terminal message in place of "not available yet"; `brief/help` for the `--tui` line); 3 new (`brief/tui-json`, `brief/tui-and-web`, `brief/tui-accept-defaults`). The byte-identity test compares 11 answer sets (every purpose, Vietnamese both ways, *other*, purpose changed on the way back, `--weak-topics yes`, several answers changed, a flag pre-fill kept) through the form and the flags: the whole file, `defaults_applied` and the warnings. `@clack/prompts` 1.8.1 and its four dependencies, all MIT, are in the notices and load only from the form's chunk (`test/cli-graph.test.ts`). **The notices script changed:** clack's MIT text is worded differently, and as the first MIT text it would have become the one the page's Licences popup shows (9 build goldens changed in Sonnet's first run); the script now always takes a shown text from a package the page ships, and gives clack's copyright line in the override, since its file runs title and copyright on one line. Reviewed and accepted; no build golden changed. Tried by hand: `< /dev/null` exits 2 with the message; under `script(1)` the form draws each step heading, the help above each question, a hint beside each choice, and Ctrl+C prints "cancelled: nothing was written", exit 2, no `DIR`. Done differently, accepted in review unless the owner says otherwise: the form returns flag-style answers and `runBrief` writes them, so byte identity holds by construction (G23: an answer left at its default is omitted); going back is from the summary screen, as COMMANDS.md says; `--language` fixes the form's language for the run; the number and word checks moved to `src/core/brief/questions.ts`, shared by the flags and the form; the form's own words (steps, summary, validation) are in `src/cli/brief-tui.ts` in `en` and `vi`.
 
-**3i's gaps, for the owner:**
+**3i's gaps decided by the owner on 2026-11-03**, all as recommended, and written into COMMANDS.md, `quiz brief` (the exit order; the cursor on the first choice; the step heading; 80 columns for a terminal with no width). G26 and G29 are code: 3j's first tasks. The gaps as they were put:
 
 **G26. Which error wins without a terminal** (3h). The terminal check runs before the flags are checked, so `quiz brief d --tui --purpose exam < /dev/null` says "needs an interactive terminal", not that `exam` is not a purpose. Both exit 2. **Recommend:** check the flags first: an agent that prepares a form learns of its own mistake whatever terminal it has; COMMANDS.md's exit list gains the order (flags, then `brief.yaml` exists, then the terminal).
 
@@ -69,7 +70,7 @@ Step 2 is closed (STEP2.md, item 75): every "Done when" criterion passes in Chro
 
 
 
-1. **The owner decides G26 to G29** (3i's gaps, above). They go into COMMANDS.md and become the next slice's first tasks; 3j's brief comes next, since it needs no board.
+1. **The owner approves 3j's brief** (below) with G30 to G33; then 3j goes to Sonnet.
 2. **Whenever the owner is ready:** the form boards on the Design canvas (3v, G7), as 2v did for the page. Only 3e, 3f and 3h wait for them.
 
 ### Open proposals carried over from step 2
@@ -131,6 +132,14 @@ The design docs leave these open. Each needs the owner's yes before the slice th
 **G17. `focus_tags` outside a library** (3g). The file fills it "from earlier results when `weak_topics` is true", but `quiz brief` is a core command with no history to read. **Decided by the owner on 2026-11-03, as recommended.** **Recommend:** `quiz brief` always writes `focus_tags: []`; with `--weak-topics yes` it warns (`brief.no-history`, listed in `--json`'s `warnings`) that the agent should pick the weak topics from the learner's reports, or use the library's brief in step 4, which fills it from `stats`.
 
 **G18. A `DIR` that already holds `brief.yaml`** (3g). Nothing says. **Decided by the owner on 2026-11-03, as recommended.** **Recommend:** never overwrite, as `new`: exit 2 before asking anything, "DIR/brief.yaml already exists: edit it, or delete it to start again". An existing `content/` is kept as it is, and a missing `DIR` is created.
+
+**G30. The reload server's paths** (3j). G6 gives the event stream as `GET /events?token=…`; the one-shot server puts the token in the path (`/<token>/`) and refuses everything outside it. **Recommend:** the same: the page at `/<token>/` (with several files, the index there and each page at `/<token>/<name>.html`), the events at `/<token>/events`, the same `Host` check, every other path 403 or 404 as for `serve`; COMMANDS.md's `GET /events` becomes `GET /<token>/events`. One `reload` event per good rebuild, none for a failed one; a comment line every 15 s so a proxy or the browser keeps the stream open.
+
+**G31. Where the reload code lives** (3j). G10 made `dist/serve.js` the one-shot module (submit, autosave, `sent`). The reload page must carry none of it (G6: "the reload code as its only module"). **Recommend:** its own esbuild IIFE, `dist/reload.js`, a few hundred bytes (an `EventSource` that calls `location.reload()`, and reconnects as `EventSource` does), its own entry in `scripts/bundles.mjs` and the notices test; the served copy's CSP gains its hash and `connect-src 'self'`. A test checks that a `--serve` page holds no submit code and a `build` page none of either.
+
+**G32. `--watch`'s outputs** (3j). COMMANDS.md says "one JSON line per rebuild" and nothing of `--serve`'s URL or of the human output. **Recommend:** with `--serve`, the first line is `{"status": "listening", "url", "port", "pid"}`, as `serve`'s; then a first build and every rebuild give `build --json`'s line (with `"file"` when there are several), and Ctrl+C prints `{"status": "stopped"}` and exits 0. The human output is one line per rebuild on stderr (`rebuilt quiz.html · 412 KB · 0.3 s`, or the errors and "kept the last good page"). `--open` with `--serve` opens the URL once, after the first build; without `--serve` it opens the file once. `--port N` without `--serve` exits 2.
+
+**G33. The index of several pages** (3j). "With several files it serves an index of the pages"; no board shows it. **Recommend:** a plain page with no board needed: the quizzes' titles as links in the order given, each with its file name and, after a failed rebuild, "last build failed: see the terminal"; the page's tokens and both themes, `ui_lang` from `--ui-lang` or `en`, no script but the reload code. It lives in `src/build/` as one small function with a golden.
 
 **G12. `@clack/prompts`** (3i). A new runtime dependency, already named in section 3. **Decided by the owner on 2026-11-03, as recommended (with the refinement below).** **Recommend:** pinned exactly, MIT (in the allow-list), listed in `--acknowledgements` and `THIRD_PARTY_NOTICES.md`, loaded only by `brief --tui`, with the byte-identity test driving it through a pseudo-terminal (`node:child_process` with a scripted stdin) rather than a new test dependency. If clack cannot be driven that way, the slice stops and reports. **Refined with 3i's brief:** a pipe is not a terminal, and `--tui` refuses one, so the byte-identity test drives the form in process, through the prompts' `input` and `output` streams (a scripted stream that reports itself as a TTY); one subprocess test runs the real command under `script(1)` for a pseudo-terminal on Linux and Ctrl+C, skipped by name elsewhere. No new test dependency. `@clack/prompts` 1.8.1 (MIT, 2026-09-13) brings `@clack/core`, `sisteransi`, `fast-wrap-ansi`, `fast-string-width` and `fast-string-truncated-width`, all MIT: each pinned through the lock file, checked against the allow-list and listed in the notices.
 
@@ -369,3 +378,38 @@ The order (owner, 2026-11-03) puts the server first, since four commands stand o
 ### Done when
 
 `npm run check` passes in Chromium; `quiz brief d --tui` in a real terminal asks every question in the question file's words, shows the summary, and writes a `d/brief.yaml` byte-identical to the flags run with the same answers; Ctrl+C writes nothing; `quiz brief d --tui < /dev/null` exits 2 with the message; `check` does not load `@clack/prompts`. Report as the rules say.
+
+## Slice 3j: 3i's fixes, then `build --watch` and `--serve`
+
+**Drafted 2026-11-03; waits for the owner's yes, with G30 to G33.**
+
+### Read first
+
+- COMMANDS.md: `quiz build` (all of it: `--watch`, `--serve`, `--json`, several files, the build file), `quiz serve` (the `listening` line), "Exit codes", "Common options"; `quiz brief`'s exit list and `--tui` row (G26, G29).
+- TECHNICAL_DESIGN.md: section 3 (Watching: `node:fs.watch` with `recursive`), section 7 (Budgets; "Left until measured": no disk cache), foundation 1 (what the quiz hash covers: the files to watch), foundation 4 (the server's rules), foundation 9 (no server code in a shared page; the reload code).
+- This plan: "Rules for every slice", G6, G10, G26, G29, G30 to G33, and 3i's review.
+- Code: `src/cli/build.ts`, `src/cli/build-file.ts`, `src/cli/main.ts` (the `LATER` stubs), `src/build/page.ts` (the CSP), `src/serve/server.ts`, `src/serve/module-file.ts`, `scripts/build-page.mjs`, `scripts/bundles.mjs`, `e2e/helpers.ts` (the served-command helper), `src/cli/brief.ts` and `src/cli/brief-tui.ts` (for G26 and G29).
+
+### Decided for this slice
+
+- **3i's fixes:** G26, the flags are checked before an existing `brief.yaml` and before the terminal (the `brief/tui*` goldens that change, counted); G29, the form draws at 80 columns when the output reports 0 or no width, with a unit test on a 0-column stream.
+- **What is watched** (G6): each `FILE`, every file its quiz hash covers (assets, `materials` sheets and their assets, found from the last build, good or failed), and the build file; watched by folder, so an editor that saves by rename is seen; changes gathered for 100 ms, then one rebuild of the quizzes they touch. A file the quiz starts or stops referencing is watched from the next rebuild on. A deleted `FILE` is a failed rebuild (its read error), not an exit.
+- **The last good page** stays on disk and in the server after a failed rebuild; nothing is written when check fails, as `build` already does. `--print` rebuilds the paper. A build file's entries are re-read when it changes; a build file that no longer parses is a failed rebuild of everything, and the old entries stay watched.
+- **The reload server** (G30, G31): not the one-shot server's predicate or submit path. Either `startServer` gains a mode with no `quizIds`, no submit and an events path, or a small sibling in `src/serve/` shares its token, `Host` and refusal code; Sonnet picks the smaller change and says which. It holds the pages in memory and writes nothing. It runs until Ctrl+C, which exits 0 (G6).
+- **Outputs** (G32) and **the index** (G33), as decided.
+- **Determinism:** a `build --watch` page on disk is byte-identical to `build` of the same input (with `--built-at`); only the served copy carries the reload code.
+- **Not in this slice:** a disk cache; a build log ([proposals/build-log.md](../design/proposals/build-log.md)); the PDF through the browser (a proposal written in this slice's review, as "Open proposals" says).
+
+### Tasks
+
+1. 3i's fixes above (G26, G29).
+2. The watcher in its own module over an injected file-system watcher and clock, so unit tests never wait: debounce, the watched set following the last build, rename saves, deletion, the build file.
+3. `build --watch` without `--serve`: rebuilds, the human line and the JSON lines, the last good page kept, `--print`, several files, the build file, Ctrl+C exits 0 with `{"status": "stopped"}`.
+4. `dist/reload.js` (G31) and the served copy: its CSP, the byte-identity test (a page on disk with and without `--watch`), a test that a `--serve` page holds no submit code.
+5. The reload server (G30): token paths, `Host`, the event stream, the keep-alive comment, the index (G33); `--port`, `--open`.
+6. Subprocess tests with the served-command helper: start `build --watch --serve --json`, read `listening`, open the page in Playwright, edit the quiz, see the page reload with the change; save an error, see the terminal's errors and the page unchanged; fix it, see it reload; SIGINT exits 0. The same for two files through the index.
+7. `quiz build --help`, the `LATER` stubs removed, goldens for every new exit and usage error; `npm run samples` gains a `build --watch --serve` line.
+
+### Done when
+
+`npm run check` passes in Chromium; `quiz build examples/rust/quiz.md --watch --serve --open` opens the page, a saved edit reloads it within a second, a saved error leaves it as it was and prints the errors, and Ctrl+C exits 0; the page on disk is byte-identical to `build`'s; `check` does not load `src/serve/`. Report as the rules say.
