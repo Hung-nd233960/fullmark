@@ -469,6 +469,9 @@ export function buildPage(quizzes: readonly BuildQuiz[], options: PageOptions): 
     `<meta http-equiv="Content-Security-Policy" content="${escapeAttr(csp)}">`,
     `<meta name="generator" content="${escapeAttr(`fullmark ${options.version}; built ${options.builtAt}`)}">`,
     `<title>${escapeAttr(first.title)}</title>`,
+    // a served page names an empty icon, so the browser never asks the server for /favicon.ico (Firefox logs the
+    // refused request as a CSP error); a shared page from a file asks for none
+    ...(options.serveModule === undefined ? [] : ['<link rel="icon" href="data:,">']),
     `<style>${css}</style>`,
     ...(fontCss === null ? [] : [`<style id="fm-fonts">${fontCss}</style>`]),
     ...(mathCss === null ? [] : [`<style id="fm-katex">${mathCss}</style>`]),

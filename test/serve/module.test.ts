@@ -82,8 +82,11 @@ describe("the served page", () => {
     expect(scripts).toHaveLength(2);
   });
 
-  it("differs from the shared page by the module, its hash, connect-src and `served: true`, and nothing else", () => {
-    const withoutModule = served.replace(`<script>${serveModule}</script>\n`, "");
+  it("differs from the shared page by the module, its hash, connect-src, the empty icon and `served: true`, and nothing else", () => {
+    expect(served).toContain('<link rel="icon" href="data:,">');
+    const withoutModule = served
+      .replace(`<script>${serveModule}</script>\n`, "")
+      .replace('<link rel="icon" href="data:,">\n', "");
     const csp = cspOf(served);
     const base = cspOf(plain);
     const stripped = withoutModule.replace(csp, base).replace(',"served":true', "");

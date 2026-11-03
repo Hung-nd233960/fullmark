@@ -28,7 +28,7 @@ export function Ordering({ q, c }: { q: Extract<PageQuestion, { type: "ordering"
   const order = given && given.length === q.items.length ? given : start;
   const itemOf = (s: number) => shown.find((e) => e.source === s)?.entry ?? { html: "", label: "" };
   const [said, setSaid] = useState("");
-  const focus = useRef<{ source: number; dir: Dir } | null>(null);
+  const focus = useRef<{ source: number; dir: Dir; order: string } | null>(null);
   const list = useRef<HTMLOListElement>(null);
   const [drag, setDrag] = useState<Drag | null>(null);
   const dragging = useRef<Drag | null>(null);
@@ -39,7 +39,9 @@ export function Ordering({ q, c }: { q: Extract<PageQuestion, { type: "ordering"
 
   useEffect(() => {
     const want = focus.current;
-    if (want === null) return;
+    // wait for the render that shows the move: the label and the stored order may render apart, and focusing the
+    // button before the item reaches its place leaves the focus on a button the move then disables (Firefox drops it)
+    if (want === null || want.order !== order.join(",")) return;
     focus.current = null;
     const row = list.current?.querySelector(`[data-source="${want.source}"]`);
     const same = row?.querySelector<HTMLButtonElement>(`button[data-dir="${want.dir}"]`);
@@ -58,7 +60,7 @@ export function Ordering({ q, c }: { q: Extract<PageQuestion, { type: "ordering"
     if (to < 0 || to >= order.length) return;
     const next = [...order];
     [next[from], next[to]] = [next[to] as number, next[from] as number];
-    focus.current = { source: order[from] as number, dir };
+    focus.current = { source: order[from] as number, dir, order: next.join(",") };
     setSaid(t.movedTo(to + 1, order.length));
     c.set({ order: next });
   };

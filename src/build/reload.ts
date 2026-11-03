@@ -12,6 +12,7 @@ import { deviceThemeCss } from "../core/themes";
 const sha256Source = (text: string): string => `'sha256-${toBase64(sha256(utf8ToBytes(text)))}'`;
 
 const CSP_TAG = '<meta http-equiv="Content-Security-Policy" content="';
+const ICON = '<link rel="icon" href="data:,">';
 
 /**
  * The served copy of a built page or paper: the reload script before `</body>`, its hash in the CSP's `script-src`
@@ -30,7 +31,9 @@ export function withReload(html: string, reload: string): string {
   if (scripts === null || policy.includes("connect-src")) throw new Error("not a page that build wrote: its CSP");
   const sources = scripts[2] === "'none'" ? sha256Source(reload) : `${scripts[2]} ${sha256Source(reload)}`;
   const changed = `${policy.slice(0, scripts.index)}${scripts[1]}script-src ${sources}${policy.slice(scripts.index + scripts[0].length)}; connect-src 'self'`;
-  return `${html.slice(0, from)}${changed}${html.slice(to, body)}<script>${reload}</script>\n${html.slice(body)}`;
+  // the empty icon after the CSP tag, as on a one-shot served page: no request for /favicon.ico
+  const tagEnd = html.indexOf(">", to) + 1;
+  return `${html.slice(0, from)}${changed}${html.slice(to, tagEnd)}\n${ICON}${html.slice(tagEnd, body)}<script>${reload}</script>\n${html.slice(body)}`;
 }
 
 /** One line of the index: a quiz page and how its last build went. */
@@ -108,6 +111,7 @@ export function buildIndex(entries: readonly IndexEntry[], ui: "en" | "vi", relo
     '<meta name="viewport" content="width=device-width, initial-scale=1">',
     `<meta http-equiv="Content-Security-Policy" content="${escapeHtml(csp)}">`,
     `<title>${t.title}</title>`,
+    ICON,
     `<style>${css}</style>`,
     "</head>",
     "<body>",
