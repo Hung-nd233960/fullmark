@@ -1,0 +1,2272 @@
+{
+ "examples/calculus/quiz.md full k": {
+  "source": "full",
+  "questions": [
+   "limit-sinx-over-x",
+   "differentiable-implies-continuous",
+   "continuous-at-zero",
+   "derivative-blanks",
+   "product-rule",
+   "chain-rule",
+   "chain-rule-value",
+   "cubic-graph",
+   "related-rates",
+   "mean-value-theorem",
+   "integral-x-squared",
+   "ftc-derivative"
+  ],
+  "seed": "k"
+ },
+ "examples/calculus/quiz.md bank k": {
+  "source": "bank",
+  "questions": [
+   "limit-sinx-over-x",
+   "differentiable-implies-continuous",
+   "continuous-at-zero",
+   "derivative-blanks",
+   "product-rule",
+   "chain-rule",
+   "chain-rule-value",
+   "cubic-graph",
+   "related-rates",
+   "mean-value-theorem",
+   "integral-x-squared",
+   "ftc-derivative"
+  ],
+  "seed": "k"
+ },
+ "examples/calculus/quiz.md section limits-and-continuity k": {
+  "source": "section",
+  "section": "limits-and-continuity",
+  "questions": [
+   "limit-sinx-over-x",
+   "differentiable-implies-continuous",
+   "continuous-at-zero"
+  ],
+  "seed": "k"
+ },
+ "examples/calculus/quiz.md section derivative-rules k": {
+  "source": "section",
+  "section": "derivative-rules",
+  "questions": [
+   "derivative-blanks",
+   "product-rule",
+   "chain-rule",
+   "chain-rule-value",
+   "cubic-graph"
+  ],
+  "seed": "k"
+ },
+ "examples/calculus/quiz.md section applications-and-integrals k": {
+  "source": "section",
+  "section": "applications-and-integrals",
+  "questions": [
+   "related-rates",
+   "mean-value-theorem",
+   "integral-x-squared",
+   "ftc-derivative"
+  ],
+  "seed": "k"
+ },
+ "examples/calculus/quiz.md full mn42": {
+  "source": "full",
+  "questions": [
+   "continuous-at-zero",
+   "differentiable-implies-continuous",
+   "limit-sinx-over-x",
+   "chain-rule",
+   "product-rule",
+   "chain-rule-value",
+   "cubic-graph",
+   "derivative-blanks",
+   "mean-value-theorem",
+   "integral-x-squared",
+   "ftc-derivative",
+   "related-rates"
+  ],
+  "seed": "mn42"
+ },
+ "examples/calculus/quiz.md bank mn42": {
+  "source": "bank",
+  "questions": [
+   "continuous-at-zero",
+   "differentiable-implies-continuous",
+   "limit-sinx-over-x",
+   "chain-rule",
+   "product-rule",
+   "chain-rule-value",
+   "cubic-graph",
+   "derivative-blanks",
+   "mean-value-theorem",
+   "integral-x-squared",
+   "ftc-derivative",
+   "related-rates"
+  ],
+  "seed": "mn42"
+ },
+ "examples/calculus/quiz.md section limits-and-continuity mn42": {
+  "source": "section",
+  "section": "limits-and-continuity",
+  "questions": [
+   "continuous-at-zero",
+   "differentiable-implies-continuous",
+   "limit-sinx-over-x"
+  ],
+  "seed": "mn42"
+ },
+ "examples/calculus/quiz.md section derivative-rules mn42": {
+  "source": "section",
+  "section": "derivative-rules",
+  "questions": [
+   "chain-rule",
+   "product-rule",
+   "chain-rule-value",
+   "cubic-graph",
+   "derivative-blanks"
+  ],
+  "seed": "mn42"
+ },
+ "examples/calculus/quiz.md section applications-and-integrals mn42": {
+  "source": "section",
+  "section": "applications-and-integrals",
+  "questions": [
+   "mean-value-theorem",
+   "integral-x-squared",
+   "ftc-derivative",
+   "related-rates"
+  ],
+  "seed": "mn42"
+ },
+ "examples/exam/quiz.md full k": {
+  "source": "full",
+  "questions": [
+   "normal",
+   "pvalue",
+   "median",
+   "mean",
+   "sd-blanks",
+   "sem",
+   "ci-a",
+   "ci-b"
+  ],
+  "optionOrder": {
+   "normal": [
+    0,
+    2,
+    3,
+    1
+   ],
+   "median": [
+    2,
+    3,
+    1,
+    0
+   ],
+   "ci-a": [
+    0,
+    3,
+    2,
+    1
+   ],
+   "ci-b": [
+    3,
+    2,
+    1,
+    0
+   ]
+  },
+  "seed": "k"
+ },
+ "examples/exam/quiz.md bank k": {
+  "source": "bank",
+  "questions": [
+   "normal",
+   "pvalue",
+   "median",
+   "mean",
+   "sd-blanks",
+   "sem",
+   "ci-b"
+  ],
+  "optionOrder": {
+   "normal": [
+    0,
+    2,
+    3,
+    1
+   ],
+   "median": [
+    2,
+    3,
+    1,
+    0
+   ],
+   "ci-b": [
+    3,
+    2,
+    1,
+    0
+   ]
+  },
+  "seed": "k"
+ },
+ "examples/exam/quiz.md section concepts k": {
+  "source": "section",
+  "section": "concepts",
+  "questions": [
+   "normal",
+   "pvalue",
+   "median"
+  ],
+  "optionOrder": {
+   "normal": [
+    0,
+    2,
+    3,
+    1
+   ],
+   "median": [
+    2,
+    3,
+    1,
+    0
+   ]
+  },
+  "seed": "k"
+ },
+ "examples/exam/quiz.md section calculations k": {
+  "source": "section",
+  "section": "calculations",
+  "questions": [
+   "mean",
+   "sd-blanks",
+   "sem"
+  ],
+  "seed": "k"
+ },
+ "examples/exam/quiz.md section bonus k": {
+  "source": "section",
+  "section": "bonus",
+  "questions": [
+   "ci-b"
+  ],
+  "optionOrder": {
+   "ci-b": [
+    3,
+    2,
+    1,
+    0
+   ]
+  },
+  "seed": "k"
+ },
+ "examples/exam/quiz.md full mn42": {
+  "source": "full",
+  "questions": [
+   "median",
+   "pvalue",
+   "normal",
+   "sem",
+   "sd-blanks",
+   "mean",
+   "ci-a",
+   "ci-b"
+  ],
+  "optionOrder": {
+   "median": [
+    3,
+    2,
+    0,
+    1
+   ],
+   "normal": [
+    3,
+    2,
+    0,
+    1
+   ],
+   "ci-a": [
+    2,
+    3,
+    1,
+    0
+   ],
+   "ci-b": [
+    3,
+    0,
+    1,
+    2
+   ]
+  },
+  "seed": "mn42"
+ },
+ "examples/exam/quiz.md bank mn42": {
+  "source": "bank",
+  "questions": [
+   "median",
+   "pvalue",
+   "normal",
+   "sem",
+   "sd-blanks",
+   "mean",
+   "ci-a"
+  ],
+  "optionOrder": {
+   "median": [
+    3,
+    2,
+    0,
+    1
+   ],
+   "normal": [
+    3,
+    2,
+    0,
+    1
+   ],
+   "ci-a": [
+    2,
+    3,
+    1,
+    0
+   ]
+  },
+  "seed": "mn42"
+ },
+ "examples/exam/quiz.md section concepts mn42": {
+  "source": "section",
+  "section": "concepts",
+  "questions": [
+   "median",
+   "pvalue",
+   "normal"
+  ],
+  "optionOrder": {
+   "median": [
+    3,
+    2,
+    0,
+    1
+   ],
+   "normal": [
+    3,
+    2,
+    0,
+    1
+   ]
+  },
+  "seed": "mn42"
+ },
+ "examples/exam/quiz.md section calculations mn42": {
+  "source": "section",
+  "section": "calculations",
+  "questions": [
+   "sem",
+   "sd-blanks",
+   "mean"
+  ],
+  "seed": "mn42"
+ },
+ "examples/exam/quiz.md section bonus mn42": {
+  "source": "section",
+  "section": "bonus",
+  "questions": [
+   "ci-a"
+  ],
+  "optionOrder": {
+   "ci-a": [
+    2,
+    3,
+    1,
+    0
+   ]
+  },
+  "seed": "mn42"
+ },
+ "examples/ielts/quiz.md full k": {
+  "source": "full",
+  "questions": [
+   "chart-summary",
+   "cycling-routes"
+  ],
+  "seed": "k"
+ },
+ "examples/ielts/quiz.md bank k": {
+  "source": "bank",
+  "questions": [
+   "chart-summary",
+   "cycling-routes"
+  ],
+  "seed": "k"
+ },
+ "examples/ielts/quiz.md section task-1 k": {
+  "source": "section",
+  "section": "task-1",
+  "questions": [
+   "chart-summary"
+  ],
+  "seed": "k"
+ },
+ "examples/ielts/quiz.md section task-2 k": {
+  "source": "section",
+  "section": "task-2",
+  "questions": [
+   "cycling-routes"
+  ],
+  "seed": "k"
+ },
+ "examples/ielts/quiz.md full mn42": {
+  "source": "full",
+  "questions": [
+   "chart-summary",
+   "cycling-routes"
+  ],
+  "seed": "mn42"
+ },
+ "examples/ielts/quiz.md bank mn42": {
+  "source": "bank",
+  "questions": [
+   "chart-summary",
+   "cycling-routes"
+  ],
+  "seed": "mn42"
+ },
+ "examples/ielts/quiz.md section task-1 mn42": {
+  "source": "section",
+  "section": "task-1",
+  "questions": [
+   "chart-summary"
+  ],
+  "seed": "mn42"
+ },
+ "examples/ielts/quiz.md section task-2 mn42": {
+  "source": "section",
+  "section": "task-2",
+  "questions": [
+   "cycling-routes"
+  ],
+  "seed": "mn42"
+ },
+ "examples/medical/quiz.md full k": {
+  "source": "full",
+  "questions": [
+   "sa-node",
+   "pathway",
+   "ecg-match",
+   "mitral",
+   "map-true",
+   "co",
+   "bp-fields",
+   "hr",
+   "sv",
+   "frank-starling"
+  ],
+  "optionOrder": {
+   "sa-node": [
+    0,
+    3,
+    1,
+    2
+   ],
+   "pathway": [
+    4,
+    2,
+    3,
+    0,
+    1
+   ],
+   "ecg-match": [
+    2,
+    3,
+    1,
+    0
+   ],
+   "sv": [
+    0,
+    3,
+    2,
+    1,
+    4
+   ]
+  },
+  "seed": "k"
+ },
+ "examples/medical/quiz.md bank k": {
+  "source": "bank",
+  "questions": [
+   "sa-node",
+   "pathway",
+   "ecg-match",
+   "mitral",
+   "map-true",
+   "co",
+   "bp-fields",
+   "hr",
+   "sv",
+   "frank-starling"
+  ],
+  "optionOrder": {
+   "sa-node": [
+    0,
+    3,
+    1,
+    2
+   ],
+   "pathway": [
+    4,
+    2,
+    3,
+    0,
+    1
+   ],
+   "ecg-match": [
+    2,
+    3,
+    1,
+    0
+   ],
+   "sv": [
+    0,
+    3,
+    2,
+    1,
+    4
+   ]
+  },
+  "seed": "k"
+ },
+ "examples/medical/quiz.md section structure-and-conduction k": {
+  "source": "section",
+  "section": "structure-and-conduction",
+  "questions": [
+   "sa-node",
+   "pathway",
+   "ecg-match",
+   "mitral"
+  ],
+  "optionOrder": {
+   "sa-node": [
+    0,
+    3,
+    1,
+    2
+   ],
+   "pathway": [
+    4,
+    2,
+    3,
+    0,
+    1
+   ],
+   "ecg-match": [
+    2,
+    3,
+    1,
+    0
+   ]
+  },
+  "seed": "k"
+ },
+ "examples/medical/quiz.md section haemodynamics k": {
+  "source": "section",
+  "section": "haemodynamics",
+  "questions": [
+   "map-true",
+   "co",
+   "bp-fields",
+   "hr",
+   "sv"
+  ],
+  "optionOrder": {
+   "sv": [
+    0,
+    3,
+    2,
+    1,
+    4
+   ]
+  },
+  "seed": "k"
+ },
+ "examples/medical/quiz.md section written-answer k": {
+  "source": "section",
+  "section": "written-answer",
+  "questions": [
+   "frank-starling"
+  ],
+  "seed": "k"
+ },
+ "examples/medical/quiz.md full mn42": {
+  "source": "full",
+  "questions": [
+   "sa-node",
+   "pathway",
+   "mitral",
+   "ecg-match",
+   "hr",
+   "sv",
+   "bp-fields",
+   "co",
+   "map-true",
+   "frank-starling"
+  ],
+  "optionOrder": {
+   "sa-node": [
+    3,
+    0,
+    2,
+    1
+   ],
+   "pathway": [
+    2,
+    3,
+    4,
+    0,
+    1
+   ],
+   "ecg-match": [
+    1,
+    2,
+    3,
+    0
+   ],
+   "sv": [
+    4,
+    1,
+    0,
+    3,
+    2
+   ]
+  },
+  "seed": "mn42"
+ },
+ "examples/medical/quiz.md bank mn42": {
+  "source": "bank",
+  "questions": [
+   "sa-node",
+   "pathway",
+   "mitral",
+   "ecg-match",
+   "hr",
+   "sv",
+   "bp-fields",
+   "co",
+   "map-true",
+   "frank-starling"
+  ],
+  "optionOrder": {
+   "sa-node": [
+    3,
+    0,
+    2,
+    1
+   ],
+   "pathway": [
+    2,
+    3,
+    4,
+    0,
+    1
+   ],
+   "ecg-match": [
+    1,
+    2,
+    3,
+    0
+   ],
+   "sv": [
+    4,
+    1,
+    0,
+    3,
+    2
+   ]
+  },
+  "seed": "mn42"
+ },
+ "examples/medical/quiz.md section structure-and-conduction mn42": {
+  "source": "section",
+  "section": "structure-and-conduction",
+  "questions": [
+   "sa-node",
+   "pathway",
+   "mitral",
+   "ecg-match"
+  ],
+  "optionOrder": {
+   "sa-node": [
+    3,
+    0,
+    2,
+    1
+   ],
+   "pathway": [
+    2,
+    3,
+    4,
+    0,
+    1
+   ],
+   "ecg-match": [
+    1,
+    2,
+    3,
+    0
+   ]
+  },
+  "seed": "mn42"
+ },
+ "examples/medical/quiz.md section haemodynamics mn42": {
+  "source": "section",
+  "section": "haemodynamics",
+  "questions": [
+   "hr",
+   "sv",
+   "bp-fields",
+   "co",
+   "map-true"
+  ],
+  "optionOrder": {
+   "sv": [
+    4,
+    1,
+    0,
+    3,
+    2
+   ]
+  },
+  "seed": "mn42"
+ },
+ "examples/medical/quiz.md section written-answer mn42": {
+  "source": "section",
+  "section": "written-answer",
+  "questions": [
+   "frank-starling"
+  ],
+  "seed": "mn42"
+ },
+ "examples/rust/quiz.md full k": {
+  "source": "full",
+  "questions": [
+   "borrowing-rule",
+   "which-compile",
+   "make-it-compile",
+   "move-then-use",
+   "reject-second-borrow",
+   "vec-pop",
+   "integer-division",
+   "match-guard",
+   "shadowing",
+   "largest"
+  ],
+  "optionOrder": {
+   "which-compile": [
+    3,
+    2,
+    1,
+    0,
+    4
+   ],
+   "move-then-use": [
+    2,
+    0,
+    3,
+    1
+   ],
+   "reject-second-borrow": [
+    0,
+    2,
+    1,
+    3
+   ],
+   "vec-pop": [
+    3,
+    1,
+    0,
+    2
+   ],
+   "match-guard": [
+    0,
+    1,
+    3,
+    2
+   ]
+  },
+  "seed": "k"
+ },
+ "examples/rust/quiz.md bank k": {
+  "source": "bank",
+  "questions": [
+   "borrowing-rule",
+   "which-compile",
+   "make-it-compile",
+   "move-then-use",
+   "reject-second-borrow",
+   "vec-pop",
+   "integer-division",
+   "match-guard",
+   "shadowing",
+   "largest"
+  ],
+  "optionOrder": {
+   "which-compile": [
+    3,
+    2,
+    1,
+    0,
+    4
+   ],
+   "move-then-use": [
+    2,
+    0,
+    3,
+    1
+   ],
+   "reject-second-borrow": [
+    0,
+    2,
+    1,
+    3
+   ],
+   "vec-pop": [
+    3,
+    1,
+    0,
+    2
+   ],
+   "match-guard": [
+    0,
+    1,
+    3,
+    2
+   ]
+  },
+  "seed": "k"
+ },
+ "examples/rust/quiz.md section ownership-and-borrowing k": {
+  "source": "section",
+  "section": "ownership-and-borrowing",
+  "questions": [
+   "borrowing-rule",
+   "which-compile",
+   "make-it-compile",
+   "move-then-use",
+   "reject-second-borrow"
+  ],
+  "optionOrder": {
+   "which-compile": [
+    3,
+    2,
+    1,
+    0,
+    4
+   ],
+   "move-then-use": [
+    2,
+    0,
+    3,
+    1
+   ],
+   "reject-second-borrow": [
+    0,
+    2,
+    1,
+    3
+   ]
+  },
+  "seed": "k"
+ },
+ "examples/rust/quiz.md section values-and-control-flow k": {
+  "source": "section",
+  "section": "values-and-control-flow",
+  "questions": [
+   "vec-pop",
+   "integer-division",
+   "match-guard",
+   "shadowing"
+  ],
+  "optionOrder": {
+   "vec-pop": [
+    3,
+    1,
+    0,
+    2
+   ],
+   "match-guard": [
+    0,
+    1,
+    3,
+    2
+   ]
+  },
+  "seed": "k"
+ },
+ "examples/rust/quiz.md section write-some-code k": {
+  "source": "section",
+  "section": "write-some-code",
+  "questions": [
+   "largest"
+  ],
+  "seed": "k"
+ },
+ "examples/rust/quiz.md full mn42": {
+  "source": "full",
+  "questions": [
+   "reject-second-borrow",
+   "borrowing-rule",
+   "make-it-compile",
+   "move-then-use",
+   "which-compile",
+   "match-guard",
+   "integer-division",
+   "vec-pop",
+   "shadowing",
+   "largest"
+  ],
+  "optionOrder": {
+   "reject-second-borrow": [
+    0,
+    3,
+    2,
+    1
+   ],
+   "move-then-use": [
+    1,
+    0,
+    2,
+    3
+   ],
+   "which-compile": [
+    0,
+    1,
+    4,
+    2,
+    3
+   ],
+   "match-guard": [
+    0,
+    2,
+    3,
+    1
+   ],
+   "vec-pop": [
+    0,
+    1,
+    3,
+    2
+   ]
+  },
+  "seed": "mn42"
+ },
+ "examples/rust/quiz.md bank mn42": {
+  "source": "bank",
+  "questions": [
+   "reject-second-borrow",
+   "borrowing-rule",
+   "make-it-compile",
+   "move-then-use",
+   "which-compile",
+   "match-guard",
+   "integer-division",
+   "vec-pop",
+   "shadowing",
+   "largest"
+  ],
+  "optionOrder": {
+   "reject-second-borrow": [
+    0,
+    3,
+    2,
+    1
+   ],
+   "move-then-use": [
+    1,
+    0,
+    2,
+    3
+   ],
+   "which-compile": [
+    0,
+    1,
+    4,
+    2,
+    3
+   ],
+   "match-guard": [
+    0,
+    2,
+    3,
+    1
+   ],
+   "vec-pop": [
+    0,
+    1,
+    3,
+    2
+   ]
+  },
+  "seed": "mn42"
+ },
+ "examples/rust/quiz.md section ownership-and-borrowing mn42": {
+  "source": "section",
+  "section": "ownership-and-borrowing",
+  "questions": [
+   "reject-second-borrow",
+   "borrowing-rule",
+   "make-it-compile",
+   "move-then-use",
+   "which-compile"
+  ],
+  "optionOrder": {
+   "reject-second-borrow": [
+    0,
+    3,
+    2,
+    1
+   ],
+   "move-then-use": [
+    1,
+    0,
+    2,
+    3
+   ],
+   "which-compile": [
+    0,
+    1,
+    4,
+    2,
+    3
+   ]
+  },
+  "seed": "mn42"
+ },
+ "examples/rust/quiz.md section values-and-control-flow mn42": {
+  "source": "section",
+  "section": "values-and-control-flow",
+  "questions": [
+   "match-guard",
+   "integer-division",
+   "vec-pop",
+   "shadowing"
+  ],
+  "optionOrder": {
+   "match-guard": [
+    0,
+    2,
+    3,
+    1
+   ],
+   "vec-pop": [
+    0,
+    1,
+    3,
+    2
+   ]
+  },
+  "seed": "mn42"
+ },
+ "examples/rust/quiz.md section write-some-code mn42": {
+  "source": "section",
+  "section": "write-some-code",
+  "questions": [
+   "largest"
+  ],
+  "seed": "mn42"
+ },
+ "examples/survey/quiz.md full k": {
+  "source": "full",
+  "questions": [
+   "where",
+   "rank",
+   "prepare",
+   "tools",
+   "days",
+   "ideas",
+   "confidence",
+   "routine"
+  ],
+  "optionOrder": {
+   "rank": [
+    0,
+    1,
+    3,
+    2
+   ]
+  },
+  "seed": "k"
+ },
+ "examples/survey/quiz.md bank k": {
+  "source": "bank",
+  "questions": [
+   "where",
+   "rank",
+   "prepare",
+   "tools",
+   "days",
+   "ideas",
+   "confidence",
+   "routine"
+  ],
+  "optionOrder": {
+   "rank": [
+    0,
+    1,
+    3,
+    2
+   ]
+  },
+  "seed": "k"
+ },
+ "examples/survey/quiz.md section how-you-study k": {
+  "source": "section",
+  "section": "how-you-study",
+  "questions": [
+   "where",
+   "rank",
+   "prepare",
+   "tools"
+  ],
+  "optionOrder": {
+   "rank": [
+    0,
+    1,
+    3,
+    2
+   ]
+  },
+  "seed": "k"
+ },
+ "examples/survey/quiz.md section how-it-feels k": {
+  "source": "section",
+  "section": "how-it-feels",
+  "questions": [
+   "days",
+   "ideas",
+   "confidence",
+   "routine"
+  ],
+  "seed": "k"
+ },
+ "examples/survey/quiz.md full mn42": {
+  "source": "full",
+  "questions": [
+   "rank",
+   "where",
+   "prepare",
+   "tools",
+   "routine",
+   "confidence",
+   "ideas",
+   "days"
+  ],
+  "optionOrder": {
+   "rank": [
+    2,
+    0,
+    1,
+    3
+   ]
+  },
+  "seed": "mn42"
+ },
+ "examples/survey/quiz.md bank mn42": {
+  "source": "bank",
+  "questions": [
+   "rank",
+   "where",
+   "prepare",
+   "tools",
+   "routine",
+   "confidence",
+   "ideas",
+   "days"
+  ],
+  "optionOrder": {
+   "rank": [
+    2,
+    0,
+    1,
+    3
+   ]
+  },
+  "seed": "mn42"
+ },
+ "examples/survey/quiz.md section how-you-study mn42": {
+  "source": "section",
+  "section": "how-you-study",
+  "questions": [
+   "rank",
+   "where",
+   "prepare",
+   "tools"
+  ],
+  "optionOrder": {
+   "rank": [
+    2,
+    0,
+    1,
+    3
+   ]
+  },
+  "seed": "mn42"
+ },
+ "examples/survey/quiz.md section how-it-feels mn42": {
+  "source": "section",
+  "section": "how-it-feels",
+  "questions": [
+   "routine",
+   "confidence",
+   "ideas",
+   "days"
+  ],
+  "seed": "mn42"
+ },
+ "templates/blank/quiz.md full k": {
+  "source": "full",
+  "questions": [
+   "labeled-fields",
+   "numeric",
+   "multiple-answer",
+   "short-answer",
+   "true-or-false",
+   "blanks",
+   "single-choice",
+   "code",
+   "essay",
+   "matching",
+   "ordering"
+  ],
+  "optionOrder": {
+   "matching": [
+    1,
+    2,
+    0
+   ],
+   "ordering": [
+    2,
+    0,
+    1
+   ]
+  },
+  "seed": "k"
+ },
+ "templates/blank/quiz.md bank k": {
+  "source": "bank",
+  "questions": [
+   "labeled-fields",
+   "numeric",
+   "multiple-answer",
+   "short-answer",
+   "true-or-false",
+   "blanks",
+   "single-choice",
+   "code",
+   "essay",
+   "matching",
+   "ordering"
+  ],
+  "optionOrder": {
+   "matching": [
+    1,
+    2,
+    0
+   ],
+   "ordering": [
+    2,
+    0,
+    1
+   ]
+  },
+  "seed": "k"
+ },
+ "templates/blank/quiz.md section section-one k": {
+  "source": "section",
+  "section": "section-one",
+  "questions": [
+   "labeled-fields",
+   "numeric",
+   "multiple-answer",
+   "short-answer",
+   "true-or-false",
+   "blanks",
+   "single-choice"
+  ],
+  "seed": "k"
+ },
+ "templates/blank/quiz.md section written-work k": {
+  "source": "section",
+  "section": "written-work",
+  "questions": [
+   "code",
+   "essay",
+   "matching",
+   "ordering"
+  ],
+  "optionOrder": {
+   "matching": [
+    1,
+    2,
+    0
+   ],
+   "ordering": [
+    2,
+    0,
+    1
+   ]
+  },
+  "seed": "k"
+ },
+ "templates/blank/quiz.md full mn42": {
+  "source": "full",
+  "questions": [
+   "single-choice",
+   "true-or-false",
+   "numeric",
+   "labeled-fields",
+   "blanks",
+   "short-answer",
+   "multiple-answer",
+   "ordering",
+   "matching",
+   "essay",
+   "code"
+  ],
+  "optionOrder": {
+   "ordering": [
+    0,
+    2,
+    1
+   ],
+   "matching": [
+    1,
+    2,
+    0
+   ]
+  },
+  "seed": "mn42"
+ },
+ "templates/blank/quiz.md bank mn42": {
+  "source": "bank",
+  "questions": [
+   "single-choice",
+   "true-or-false",
+   "numeric",
+   "labeled-fields",
+   "blanks",
+   "short-answer",
+   "multiple-answer",
+   "ordering",
+   "matching",
+   "essay",
+   "code"
+  ],
+  "optionOrder": {
+   "ordering": [
+    0,
+    2,
+    1
+   ],
+   "matching": [
+    1,
+    2,
+    0
+   ]
+  },
+  "seed": "mn42"
+ },
+ "templates/blank/quiz.md section section-one mn42": {
+  "source": "section",
+  "section": "section-one",
+  "questions": [
+   "single-choice",
+   "true-or-false",
+   "numeric",
+   "labeled-fields",
+   "blanks",
+   "short-answer",
+   "multiple-answer"
+  ],
+  "seed": "mn42"
+ },
+ "templates/blank/quiz.md section written-work mn42": {
+  "source": "section",
+  "section": "written-work",
+  "questions": [
+   "ordering",
+   "matching",
+   "essay",
+   "code"
+  ],
+  "optionOrder": {
+   "ordering": [
+    0,
+    2,
+    1
+   ],
+   "matching": [
+    1,
+    2,
+    0
+   ]
+  },
+  "seed": "mn42"
+ },
+ "test/fixtures/valid/all-types.md full k": {
+  "source": "full",
+  "questions": [
+   "tf1",
+   "single1",
+   "multi1",
+   "blanks1",
+   "num1",
+   "short1",
+   "blanks2",
+   "fields1",
+   "code1",
+   "essay1",
+   "ord1",
+   "match1"
+  ],
+  "optionOrder": {
+   "ord1": [
+    1,
+    0,
+    3,
+    2
+   ],
+   "match1": [
+    2,
+    0,
+    3,
+    1
+   ]
+  },
+  "seed": "k"
+ },
+ "test/fixtures/valid/all-types.md bank k": {
+  "source": "bank",
+  "questions": [
+   "tf1",
+   "single1",
+   "multi1",
+   "blanks1",
+   "num1",
+   "short1",
+   "blanks2",
+   "fields1",
+   "code1",
+   "essay1",
+   "ord1",
+   "match1"
+  ],
+  "optionOrder": {
+   "ord1": [
+    1,
+    0,
+    3,
+    2
+   ],
+   "match1": [
+    2,
+    0,
+    3,
+    1
+   ]
+  },
+  "seed": "k"
+ },
+ "test/fixtures/valid/all-types.md section choices k": {
+  "source": "section",
+  "section": "choices",
+  "questions": [
+   "tf1",
+   "single1",
+   "multi1"
+  ],
+  "seed": "k"
+ },
+ "test/fixtures/valid/all-types.md section typed-answers k": {
+  "source": "section",
+  "section": "typed-answers",
+  "questions": [
+   "blanks1",
+   "num1",
+   "short1",
+   "blanks2",
+   "fields1"
+  ],
+  "seed": "k"
+ },
+ "test/fixtures/valid/all-types.md section written-work k": {
+  "source": "section",
+  "section": "written-work",
+  "questions": [
+   "code1",
+   "essay1"
+  ],
+  "seed": "k"
+ },
+ "test/fixtures/valid/all-types.md section order-and-match k": {
+  "source": "section",
+  "section": "order-and-match",
+  "questions": [
+   "ord1",
+   "match1"
+  ],
+  "optionOrder": {
+   "ord1": [
+    1,
+    0,
+    3,
+    2
+   ],
+   "match1": [
+    2,
+    0,
+    3,
+    1
+   ]
+  },
+  "seed": "k"
+ },
+ "test/fixtures/valid/all-types.md full mn42": {
+  "source": "full",
+  "questions": [
+   "multi1",
+   "tf1",
+   "single1",
+   "short1",
+   "blanks2",
+   "num1",
+   "fields1",
+   "blanks1",
+   "essay1",
+   "code1",
+   "match1",
+   "ord1"
+  ],
+  "optionOrder": {
+   "match1": [
+    1,
+    0,
+    3,
+    2
+   ],
+   "ord1": [
+    3,
+    1,
+    0,
+    2
+   ]
+  },
+  "seed": "mn42"
+ },
+ "test/fixtures/valid/all-types.md bank mn42": {
+  "source": "bank",
+  "questions": [
+   "multi1",
+   "tf1",
+   "single1",
+   "short1",
+   "blanks2",
+   "num1",
+   "fields1",
+   "blanks1",
+   "essay1",
+   "code1",
+   "match1",
+   "ord1"
+  ],
+  "optionOrder": {
+   "match1": [
+    1,
+    0,
+    3,
+    2
+   ],
+   "ord1": [
+    3,
+    1,
+    0,
+    2
+   ]
+  },
+  "seed": "mn42"
+ },
+ "test/fixtures/valid/all-types.md section choices mn42": {
+  "source": "section",
+  "section": "choices",
+  "questions": [
+   "multi1",
+   "tf1",
+   "single1"
+  ],
+  "seed": "mn42"
+ },
+ "test/fixtures/valid/all-types.md section typed-answers mn42": {
+  "source": "section",
+  "section": "typed-answers",
+  "questions": [
+   "short1",
+   "blanks2",
+   "num1",
+   "fields1",
+   "blanks1"
+  ],
+  "seed": "mn42"
+ },
+ "test/fixtures/valid/all-types.md section written-work mn42": {
+  "source": "section",
+  "section": "written-work",
+  "questions": [
+   "essay1",
+   "code1"
+  ],
+  "seed": "mn42"
+ },
+ "test/fixtures/valid/all-types.md section order-and-match mn42": {
+  "source": "section",
+  "section": "order-and-match",
+  "questions": [
+   "match1",
+   "ord1"
+  ],
+  "optionOrder": {
+   "match1": [
+    1,
+    0,
+    3,
+    2
+   ],
+   "ord1": [
+    3,
+    1,
+    0,
+    2
+   ]
+  },
+  "seed": "mn42"
+ },
+ "test/fixtures/valid/followup.md full k": {
+  "source": "full",
+  "questions": [
+   "capital",
+   "where",
+   "plain",
+   "primes"
+  ],
+  "optionOrder": {
+   "where": [
+    4,
+    0,
+    3,
+    2,
+    1
+   ]
+  },
+  "seed": "k"
+ },
+ "test/fixtures/valid/followup.md bank k": {
+  "source": "bank",
+  "questions": [
+   "capital",
+   "where",
+   "plain",
+   "primes"
+  ],
+  "optionOrder": {
+   "where": [
+    4,
+    0,
+    3,
+    2,
+    1
+   ]
+  },
+  "seed": "k"
+ },
+ "test/fixtures/valid/followup.md section choices-with-details k": {
+  "source": "section",
+  "section": "choices-with-details",
+  "questions": [
+   "capital",
+   "where",
+   "plain",
+   "primes"
+  ],
+  "optionOrder": {
+   "where": [
+    4,
+    0,
+    3,
+    2,
+    1
+   ]
+  },
+  "seed": "k"
+ },
+ "test/fixtures/valid/followup.md full mn42": {
+  "source": "full",
+  "questions": [
+   "primes",
+   "where",
+   "capital",
+   "plain"
+  ],
+  "optionOrder": {
+   "where": [
+    2,
+    1,
+    3,
+    0,
+    4
+   ]
+  },
+  "seed": "mn42"
+ },
+ "test/fixtures/valid/followup.md bank mn42": {
+  "source": "bank",
+  "questions": [
+   "primes",
+   "where",
+   "capital",
+   "plain"
+  ],
+  "optionOrder": {
+   "where": [
+    2,
+    1,
+    3,
+    0,
+    4
+   ]
+  },
+  "seed": "mn42"
+ },
+ "test/fixtures/valid/followup.md section choices-with-details mn42": {
+  "source": "section",
+  "section": "choices-with-details",
+  "questions": [
+   "primes",
+   "where",
+   "capital",
+   "plain"
+  ],
+  "optionOrder": {
+   "where": [
+    2,
+    1,
+    3,
+    0,
+    4
+   ]
+  },
+  "seed": "mn42"
+ },
+ "test/fixtures/valid/mixed.md full k": {
+  "source": "full",
+  "questions": [
+   "why",
+   "colour",
+   "sure",
+   "sum",
+   "fr"
+  ],
+  "seed": "k"
+ },
+ "test/fixtures/valid/mixed.md bank k": {
+  "source": "bank",
+  "questions": [
+   "why",
+   "colour",
+   "sure",
+   "sum",
+   "fr"
+  ],
+  "seed": "k"
+ },
+ "test/fixtures/valid/mixed.md full mn42": {
+  "source": "full",
+  "questions": [
+   "sure",
+   "fr",
+   "sum",
+   "colour",
+   "why"
+  ],
+  "seed": "mn42"
+ },
+ "test/fixtures/valid/mixed.md bank mn42": {
+  "source": "bank",
+  "questions": [
+   "sure",
+   "fr",
+   "sum",
+   "colour",
+   "why"
+  ],
+  "seed": "mn42"
+ },
+ "test/fixtures/valid/survey.md full k": {
+  "source": "full",
+  "questions": [
+   "how",
+   "name",
+   "help",
+   "details",
+   "sleep",
+   "rank",
+   "conf",
+   "more"
+  ],
+  "optionOrder": {
+   "rank": [
+    0,
+    2,
+    1
+   ]
+  },
+  "seed": "k"
+ },
+ "test/fixtures/valid/survey.md bank k": {
+  "source": "bank",
+  "questions": [
+   "how",
+   "name",
+   "help",
+   "details",
+   "sleep",
+   "rank",
+   "conf",
+   "more"
+  ],
+  "optionOrder": {
+   "rank": [
+    0,
+    2,
+    1
+   ]
+  },
+  "seed": "k"
+ },
+ "test/fixtures/valid/survey.md section about-you k": {
+  "source": "section",
+  "section": "about-you",
+  "questions": [
+   "how",
+   "name",
+   "help",
+   "details"
+  ],
+  "seed": "k"
+ },
+ "test/fixtures/valid/survey.md section confidence k": {
+  "source": "section",
+  "section": "confidence",
+  "questions": [
+   "sleep",
+   "rank",
+   "conf",
+   "more"
+  ],
+  "optionOrder": {
+   "rank": [
+    0,
+    2,
+    1
+   ]
+  },
+  "seed": "k"
+ },
+ "test/fixtures/valid/survey.md full mn42": {
+  "source": "full",
+  "questions": [
+   "help",
+   "name",
+   "details",
+   "how",
+   "conf",
+   "rank",
+   "more",
+   "sleep"
+  ],
+  "optionOrder": {
+   "rank": [
+    1,
+    2,
+    0
+   ]
+  },
+  "seed": "mn42"
+ },
+ "test/fixtures/valid/survey.md bank mn42": {
+  "source": "bank",
+  "questions": [
+   "help",
+   "name",
+   "details",
+   "how",
+   "conf",
+   "rank",
+   "more",
+   "sleep"
+  ],
+  "optionOrder": {
+   "rank": [
+    1,
+    2,
+    0
+   ]
+  },
+  "seed": "mn42"
+ },
+ "test/fixtures/valid/survey.md section about-you mn42": {
+  "source": "section",
+  "section": "about-you",
+  "questions": [
+   "help",
+   "name",
+   "details",
+   "how"
+  ],
+  "seed": "mn42"
+ },
+ "test/fixtures/valid/survey.md section confidence mn42": {
+  "source": "section",
+  "section": "confidence",
+  "questions": [
+   "conf",
+   "rank",
+   "more",
+   "sleep"
+  ],
+  "optionOrder": {
+   "rank": [
+    1,
+    2,
+    0
+   ]
+  },
+  "seed": "mn42"
+ },
+ "test/fixtures/valid/with-materials.md full k": {
+  "source": "full",
+  "questions": [
+   "q"
+  ],
+  "seed": "k"
+ },
+ "test/fixtures/valid/with-materials.md bank k": {
+  "source": "bank",
+  "questions": [
+   "q"
+  ],
+  "seed": "k"
+ },
+ "test/fixtures/valid/with-materials.md full mn42": {
+  "source": "full",
+  "questions": [
+   "q"
+  ],
+  "seed": "mn42"
+ },
+ "test/fixtures/valid/with-materials.md bank mn42": {
+  "source": "bank",
+  "questions": [
+   "q"
+  ],
+  "seed": "mn42"
+ },
+ "test/fixtures/paper/exam.md full k": {
+  "source": "full",
+  "questions": [
+   "zqid3",
+   "zqid2",
+   "zqid1",
+   "zqid5",
+   "zqid4",
+   "zqid8",
+   "zqid7",
+   "zqid6",
+   "zqid11",
+   "zqid12",
+   "zqid9",
+   "zqid10"
+  ],
+  "optionOrder": {
+   "zqid2": [
+    0,
+    2,
+    1,
+    3
+   ],
+   "zqid1": [
+    0,
+    3,
+    2,
+    1
+   ],
+   "zqid9": [
+    1,
+    2,
+    0
+   ],
+   "zqid10": [
+    1,
+    2,
+    3,
+    0
+   ]
+  },
+  "seed": "k"
+ },
+ "test/fixtures/paper/exam.md bank k": {
+  "source": "bank",
+  "questions": [
+   "zqid3",
+   "zqid2",
+   "zqid1",
+   "zqid5",
+   "zqid4",
+   "zqid8",
+   "zqid7",
+   "zqid6",
+   "zqid11",
+   "zqid12",
+   "zqid9",
+   "zqid10"
+  ],
+  "optionOrder": {
+   "zqid2": [
+    0,
+    2,
+    1,
+    3
+   ],
+   "zqid1": [
+    0,
+    3,
+    2,
+    1
+   ],
+   "zqid9": [
+    1,
+    2,
+    0
+   ],
+   "zqid10": [
+    1,
+    2,
+    3,
+    0
+   ]
+  },
+  "seed": "k"
+ },
+ "test/fixtures/paper/exam.md section signals k": {
+  "source": "section",
+  "section": "signals",
+  "questions": [
+   "zqid3",
+   "zqid2",
+   "zqid1"
+  ],
+  "optionOrder": {
+   "zqid2": [
+    0,
+    2,
+    1,
+    3
+   ],
+   "zqid1": [
+    0,
+    3,
+    2,
+    1
+   ]
+  },
+  "seed": "k"
+ },
+ "test/fixtures/paper/exam.md section short k": {
+  "source": "section",
+  "section": "short",
+  "questions": [
+   "zqid5",
+   "zqid4",
+   "zqid8",
+   "zqid7",
+   "zqid6"
+  ],
+  "seed": "k"
+ },
+ "test/fixtures/paper/exam.md section long k": {
+  "source": "section",
+  "section": "long",
+  "questions": [
+   "zqid11",
+   "zqid12",
+   "zqid9",
+   "zqid10"
+  ],
+  "optionOrder": {
+   "zqid9": [
+    1,
+    2,
+    0
+   ],
+   "zqid10": [
+    1,
+    2,
+    3,
+    0
+   ]
+  },
+  "seed": "k"
+ },
+ "test/fixtures/paper/exam.md full mn42": {
+  "source": "full",
+  "questions": [
+   "zqid2",
+   "zqid3",
+   "zqid1",
+   "zqid8",
+   "zqid5",
+   "zqid4",
+   "zqid6",
+   "zqid7",
+   "zqid9",
+   "zqid12",
+   "zqid10",
+   "zqid11"
+  ],
+  "optionOrder": {
+   "zqid2": [
+    2,
+    3,
+    1,
+    0
+   ],
+   "zqid1": [
+    2,
+    3,
+    1,
+    0
+   ],
+   "zqid9": [
+    1,
+    0,
+    2
+   ],
+   "zqid10": [
+    0,
+    2,
+    3,
+    1
+   ]
+  },
+  "seed": "mn42"
+ },
+ "test/fixtures/paper/exam.md bank mn42": {
+  "source": "bank",
+  "questions": [
+   "zqid2",
+   "zqid3",
+   "zqid1",
+   "zqid8",
+   "zqid5",
+   "zqid4",
+   "zqid6",
+   "zqid7",
+   "zqid9",
+   "zqid12",
+   "zqid10",
+   "zqid11"
+  ],
+  "optionOrder": {
+   "zqid2": [
+    2,
+    3,
+    1,
+    0
+   ],
+   "zqid1": [
+    2,
+    3,
+    1,
+    0
+   ],
+   "zqid9": [
+    1,
+    0,
+    2
+   ],
+   "zqid10": [
+    0,
+    2,
+    3,
+    1
+   ]
+  },
+  "seed": "mn42"
+ },
+ "test/fixtures/paper/exam.md section signals mn42": {
+  "source": "section",
+  "section": "signals",
+  "questions": [
+   "zqid2",
+   "zqid3",
+   "zqid1"
+  ],
+  "optionOrder": {
+   "zqid2": [
+    2,
+    3,
+    1,
+    0
+   ],
+   "zqid1": [
+    2,
+    3,
+    1,
+    0
+   ]
+  },
+  "seed": "mn42"
+ },
+ "test/fixtures/paper/exam.md section short mn42": {
+  "source": "section",
+  "section": "short",
+  "questions": [
+   "zqid8",
+   "zqid5",
+   "zqid4",
+   "zqid6",
+   "zqid7"
+  ],
+  "seed": "mn42"
+ },
+ "test/fixtures/paper/exam.md section long mn42": {
+  "source": "section",
+  "section": "long",
+  "questions": [
+   "zqid9",
+   "zqid12",
+   "zqid10",
+   "zqid11"
+  ],
+  "optionOrder": {
+   "zqid9": [
+    1,
+    0,
+    2
+   ],
+   "zqid10": [
+    0,
+    2,
+    3,
+    1
+   ]
+  },
+  "seed": "mn42"
+ }
+}

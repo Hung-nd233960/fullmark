@@ -42,6 +42,29 @@ function shuffledNotSource(count: number, next: () => number): number[] {
 }
 
 /**
+ * `type_order`'s shuffle (section 4, Seeds): the questions are shuffled only inside each run, a stretch of consecutive
+ * questions in the same group of the order. Runs keep their places, so a quiz in its order stays in it; a quiz out of
+ * its order is shuffled, not rearranged. A type outside the order is a run of its own and does not move.
+ */
+function shuffledInRuns(
+  questions: readonly Question[],
+  groups: readonly (readonly string[])[],
+  next: () => number,
+): Question[] {
+  const groupOf = (q: Question): number => groups.findIndex((g) => g.includes(q.type));
+  const out: Question[] = [];
+  for (let i = 0; i < questions.length; ) {
+    const g = groupOf(questions[i] as Question);
+    let end = i + 1;
+    while (g >= 0 && end < questions.length && groupOf(questions[end] as Question) === g) end++;
+    const run = questions.slice(i, end);
+    out.push(...(run.length > 1 ? shuffled(run, next) : run));
+    i = end;
+  }
+  return out;
+}
+
+/**
  * The sections of a retry: the quiz's own, cut down to the named questions, which stay in the order given (shuffled
  * afterwards when the quiz shuffles its questions, by the seed). A question the quiz does not have is an error.
  */
@@ -98,7 +121,9 @@ export function planFor(quiz: Quiz, request: PlanRequest): Plan {
       chosen = chosen.filter((_, i) => keep.has(i));
     }
     if (quiz.frontMatter.shuffleQuestions && seed !== undefined) {
-      chosen = shuffled(chosen, random(`${seed}\u0000questions\u0000${section.id}`));
+      const next = random(`${seed}\u0000questions\u0000${section.id}`);
+      const groups = quiz.frontMatter.typeOrder === "none" ? undefined : quiz.frontMatter.typeOrderGroups;
+      chosen = groups === undefined ? shuffled(chosen, next) : shuffledInRuns(chosen, groups, next);
     }
     questions.push(...chosen);
   }

@@ -286,3 +286,25 @@ test("the page shows the items in the order the plan drew, and the export record
   const order = file.plan.optionOrder.o1 ?? [];
   expect(order.map((i) => source[i])).toEqual(shown);
 });
+
+test("an ordered, shuffled quiz shows its groups in order after Start, whichever the seed", async ({ page }) => {
+  const ordered = buildIn("test/fixtures/page/ordered.md", "ordered.md");
+  const seen = new Set<string>();
+  for (let i = 0; i < 4; i++) {
+    await page.goto(ordered.url);
+    await page.evaluate(() => localStorage.clear());
+    await page.goto(ordered.url);
+    await page.getByRole("button", { name: "Start" }).click();
+    const types = await page
+      .locator("article.fm-question")
+      .evaluateAll((els) => els.map((el) => el.getAttribute("data-type") ?? ""));
+    expect(types).toEqual([
+      ...Array(4).fill("single"),
+      ...Array(3).fill("truefalse"),
+      ...Array(3).fill("short"),
+      ...Array(2).fill("essay"),
+    ]);
+    seen.add((await idsOn(page)).join());
+  }
+  expect(seen.size).toBeGreaterThan(1);
+});

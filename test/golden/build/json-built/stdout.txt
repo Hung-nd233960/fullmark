@@ -1,1 +1,1 @@
-{"status":"built","output":"quiz.html","bytes":239986,"errors":[],"warnings":[]}
+{"status":"built","output":"quiz.html","bytes":240305,"errors":[],"warnings":[]}
