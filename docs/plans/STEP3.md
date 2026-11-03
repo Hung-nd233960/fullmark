@@ -19,7 +19,7 @@ As in step 2 ([STEP2.md](STEP2.md), Handoff): Opus writes a slice's full brief h
 | 3d 3c's fixes, `stats` | done, reviewed, gaps decided | `fd466d1`, `2dfd341` |
 | 3g 3d's fixes, `brief` through flags | done, reviewed, gaps decided | `27a61a4`..`2e6b449` |
 | 3i 3g's fixes, `brief --tui` | done, reviewed, gaps decided | `fb5ed78`..`546ccc0` |
-| 3j 3i's fixes, `build --watch` and `--serve` | **brief drafted; G30 to G33 for the owner** | |
+| 3j 3i's fixes, `build --watch` and `--serve` | with Sonnet | |
 
 Step 2 is closed (STEP2.md, item 75): every "Done when" criterion passes in Chromium and Firefox; Vitest 2059 of 2059, the 2 startup tests, Playwright and axe. What step 3 inherits:
 
@@ -70,7 +70,7 @@ Step 2 is closed (STEP2.md, item 75): every "Done when" criterion passes in Chro
 
 
 
-1. **The owner approves 3j's brief** (below) with G30 to G33; then 3j goes to Sonnet.
+1. **3j with Sonnet** (the owner's go, 2026-11-03; G30 to G33 decided).
 2. **Whenever the owner is ready:** the form boards on the Design canvas (3v, G7), as 2v did for the page. Only 3e, 3f and 3h wait for them.
 
 ### Open proposals carried over from step 2
@@ -133,13 +133,13 @@ The design docs leave these open. Each needs the owner's yes before the slice th
 
 **G18. A `DIR` that already holds `brief.yaml`** (3g). Nothing says. **Decided by the owner on 2026-11-03, as recommended.** **Recommend:** never overwrite, as `new`: exit 2 before asking anything, "DIR/brief.yaml already exists: edit it, or delete it to start again". An existing `content/` is kept as it is, and a missing `DIR` is created.
 
-**G30. The reload server's paths** (3j). G6 gives the event stream as `GET /events?token=…`; the one-shot server puts the token in the path (`/<token>/`) and refuses everything outside it. **Recommend:** the same: the page at `/<token>/` (with several files, the index there and each page at `/<token>/<name>.html`), the events at `/<token>/events`, the same `Host` check, every other path 403 or 404 as for `serve`; COMMANDS.md's `GET /events` becomes `GET /<token>/events`. One `reload` event per good rebuild, none for a failed one; a comment line every 15 s so a proxy or the browser keeps the stream open.
+**G30. The reload server's paths** (3j). **Decided by the owner on 2026-11-03, as recommended**, and written into COMMANDS.md, `quiz build`. G6 gives the event stream as `GET /events?token=…`; the one-shot server puts the token in the path (`/<token>/`) and refuses everything outside it. **Recommend:** the same: the page at `/<token>/` (with several files, the index there and each page at `/<token>/<name>.html`), the events at `/<token>/events`, the same `Host` check, every other path 403 or 404 as for `serve`; COMMANDS.md's `GET /events` becomes `GET /<token>/events`. One `reload` event per good rebuild, none for a failed one; a comment line every 15 s so a proxy or the browser keeps the stream open.
 
-**G31. Where the reload code lives** (3j). G10 made `dist/serve.js` the one-shot module (submit, autosave, `sent`). The reload page must carry none of it (G6: "the reload code as its only module"). **Recommend:** its own esbuild IIFE, `dist/reload.js`, a few hundred bytes (an `EventSource` that calls `location.reload()`, and reconnects as `EventSource` does), its own entry in `scripts/bundles.mjs` and the notices test; the served copy's CSP gains its hash and `connect-src 'self'`. A test checks that a `--serve` page holds no submit code and a `build` page none of either.
+**G31. Where the reload code lives** (3j). **Decided by the owner on 2026-11-03, as recommended**, and written into COMMANDS.md, `quiz build`. G10 made `dist/serve.js` the one-shot module (submit, autosave, `sent`). The reload page must carry none of it (G6: "the reload code as its only module"). **Recommend:** its own esbuild IIFE, `dist/reload.js`, a few hundred bytes (an `EventSource` that calls `location.reload()`, and reconnects as `EventSource` does), its own entry in `scripts/bundles.mjs` and the notices test; the served copy's CSP gains its hash and `connect-src 'self'`. A test checks that a `--serve` page holds no submit code and a `build` page none of either.
 
-**G32. `--watch`'s outputs** (3j). COMMANDS.md says "one JSON line per rebuild" and nothing of `--serve`'s URL or of the human output. **Recommend:** with `--serve`, the first line is `{"status": "listening", "url", "port", "pid"}`, as `serve`'s; then a first build and every rebuild give `build --json`'s line (with `"file"` when there are several), and Ctrl+C prints `{"status": "stopped"}` and exits 0. The human output is one line per rebuild on stderr (`rebuilt quiz.html · 412 KB · 0.3 s`, or the errors and "kept the last good page"). `--open` with `--serve` opens the URL once, after the first build; without `--serve` it opens the file once. `--port N` without `--serve` exits 2.
+**G32. `--watch`'s outputs** (3j). **Decided by the owner on 2026-11-03, as recommended**, and written into COMMANDS.md, `quiz build`. COMMANDS.md says "one JSON line per rebuild" and nothing of `--serve`'s URL or of the human output. **Recommend:** with `--serve`, the first line is `{"status": "listening", "url", "port", "pid"}`, as `serve`'s; then a first build and every rebuild give `build --json`'s line (with `"file"` when there are several), and Ctrl+C prints `{"status": "stopped"}` and exits 0. The human output is one line per rebuild on stderr (`rebuilt quiz.html · 412 KB · 0.3 s`, or the errors and "kept the last good page"). `--open` with `--serve` opens the URL once, after the first build; without `--serve` it opens the file once. `--port N` without `--serve` exits 2.
 
-**G33. The index of several pages** (3j). "With several files it serves an index of the pages"; no board shows it. **Recommend:** a plain page with no board needed: the quizzes' titles as links in the order given, each with its file name and, after a failed rebuild, "last build failed: see the terminal"; the page's tokens and both themes, `ui_lang` from `--ui-lang` or `en`, no script but the reload code. It lives in `src/build/` as one small function with a golden.
+**G33. The index of several pages** (3j). **Decided by the owner on 2026-11-03, as recommended**, and written into COMMANDS.md, `quiz build`. "With several files it serves an index of the pages"; no board shows it. **Recommend:** a plain page with no board needed: the quizzes' titles as links in the order given, each with its file name and, after a failed rebuild, "last build failed: see the terminal"; the page's tokens and both themes, `ui_lang` from `--ui-lang` or `en`, no script but the reload code. It lives in `src/build/` as one small function with a golden.
 
 **G12. `@clack/prompts`** (3i). A new runtime dependency, already named in section 3. **Decided by the owner on 2026-11-03, as recommended (with the refinement below).** **Recommend:** pinned exactly, MIT (in the allow-list), listed in `--acknowledgements` and `THIRD_PARTY_NOTICES.md`, loaded only by `brief --tui`, with the byte-identity test driving it through a pseudo-terminal (`node:child_process` with a scripted stdin) rather than a new test dependency. If clack cannot be driven that way, the slice stops and reports. **Refined with 3i's brief:** a pipe is not a terminal, and `--tui` refuses one, so the byte-identity test drives the form in process, through the prompts' `input` and `output` streams (a scripted stream that reports itself as a TTY); one subprocess test runs the real command under `script(1)` for a pseudo-terminal on Linux and Ctrl+C, skipped by name elsewhere. No new test dependency. `@clack/prompts` 1.8.1 (MIT, 2026-09-13) brings `@clack/core`, `sisteransi`, `fast-wrap-ansi`, `fast-string-width` and `fast-string-truncated-width`, all MIT: each pinned through the lock file, checked against the allow-list and listed in the notices.
 
@@ -381,7 +381,7 @@ The order (owner, 2026-11-03) puts the server first, since four commands stand o
 
 ## Slice 3j: 3i's fixes, then `build --watch` and `--serve`
 
-**Drafted 2026-11-03; waits for the owner's yes, with G30 to G33.**
+**Approved by the owner on 2026-11-03**, with G30 to G33.
 
 ### Read first
 
