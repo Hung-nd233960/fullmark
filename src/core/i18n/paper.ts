@@ -153,7 +153,7 @@ export const paperVi = {
   noSheetFix: "bỏ --answer-sheet, hoặc thêm một câu một lựa chọn hoặc đúng/sai",
   groupNames: {
     "multi+single": "Trắc nghiệm",
-    truefalse: "Đúng hay sai",
+    truefalse: "Đúng/Sai",
     "matching+ordering": "Ghép cặp và sắp xếp",
     blanks: "Điền vào chỗ trống",
     "fields+numeric+short": "Trả lời ngắn",
@@ -163,7 +163,7 @@ export const paperVi = {
   typeNames: {
     single: "Một lựa chọn",
     multi: "Nhiều lựa chọn",
-    truefalse: "Đúng hay sai",
+    truefalse: "Đúng/Sai",
     matching: "Ghép cặp",
     ordering: "Sắp xếp",
     blanks: "Điền vào chỗ trống",

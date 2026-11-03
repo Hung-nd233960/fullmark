@@ -195,7 +195,7 @@ describe("the key grouped by type", () => {
     const g = headings(load("grouped.md"), "vi");
     expect(g.map((x) => x.title)).toEqual([
       "Trắc nghiệm",
-      "Đúng hay sai",
+      "Đúng/Sai",
       "Ghép cặp và sắp xếp",
       "Trả lời ngắn",
       "Tự luận",
