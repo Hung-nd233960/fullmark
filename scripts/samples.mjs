@@ -48,6 +48,15 @@ const TRY = {
   "vi-fonts": "built with --fonts all: Vietnamese text with stacked diacritics; Appearance > Font offers all four fonts; the Licences button lists their notices",
 };
 
+// Served commands cannot be a file, so the index lists how to start each one by hand (one line per command, run from
+// the repository after `npm run samples`). Each later slice that adds a served command adds its line here.
+const SERVED = [
+  {
+    command: "node dist/cli.js serve examples/calculus/quiz.md --open --out samples/calculus-results.json",
+    try: "quiz serve: the quiz is served on 127.0.0.1 and opens in your browser; answer, press Submit and confirm: the page says the results were sent, the command prints the score and exits 0, and samples/calculus-results.json is written (quiz grade grades it to the same score). Close the server with Ctrl+C instead: it prints nothing written and exits 2.",
+  },
+];
+
 // extra `build` flags for a page
 const FLAGS = { "vi-fonts": ["--fonts", "all"] };
 
@@ -131,6 +140,11 @@ writeFileSync(
 <p>Built from the current branch by <code>npm run samples</code>. Each page is offline: open it, answer, submit, export. Answers are autosaved per page in this browser; use Start over or New attempt to reset.</p>
 <ul>
 ${rows}
+</ul>
+<h2>Served commands</h2>
+<p>These start a small server on this machine and wait for you, so they are run from a terminal in the repository, not opened as files.</p>
+<ul>
+${SERVED.map((s) => `<li><code>${esc(s.command)}</code> <span>${esc(s.try)}</span></li>`).join("\n")}
 </ul>
 `,
 );
