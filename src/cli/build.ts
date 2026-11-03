@@ -64,8 +64,12 @@ export type BuildOptions = {
   answers: string | null;
   /** `--materials none` with `--print`; null: not given */
   materials: string | null;
-  /** the options that arrive with later slices; any of them set is "not available yet" */
-  later: string[];
+  /** `--watch`: rebuild when the quiz, the files its version covers or the build file change, until Ctrl+C */
+  watch: boolean;
+  /** `--serve` (with `--watch`): serve the last good page at a token URL and reload it after each rebuild */
+  serve: boolean;
+  /** `--port N` (with `--serve`), as given; null: a free port */
+  port: string | null;
   version: string;
 };
 
@@ -75,6 +79,17 @@ export type BuildIo = CheckIo & {
   now?: () => Date;
   /** opens a page with the system's opener, without waiting for it; rejects or throws when it cannot start */
   open?: (path: string) => void | Promise<void>;
+};
+
+/** `build --watch`'s seams, which tests control: the file system watch, its clock, Ctrl+C and the keep-alive timer. */
+export type WatchIo = BuildIo & {
+  folderWatch?: import("./watcher").FolderWatch;
+  watchClock?: import("./watcher").WatchClock;
+  /** registers the Ctrl+C handler and returns the function that removes it; the default is `process.once("SIGINT")` */
+  onInterrupt?: (handler: () => void) => () => void;
+  setTimer?: (fire: () => void, ms: number) => () => void;
+  /** called after every round of builds, the first included, once what is served is up to date (for tests) */
+  roundDone?: () => void;
 };
 
 /** The system's opener (COMMANDS.md, `--open`): `start` through `cmd` on Windows, `open` on macOS, else `xdg-open`. */
@@ -102,10 +117,10 @@ export function runtimeFolder(): string {
 }
 
 /** `21.4 MB`: one decimal, MB being 1,000,000 bytes. */
-const megabytes = (bytes: number): string => `${(bytes / 1e6).toFixed(1)} MB`;
+export const megabytes = (bytes: number): string => `${(bytes / 1e6).toFixed(1)} MB`;
 
 /** What one file came to: its exit code and the lines it prints, in order. */
-type FileResult = {
+export type FileResult = {
   file: string;
   exit: ExitCode;
   /** `built`; `failed` for content that is wrong (check errors, `--strict`, a page over `max-mb`); `error` for I/O */
@@ -122,15 +137,20 @@ type FileResult = {
   configErrors?: ConfigError[];
   /** a replay's `--json`: the attempt, and whether grades are on the page */
   replay?: { attempt: Record<string, unknown>; graded: boolean };
+  /** a built file's page, and its quiz's title: what `--watch --serve` serves (a copy with the reload code) */
+  page?: Uint8Array;
+  title?: string;
 };
 
-type RunContext = {
+export type RunContext = {
   io: BuildIo;
   several: boolean;
   builtAt: string;
   runtime: () => Runtime | null;
   /** `dist/paper.css`, which only the printed paper carries */
   paperCss: () => string | null;
+  /** `--watch`: told what each file's quiz covers, from the load, good or failed */
+  onLoaded?: (job: Job, loaded: LoadedQuiz) => void;
 };
 type Runtime = { runtime: string; css: string };
 
@@ -146,7 +166,7 @@ function targetOf(file: string, opts: BuildOptions, io: BuildIo, several: boolea
 }
 
 /** A file's `--json` line: `check --json`'s issues, split into `errors` and `warnings`. */
-function jsonLine(r: FileResult, several: boolean, replay: boolean): Record<string, unknown> {
+export function jsonLine(r: FileResult, several: boolean, replay: boolean): Record<string, unknown> {
   const file = several ? { file: r.file } : {};
   if (r.status === "error") {
     return {
@@ -176,7 +196,7 @@ function jsonLine(r: FileResult, several: boolean, replay: boolean): Record<stri
 }
 
 /** One file, checked and built exactly as alone (COMMANDS.md, "Several files"). Nothing is printed here. */
-async function buildOne(job: Job, c: RunContext): Promise<FileResult> {
+export async function buildOne(job: Job, c: RunContext): Promise<FileResult> {
   const { file, opts } = job;
   const { io } = c;
   const issues: Issue[] = [];
@@ -229,6 +249,7 @@ async function buildOne(job: Job, c: RunContext): Promise<FileResult> {
         ...(result.configErrors ? { configErrors: result.configErrors } : {}),
       };
     }
+    c.onLoaded?.(job, result.loaded);
     issues.push(...result.issues);
     if (result.status === "failed" || result.loaded.quiz === null) {
       // nothing is written; the issues are printed as `check` prints them
@@ -386,6 +407,8 @@ async function buildOne(job: Job, c: RunContext): Promise<FileResult> {
     bytes: page.length,
     out,
     err: [],
+    page,
+    title: quiz.frontMatter.title,
   };
   if (replay) {
     const a = replay.attempt;
@@ -399,13 +422,20 @@ async function buildOne(job: Job, c: RunContext): Promise<FileResult> {
 
 /** `quiz build FILE...` (COMMANDS.md): each file is checked as `check` does, then written as one page; nothing on errors. */
 export async function runBuild(patterns: readonly string[], opts: BuildOptions, io: BuildIo): Promise<ExitCode> {
-  if (opts.later.length > 0) {
-    fail(
-      io,
-      opts.json,
-      `${opts.later.map((o) => `--${o}`).join(", ")} is not available yet: it arrives in a later release`,
-    );
+  // `--serve` is a way of watching, and `--port` a way of serving (COMMANDS.md, G32)
+  if (opts.serve && !opts.watch) {
+    fail(io, opts.json, "--serve needs --watch");
     return EXIT.usage;
+  }
+  if (opts.port !== null) {
+    if (!opts.serve) {
+      fail(io, opts.json, "--port needs --serve");
+      return EXIT.usage;
+    }
+    if (!/^\d+$/.test(opts.port) || Number(opts.port) < 1 || Number(opts.port) > 65535) {
+      fail(io, opts.json, `--port ${opts.port} is not a port number (1 to 65535)`);
+      return EXIT.usage;
+    }
   }
   if (opts.seed !== null) {
     const problem = seedProblem(opts.seed);
@@ -542,6 +572,12 @@ export async function runBuild(patterns: readonly string[], opts: BuildOptions, 
     runtime,
     paperCss,
   };
+
+  if (opts.watch) {
+    // the watcher and the reload server load only for `--watch`: a plain build never reads them
+    const { runWatch } = await import("./build-watch");
+    return runWatch({ patterns, opts, io: io as WatchIo, items, context });
+  }
 
   const progress = !opts.json && !opts.plain && io.tty && jobCount > 1;
   let exit: ExitCode = EXIT.done;

@@ -21,7 +21,9 @@ const base: BuildOptions = {
   answerSheet: false,
   answers: null,
   materials: null,
-  later: [],
+  watch: false,
+  serve: false,
+  port: null,
   version: "1.0.0-test",
 };
 

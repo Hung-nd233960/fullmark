@@ -106,7 +106,9 @@ export async function runReplay(
     answerSheet: false,
     answers: null,
     materials: null,
-    later: [],
+    watch: false,
+    serve: false,
+    port: null,
     version: opts.version,
   };
   return runBuild(patterns, build, io);

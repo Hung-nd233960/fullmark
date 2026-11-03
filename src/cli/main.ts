@@ -163,7 +163,6 @@ export function buildProgram(outcome: Outcome = { exit: EXIT.done }, io: Io = te
       },
     );
 
-  const LATER = ["watch", "serve", "port"] as const;
   program
     .command("build")
     .description("check a quiz, then write it as one offline HTML page")
@@ -193,9 +192,9 @@ export function buildProgram(outcome: Outcome = { exit: EXIT.done }, io: Io = te
       "which fonts the page embeds: quiz (the quiz's own), all or none (default: fonts in config.toml, else quiz)",
     )
     .option("--plain", "no colours and no progress line, even in a terminal")
-    .option("--watch", "(not available yet)")
-    .option("--serve", "(not available yet)")
-    .option("--port <n>", "(not available yet)")
+    .option("--watch", "rebuild when the quiz, the files it uses or the build file change; Ctrl+C stops (exit 0)")
+    .option("--serve", "with --watch: serve the last good page on 127.0.0.1 and reload it after each rebuild")
+    .option("--port <n>", "with --serve: the port on 127.0.0.1 (default: a free one)")
     .action(async (files: string[], options: Record<string, unknown>) => {
       const opts: BuildOptions = {
         profile: (options.profile as string | undefined) ?? null,
@@ -213,9 +212,9 @@ export function buildProgram(outcome: Outcome = { exit: EXIT.done }, io: Io = te
         answerSheet: Boolean(options.answerSheet),
         answers: (options.answers as string | undefined) ?? null,
         materials: (options.materials as string | undefined) ?? null,
-        later: LATER.filter(
-          (name) => options[name.replace(/-(\w)/g, (_m, c: string) => c.toUpperCase())] !== undefined,
-        ),
+        watch: Boolean(options.watch),
+        serve: Boolean(options.serve),
+        port: (options.port as string | undefined) ?? null,
         fonts: (options.fonts as string | undefined) ?? null,
         version: VERSION,
       };
