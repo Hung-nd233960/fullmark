@@ -1,0 +1,3 @@
+quiz.md:1: warning build.answer-sheet-empty: no single-choice or true/false question for the answer sheet
+    fix: leave out --answer-sheet, or add a single-choice or true/false question
+quiz.md: wrote quiz-print.html

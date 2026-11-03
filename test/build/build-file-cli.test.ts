@@ -180,10 +180,10 @@ describe("build --build-file: refusals before anything is built", () => {
     expect(r.c.err.join("\n")).toContain("build.toml:1: the build file has no [[build]] entry");
   });
 
-  it("the keys that wait for the printed paper say so", async () => {
-    const r = await refused({ "build.toml": '[[build]]\nfiles = ["a.md"]\nprint = true\n', "a.md": quiz() });
+  it("the keys that wait for the key and the materials page say so", async () => {
+    const r = await refused({ "build.toml": '[[build]]\nfiles = ["a.md"]\nanswers = "key"\n', "a.md": quiz() });
     expect(r.code).toBe(2);
-    expect(r.c.err.join("\n")).toContain("build.toml:3: `print` is not available yet");
+    expect(r.c.err.join("\n")).toContain("build.toml:3: `answers` is not available yet");
     expect(r.html).toEqual([]);
   });
 

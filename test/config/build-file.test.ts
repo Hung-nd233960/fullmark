@@ -15,6 +15,9 @@ strict = true
 fonts = "none"
 ui-lang = "vi"
 built-at = "2026-10-24T09:00:00+07:00"
+print = true
+seed = 7
+answer-sheet = true
 `);
     expect(r.errors).toEqual([]);
     expect(r.entries).toEqual([
@@ -29,7 +32,42 @@ built-at = "2026-10-24T09:00:00+07:00"
         fonts: "none",
         uiLang: "vi",
         builtAt: "2026-10-24T09:00:00+07:00",
+        print: true,
+        seed: "7",
+        seedLine: 11,
+        answerSheet: true,
+        answerSheetLine: 12,
       },
+    ]);
+  });
+
+  it("reads `seed` as text or as a whole number's decimal digits, and refuses the rest", () => {
+    const seed = (value: string) => read(`[[build]]\nfiles = ["a.md"]\nprint = true\nseed = ${value}\n`);
+    expect(seed("101").entries[0]?.seed).toBe("101");
+    expect(seed("0").entries[0]?.seed).toBe("0");
+    expect(seed('"007"').entries[0]?.seed).toBe("007");
+    expect(seed('"Mid1"').entries[0]?.seed).toBe("Mid1");
+    expect(seed("-1").errors.map((e) => e.message)).toEqual(["`seed` must be text or a whole number, not number -1"]);
+    expect(seed("1.5").errors.map((e) => e.message)).toEqual(["`seed` must be text or a whole number, not number 1.5"]);
+    expect(seed("true").errors.map((e) => e.message)).toEqual([
+      "`seed` must be text or a whole number, not boolean true",
+    ]);
+    expect(seed('"too-long-seed"').errors.map((e) => e.message)).toEqual([
+      'seed "too-long-seed" must be 1 to 8 letters or digits',
+    ]);
+    expect(seed("123456789").errors.map((e) => e.message)).toEqual([
+      'seed "123456789" must be 1 to 8 letters or digits',
+    ]);
+    expect(read('[[build]]\nfiles = ["a.md"]\nprint = "yes"\n').errors.map((e) => e.message)).toEqual([
+      '`print` must be true or false, not string "yes"',
+    ]);
+  });
+
+  it("a top-level seed is each entry's default, and an entry's own wins", () => {
+    const r = read('seed = 1\nprint = true\n[[build]]\nfiles = ["a.md"]\n[[build]]\nfiles = ["b.md"]\nseed = 2\n');
+    expect(r.entries.map((e) => [e.seed, e.seedLine])).toEqual([
+      ["1", 1],
+      ["2", 7],
     ]);
   });
 
@@ -97,14 +135,14 @@ ui-lang = "en"
     );
   });
 
-  it("the keys that wait for the printed paper say so, with their line", () => {
-    for (const key of ["print", "answers", "seed", "materials"]) {
+  it("the keys that wait for the key and the materials page say so, with their line", () => {
+    for (const key of ["answers", "materials"]) {
       expect(errs(`[[build]]\nfiles = ["a.md"]\n${key} = "x"\n`)).toEqual([
         `3: \`${key}\` is not available yet: it arrives in a later release`,
       ]);
     }
-    expect(errs('print = true\n[[build]]\nfiles = ["a.md"]\n')).toEqual([
-      "1: `print` is not available yet: it arrives in a later release",
+    expect(errs('answers = "key"\n[[build]]\nfiles = ["a.md"]\n')).toEqual([
+      "1: `answers` is not available yet: it arrives in a later release",
     ]);
   });
 
@@ -112,7 +150,11 @@ ui-lang = "en"
     const r = read('[[build]]\nfiles = ["a.md"]\nbuilt_at = "x"\nzzz = 1\n');
     expect(r.errors.map((e) => [e.line, e.message, e.fix])).toEqual([
       [3, "unknown key `built_at`", "did you mean `built-at`?"],
-      [4, "unknown key `zzz`", "the keys are: out, profile, config, strict, fonts, ui-lang, built-at, files"],
+      [
+        4,
+        "unknown key `zzz`",
+        "the keys are: out, profile, config, strict, fonts, ui-lang, built-at, print, seed, answer-sheet, files",
+      ],
     ]);
     expect(errs('lang = "vi"\n[[build]]\nfiles = ["a.md"]\n')).toEqual(["1: unknown key `lang`"]);
   });

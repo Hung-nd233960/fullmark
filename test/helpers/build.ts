@@ -13,6 +13,9 @@ export const base: BuildOptions = {
   json: false,
   open: false,
   buildFile: null,
+  print: false,
+  seed: null,
+  answerSheet: false,
   later: [],
   version: "1.0.0-test",
 };

@@ -31,6 +31,10 @@ const TRY = {
   second: "a second, small quiz",
   replay:
     "quiz replay: the essay fixture's attempt, already submitted, with its grades file (criterion tables, the grader's line); try Retry missed, reload, and Continue your retry",
+  "paper-exam":
+    "quiz build --print --seed 101 --answer-sheet: the exam paper, every type, a part of long answers; print it or save as PDF (the footer and page breaks show there)",
+  "paper-mockup": "quiz build --print, no seed: the board's header, the marker's table, no paper code",
+  "paper-exam-vi": "the paper with --ui-lang vi: Mã đề, Câu 1., Phiếu trả lời",
   "vi-fonts": "built with --fonts all: Vietnamese text with stacked diacritics; Appearance > Font offers all four fonts; the Licences button lists their notices",
 };
 
@@ -57,6 +61,24 @@ for (const s of sources) {
     built.push(s);
   } catch (e) {
     console.error(`${s.file}: build failed\n${e.stderr?.toString() ?? e}`);
+    process.exitCode = 1;
+  }
+}
+
+// printed papers (`quiz build --print`): the file, the flags and the name
+const papers = [
+  { name: "paper-exam", file: join("test", "fixtures", "paper", "exam.md"), flags: ["--seed", "101", "--answer-sheet"] },
+  { name: "paper-mockup", file: join("test", "fixtures", "page", "mockup.md"), flags: [] },
+  { name: "paper-exam-vi", file: join("test", "fixtures", "paper", "exam.md"), flags: ["--seed", "102", "--ui-lang", "vi"] },
+];
+for (const p of papers) {
+  try {
+    execFileSync(process.execPath, [CLI, "build", p.file, "--print", ...p.flags, "-o", join(OUT, `${p.name}.html`)], {
+      stdio: "pipe",
+    });
+    built.push(p);
+  } catch (e) {
+    console.error(`${p.file}: paper failed\n${e.stderr?.toString() ?? e}`);
     process.exitCode = 1;
   }
 }
@@ -98,4 +120,4 @@ ${rows}
 </ul>
 `,
 );
-console.log(`samples: ${built.length} of ${sources.length + replays.length} pages in ${OUT}/ (open ${join(OUT, "index.html")})`);
+console.log(`samples: ${built.length} of ${sources.length + papers.length + replays.length} pages in ${OUT}/ (open ${join(OUT, "index.html")})`);
