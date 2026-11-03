@@ -12,7 +12,8 @@ As in step 2 ([STEP2.md](STEP2.md), Handoff): Opus writes a slice's full brief h
 
 | Slice | State | Commits |
 |---|---|---|
-| plan | approved: the gaps below G1 to G4, G6, G7, G9, G10 and G11 decided; G5, G8 and G12 open; the slice order and 3a's brief approved | this file |
+| plan | approved (2026-11-03): gaps G1 to G4, G6, G7, G9, G10 and G11 decided; G5, G8 and G12 open; the slice order and 3a's brief approved | this file |
+| 3a the one-shot server and `quiz serve` | with Sonnet | |
 
 Step 2 is closed (STEP2.md, item 75): every "Done when" criterion passes in Chromium and Firefox; Vitest 2059 of 2059, the 2 startup tests, Playwright and axe. What step 3 inherits:
 
