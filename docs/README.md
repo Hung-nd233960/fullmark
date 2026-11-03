@@ -15,7 +15,7 @@ The design of fullmark 1.0 (the TypeScript rewrite) and the plans it is built fr
 | [TECHNICAL_DESIGN.md](design/TECHNICAL_DESIGN.md) | How 1.0 is built: stack, IR, Plan and Attempt, rules and profiles, grading and rubrics, architecture and budgets, pages and themes, languages, library, testing, and the order of work (section 12) |
 | [COMMANDS.md](design/COMMANDS.md) | The command reference: every command's arguments, output, files and exit codes, and the conventions they share |
 | [QUIZ_SYNTAX.md](design/QUIZ_SYNTAX.md) | How a quiz is written in Markdown, with every field and every syntax rule. Settled |
-| [TODO.md](design/TODO.md) | Design gaps still to settle, grouped by the step that needs them, and small 0.x quirks to check |
+| [TODO.md](design/TODO.md) | Design gaps still to settle, grouped by the step that needs them |
 | [fullmark-migration.md](design/fullmark-migration.md) | Why 1.0 is a rewrite rather than a migration of 0.x, and the version plan |
 | [proposals/](design/proposals/) | Ideas outside v1. Each says its status and the v1 seam it relies on, if any; the list below, and with each seam in [USER_DESIGN.md, section 6](design/USER_DESIGN.md#6-what-fullmark-deliberately-does-not-do) |
 
@@ -26,8 +26,8 @@ The full table, with what each step contains and when it is done, is [TECHNICAL_
 | Step | Content | Plan |
 |---|---|---|
 | 0 | The quiz syntax, and 0.x's test data rewritten in it | done |
-| 1 | The core: parser, rules and profiles, grader and rubrics; `check`, `rules`, `grade`, `ids` | done: [plans/STEP1.md](plans/STEP1.md) |
-| 2 | `build`, the page runtime, themes and fonts, `replay`, the printable paper | done: [plans/STEP2.md](plans/STEP2.md) |
+| 1 | The core: parser, rules and profiles, grader and rubrics; `check`, `rules`, `grade`, `ids` | done, archived: [plans/archive/STEP1.md](plans/archive/STEP1.md) |
+| 2 | `build`, the page runtime, themes and fonts, `replay`, the printable paper | done, archived: [plans/archive/STEP2.md](plans/archive/STEP2.md) |
 | 3 | `serve`, `review`, `grade --web`, `brief`, `stats`, `inspect`, `new`, `template`, `build --watch` | in progress: [plans/STEP3.md](plans/STEP3.md). Built: `serve`, `inspect`, `new`, `template`, `stats`, `brief` (flags and `--tui`), `build --watch --serve`. Waiting for the form boards: `review`, `grade --web`, `brief --web` |
 | 4 | The library | not written yet |
 | 5 | `publish` and `import` | not written yet |
@@ -35,7 +35,7 @@ The full table, with what each step contains and when it is done, is [TECHNICAL_
 
 ## Plans (`plans/`)
 
-One file per step (`STEP1.md`, `STEP2.md` and so on), written when the step starts. Each is cut into slices small enough to hand to one agent and review before the next. A slice's brief is written in full before it is delegated; the Handoff at the top of the file keeps the current state. In `STEP3.md` each slice's section ends with its review, and every gap (G1, G2 and on) is in one numbered list; `STEP1.md` and `STEP2.md` keep their numbered logs.
+One file per step (`STEP1.md`, `STEP2.md` and so on), written when the step starts. Each is cut into slices small enough to hand to one agent and review before the next. A slice's brief is written in full before it is delegated; the Handoff at the top of the file keeps the current state. In `STEP3.md` each slice's section ends with its review, and every gap (G1, G2 and on) is in one numbered list; A closed step's plan moves to [plans/archive/](plans/archive/) with a short summary on top; `STEP1.md` and `STEP2.md` keep their numbered logs there, and code comments cite them by name and item ("STEP2.md, slice 2k").
 
 ## Screens and boards
 

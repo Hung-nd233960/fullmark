@@ -15,7 +15,7 @@ fullmark 1.0 is a TypeScript rewrite: Markdown quizzes in, one offline HTML page
 
 ## Rules
 
-The full list is under "Rules for every slice" in the plan (and STEP2.md's, which it extends). The ones most often broken:
+The full list is under "Rules for every slice" in the plan (and [docs/plans/archive/STEP2.md](docs/plans/archive/STEP2.md)'s, which it extends). The ones most often broken:
 
 - **Goldens are the contract.** Expected outputs are in `test/golden/`; `npm run golden:update` rewrites them. Never regenerate or revert a golden to hide a difference. Explain and count every one that changes.
 - **A failure is environmental only when its cause is shown.**
@@ -38,4 +38,4 @@ npm run build
 npm run check
 ```
 
-`npm run check` runs the typecheck, Biome, Vitest (the startup tests run alone first) and Playwright. In this cloud environment only Chromium is installed: run `npx playwright test --project=chromium`, and say that Firefox was not run. `npm run samples` builds the examples for the owner to try by hand. The CLI is `node dist/cli.js` after a build.
+`npm run check` runs the typecheck, Biome, Vitest (the startup tests run alone first) and Playwright. The cloud environment comes with Chromium; Firefox is there only when the environment's setup script installs it (`npx -y playwright@1.64.1 install --with-deps firefox`, with `cdn.playwright.dev` allowed). Check with `ls /opt/pw-browsers`; without Firefox, run `npx playwright test --project=chromium` and say that Firefox was not run. `npm run samples` builds the examples for the owner to try by hand. The CLI is `node dist/cli.js` after a build.

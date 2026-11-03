@@ -1,5 +1,7 @@
 # Step 1: the core
 
+> **Archived (2026-11-03).** Step 1 (the core: the parser, rules and profiles, the grader and rubrics; `check`, `rules`, `grade`, `ids`) is done. Its slices' briefs, reviews and the owner's decisions are kept below as they were; the decisions themselves live in `docs/design/`, which wins over anything here. The current plan is [STEP3.md](../STEP3.md).
+
 ## Handoff (2026-10-28): start here
 
 A new session picks up from this section alone; it needs no earlier chat.
@@ -51,9 +53,9 @@ The **printable paper** (`build --print`) was decided on 2026-10-28 and is in TE
 
 - **document-kit and presentation-kit** have one local commit each switching them to `fullmark-py` (`1d34d42`, `a148385`), not pushed; the owner still has to reinstall `doc` and `deck` (`uv tool install --reinstall <path>`, plus `--editable` if that is how they were installed).
 - **`D:\coding-projects\fullmark`** (the old checkout, branch `main`) holds someone's uncommitted edits to five docs files; leave them alone.
-- **Config path shared with 0.x:** see [TODO.md](../design/TODO.md).
+- **Config path shared with 0.x:** see [TODO.md](../../design/TODO.md).
 
-The plan for step 1 of the order of work ([TECHNICAL_DESIGN.md](../design/TECHNICAL_DESIGN.md), section 12). It is cut into slices so that each one can be handed to an agent, reviewed, and committed before the next starts. A slice's brief is written in full here before it is delegated; later slices stay outlines until then, so they can absorb what the earlier ones teach.
+The plan for step 1 of the order of work ([TECHNICAL_DESIGN.md](../../design/TECHNICAL_DESIGN.md), section 12). It is cut into slices so that each one can be handed to an agent, reviewed, and committed before the next starts. A slice's brief is written in full here before it is delegated; later slices stay outlines until then, so they can absorb what the earlier ones teach.
 
 ## Goal
 
@@ -65,7 +67,7 @@ The core of fullmark 1.0 and the commands that need no page: `check`, `rules`, `
 
 ## Rules for every slice
 
-- **Read first:** [QUIZ_SYNTAX.md](../design/QUIZ_SYNTAX.md), [TECHNICAL_DESIGN.md](../design/TECHNICAL_DESIGN.md) (sections 3, 4, 5, 6, 7, 9 and 11) and [COMMANDS.md](../design/COMMANDS.md) (Conventions, and the commands the slice touches). The design docs win over this plan; if they disagree or leave a gap, stop and report it rather than invent an answer.
+- **Read first:** [QUIZ_SYNTAX.md](../../design/QUIZ_SYNTAX.md), [TECHNICAL_DESIGN.md](../../design/TECHNICAL_DESIGN.md) (sections 3, 4, 5, 6, 7, 9 and 11) and [COMMANDS.md](../../design/COMMANDS.md) (Conventions, and the commands the slice touches). The design docs win over this plan; if they disagree or leave a gap, stop and report it rather than invent an answer.
 - **Stack:** TypeScript (strict), Node 22 or later (the machine runs 24), **npm** with a committed `package-lock.json`, tsup for the CLI bundle, vitest, Biome. Dependencies only from TECHNICAL_DESIGN.md section 3, pinned exactly; add one only when its slice needs it.
 - **Layout:** `src/` as in TECHNICAL_DESIGN.md section 7. `src/core` imports no `node:*` module and nothing from `library`; a test enforces it.
 - **Determinism:** no `Date.now()`, `Math.random()`, OS locale or `Intl` in `core`. Sorting uses a fixed comparison.
