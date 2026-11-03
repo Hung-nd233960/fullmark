@@ -67,6 +67,10 @@ const SERVED = [
     command: "node dist/cli.js serve examples/calculus/quiz.md --open --autosave samples/calculus-progress.json --out samples/calculus-results.json",
     try: "quiz serve --autosave: Start, answer a few questions, then press Ctrl+C in the terminal (or close the terminal). samples/calculus-progress.json holds the attempt in progress. Run the same command again and open the page: it offers Continue with your answers and the clock; Continue, finish and Submit: the progress file is deleted once samples/calculus-results.json is written. The browser's own storage is not used. Edit the quiz between the two runs and the second one exits 1, naming the two versions, and leaves the file alone.",
   },
+  {
+    command: "node dist/cli.js brief samples/brief-tui --tui",
+    try: "quiz brief --tui: asks every question in the terminal, in two steps (Quiz 1/2 style progress), with each question's help and each choice's hint. Purpose and scope start empty; a scope under four words is asked again with the example. The summary lists every answer and marks the defaults; pick Change on any line to go back (change the purpose and the defaults that follow it are refilled), then Write brief.yaml: samples/brief-tui/brief.yaml and an empty content/ are written. Ctrl+C at any step writes nothing and exits 2. Run it again: it exits 2 because brief.yaml exists. Pre-fill with flags (--scope \"...\" --language vi) and the form opens with them, in Vietnamese; the same answers through flags (quiz brief samples/brief-flags --purpose ... --scope ...) write the same bytes. With stdin from /dev/null it exits 2: --tui needs a terminal.",
+  },
 ];
 
 // extra `build` flags for a page
