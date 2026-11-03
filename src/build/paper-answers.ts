@@ -27,6 +27,8 @@ export type KeyContext = {
   /** the quiz's `partial` and the question's own, as the grader reads them */
   partial: boolean;
   t: PaperMessages;
+  /** the paper's language: a `vi` key writes a decimal with a comma, as points are written; absent: `en` */
+  lang?: "en" | "vi";
   /** "4 points" / "4 điểm" */
   points: (n: number) => string;
   /** plain text of a field's label (the label is Markdown) */
@@ -41,15 +43,19 @@ const clean = (x: number): string => String(Number.parseFloat(x.toFixed(10)));
 
 type NumberLike = { raw: string; tolerance: number; relTolerance: number | null };
 
-/** A number as the quiz states it, with its tolerance: "0.4 (± 0.001)", "5 (± 2%)". */
-function numberText(k: NumberLike, unit = ""): string {
+/** A decimal in the paper's format: "0.4" is "0,4" in `vi`; a fraction, an integer or text is left as written. */
+const inLang = (text: string, lang: "en" | "vi"): string =>
+  lang === "vi" && /^[+-]?\d*\.\d+(?:[eE][+-]?\d+)?$/.test(text) ? text.replace(".", ",") : text;
+
+/** A number as the quiz states it, with its tolerance: "0.4 (± 0.001)", "5 (± 2%)"; "0,4 (± 0,001)" in `vi`. */
+function numberText(k: NumberLike, lang: "en" | "vi", unit = ""): string {
   const tol =
     k.relTolerance !== null
-      ? ` (± ${clean(k.relTolerance * 100)}%)`
+      ? ` (± ${inLang(clean(k.relTolerance * 100), lang)}%)`
       : k.tolerance > 0
-        ? ` (± ${clean(k.tolerance)})`
+        ? ` (± ${inLang(clean(k.tolerance), lang)})`
         : "";
-  return `${k.raw}${tol}${unit === "" ? "" : ` ${unit}`}`;
+  return `${inLang(k.raw, lang)}${tol}${unit === "" ? "" : ` ${unit}`}`;
 }
 
 function textsOf(k: { accept: readonly string[]; patterns: readonly string[] }): string[] {
@@ -65,6 +71,7 @@ const positionOf = (order: readonly number[] | undefined, source: number): numbe
 
 export function keyAnswerOf(q: Question, ctx: KeyContext): KeyAnswer {
   const { t } = ctx;
+  const lang = ctx.lang ?? "en";
   const none = { note: null, sheet: null };
   if (!q.graded && q.type !== "essay" && q.type !== "code") {
     return { lines: [t.notMarked], parts: [], ...none };
@@ -94,7 +101,7 @@ export function keyAnswerOf(q: Question, ctx: KeyContext): KeyAnswer {
     case "numeric": {
       const values = q.key.values.map((_, i) => q.key.raw[i] ?? String(q.key.values[i]));
       const text = values
-        .map((raw) => numberText({ raw, tolerance: q.key.tolerance, relTolerance: q.key.relTolerance }))
+        .map((raw) => numberText({ raw, tolerance: q.key.tolerance, relTolerance: q.key.relTolerance }, lang))
         .join("; ");
       return { lines: [q.key.unit === "" ? text : `${text} ${q.key.unit}`], parts: values, ...none };
     }
@@ -102,7 +109,7 @@ export function keyAnswerOf(q: Question, ctx: KeyContext): KeyAnswer {
       const each = q.blanks.map((b) =>
         b.kind === "text"
           ? { text: b.answers.join(" / "), first: b.answers[0] ?? "" }
-          : { text: numberText({ raw: b.raw, tolerance: b.tolerance, relTolerance: null }), first: b.raw },
+          : { text: numberText({ raw: b.raw, tolerance: b.tolerance, relTolerance: null }, lang), first: b.raw },
       );
       return {
         lines: [each.map((b, i) => `(${i + 1}) ${b.text}`).join("; ")],
@@ -131,7 +138,7 @@ export function keyAnswerOf(q: Question, ctx: KeyContext): KeyAnswer {
           const key = f.key;
           const raw = key.values.map((_, i) => key.raw[i] ?? "");
           lines.push(
-            `${label}: ${raw.map((r) => numberText({ raw: r, tolerance: key.tolerance, relTolerance: key.relTolerance }, key.unit)).join(" / ")}${own(f)}`,
+            `${label}: ${raw.map((r) => numberText({ raw: r, tolerance: key.tolerance, relTolerance: key.relTolerance }, lang, key.unit)).join(" / ")}${own(f)}`,
           );
           parts.push(raw[0] ?? "");
         }

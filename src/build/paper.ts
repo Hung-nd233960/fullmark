@@ -129,6 +129,7 @@ export function buildPaper(built: BuildQuiz, options: PaperOptions): { html: str
       order: plan.optionOrder?.[q.id],
       partial: partialOf(quiz, ir),
       t,
+      lang,
       points: label,
       label: (s) => plain(md.inline(s)),
     });

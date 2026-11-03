@@ -113,10 +113,21 @@ describe("what a key prints per type", () => {
     keyAnswerOf(byId.get(id) as Question, {
       order: undefined,
       partial,
+      lang: t === paperVi ? "vi" : "en",
       t: t as typeof paperEn,
       points: (n) => `${n} points`,
       label: (s) => s,
     });
+
+  it("writes a number in the paper's format: a comma in vi, a point in en", () => {
+    expect(say("k-num").lines).toEqual(["0.4 (± 0.001) s"]);
+    expect(say("k-num", paperVi).lines).toEqual(["0,4 (± 0,001) s"]);
+    expect(say("k-rel", paperVi).lines).toEqual(["100 (± 5%)"]);
+    expect(say("k-blanks", paperVi).lines[0]).toContain("(2) 2 (± 0,5)");
+    expect(say("k-fields", paperVi).lines[0]).toContain("12 (± 0,5) dB");
+    // the parts a test reads back stay as written
+    expect(say("k-num", paperVi).parts).toEqual(["0.4"]);
+  });
 
   it("writes the answers as the quiz states them", () => {
     expect(say("k-single").lines).toEqual(["B"]);
