@@ -40,6 +40,10 @@ const TRY = {
     "quiz build --print --answers key on a quiz with three sheets: the header's Materials line, the materials page (tables, maths) after the last question, then the key",
   "paper-inline":
     "quiz build --print --answers inline: a study sheet, each answer, explanation, rubric and sample answer under its question; no name boxes",
+  ordered:
+    "type_order: by-quiz with shuffle_questions: reload with New attempt a few times; the questions shuffle, but single choice, true/false, short answers and essays always keep their places",
+  "paper-key-grouped":
+    "quiz build --print --seed 101 --answers key on a quiz with its own type_order: the key's other answers in groups (Essays, Short answers and numeric answers, Single choice, Other)",
   "paper-exam-vi": "the paper with --ui-lang vi: Mã đề, Câu 1., Phiếu trả lời",
   "vi-fonts": "built with --fonts all: Vietnamese text with stacked diacritics; Appearance > Font offers all four fonts; the Licences button lists their notices",
 };
@@ -75,6 +79,7 @@ for (const s of sources) {
 const papers = [
   { name: "paper-exam", file: join("test", "fixtures", "paper", "exam.md"), flags: ["--seed", "101", "--answer-sheet"] },
   { name: "paper-key", file: join("test", "fixtures", "paper", "exam.md"), flags: ["--seed", "101", "--answer-sheet", "--answers", "key"] },
+  { name: "paper-key-grouped", file: join("test", "fixtures", "paper", "grouped-custom.md"), flags: ["--seed", "101", "--answers", "key"] },
   { name: "paper-inline", file: join("test", "fixtures", "paper", "exam.md"), flags: ["--seed", "101", "--answers", "inline"] },
   { name: "paper-materials", file: join("test", "fixtures", "paper", "materials-quiz.md"), flags: ["--answers", "key"] },
   { name: "paper-mockup", file: join("test", "fixtures", "page", "mockup.md"), flags: [] },
