@@ -12,7 +12,7 @@ As in step 2 ([STEP2.md](STEP2.md), Handoff): Opus writes a slice's full brief h
 
 | Slice | State | Commits |
 |---|---|---|
-| plan | **drafted, waiting for the owner**: the gaps below (G1 to G12), the slice order, and 3a's brief | this file |
+| plan | **drafted, waiting for the owner**: the gaps below (G1 and G2 decided; G3 to G12 open), the slice order, and 3a's brief | this file |
 
 Step 2 is closed (STEP2.md, item 75): every "Done when" criterion passes in Chromium and Firefox; Vitest 2059 of 2059, the 2 startup tests, Playwright and axe. What step 3 inherits:
 
@@ -25,7 +25,7 @@ Step 2 is closed (STEP2.md, item 75): every "Done when" criterion passes in Chro
 
 ### Next steps, in order
 
-1. **The owner decides G1 to G12** (below). Each has a recommendation.
+1. **The owner decides G3 to G12** (below; G1 and G2 decided 2026-11-03). Each has a recommendation.
 2. **The owner approves the slice order** and 3a's brief (below). Then 3a with Sonnet.
 3. **Before 3e (the first form):** the owner draws the form boards on the Design canvas (G7), as 2v did for the page. 3a to 3d need no new design.
 
@@ -57,9 +57,7 @@ Step 2's rules hold ([STEP2.md](STEP2.md), "Rules for every slice"), including i
 
 The design docs leave these open. Each needs the owner's yes before the slice that depends on it; the recommendation is written so it can go into the docs as it stands.
 
-**G1. The `review-v1` format** (needed by 3e). COMMANDS.md says only "keep, fix or drop per question, with a reason". **Recommend:** `{format: "review", version: 1, quizId, quizHash, reviewedAt, questions: {<question id>: {verdict: "keep"|"fix"|"drop", reasons: [<reason id>], note, hash}}}`, keyed by question id, `hash` the question hash at the time of the verdict. Reasons are a fixed list with catalog labels (`key-wrong`, `unclear`, `too-easy`, `off-scope`, `duplicate`, `other`; for essays and code also `rubric-loose`, `points-misallocated`, `criterion-unclear`); `fix` and `drop` need at least one reason, `other` needs a note. **Merging into an existing file:** a question answered in this run replaces its entry; the others stay. **`--since R`:** asks about questions whose id is not in `R` or whose hash differs, and merges into `R` (so `--out` defaults to `R`).
-
-**G2. What `check --review` fails on** (3e). **Recommend:** two fixed rules, `review.fix` and `review.drop`: an error for every question marked `fix` or `drop` whose current hash still equals the review's `hash`. A question that changed or is gone passes. A `keep` is never a finding. A review for another quiz id is `review.other-quiz` (exit 2, like a usage error); a different `quizHash` is expected and fine. These join the rule catalogue (TECHNICAL_DESIGN.md section 5) and QUIZ_SYNTAX.md 8a's fixed rules.
+**G1. The `review-v1` format** and **G2. what `check --review` fails on**: **decided by the owner on 2026-11-03** and written into TECHNICAL_DESIGN.md section 4 ("`review-v1`", with the three rules) and section 5 (the catalogue row), and COMMANDS.md (`quiz check --review`, `quiz review`'s form). In short: entries keyed by question id with the question hash and, for fix and drop, the question's source; the nine reasons shown per verdict as chips after Keep, Fix or Drop is chosen; **The rest is fine** and the Finish dialog record Keep with `assumed`; `review.fix` passes once the question changed or is gone, `review.drop` only once it is gone, `review.unconfirmed` warns on a changed fix until `review --since` judges it again, and `--since` shows the earlier verdict and a diff. Keyboard keys wait for the form board (3v).
 
 **G3. Questions without ids in `review`, `stats` and `grade --web`** (3d, 3e). Reviews and history follow questions by id. **Recommend:** `review` refuses a quiz with a question without an id (exit 1, "run `quiz ids FILE` first"), so a verdict is never lost; COMMANDS.md's exit list for `review` gains `1` (also for check errors, as `serve` has). `stats` matches questions across versions by id, and by question hash for those without one (counted per version, marked "no id" in the output).
 
@@ -90,7 +88,7 @@ The design docs leave these open. Each needs the owner's yes before the slice th
 | **3c** | `inspect` (with `--review` waiting for 3e), `new TEMPLATE`, `new --from [--skeleton]`, `template list/add/rm`, the built-in templates | G4, G8 |
 | **3d** | `stats`: `src/core/stats/` (per question, per tag, per criterion, across versions), the survey table, human and `--json` | G3, G8 |
 | **3v** | The owner's form boards (G7); no code | G7 |
-| **3e** | `review`: `review-v1` in `ir.ts` and its JSON Schema, the form, merge and `--since`; `check --review` with `review.fix` and `review.drop`; `inspect --review` | G1, G2, G3, boards |
+| **3e** | `review`: `review-v1` in `ir.ts` and its JSON Schema, the form (verdict, then reasons; The rest is fine; the Finish dialog), merge, `--since` with the diff; `check --review` with `review.fix`, `review.drop` and `review.unconfirmed`; `inspect --review` | G1, G2, G3, boards |
 | **3f** | `grade --web` and `--name`: the grading form on the rubric modes, pre-filled from `--grades`, `kind: human` and `reviewed`, then the report | boards |
 | **3g** | `brief` through flags: the question file, every option, defaults written with `decided_by`, `brief.vague`, exit 3 and `needs_input`, `--accept-defaults`, `--json`, `content/` | G11 |
 | **3h** | `brief --web`: the form from the question file, the detail rules, the summary screen, `--language` for the form | G11, boards |

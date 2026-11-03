@@ -107,7 +107,7 @@ Validates a quiz under one profile. Reports every issue with a level, a rule id,
 | `--profile P` | Check under this profile. Default: the quiz's `profile:` (`survey` for a `kind: survey` quiz that names none), then the brief's, then `[check] profile`, then `default` |
 | `--config TOML` | This config file instead of the nearest `fullmark.toml` |
 | `--strict` | Warnings count as errors (sets `fail-on = "warning"` for this run) |
-| `--review REVIEW` | Also fail until every question flagged *fix* or *drop* in this `review.json` has changed or gone. One quiz only |
+| `--review REVIEW` | Also fail until every question flagged *fix* has changed or gone and every question flagged *drop* is gone (`review.fix`, `review.drop`); a changed *fix* warns `review.unconfirmed` until the learner judges it again with `review --since`. A review of another quiz exits 2. One quiz only. See [TECHNICAL_DESIGN.md](TECHNICAL_DESIGN.md), section 4, "`review-v1`" |
 | `--json` | `{"status", "profile", "config": [paths], "errors", "warnings", "issues": [{"rule", "level", "file", "line", "message", "fix"}], "ignored": [{"rule", "line", "because"}]}` |
 
 Exit: `0` no errors, `1` errors (or warnings with `--strict` or `fail-on = "warning"`), or an unknown profile named in the quiz (`profile.unknown`); `2` file not found, malformed config (with `file:line`), or unknown `--profile` (a plain message naming the known profiles).
@@ -244,7 +244,16 @@ quiz review FILE [--out REVIEW] [--since REVIEW] [--open]
                  [--timeout SECONDS] [--port N] [--json]
 ```
 
-A form where the learner judges every question: keep, fix or drop, with a reason (such as "the answer key is wrong"; for essays and code also "rubric too loose", "points misallocated" or "criterion unclear"). Rubrics are shown with their points. **Finish** writes `review.json`. Then `quiz check FILE --review review.json` fails until the flagged questions are fixed.
+A form where the learner judges every question: keep, fix or drop, with a reason (such as "the answer key is wrong"; for essays and code also "rubric too loose", "points misallocated" or "criterion unclear"). Rubrics are shown with their points. **Finish** writes `review.json` ([TECHNICAL_DESIGN.md](TECHNICAL_DESIGN.md), section 4, "`review-v1`"). Then `quiz check FILE --review review.json` fails until every *fix* question has changed and every *drop* question is gone.
+
+**The form** (owner, 2026-11-03; the look is drawn in step 3's form board):
+
+- **Verdict first.** Each question, rendered as on the page, has three buttons: **Keep**, **Fix**, **Drop**. Keep needs nothing more.
+- **Reasons only after Fix or Drop**, as chips for that verdict: Fix shows *Answer key wrong*, *Unclear*, *Other*, and on essays and code also *Rubric too loose*, *Points misallocated*, *Criterion unclear*; Drop shows *Duplicate*, *Off scope*, *Too easy*, *Other*. At least one is required; a note box opens with them, required with *Other*.
+- **The rest is fine.** A button in the form's bar marks every question not yet judged as Keep (recorded with `assumed`) and finishes, after saying how many.
+- **Finish with questions not judged** asks first: "N questions not judged", with **Go back** (to the first one) and **Mark them Keep and finish**.
+- **With `--since`**, each question asked again shows the learner's earlier verdict, reasons and note, and a diff of the question against the version judged.
+- Keyboard keys wait for the board.
 
 | Argument or option | Meaning |
 |---|---|

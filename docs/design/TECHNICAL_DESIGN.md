@@ -133,6 +133,43 @@ An essay's word count is not stored: the grader counts it.
 
 **The exported file** is named `<quiz id>-results-YYYYMMDD-HHMMSS.json`, the stamp in the learner's local time (decided 2026-10-28).
 
+### `review-v1`
+
+The learner's verdict on each question, written only by `quiz review` (an agent never writes it; USER_DESIGN.md). Decided by the owner on 2026-11-03 (STEP3.md, G1 and G2).
+
+```ts
+type Review = {
+  format: "review"; version: 1;
+  quizId: string;
+  quizHash: string;                 // the version last reviewed; another version is expected and fine
+  reviewedAt: string;               // ISO, local offset, of the last Finish
+  questions: Record<QuestionId, {
+    verdict: "keep" | "fix" | "drop";
+    reasons: ReasonId[];            // empty for keep; at least one for fix and drop
+    note: string;                   // required with "other", else may be empty
+    hash: string;                   // the question hash when judged (foundation 1)
+    source?: string;                // fix and drop only: the question's block as judged, for the diff in --since
+    assumed?: true;                 // kept by "The rest is fine" or the Finish dialog, not judged one by one
+  }>;
+};
+```
+
+- **Keyed by question id**, so a verdict follows a question when it moves or others are added. The question hash leaves the id out, so adding an id or moving a question is not a change; any edit to the block is.
+- **Reasons** are fixed ids with catalog labels in `en` and `vi`. For `fix`: `key-wrong`, `unclear`, `other`; on essays and code also `rubric-loose`, `points-misallocated`, `criterion-unclear`. For `drop`: `duplicate`, `off-scope`, `too-easy`, `other`. A reason given with the wrong verdict or type is invalid.
+- **Merging.** A question judged in a run replaces its entry; every other entry stays. Entries for questions no longer in the quiz stay too, as history; `check` ignores them.
+- **`assumed`** is set only by **The rest is fine** and by the Finish dialog's **Mark them Keep and finish**. It changes nothing in `check` or `--since` today; it records that the learner did not look. Judging that question later replaces the entry and drops the marker.
+- **`source`** is the question's normalised block, as hashed, so `review --since` can show the learner's earlier reason and note beside a diff of what changed.
+
+**What `check --review` can prove.** That every flagged question was changed or removed, never that it was fixed: whether the new key is right is the learner's call. So a changed `fix` question passes, with the warning `review.unconfirmed` until a later `review --since` judges it again, and the loop closes in the learner's hands.
+
+| Rule | Kind | Finding when |
+|---|---|---|
+| `review.fix` | fixed (error) | a question marked `fix` is unchanged: its current hash equals the entry's `hash`. Changed or removed passes |
+| `review.drop` | fixed (error) | a question marked `drop` is still in the quiz, changed or not. Only removing it passes |
+| `review.unconfirmed` | quality (warning) | a question marked `fix` has changed since the verdict and has not been judged again |
+
+A `keep` is never a finding. A review whose `quizId` is another quiz's exits 2 before checking.
+
 ### Rules
 
 ```ts
@@ -177,6 +214,7 @@ Quality rules carried over from 0.x, now with ids and options. Their defaults st
 | `questions.type-order` | warning | Silent unless the quiz declares `type_order`: the first question out of the declared order, one finding per section for `by-section` and one for the quiz for `by-quiz`; an ignored question lets the next break show. Option `require` (`by-section` or `by-quiz`, no default): a quiz that declares less gets one finding at its `type_order` line, or its front matter; `by-quiz` satisfies `by-section`. A profile cannot set the order itself: the page and the paper follow the quiz (2k3, owner 2026-11-03) |
 | `build.answer-sheet-empty` | warning | Checked by `build --print --answer-sheet`: the paper has no `single` or `truefalse` question, so no grid is printed (section 8, "Printable paper"). Registered in 2k2 (owner, 2026-11-03) |
 | `materials.empty` | warning | (a `materials` sheet with nothing after its heading; the fixed rules `materials.missing`, `materials.heading` and `materials.question` are in QUIZ_SYNTAX.md) |
+| `review.unconfirmed` | warning | Only with `check --review`: a `fix` question that changed and waits for the learner's `review --since`. The fixed rules `review.fix` and `review.drop` are in section 4, "`review-v1`" |
 
 New quality rules, off in `default` so behaviour does not change, and used by the stricter built-in profiles:
 
