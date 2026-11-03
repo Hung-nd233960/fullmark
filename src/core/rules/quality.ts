@@ -425,6 +425,73 @@ export const QUALITY_RULES: QualityRule[] = [
       return out;
     },
   }),
+  rule({
+    id: "questions.type-order",
+    level: "warning",
+    summary: "the questions are not in the order of types the quiz declares, or the profile asks for a declared order",
+    why: "Questions of one kind together are easier to answer and to mark; a quiz that declares its order is held to it, and a profile can insist that every quiz declares one.",
+    example: file(
+      "## True? {type=truefalse id=a}\n\n```answer\nvalue: true\n```\n\n## Pick one. {type=single id=b}\n\n- [x] a\n- [ ] b",
+      "title: Example\ntype_order: by-section",
+    ),
+    fix: "move the question, or change `type_order`",
+    options: z.object({ require: z.enum(["by-section", "by-quiz"]).optional() }).strict(),
+    run(quiz, _ctx, o) {
+      const fm = quiz.frontMatter;
+      const out: Finding[] = [];
+      const need = o.require as "by-section" | "by-quiz" | undefined;
+      if (need !== undefined && !(fm.typeOrder === need || (need === "by-section" && fm.typeOrder === "by-quiz"))) {
+        const declares = fm.typeOrder === "none" ? "none" : `\`${fm.typeOrder}\``;
+        out.push({
+          line: fm.keyLines.type_order ?? 1,
+          message: `this profile requires \`type_order: ${need}\`; the quiz declares ${declares}`,
+          fix:
+            fm.keyLines.type_order === undefined
+              ? `add \`type_order: ${need}\` to the front matter`
+              : `change \`type_order\` to \`${need}\``,
+        });
+      }
+      if (fm.typeOrder === "none") return out;
+      const groups = fm.typeOrderGroups;
+      const groupOf = (t: string): number => groups.findIndex((g) => g.includes(t));
+      const order = groups
+        .map((g) => (g.length > 1 ? `${g.slice(0, -1).join(", ")} or ${g.at(-1)}` : (g[0] ?? "")))
+        .join(", ");
+      let number = 0;
+      let top = -1; // the highest group reached so far, and the type of the last question in it
+      let topType = "";
+      const scan = (list: readonly Question[], reset: boolean) => {
+        let found = false;
+        if (reset) top = -1;
+        for (const q of list) {
+          number++;
+          const g = groupOf(q.type);
+          if (g < 0 || found) continue;
+          // a question that ignores this rule is accepted where it stands: it neither reports nor moves the mark
+          if (g < top) {
+            if (q.ignore?.rules.includes("questions.type-order")) continue;
+            found = true;
+            out.push({
+              line: q.line,
+              message: `Question ${number} (${q.type}) comes after a ${topType} question; this quiz's order is ${order}`,
+              fix: "move it, or change `type_order`",
+            });
+          } else {
+            top = g;
+            topType = q.type;
+          }
+        }
+        return found;
+      };
+      if (fm.typeOrder === "by-section") for (const s of quiz.sections) scan(s.questions, true);
+      else
+        scan(
+          quiz.sections.flatMap((s) => s.questions),
+          true,
+        );
+      return out;
+    },
+  }),
 ];
 
 export type { RuleContext };

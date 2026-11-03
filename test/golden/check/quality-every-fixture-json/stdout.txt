@@ -18,6 +18,8 @@
 {"status":"ok","file":"quality/question.points-ignored.ok.md","profile":"default","config":[],"errors":0,"warnings":0,"issues":[],"ignored":[]}
 {"status":"ok","file":"quality/question.untagged.md","profile":"default","config":[],"errors":0,"warnings":0,"issues":[],"ignored":[]}
 {"status":"ok","file":"quality/question.untagged.ok.md","profile":"default","config":[],"errors":0,"warnings":0,"issues":[],"ignored":[]}
+{"status":"ok","file":"quality/questions.type-order.md","profile":"default","config":[],"errors":0,"warnings":1,"issues":[{"rule":"questions.type-order","level":"warning","file":"quality/questions.type-order.md","line":12,"message":"Question 2 (single) comes after a truefalse question; this quiz's order is single or multi, truefalse, matching or ordering, blanks, short, numeric or fields, code, essay","fix":"move it, or change `type_order`"}],"ignored":[]}
+{"status":"ok","file":"quality/questions.type-order.ok.md","profile":"default","config":[],"errors":0,"warnings":0,"issues":[],"ignored":[]}
 {"status":"ok","file":"quality/quiz.no-time-limit.md","profile":"default","config":[],"errors":0,"warnings":0,"issues":[],"ignored":[]}
 {"status":"ok","file":"quality/quiz.no-time-limit.ok.md","profile":"default","config":[],"errors":0,"warnings":0,"issues":[],"ignored":[]}
 {"status":"ok","file":"quality/rubric.missing.md","profile":"default","config":[],"errors":0,"warnings":1,"issues":[{"rule":"rubric.missing","level":"warning","file":"quality/rubric.missing.md","line":5,"message":"the question has no rubric","fix":"add a `rubric:` to the answer block"}],"ignored":[]}
@@ -26,4 +28,4 @@
 {"status":"ok","file":"quality/rubric.points-in-text.ok.md","profile":"default","config":[],"errors":0,"warnings":1,"issues":[{"rule":"rubric.thin","level":"warning","file":"quality/rubric.points-in-text.ok.md","line":8,"message":"the rubric has 2 criteria; at least 3 are expected","fix":"split the rubric into more things a grader can check"}],"ignored":[]}
 {"status":"ok","file":"quality/rubric.thin.md","profile":"default","config":[],"errors":0,"warnings":1,"issues":[{"rule":"rubric.thin","level":"warning","file":"quality/rubric.thin.md","line":8,"message":"the rubric has 1 criterion; at least 3 are expected","fix":"split the rubric into more things a grader can check"}],"ignored":[]}
 {"status":"ok","file":"quality/rubric.thin.ok.md","profile":"default","config":[],"errors":0,"warnings":0,"issues":[],"ignored":[]}
-{"status":"done","ok":28,"failed":0}
+{"status":"done","ok":30,"failed":0}

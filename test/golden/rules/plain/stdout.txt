@@ -81,6 +81,7 @@ rubric.missing            quality  warning  a graded essay or code question has 
 rubric.thin               quality  warning  a rubric has too few criteria to grade from
                           options: min=3
 rubric.points-in-text     quality  warning  a holistic rubric bullet carries points, which nothing adds up
+questions.type-order      quality  warning  the questions are not in the order of types the quiz declares, or the profile asks for a declared order
 brief.count               quality  warning  the number of questions is far from the brief's
                           options: tolerance=0.2
 brief.mix                 quality  warning  the quiz has no question of a kind the brief asks for

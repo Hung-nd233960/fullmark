@@ -81,6 +81,7 @@ rubric.missing            quality  info     a graded essay or code question has 
 rubric.thin               quality  info     a rubric has too few criteria to grade from  [profile draft]
                           options: min=3
 rubric.points-in-text     quality  info     a holistic rubric bullet carries points, which nothing adds up  [profile draft]
+questions.type-order      quality  info     the questions are not in the order of types the quiz declares, or the profile asks for a declared order  [profile draft]
 brief.count               quality  info     the number of questions is far from the brief's  [profile draft]
                           options: tolerance=0.2
 brief.mix                 quality  info     the quiz has no question of a kind the brief asks for  [profile draft]

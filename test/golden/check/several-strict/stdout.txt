@@ -58,6 +58,12 @@ quality/question.untagged.md: profile default (built-in) from the default; confi
 quality/question.untagged.md: 0 errors, 0 warnings
 quality/question.untagged.ok.md: profile default (built-in) from the default; config: none
 quality/question.untagged.ok.md: 0 errors, 0 warnings
+quality/questions.type-order.md: profile default (built-in) from the default; config: none
+quality/questions.type-order.md:12: warning questions.type-order: Question 2 (single) comes after a truefalse question; this quiz's order is single or multi, truefalse, matching or ordering, blanks, short, numeric or fields, code, essay
+    fix: move it, or change `type_order`
+quality/questions.type-order.md: 0 errors, 1 warning
+quality/questions.type-order.ok.md: profile default (built-in) from the default; config: none
+quality/questions.type-order.ok.md: 0 errors, 0 warnings
 quality/quiz.no-time-limit.md: profile default (built-in) from the default; config: none
 quality/quiz.no-time-limit.md: 0 errors, 0 warnings
 quality/quiz.no-time-limit.ok.md: profile default (built-in) from the default; config: none
@@ -84,4 +90,4 @@ quality/rubric.thin.md:8: warning rubric.thin: the rubric has 1 criterion; at le
 quality/rubric.thin.md: 0 errors, 1 warning
 quality/rubric.thin.ok.md: profile default (built-in) from the default; config: none
 quality/rubric.thin.ok.md: 0 errors, 0 warnings
-15 done, 13 failed
+16 done, 14 failed

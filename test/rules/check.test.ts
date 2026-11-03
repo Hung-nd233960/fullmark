@@ -52,6 +52,7 @@ describe("quality rules under each built-in profile", () => {
     "rubric.missing": ["warning", "info", "error", "warning"],
     "rubric.thin": ["warning", "info", "error", "warning"],
     "rubric.points-in-text": ["warning", "info", "error", "warning"],
+    "questions.type-order": ["warning", "info", "error", "warning"],
   };
   const profiles = ["default", "draft", "exam", "survey"];
 
@@ -265,4 +266,42 @@ describe("the ignore.invalid fixtures", () => {
       expect(check(text).issues.map((i) => [i.rule, i.line])).toEqual([["ignore.invalid", 5]]);
     });
   }
+});
+
+describe("questions.type-order through a profile and check-ignore", () => {
+  const layers = layersOf(`
+[profiles.department-exam]
+extends = "exam"
+rules."questions.type-order" = { level = "error", require = "by-section" }
+`);
+  const T = (extra = "") => `## T {type=truefalse id=t${extra}}\n\n\`\`\`answer\nvalue: true\n\`\`\`\n`;
+  const S = "## S {type=single id=s}\n\n- [x] a\n- [ ] b\n";
+  const text = (front: string, ...parts: string[]) => `---\ntitle: T\n${front}\n---\n\n${parts.join("\n")}\n`;
+
+  it("a department profile requires a declared order, as an error", () => {
+    const issues = check(text("", S), "department-exam", layers).issues.filter(
+      (i) => i.rule === "questions.type-order",
+    );
+    expect(issues).toHaveLength(1);
+    expect(issues[0]).toMatchObject({ level: "error", line: 1 });
+    expect(check(text("type_order: by-section", S), "department-exam", layers).issues.map((i) => i.rule)).not.toContain(
+      "questions.type-order",
+    );
+  });
+
+  it("a quiz out of its order is found, and an ignore hides it and is reported", () => {
+    const bad = check(text("type_order: by-section", T(), S));
+    const found = bad.issues.filter((i) => i.rule === "questions.type-order");
+    expect(found).toHaveLength(1);
+    expect(found[0]).toMatchObject({ level: "warning", line: 12 });
+    const ig = check(
+      text(
+        "type_order: by-section",
+        T(),
+        S.replace("id=s}", 'id=s check-ignore="questions.type-order" because="the quiz is a story"}'),
+      ),
+    );
+    expect(ig.issues.filter((i) => i.rule === "questions.type-order")).toEqual([]);
+    expect(ig.ignored.map((i) => i.rule)).toEqual(["questions.type-order"]);
+  });
 });

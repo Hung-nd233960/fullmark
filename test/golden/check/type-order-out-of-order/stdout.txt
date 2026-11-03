@@ -1,0 +1,4 @@
+profile default (built-in) from the default; config: none
+quiz.md:12: warning questions.type-order: Question 2 (single) comes after a truefalse question; this quiz's order is single or multi, truefalse, matching or ordering, blanks, short, numeric or fields, code, essay
+    fix: move it, or change `type_order`
+quiz.md: 0 errors, 1 warning

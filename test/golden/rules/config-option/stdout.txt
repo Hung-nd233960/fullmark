@@ -81,6 +81,7 @@ rubric.missing            quality  error    a graded essay or code question has 
 rubric.thin               quality  error    a rubric has too few criteria to grade from
                           options: min=3
 rubric.points-in-text     quality  error    a holistic rubric bullet carries points, which nothing adds up
+questions.type-order      quality  error    the questions are not in the order of types the quiz declares, or the profile asks for a declared order
 brief.count               quality  error    the number of questions is far from the brief's
                           options: tolerance=0.1
 brief.mix                 quality  error    the quiz has no question of a kind the brief asks for
