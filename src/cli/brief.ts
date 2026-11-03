@@ -149,11 +149,6 @@ export async function runBrief(
     fail(io, json, "--accept-defaults cannot be used with --tui: the person at the terminal answers");
     return EXIT.usage;
   }
-  const streams: TuiStreams = io.tui ?? { input: process.stdin, output: process.stderr };
-  if (opts.tui && !((streams.input as { isTTY?: boolean }).isTTY && (streams.output as { isTTY?: boolean }).isTTY)) {
-    fail(io, json, "--tui needs an interactive terminal: use --web, or give the answers as flags");
-    return EXIT.usage;
-  }
 
   let questions: QuestionFile;
   try {
@@ -214,6 +209,13 @@ export async function runBrief(
   if (existsSync(target)) {
     const shown = shownPath(target, io.cwd);
     fail(io, json, `${shown} already exists: edit it, or delete it to start again`);
+    return EXIT.usage;
+  }
+
+  // -- the terminal is checked last (G26): an agent that prepares a form learns of its own mistakes first
+  const streams: TuiStreams = io.tui ?? { input: process.stdin, output: process.stderr };
+  if (opts.tui && !((streams.input as { isTTY?: boolean }).isTTY && (streams.output as { isTTY?: boolean }).isTTY)) {
+    fail(io, json, "--tui needs an interactive terminal: use --web, or give the answers as flags");
     return EXIT.usage;
   }
 

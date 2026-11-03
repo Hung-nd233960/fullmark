@@ -1,0 +1,1 @@
+--purpose must be one of: self-study, exam-prep, classmates, survey, not "exam"

@@ -69,13 +69,36 @@ export type FormContext = {
   signal: AbortSignal;
 };
 
+/** The width the form draws at when the output reports none (G29). */
+export const FALLBACK_COLUMNS = 80;
+
+/**
+ * Under `script(1)`, and on some serial consoles, the width starts at 0 and clack would draw one character per line.
+ * An output that reports no usable width is seen through a proxy that says 80; a real width is left alone.
+ */
+export function withWidth(output: Writable): Writable {
+  const columns = (output as { columns?: unknown }).columns;
+  if (typeof columns === "number" && columns > 0) return output;
+  return new Proxy(output, {
+    get(target, key) {
+      if (key === "columns") {
+        const now = (target as { columns?: unknown }).columns;
+        return typeof now === "number" && now > 0 ? now : FALLBACK_COLUMNS;
+      }
+      const value = Reflect.get(target, key, target);
+      return typeof value === "function" ? value.bind(target) : value;
+    },
+    has: (target, key) => key === "columns" || Reflect.has(target, key),
+  });
+}
+
 /** What the person answered as `Given`, or "cancelled" when they pressed Ctrl+C at any step. Writes nothing. */
 export async function askForm(ctx: FormContext): Promise<Given | "cancelled"> {
   // loaded here and nowhere else: `check` and `brief` through flags never load the prompts
   const clack = await import("@clack/prompts");
   const { questions, lang } = ctx;
   const t = UI[lang];
-  const common = { input: ctx.input, output: ctx.output, signal: ctx.signal };
+  const common = { input: ctx.input, output: withWidth(ctx.output), signal: ctx.signal };
   const q = (key: string): Question => questionOf(questions, key);
   const sameValue = (a: QuestionValue, b: QuestionValue): boolean => JSON.stringify(a) === JSON.stringify(b);
 

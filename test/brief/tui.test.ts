@@ -306,6 +306,49 @@ describe("quiz brief --tui: the exits", () => {
     expect(r.text).toBeNull();
   });
 
+  it("G26: a bad flag wins over a missing terminal, and an existing brief.yaml too", async () => {
+    const plain = { input: new PassThrough(), output: new PassThrough() };
+    const bad = tree();
+    const a = capture(bad);
+    expect(await runBrief("d", { ...NONE, tui: true, purpose: "exam" }, { ...a.io, tui: plain })).toBe(2);
+    expect(JSON.parse(a.out[0] as string).message).toContain('"exam"');
+    expect(JSON.parse(a.out[0] as string).message).not.toContain("interactive terminal");
+    const old = tree({ "d/brief.yaml": "old" });
+    const b = capture(old);
+    expect(await runBrief("d", { ...NONE, tui: true }, { ...b.io, tui: plain })).toBe(2);
+    expect(JSON.parse(b.out[0] as string).message).toContain("already exists");
+  });
+
+  it("G29: an output that reports 0 columns, or none, is drawn at 80", async () => {
+    const { withWidth } = await import("../../src/cli/brief-tui");
+    const zero = fakeTerminal([]);
+    zero.output.columns = 0;
+    expect((withWidth(zero.output) as { columns: number }).columns).toBe(80);
+    const none = fakeTerminal([]);
+    (none.output as { columns?: number }).columns = undefined;
+    expect((withWidth(none.output) as { columns: number }).columns).toBe(80);
+    const real = fakeTerminal([]);
+    expect(withWidth(real.output)).toBe(real.output);
+    // and the form, run on a 0-column stream, still draws its steps on lines of their own
+    const term = fakeTerminal([]);
+    term.output.columns = 0;
+    const controller = new AbortController();
+    controller.abort();
+    const { askForm } = await import("../../src/cli/brief-tui");
+    await askForm({
+      questions,
+      lang: "en",
+      prefill: {},
+      overridesOf: () => ({}),
+      profileProblem: () => null,
+      input: term.input,
+      output: term.output,
+      signal: controller.signal,
+    });
+    // clack at width 0 draws one character per line; at 80 the intro line is whole
+    expect(term.drawn()).toMatch(/[A-Za-z]{6,}/);
+  });
+
   it("--accept-defaults and --web with --tui exit 2", async () => {
     for (const opts of [{ acceptDefaults: true }, { web: true }]) {
       const r = await viaForm(walk({}), {}, {}, opts);
