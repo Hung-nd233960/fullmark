@@ -1,0 +1,9 @@
+build
+exam.md
+--print
+--seed
+101
+--answers
+inline
+--built-at
+2026-10-28T10:00:00+07:00

@@ -37,6 +37,10 @@ answer-sheet = true
         seedLine: 11,
         answerSheet: true,
         answerSheetLine: 12,
+        answers: null,
+        answersLine: 1,
+        materials: null,
+        materialsLine: 1,
       },
     ]);
   });
@@ -135,15 +139,15 @@ ui-lang = "en"
     );
   });
 
-  it("the keys that wait for the key and the materials page say so, with their line", () => {
-    for (const key of ["answers", "materials"]) {
-      expect(errs(`[[build]]\nfiles = ["a.md"]\n${key} = "x"\n`)).toEqual([
-        `3: \`${key}\` is not available yet: it arrives in a later release`,
-      ]);
-    }
-    expect(errs('answers = "key"\n[[build]]\nfiles = ["a.md"]\n')).toEqual([
-      "1: `answers` is not available yet: it arrives in a later release",
+  it("answers takes none, key or inline and materials takes none, with their line", () => {
+    expect(errs('[[build]]\nfiles = ["a.md"]\nanswers = "x"\n')).toEqual([
+      "3: answers x is not one of none, key, inline",
     ]);
+    expect(errs('[[build]]\nfiles = ["a.md"]\nmaterials = "x"\n')).toEqual(["3: materials x is not none"]);
+    expect(errs('[[build]]\nfiles = ["a.md"]\nanswers = 3\n')[0]).toContain(
+      "`answers` must be one of none, key, inline",
+    );
+    expect(errs('answers = "key"\nmaterials = "none"\n[[build]]\nfiles = ["a.md"]\n')).toEqual([]);
   });
 
   it("an unknown key is refused with a suggestion when one is close", () => {
@@ -153,7 +157,7 @@ ui-lang = "en"
       [
         4,
         "unknown key `zzz`",
-        "the keys are: out, profile, config, strict, fonts, ui-lang, built-at, print, seed, answer-sheet, files",
+        "the keys are: out, profile, config, strict, fonts, ui-lang, built-at, print, seed, answer-sheet, answers, materials, files",
       ],
     ]);
     expect(errs('lang = "vi"\n[[build]]\nfiles = ["a.md"]\n')).toEqual(["1: unknown key `lang`"]);

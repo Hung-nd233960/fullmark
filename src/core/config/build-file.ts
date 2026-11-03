@@ -26,9 +26,9 @@ export const BUILD_FILE_KEYS = [
   "print",
   "seed",
   "answer-sheet",
+  "answers",
+  "materials",
 ] as const;
-/** The key and the materials page of the printed paper arrive in a later release; the keys are known and refused until then. */
-const LATER_KEYS = ["answers", "materials"] as const;
 /** Flags about one run, not about what to build. */
 const RUN_KEYS = ["attempt", "grades", "watch", "serve", "open", "port"] as const;
 
@@ -53,6 +53,12 @@ export type BuildEntry = {
   seedLine: number;
   answerSheet: boolean | null;
   answerSheetLine: number;
+  /** the printed paper's answers: `none` (default), `key` or `inline` */
+  answers: "none" | "key" | "inline" | null;
+  answersLine: number;
+  /** `none` leaves the materials page out of the printed paper */
+  materials: "none" | null;
+  materialsLine: number;
 };
 
 export type BuildFileParse = { entries: BuildEntry[]; errors: ConfigError[] };
@@ -96,16 +102,12 @@ export function parseBuildFile(text: string, file: string): BuildFileParse {
   /** Checks the keys of a table and reads the settings; the same messages as the flags give. */
   const settings = (t: Table, path: string[]): Map<string, Setting> => {
     const found = new Map<string, Setting>();
-    const known = [...BUILD_FILE_KEYS, ...LATER_KEYS, ...(path.length === 0 ? [] : ["files"])];
+    const known = [...BUILD_FILE_KEYS, ...(path.length === 0 ? [] : ["files"])];
     for (const [key, value] of Object.entries(t)) {
       const at = [...path, key];
       if (path.length === 0 && key === "build") continue;
       if ((RUN_KEYS as readonly string[]).includes(key)) {
         fail(at, `\`${key}\` is about one run, not about what to build`, "give it on the command line instead");
-        continue;
-      }
-      if ((LATER_KEYS as readonly string[]).includes(key)) {
-        fail(at, `\`${key}\` is not available yet: it arrives in a later release`);
         continue;
       }
       if (key === "files") {
@@ -148,6 +150,15 @@ export function parseBuildFile(text: string, file: string): BuildFileParse {
           if (problem !== null) fail(at, problem);
           else ok = v;
         }
+      } else if (key === "answers") {
+        const v = text("one of none, key, inline");
+        if (v !== null && v !== "none" && v !== "key" && v !== "inline")
+          fail(at, `answers ${v} is not one of none, key, inline`);
+        else ok = v;
+      } else if (key === "materials") {
+        const v = text("none");
+        if (v !== null && v !== "none") fail(at, `materials ${v} is not none`);
+        else ok = v;
       } else if (key === "fonts") {
         const v = text("one of quiz, all, none");
         if (v !== null && !(FONT_CHOICES as readonly string[]).includes(v))
@@ -221,6 +232,10 @@ export function parseBuildFile(text: string, file: string): BuildFileParse {
         seedLine: get("seed")?.line ?? line,
         answerSheet: flag("answer-sheet"),
         answerSheetLine: get("answer-sheet")?.line ?? line,
+        answers: str("answers") as BuildEntry["answers"],
+        answersLine: get("answers")?.line ?? line,
+        materials: str("materials") as BuildEntry["materials"],
+        materialsLine: get("materials")?.line ?? line,
       });
     });
   }

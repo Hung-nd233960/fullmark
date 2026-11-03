@@ -180,13 +180,6 @@ describe("build --build-file: refusals before anything is built", () => {
     expect(r.c.err.join("\n")).toContain("build.toml:1: the build file has no [[build]] entry");
   });
 
-  it("the keys that wait for the key and the materials page say so", async () => {
-    const r = await refused({ "build.toml": '[[build]]\nfiles = ["a.md"]\nanswers = "key"\n', "a.md": quiz() });
-    expect(r.code).toBe(2);
-    expect(r.c.err.join("\n")).toContain("build.toml:3: `answers` is not available yet");
-    expect(r.html).toEqual([]);
-  });
-
   it("two pages for one path: the same file in two entries, or one name from two folders", async () => {
     const same = await refused({
       "build.toml": 'out = "site"\n[[build]]\nfiles = ["a.md"]\n[[build]]\nfiles = ["a.md"]\n',

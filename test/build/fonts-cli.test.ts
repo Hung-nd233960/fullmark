@@ -19,6 +19,8 @@ const base: BuildOptions = {
   print: false,
   seed: null,
   answerSheet: false,
+  answers: null,
+  materials: null,
   later: [],
   version: "1.0.0-test",
 };

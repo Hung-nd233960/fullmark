@@ -104,6 +104,8 @@ export async function runReplay(
     print: false,
     seed: null,
     answerSheet: false,
+    answers: null,
+    materials: null,
     later: [],
     version: opts.version,
   };

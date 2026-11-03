@@ -133,15 +133,41 @@ describe("build --print: the refusals", () => {
     expect((await refused({ seed: "bad!" })).err).toEqual(['seed "bad!" must be 1 to 8 letters or digits']);
   });
 
-  it("--answers and --materials are not available yet, with or without --print", async () => {
-    for (const print of [true, false]) {
-      for (const later of ["answers", "materials"]) {
-        const r = await refused({ print, later: [later] });
-        expect(r.code).toBe(2);
-        expect(r.err).toEqual([`--${later} is not available yet: it arrives in a later release`]);
-        expect(r.written).toEqual([]);
-      }
-    }
+  it("--answers and --materials need --print", async () => {
+    expect((await refused({ answers: "key" })).err).toEqual(["--answers needs --print"]);
+    expect((await refused({ materials: "none" })).err).toEqual(["--materials needs --print"]);
+  });
+
+  it("--answers takes none, key or inline; --materials takes none; anything else exits 2", async () => {
+    const a = await refused({ print: true, answers: "all" });
+    expect(a).toEqual({ code: 2, err: ["--answers all is not one of none, key, inline"], written: [] });
+    const m = await refused({ print: true, materials: "all" });
+    expect(m).toEqual({ code: 2, err: ["--materials all is not none"], written: [] });
+  });
+
+  it("--answer-sheet with --answers inline exits 2", async () => {
+    const r = await refused({ print: true, answers: "inline", answerSheet: true });
+    expect(r).toEqual({ code: 2, err: ["`--answer-sheet` needs `--answers none` or `key`"], written: [] });
+  });
+
+  it("--answers key and inline write the paper with the key; --materials none on a quiz without materials says nothing", async () => {
+    const dir = tree({ "quiz.md": quiz() });
+    expect(await runBuild(["quiz.md"], print({ answers: "key", output: "k.html" }), capture(dir).io)).toBe(0);
+    expect(read(dir, "k.html")).toContain('class="key-page"');
+    expect(await runBuild(["quiz.md"], print({ answers: "inline", output: "i.html" }), capture(dir).io)).toBe(0);
+    expect(read(dir, "i.html")).toContain('class="answer-block"');
+    const c = capture(dir);
+    expect(await runBuild(["quiz.md"], print({ materials: "none", output: "m.html" }), c.io)).toBe(0);
+    expect(c.out).toEqual(["quiz.md: wrote m.html"]);
+    expect(c.err).toEqual([]);
+  });
+
+  it("build.answer-sheet-empty is held to the profile's level: the exam profile makes it an error", async () => {
+    const short = quiz("```answer\naccept: [a]\n```", "title: T", "Q {type=short id=q}");
+    const dir = tree({ "s.md": short });
+    const c = capture(dir);
+    expect(await runBuild(["s.md"], print({ answerSheet: true, profile: "exam" }), c.io)).toBe(1);
+    expect(existsSync(join(dir, "s-print.html"))).toBe(false);
   });
 });
 
@@ -200,6 +226,23 @@ describe("the build file's print, seed and answer-sheet", () => {
     const sheet = await run(file('[[build]]\nfiles = ["a.md"]\nanswer-sheet = true\n'));
     expect(sheet.c.err.join("\n")).toContain("build.toml:3: `answer-sheet` needs `print = true` in the same entry");
     expect(readdirSync(seed.dir).filter((f) => f.endsWith(".html"))).toEqual([]);
+  });
+
+  it("answers and materials in the file work as the flags, with the same refusals", async () => {
+    const r = await run(file('[[build]]\nfiles = ["a.md"]\nprint = true\nanswers = "key"\nmaterials = "none"\n'));
+    expect(r.code).toBe(0);
+    expect(read(r.dir, "a-print.html")).toContain('class="key-page"');
+    const noPrint = await run(file('[[build]]\nfiles = ["a.md"]\nanswers = "key"\n'));
+    expect(noPrint.c.err.join("\n")).toContain("build.toml:3: `answers` needs `print = true` in the same entry");
+    const noPrintM = await run(file('[[build]]\nfiles = ["a.md"]\nmaterials = "none"\n'));
+    expect(noPrintM.c.err.join("\n")).toContain("build.toml:3: `materials` needs `print = true` in the same entry");
+    const both = await run(
+      file('[[build]]\nfiles = ["a.md"]\nprint = true\nanswers = "inline"\nanswer-sheet = true\n'),
+    );
+    expect(both.code).toBe(2);
+    expect(both.c.err.join("\n")).toContain('build.toml:5: `answer-sheet` needs `answers = "none"`');
+    const bad = await run(file('[[build]]\nfiles = ["a.md"]\nprint = true\nanswers = "all"\n'));
+    expect(bad.c.err.join("\n")).toContain("build.toml:4: answers all is not one of none, key, inline");
   });
 
   it("--print on the command line makes an entry's seed legal; a flag beats the file", async () => {

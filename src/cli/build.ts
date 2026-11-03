@@ -60,6 +60,10 @@ export type BuildOptions = {
   seed: string | null;
   /** `--answer-sheet` with `--print` */
   answerSheet: boolean;
+  /** `--answers none|key|inline` with `--print`; null: not given (none) */
+  answers: string | null;
+  /** `--materials none` with `--print`; null: not given */
+  materials: string | null;
   /** the options that arrive with later slices; any of them set is "not available yet" */
   later: string[];
   version: string;
@@ -277,11 +281,14 @@ async function buildOne(job: Job, c: RunContext): Promise<FileResult> {
         ...(shown === null ? {} : { uiLang: shown }),
         hash: loaded.hash ?? "",
         assets: loaded.assets,
+        sheets: loaded.sheets,
       },
       {
         css: paperCss as string,
         seed: opts.seed,
         answerSheet: opts.answerSheet,
+        answers: opts.answers === "key" || opts.answers === "inline" ? opts.answers : "none",
+        materials: opts.materials !== "none",
         math: katexTools(),
         fonts,
       },
@@ -411,12 +418,26 @@ export async function runBuild(patterns: readonly string[], opts: BuildOptions, 
     for (const [given, flag] of [
       [opts.seed !== null, "--seed"],
       [opts.answerSheet, "--answer-sheet"],
+      [opts.answers !== null, "--answers"],
+      [opts.materials !== null, "--materials"],
     ] as const) {
       if (given && !opts.print) {
         fail(io, opts.json, `${flag} needs --print`);
         return EXIT.usage;
       }
     }
+  }
+  if (opts.answers !== null && !["none", "key", "inline"].includes(opts.answers)) {
+    fail(io, opts.json, `--answers ${opts.answers} is not one of none, key, inline`);
+    return EXIT.usage;
+  }
+  if (opts.materials !== null && opts.materials !== "none") {
+    fail(io, opts.json, `--materials ${opts.materials} is not none`);
+    return EXIT.usage;
+  }
+  if (opts.answers === "inline" && opts.answerSheet) {
+    fail(io, opts.json, "`--answer-sheet` needs `--answers none` or `key`");
+    return EXIT.usage;
   }
   if (opts.builtAt !== null && !ISO_TIME.test(opts.builtAt)) {
     fail(io, opts.json, `--built-at ${opts.builtAt} is not an ISO date and time, such as 2026-10-24T09:00:00+07:00`);

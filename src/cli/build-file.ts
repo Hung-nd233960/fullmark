@@ -85,6 +85,8 @@ export function planBuildFile(buildFile: string, fileArgs: readonly string[], op
       print: opts.print || entry.print === true,
       seed: opts.seed ?? entry.seed,
       answerSheet: opts.answerSheet || entry.answerSheet === true,
+      answers: opts.answers ?? entry.answers,
+      materials: opts.materials ?? entry.materials,
     };
     // `--seed` and `--answer-sheet` need `--print`: held per entry, now that the entry's `print` is known
     if (!entryOpts.print) {
@@ -94,6 +96,17 @@ export function planBuildFile(buildFile: string, fileArgs: readonly string[], op
       if (entryOpts.answerSheet) {
         return refuse(`${shown}:${entry.answerSheetLine}: \`answer-sheet\` needs \`print = true\` in the same entry`);
       }
+      if (entryOpts.answers !== null) {
+        return refuse(`${shown}:${entry.answersLine}: \`answers\` needs \`print = true\` in the same entry`);
+      }
+      if (entryOpts.materials !== null) {
+        return refuse(`${shown}:${entry.materialsLine}: \`materials\` needs \`print = true\` in the same entry`);
+      }
+    }
+    if (entryOpts.answers === "inline" && entryOpts.answerSheet) {
+      return refuse(
+        `${shown}:${entry.answerSheetLine}: \`answer-sheet\` needs \`answers = "none"\` or \`"key"\`, not \`"inline"\``,
+      );
     }
     for (const item of expandInputs(entry.files, dir).items) {
       if ("error" in item) {

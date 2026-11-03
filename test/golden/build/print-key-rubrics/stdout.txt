@@ -1,0 +1,7 @@
+rubrics.md:9: warning rubric.thin: the rubric has 2 criteria; at least 3 are expected
+    fix: split the rubric into more things a grader can check
+rubrics.md:21: warning rubric.thin: the rubric has 2 criteria; at least 3 are expected
+    fix: split the rubric into more things a grader can check
+rubrics.md:33: warning rubric.thin: the rubric has 2 criteria; at least 3 are expected
+    fix: split the rubric into more things a grader can check
+rubrics.md: wrote rubrics-print.html

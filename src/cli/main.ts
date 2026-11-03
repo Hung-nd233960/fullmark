@@ -159,7 +159,7 @@ export function buildProgram(outcome: Outcome = { exit: EXIT.done }, io: Io = te
       },
     );
 
-  const LATER = ["answers", "materials", "watch", "serve", "port"] as const;
+  const LATER = ["watch", "serve", "port"] as const;
   program
     .command("build")
     .description("check a quiz, then write it as one offline HTML page")
@@ -178,9 +178,11 @@ export function buildProgram(outcome: Outcome = { exit: EXIT.done }, io: Io = te
     .option("--print", "write a printable exam paper (static HTML, black on white) instead of the page")
     .option("--seed <s>", "with --print: shuffle reproducibly; 1 to 8 letters or digits, printed as the paper code")
     .option("--answer-sheet", "with --print: a grid of boxes for the single-choice and true/false answers")
-    // these arrive with later slices; they are accepted so that the refusal is a plain message
-    .option("--answers <mode>", "(not available yet)")
-    .option("--materials <which>", "(not available yet)")
+    .option(
+      "--answers <mode>",
+      "with --print: none (an exam paper), key (the answer key on a new page) or inline (a study sheet)",
+    )
+    .option("--materials <which>", "with --print: none leaves the materials page out")
     .option("--ui-lang <lang>", "the page's language for this build, en or vi (default: the quiz's ui_lang)")
     .option(
       "--fonts <which>",
@@ -205,6 +207,8 @@ export function buildProgram(outcome: Outcome = { exit: EXIT.done }, io: Io = te
         print: Boolean(options.print),
         seed: (options.seed as string | undefined) ?? null,
         answerSheet: Boolean(options.answerSheet),
+        answers: (options.answers as string | undefined) ?? null,
+        materials: (options.materials as string | undefined) ?? null,
         later: LATER.filter(
           (name) => options[name.replace(/-(\w)/g, (_m, c: string) => c.toUpperCase())] !== undefined,
         ),
