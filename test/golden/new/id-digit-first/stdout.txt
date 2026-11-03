@@ -1,0 +1,2 @@
+wrote 2024-midterm/quiz.md from template blank
+run `quiz ids 2024-midterm/quiz.md` to give the questions ids

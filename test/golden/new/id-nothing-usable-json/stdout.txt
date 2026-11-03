@@ -1,0 +1,1 @@
+{"status":"error","message":"cannot make a quiz id from the name \"日本語\": name the file, as in `日本語/kanji.md`"}

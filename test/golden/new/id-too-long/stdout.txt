@@ -1,0 +1,2 @@
+wrote word-word-word-word-word-word-word-word-word-word-word-word-word-word-end/quiz.md from template blank
+run `quiz ids word-word-word-word-word-word-word-word-word-word-word-word-word-word-end/quiz.md` to give the questions ids

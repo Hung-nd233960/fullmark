@@ -140,24 +140,6 @@ describe("stats: questions across versions", () => {
     expect(s.questions[0]?.title).toBe("Current wording.");
     expect(s.tags.map((t) => t.tag)).toEqual(["new-tag"]);
   });
-
-  it("follows a question without an id by its hash, one entry per version, and says so", () => {
-    const a = reportOf(single("q"), { q: wrong }, { hash: "1".repeat(64), at: "2026-10-01T10:00:00" });
-    const b = reportOf(single("q"), { q: wrong }, { hash: "2".repeat(64), at: "2026-10-02T10:00:00" });
-    // a quiz with an id missing does not parse, so no real report has one: the reports are edited here
-    for (const r of [a, b]) for (const q of r.questions) q.id = "";
-    b.questions[0]!.hash = "f".repeat(64);
-    const s = summarise([
-      { file: "a", report: a },
-      { file: "b", report: b },
-      { file: "c", report: a },
-    ]);
-    expect(s.questions.map((q) => [q.id, q.seen, q.missed])).toEqual([
-      [null, 2, 2],
-      [null, 1, 1],
-    ]);
-    expect(renderStats(s).join("\n")).toContain("(no id)");
-  });
 });
 
 describe("stats: pending grades are not yet scored", () => {
@@ -220,7 +202,7 @@ describe("stats: criteria from the fixture reports (made by `quiz grade --json`)
       band: null,
       attempts: 4,
     });
-    expect(get("ielts", "TR")).toMatchObject({ earned: null, percent: null, band: 5.88, attempts: 4 });
+    expect(get("ielts", "TR")).toMatchObject({ earned: null, percent: null, band: 5.9, attempts: 4 });
   });
 
   it("five attempts over two versions give the summary in COMMANDS.md's shape", () => {

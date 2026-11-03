@@ -63,6 +63,11 @@ describe("a new quiz gets its own id (owner, 2026-11-03)", () => {
     expect(freshId("/x/demo", "Week 3.md")).toBe("week-3");
     expect(freshId("/x/demo", "3rd.md")).toBe("quiz-3rd");
     expect(freshId("/x/***", "quiz.md")).toBeNull();
+    expect(freshId("/x/2024-midterm", "quiz.md")).toBe("quiz-2024-midterm");
+    const long = `${"word-".repeat(14)}end`; // 73 characters
+    expect(freshId("/x/demo", `${long}.md`)).toBe(`${"word-".repeat(12)}word`);
+    expect(freshId("/x/demo", `${"a".repeat(70)}.md`)).toBe("a".repeat(64));
+    expect(freshId("/x/日本語", "quiz.md")).toBeNull();
   });
 
   it("new TEMPLATE FOLDER uses the folder's name, new --from X.md the file's, --json prints the object", async () => {

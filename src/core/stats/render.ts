@@ -45,7 +45,7 @@ export function renderStats(s: StatsSummary): string[] {
   if (s.answers.length > 0) {
     out.push("", "Answers over time");
     for (const q of s.answers) {
-      const label = `${q.question ?? "(no id)"} "${short(q.title, 40)}"`;
+      const label = `${q.question} "${short(q.title, 40)}"`;
       const cells = q.answers.map((a) => `${dateOf(a.submitted, years.size > 1)}: ${a.answer ?? "no answer"}`);
       out.push(`  ${label}  ${cells.join(" · ")}`);
     }
@@ -78,7 +78,7 @@ export function renderStats(s: StatsSummary): string[] {
         : missed
             .map(
               (q) =>
-                `${q.id ?? "(no id)"} "${short(q.title, 30)}" wrong in ${q.missed} of ${q.seen}${q.changed ? " (changed)" : ""}`,
+                `${q.id} "${short(q.title, 30)}" wrong in ${q.missed} of ${q.seen}${q.changed ? " (changed)" : ""}`,
             )
             .join(" · "),
     ),
@@ -92,7 +92,7 @@ export function renderStats(s: StatsSummary): string[] {
           .map((c) => {
             const name = many ? `${c.question}/${c.criterion}` : c.criterion;
             return c.band !== null
-              ? `${name} band ${trim(c.band)} average`
+              ? `${name} band ${c.band.toFixed(1)} average`
               : `${name} ${Math.round(c.percent ?? 0)}% over ${plural(c.attempts, "attempt")}`;
           })
           .join(" · "),

@@ -3,4 +3,4 @@ Attempts   3 Oct 50% · 10 Oct 67% (section part-two) · 17 Oct 66% · 24 Oct 72
 Tags       numbers 50% (4 of 8 points) · writing 68% · logic 71% · no tag 67%
 Weakest    numbers, writing, logic
 Missed     add "Describe the process." wrong in 4 of 4 · ielts "To what extent do you agree?" wrong in 4 of 4 · prime "Which of these numbers is pri…" wrong in 3 of 4 (changed) · even "Zero is even." wrong in 1 of 4 · late "Which statement is a fallacy?" wrong in 1 of 3 · odd "Pick the odd one out." wrong in 1 of 3 · syll "Which one is a syllogism?" wrong in 1 of 4
-Criteria   add/defs 100% over 4 attempts · add/derive 75% over 4 attempts · add/interp 50% over 4 attempts · ielts/TR band 5.88 average · ielts/CC band 5.75 average · ielts/LR band 5.75 average · ielts/GRA band 6 average
+Criteria   add/defs 100% over 4 attempts · add/derive 75% over 4 attempts · add/interp 50% over 4 attempts · ielts/TR band 5.9 average · ielts/CC band 5.8 average · ielts/LR band 5.8 average · ielts/GRA band 6.0 average

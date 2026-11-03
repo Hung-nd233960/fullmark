@@ -3,7 +3,7 @@ import type { Report, ReportOpen, ReportQuestion } from "../report";
 /**
  * Progress across several attempts at one quiz (COMMANDS.md, `quiz stats`). Pure: reports in, the summary out.
  * Each attempt counts only the questions it had, scored against the version it was taken on; pending grades are not
- * yet scored. Questions match across versions by id, and by question hash when they have none.
+ * yet scored. Questions match across versions by id (a quiz with a question without one fails `check`, so no report has one).
  */
 
 export type StatsPlan = { source: string; section: string | null };
@@ -24,8 +24,7 @@ export type StatsAttempt = {
 export type StatsTag = { tag: string | null; earned: number; points: number; percent: number | null; attempts: number };
 
 export type StatsQuestion = {
-  /** null for a question that has no id: it is then followed by its hash */
-  id: string | null;
+  id: string;
   hash: string;
   title: string;
   seen: number;
@@ -49,7 +48,7 @@ export type StatsCriterion = {
 };
 
 export type StatsAnswers = {
-  question: string | null;
+  question: string;
   hash: string;
   title: string;
   answers: { file: string; submitted: string | null; answer: string | null }[];
@@ -76,6 +75,7 @@ export type StatsNames = {
 export type StatsInput = { file: string; report: Report };
 
 const round2 = (n: number): number => Math.round(n * 100) / 100;
+const round1 = (n: number): number => Math.round(n * 10) / 10;
 const percentOf = (earned: number, points: number): number | null =>
   points > 0 ? Math.round((earned / points) * 10000) / 100 : null;
 const compare = (a: string, b: string): number => (a < b ? -1 : a > b ? 1 : 0);
@@ -92,8 +92,6 @@ export function titleOf(prompt: string): string {
 
 /** A question the attempt scored: points on it and not waiting for a grader. An unanswered one scored 0. */
 const scored = (q: ReportQuestion): boolean => q.points > 0 && q.status !== "pending" && q.status !== "ungraded";
-
-const keyOf = (q: ReportQuestion): string => (q.id !== "" ? q.id : `hash:${q.hash}`);
 
 function planOf(report: Report): StatsPlan {
   const source = report.attempt.source;
@@ -132,7 +130,7 @@ export function summarise(inputs: readonly StatsInput[], names: StatsNames | nul
   const tagTotals = new Map<string | null, Acc>();
   const questionTotals = new Map<
     string,
-    { id: string | null; hash: string; hashes: Set<string>; title: string; seen: number; missed: number } & Acc
+    { id: string; hash: string; hashes: Set<string>; title: string; seen: number; missed: number } & Acc
   >();
   const answers = new Map<string, StatsAnswers>();
   const criteria = new Map<
@@ -148,8 +146,8 @@ export function summarise(inputs: readonly StatsInput[], names: StatsNames | nul
       const known = names?.questions.get(q.id);
       const title = known?.title ?? titleOf(q.prompt);
       if (report.quiz.kind === "survey") {
-        const key = keyOf(q);
-        const entry = answers.get(key) ?? { question: q.id === "" ? null : q.id, hash: q.hash, title, answers: [] };
+        const key = q.id;
+        const entry = answers.get(key) ?? { question: q.id, hash: q.hash, title, answers: [] };
         entry.hash = q.hash;
         entry.title = title;
         entry.answers.push({ file, submitted: report.attempt.submitted, answer: q.answer });
@@ -165,9 +163,9 @@ export function summarise(inputs: readonly StatsInput[], names: StatsNames | nul
         t.points += q.points;
         perTag.set(tag, t);
       }
-      const key = keyOf(q);
+      const key = q.id;
       const total = questionTotals.get(key) ?? {
-        id: q.id === "" ? null : q.id,
+        id: q.id,
         hash: q.hash,
         hashes: new Set<string>(),
         title,
@@ -226,7 +224,7 @@ export function summarise(inputs: readonly StatsInput[], names: StatsNames | nul
       points: round2(q.points),
       changed: q.hashes.size > 1,
     }))
-    .sort((a, b) => b.missed - a.missed || compare(a.id ?? `~${a.hash}`, b.id ?? `~${b.hash}`));
+    .sort((a, b) => b.missed - a.missed || compare(a.id, b.id));
 
   const crit: StatsCriterion[] = [...criteria.values()]
     .sort((a, b) => compare(a.question, b.question))
@@ -236,7 +234,7 @@ export function summarise(inputs: readonly StatsInput[], names: StatsNames | nul
       earned: c.banded ? null : round2(c.earned),
       max: c.banded ? null : round2(c.max),
       percent: c.banded ? null : percentOf(c.earned, c.max),
-      band: c.banded ? round2(c.band / c.n) : null,
+      band: c.banded ? round1(c.band / c.n) : null,
       attempts: c.n,
     }));
 

@@ -55,7 +55,14 @@ export function freshId(folder: string, file: string): string | null {
   const stem = file.replace(/\.md$/i, "");
   const base = slug(stem.toLowerCase() === "quiz" ? basename(folder) : stem);
   if (base === "") return null;
-  const id = (ID_FORMAT.test(base) ? base : `quiz-${base}`).slice(0, 64).replace(/-+$/, "");
+  const named = /^[a-z]/.test(base) ? base : `quiz-${base}`;
+  // over 64 characters: cut at the last hyphen before the limit, so a word is never split (one long word is cut)
+  const window = named.slice(0, 65);
+  const hyphen = window.lastIndexOf("-");
+  const id = (named.length <= 64 ? named : hyphen > 0 ? window.slice(0, hyphen) : named.slice(0, 64)).replace(
+    /-+$/,
+    "",
+  );
   return ID_FORMAT.test(id) ? id : null;
 }
 
@@ -153,7 +160,16 @@ export async function runNew(positional: readonly string[], opts: NewOptions, io
   }
   if (first) {
     const id = freshId(dest, output.name);
-    if (id !== null) first.bytes = Buffer.from(withQuizId(first.bytes.toString("utf8"), id), "utf8");
+    if (id === null) {
+      const kanji = asFile ? "kanji.md" : `${basename(dest)}/kanji.md`;
+      fail(
+        io,
+        json,
+        `cannot make a quiz id from the name "${asFile ? output.name : basename(dest)}": name the file, as in \`${kanji}\``,
+      );
+      return EXIT.usage;
+    }
+    first.bytes = Buffer.from(withQuizId(first.bytes.toString("utf8"), id), "utf8");
   }
   const taken = output.files.find((f) => existsSync(join(dest, f.path)));
   if (taken) {

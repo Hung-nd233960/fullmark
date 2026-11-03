@@ -1,0 +1,1 @@
+cannot make a quiz id from the name "日本語.md": name the file, as in `kanji.md`

@@ -28,6 +28,8 @@ function reportProblem(r: Record<string, unknown>): string | null {
   if (!Array.isArray(r.questions) || !Array.isArray(r.open)) return "not a valid report: its questions are missing";
   if (r.questions.some((q) => !isObject(q) || typeof q.hash !== "string" || typeof q.id !== "string"))
     return "this report has no question hashes (it was made by an earlier build): make it again with `quiz grade --json`";
+  if (r.questions.some((q) => (q as { id: string }).id === ""))
+    return "this report has a question without an id: run `quiz ids FILE`, then make it again with `quiz grade --json`";
   return null;
 }
 

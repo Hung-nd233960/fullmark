@@ -1,0 +1,4 @@
+new
+blank
+日本語
+--json
