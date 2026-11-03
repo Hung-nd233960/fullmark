@@ -379,8 +379,10 @@ function readBriefDefaults(
   data: ConfigFileData,
   fail: (path: readonly string[], message: string, fix?: string) => void,
 ): void {
-  if (!isTable(brief))
-    return fail(["brief"], `\`brief\` must be a table, not ${describe(brief)}`, "write [brief.purpose.exam-prep]");
+  if (!isTable(brief)) {
+    fail(["brief"], `\`brief\` must be a table, not ${describe(brief)}`, "write [brief.purpose.exam-prep]");
+    return;
+  }
   for (const key of Object.keys(brief)) {
     if (key !== "purpose")
       fail(
@@ -391,7 +393,10 @@ function readBriefDefaults(
   }
   const purposes = brief.purpose;
   if (purposes === undefined) return;
-  if (!isTable(purposes)) return fail(["brief", "purpose"], `\`purpose\` must be a table, not ${describe(purposes)}`);
+  if (!isTable(purposes)) {
+    fail(["brief", "purpose"], `\`purpose\` must be a table, not ${describe(purposes)}`);
+    return;
+  }
   for (const [name, table] of Object.entries(purposes)) {
     const path = ["brief", "purpose", name];
     if (!(PURPOSES as readonly string[]).includes(name)) {
