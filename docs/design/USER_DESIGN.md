@@ -218,7 +218,10 @@ These are written up in `proposals/`. They are ideas, not promises, and nothing 
 | [library-query.md](proposals/library-query.md) | Filter terms on `library list` (`tag:fourier score:<70 -taken:never`), with `--names` for batch use | adopted in v1: the field names of `library list --json` |
 | [vi-typo-check.md](proposals/vi-typo-check.md) | Rules that catch impossible Vietnamese syllables | the rule registry |
 | [build-log.md](proposals/build-log.md) | `--log FILE` (the `--json` lines appended to a file, for `--watch` too) and a record beside a printed paper proving which paper and key went out | `build --json`, deterministic builds |
-| [cli_integration.md](proposals/cli_integration.md) | Shell completion, prediction, a tldr page, a prompt segment | none needed |
+| [cli-integration.md](proposals/cli-integration.md) | Shell completion, prediction, a tldr page, a prompt segment | none needed |
+| [rapid-response.md](proposals/rapid-response.md) | One question at a time that moves on when answered, for drills | none needed: another view over the same `Attempt` reducer |
+| [brief-purposes.md](proposals/brief-purposes.md) | Briefs fitted to a subject: template overrides, the brief as a survey | the machine config's `[brief.purpose.<purpose>]` tables |
+| [print-pdf.md](proposals/print-pdf.md) | `build --print --pdf` through the teacher's own Chromium-based browser | `build --print` and `build --watch --serve`'s long-running server |
 | [interactions.md](proposals/interactions.md) | Open questions about how the features combine | |
 
 ## 7. Where to go next
