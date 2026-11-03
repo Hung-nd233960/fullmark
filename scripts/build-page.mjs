@@ -17,9 +17,12 @@ await build({
 
 const styles = join(root, "src/page/styles");
 const css = readdirSync(styles)
-  .filter((f) => f.endsWith(".css"))
+  .filter((f) => f.endsWith(".css") && f !== "paper.css")
   .sort()
   .map((f) => readFileSync(join(styles, f), "utf8"))
   .join("\n");
 const small = minifyCss(css);
 writeFileSync(join(root, "dist/page.css"), `${small}\n`);
+
+// The printed paper's styles are their own file: `quiz build --print` reads it, and the page never carries it.
+writeFileSync(join(root, "dist/paper.css"), `${minifyCss(readFileSync(join(styles, "paper.css"), "utf8"))}\n`);

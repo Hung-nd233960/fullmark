@@ -82,14 +82,26 @@ export function planBuildFile(buildFile: string, fileArgs: readonly string[], op
       fonts: opts.fonts ?? entry.fonts,
       uiLang: opts.uiLang ?? entry.uiLang,
       builtAt: opts.builtAt ?? entry.builtAt,
+      print: opts.print || entry.print === true,
+      seed: opts.seed ?? entry.seed,
+      answerSheet: opts.answerSheet || entry.answerSheet === true,
     };
+    // `--seed` and `--answer-sheet` need `--print`: held per entry, now that the entry's `print` is known
+    if (!entryOpts.print) {
+      if (entryOpts.seed !== null) {
+        return refuse(`${shown}:${entry.seedLine}: \`seed\` needs \`print = true\` in the same entry`);
+      }
+      if (entryOpts.answerSheet) {
+        return refuse(`${shown}:${entry.answerSheetLine}: \`answer-sheet\` needs \`print = true\` in the same entry`);
+      }
+    }
     for (const item of expandInputs(entry.files, dir).items) {
       if ("error" in item) {
         items.push({ error: { input: shownPath(resolve(dir, item.error.input), cwd), message: item.error.message } });
         continue;
       }
       const abs = resolve(dir, item.file);
-      const name = `${basename(abs, extname(abs))}.html`;
+      const name = `${basename(abs, extname(abs))}${entryOpts.print ? "-print" : ""}.html`;
       const job: Job = {
         file: shownPath(abs, cwd),
         abs,

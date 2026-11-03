@@ -101,6 +101,9 @@ export async function runReplay(
     buildFile: null,
     open: false,
     replay,
+    print: false,
+    seed: null,
+    answerSheet: false,
     later: [],
     version: opts.version,
   };

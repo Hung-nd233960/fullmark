@@ -4,6 +4,7 @@ import { basename, dirname, extname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { languagesUsed, loadHighlighter } from "../build/highlight";
 import { buildPage, type ReplayData } from "../build/page";
+import { buildPaper } from "../build/paper";
 import { katexTools } from "../build/tex";
 import { ISO_TIME } from "../core/config/build-file";
 import type { ResolvedProfile } from "../core/config/resolve";
@@ -11,6 +12,7 @@ import type { ConfigError } from "../core/config/types";
 import { FONT_CHOICES, FONT_REGISTRY, type FontsChoice } from "../core/fonts";
 import type { Quiz } from "../core/ir";
 import type { Issue } from "../core/issue";
+import { seedProblem } from "../core/plan/seed";
 import { type WriteError, writeFileAtomic } from "./atomic";
 import { type Job, type PlanItem, planBuildFile } from "./build-file";
 import {
@@ -52,6 +54,12 @@ export type BuildOptions = {
   open: boolean;
   /** `quiz replay`: the files are results files, and each is written as the page already submitted */
   replay?: ReplayOptions;
+  /** `--print`: write the printable paper (TECHNICAL_DESIGN.md, section 8) instead of the page */
+  print: boolean;
+  /** `--seed S` with `--print`: the paper code; null: the quiz's short version draws the orders */
+  seed: string | null;
+  /** `--answer-sheet` with `--print` */
+  answerSheet: boolean;
   /** the options that arrive with later slices; any of them set is "not available yet" */
   later: string[];
   version: string;
@@ -112,7 +120,14 @@ type FileResult = {
   replay?: { attempt: Record<string, unknown>; graded: boolean };
 };
 
-type RunContext = { io: BuildIo; several: boolean; builtAt: string; runtime: () => Runtime | null };
+type RunContext = {
+  io: BuildIo;
+  several: boolean;
+  builtAt: string;
+  runtime: () => Runtime | null;
+  /** `dist/paper.css`, which only the printed paper carries */
+  paperCss: () => string | null;
+};
 type Runtime = { runtime: string; css: string };
 
 /** Where a file's page goes: `-o` (a file for one input, a folder for several), else beside the source. */
@@ -121,7 +136,7 @@ function targetOf(file: string, opts: BuildOptions, io: BuildIo, several: boolea
   // a replay is named for its results file and never overwrites a page built from the source
   const name = opts.replay
     ? `${basename(source).replace(/\.json$/i, "")}-replay.html`
-    : `${basename(source, extname(source))}.html`;
+    : `${basename(source, extname(source))}${opts.print ? "-print" : ""}.html`;
   if (opts.output === null) return join(dirname(source), name);
   return several ? join(resolve(io.cwd, opts.output), name) : resolve(io.cwd, opts.output);
 }
@@ -242,46 +257,75 @@ async function buildOne(job: Job, c: RunContext): Promise<FileResult> {
     if (opts.strict) return failedWith(out);
   }
 
-  const runtime = c.runtime();
-  if (runtime === null) {
-    const message = "the page runtime is missing next to the program: run `npm run build`";
+  // `--print` writes the paper, which has no runtime; the page needs `page.js`
+  const paperCss = opts.print ? c.paperCss() : null;
+  const runtime = opts.print ? null : c.runtime();
+  if (opts.print ? paperCss === null : runtime === null) {
+    const message = `the ${opts.print ? "paper's styles are" : "page runtime is"} missing next to the program: run \`npm run build\``;
     return errorWith(message, [`${file}: ${message}`]);
   }
 
   // Shiki loads only if the quiz or a sheet has a fence of a known language; KaTeX only when a span is rendered
-  const highlight = await loadHighlighter(languagesUsed(quiz, loaded.sheets));
   // `--ui-lang` changes the page's language only: the hash and the key's `lang` (grading) are the quiz's own
   const shown: "en" | "vi" | null = opts.uiLang === "vi" ? "vi" : opts.uiLang === "en" ? "en" : null;
-  const page = new TextEncoder().encode(
-    buildPage(
-      [
-        {
-          quiz,
-          ...(shown === null ? {} : { uiLang: shown }),
-          hash: loaded.hash ?? "",
-          assets: loaded.assets,
-          sheets: loaded.sheets,
-          ...(replay ? { replay } : {}),
-        },
-      ],
+  const what = opts.print ? "paper" : "page";
+  let page: Uint8Array;
+  if (opts.print) {
+    const built = buildPaper(
       {
-        runtime: runtime.runtime,
-        css: runtime.css,
-        builtAt: opts.builtAt ?? c.builtAt,
-        version: opts.version,
-        math: katexTools(),
-        highlight,
-        fonts,
-        // the Information tab shows what was given, and a default as the default
-        given: {
-          profile: opts.profile,
-          fonts: fontsGiven ? fonts : null,
-          uiLang: shown,
-          strict: opts.strict,
-        },
+        quiz,
+        ...(shown === null ? {} : { uiLang: shown }),
+        hash: loaded.hash ?? "",
+        assets: loaded.assets,
       },
-    ),
-  );
+      {
+        css: paperCss as string,
+        seed: opts.seed,
+        answerSheet: opts.answerSheet,
+        math: katexTools(),
+        fonts,
+      },
+    );
+    for (const w of built.warnings) {
+      const issue: Issue = { rule: w.rule, level: "warning", file, line: 1, message: w.message, fix: w.fix };
+      issues.push(issue);
+      out.push(...humanIssue(issue, false));
+      if (opts.strict) return failedWith(out);
+    }
+    page = new TextEncoder().encode(built.html);
+  } else {
+    const highlight = await loadHighlighter(languagesUsed(quiz, loaded.sheets));
+    page = new TextEncoder().encode(
+      buildPage(
+        [
+          {
+            quiz,
+            ...(shown === null ? {} : { uiLang: shown }),
+            hash: loaded.hash ?? "",
+            assets: loaded.assets,
+            sheets: loaded.sheets,
+            ...(replay ? { replay } : {}),
+          },
+        ],
+        {
+          runtime: (runtime as Runtime).runtime,
+          css: (runtime as Runtime).css,
+          builtAt: opts.builtAt ?? c.builtAt,
+          version: opts.version,
+          math: katexTools(),
+          highlight,
+          fonts,
+          // the Information tab shows what was given, and a default as the default
+          given: {
+            profile: opts.profile,
+            fonts: fontsGiven ? fonts : null,
+            uiLang: shown,
+            strict: opts.strict,
+          },
+        },
+      ),
+    );
+  }
 
   // the page's size, which `check` cannot know: `build.size` (warn-mb, max-mb; MB is 1,000,000 bytes)
   const sizeRule = rules?.get("build.size");
@@ -292,7 +336,7 @@ async function buildOne(job: Job, c: RunContext): Promise<FileResult> {
     level,
     file,
     line: 1,
-    message: `the page is ${megabytes(page.length)} (1 MB is 1,000,000 bytes), over ${limit}${tail}`,
+    message: `the ${what} is ${megabytes(page.length)} (1 MB is 1,000,000 bytes), over ${limit}${tail}`,
     fix: "use smaller or fewer images, or build with `--fonts quiz` or `--fonts none`",
   });
   if (page.length > maxMb * 1e6) {
@@ -349,6 +393,25 @@ export async function runBuild(patterns: readonly string[], opts: BuildOptions, 
       `${opts.later.map((o) => `--${o}`).join(", ")} is not available yet: it arrives in a later release`,
     );
     return EXIT.usage;
+  }
+  if (opts.seed !== null) {
+    const problem = seedProblem(opts.seed);
+    if (problem !== null) {
+      fail(io, opts.json, problem);
+      return EXIT.usage;
+    }
+  }
+  if (opts.buildFile === null) {
+    // with a build file the same rule is held per entry, once its `print` is known
+    for (const [given, flag] of [
+      [opts.seed !== null, "--seed"],
+      [opts.answerSheet, "--answer-sheet"],
+    ] as const) {
+      if (given && !opts.print) {
+        fail(io, opts.json, `${flag} needs --print`);
+        return EXIT.usage;
+      }
+    }
   }
   if (opts.builtAt !== null && !ISO_TIME.test(opts.builtAt)) {
     fail(io, opts.json, `--built-at ${opts.builtAt} is not an ISO date and time, such as 2026-10-24T09:00:00+07:00`);
@@ -438,11 +501,19 @@ export async function runBuild(patterns: readonly string[], opts: BuildOptions, 
     }
     return loaded;
   };
+  const paperCss = (): string | null => {
+    try {
+      return readFileSync(join(io.runtimeDir ?? runtimeFolder(), "paper.css"), "utf8");
+    } catch {
+      return null;
+    }
+  };
   const context: RunContext = {
     io,
     several,
     builtAt: opts.builtAt ?? (io.now?.() ?? new Date()).toISOString(),
     runtime,
+    paperCss,
   };
 
   const progress = !opts.json && !opts.plain && io.tty && jobCount > 1;

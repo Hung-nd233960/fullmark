@@ -1,6 +1,7 @@
 import { parse as parseToml } from "smol-toml";
 import { FONT_CHOICES, type FontsChoice } from "../fonts";
 import { suggest } from "../parse/report";
+import { seedProblem } from "../plan/seed";
 import { TomlIndex } from "./toml-index";
 import type { ConfigError } from "./types";
 
@@ -14,9 +15,20 @@ import type { ConfigError } from "./types";
 export const ISO_TIME = /^\d{4}-\d\d-\d\dT\d\d:\d\d(:\d\d(\.\d+)?)?(Z|[+-]\d\d:\d\d)?$/;
 
 /** The keys that are `build` flag names and can be set in a build file, each with the entry it applies to. */
-export const BUILD_FILE_KEYS = ["out", "profile", "config", "strict", "fonts", "ui-lang", "built-at"] as const;
-/** The printed paper arrives in a later release; its keys are known and refused until then. */
-const LATER_KEYS = ["print", "answers", "seed", "materials"] as const;
+export const BUILD_FILE_KEYS = [
+  "out",
+  "profile",
+  "config",
+  "strict",
+  "fonts",
+  "ui-lang",
+  "built-at",
+  "print",
+  "seed",
+  "answer-sheet",
+] as const;
+/** The key and the materials page of the printed paper arrive in a later release; the keys are known and refused until then. */
+const LATER_KEYS = ["answers", "materials"] as const;
 /** Flags about one run, not about what to build. */
 const RUN_KEYS = ["attempt", "grades", "watch", "serve", "open", "port"] as const;
 
@@ -35,6 +47,12 @@ export type BuildEntry = {
   fonts: FontsChoice | null;
   uiLang: "en" | "vi" | null;
   builtAt: string | null;
+  print: boolean | null;
+  /** the paper code, as text (an integer in the file is read as its decimal digits) */
+  seed: string | null;
+  seedLine: number;
+  answerSheet: boolean | null;
+  answerSheetLine: number;
 };
 
 export type BuildFileParse = { entries: BuildEntry[]; errors: ConfigError[] };
@@ -111,9 +129,25 @@ export function parseBuildFile(text: string, file: string): BuildFileParse {
         return null;
       };
       let ok: string | boolean | null = null;
-      if (key === "strict") {
+      if (key === "strict" || key === "print" || key === "answer-sheet") {
         if (typeof value === "boolean") ok = value;
-        else fail(at, `\`strict\` must be true or false, not ${describe(value)}`);
+        else fail(at, `\`${key}\` must be true or false, not ${describe(value)}`);
+      } else if (key === "seed") {
+        // text, or a non-negative integer read as its decimal digits (a leading zero needs quotes)
+        const v =
+          typeof value === "number" && Number.isInteger(value) && value >= 0
+            ? String(value)
+            : typeof value === "bigint" && value >= 0n
+              ? String(value)
+              : typeof value === "string" && value !== ""
+                ? value
+                : null;
+        if (v === null) fail(at, `\`seed\` must be text or a whole number, not ${describe(value)}`);
+        else {
+          const problem = seedProblem(v);
+          if (problem !== null) fail(at, problem);
+          else ok = v;
+        }
       } else if (key === "fonts") {
         const v = text("one of quiz, all, none");
         if (v !== null && !(FONT_CHOICES as readonly string[]).includes(v))
@@ -167,6 +201,10 @@ export function parseBuildFile(text: string, file: string): BuildFileParse {
         return typeof v === "string" ? v : null;
       };
       const strict = get("strict")?.value;
+      const flag = (k: string) => {
+        const v = get(k)?.value;
+        return typeof v === "boolean" ? v : null;
+      };
       entries.push({
         line,
         files,
@@ -178,6 +216,11 @@ export function parseBuildFile(text: string, file: string): BuildFileParse {
         fonts: str("fonts") as FontsChoice | null,
         uiLang: str("ui-lang") as "en" | "vi" | null,
         builtAt: str("built-at"),
+        print: flag("print"),
+        seed: str("seed"),
+        seedLine: get("seed")?.line ?? line,
+        answerSheet: flag("answer-sheet"),
+        answerSheetLine: get("answer-sheet")?.line ?? line,
       });
     });
   }

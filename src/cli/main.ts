@@ -159,7 +159,7 @@ export function buildProgram(outcome: Outcome = { exit: EXIT.done }, io: Io = te
       },
     );
 
-  const LATER = ["print", "answers", "answer-sheet", "seed", "watch", "serve", "port"] as const;
+  const LATER = ["answers", "materials", "watch", "serve", "port"] as const;
   program
     .command("build")
     .description("check a quiz, then write it as one offline HTML page")
@@ -175,11 +175,12 @@ export function buildProgram(outcome: Outcome = { exit: EXIT.done }, io: Io = te
     .option("--build-file <build>", "build what a build file lists (TOML): its [[build]] entries, in order")
     .option("--json", "print one JSON object per file on stdout")
     .option("--open", "open the page after building (one file)")
+    .option("--print", "write a printable exam paper (static HTML, black on white) instead of the page")
+    .option("--seed <s>", "with --print: shuffle reproducibly; 1 to 8 letters or digits, printed as the paper code")
+    .option("--answer-sheet", "with --print: a grid of boxes for the single-choice and true/false answers")
     // these arrive with later slices; they are accepted so that the refusal is a plain message
-    .option("--print", "(not available yet)")
     .option("--answers <mode>", "(not available yet)")
-    .option("--answer-sheet", "(not available yet)")
-    .option("--seed <s>", "(not available yet)")
+    .option("--materials <which>", "(not available yet)")
     .option("--ui-lang <lang>", "the page's language for this build, en or vi (default: the quiz's ui_lang)")
     .option(
       "--fonts <which>",
@@ -201,6 +202,9 @@ export function buildProgram(outcome: Outcome = { exit: EXIT.done }, io: Io = te
         buildFile: (options.buildFile as string | undefined) ?? null,
         open: Boolean(options.open),
         uiLang: (options.uiLang as string | undefined) ?? null,
+        print: Boolean(options.print),
+        seed: (options.seed as string | undefined) ?? null,
+        answerSheet: Boolean(options.answerSheet),
         later: LATER.filter(
           (name) => options[name.replace(/-(\w)/g, (_m, c: string) => c.toUpperCase())] !== undefined,
         ),
