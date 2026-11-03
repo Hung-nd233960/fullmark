@@ -174,6 +174,7 @@ Quality rules carried over from 0.x, now with ids and options. Their defaults st
 | `brief.generated-by` | warning | (a quiz written from a brief by an agent must set `generated_by` in its front matter, naming the agent and model; a hand-written quiz leaves it out) |
 | `build.size` | warning | `warn-mb` (20), `max-mb` (100, always an error above it). Registered from step 1 so profiles can set it; checked from step 2 |
 | `build.font-not-embedded` | warning | Checked by `build`: `--fonts none` on a `look: locked` quiz whose font is not `system` (section 8, "Which fonts a page carries"). Registered in 2h3 |
+| `build.answer-sheet-empty` | warning | Checked by `build --print --answer-sheet`: the paper has no `single` or `truefalse` question, so no grid is printed (section 8, "Printable paper"). Registered in 2k2 (owner, 2026-11-03) |
 | `materials.empty` | warning | (a `materials` sheet with nothing after its heading; the fixed rules `materials.missing`, `materials.heading` and `materials.question` are in QUIZ_SYNTAX.md) |
 
 New quality rules, off in `default` so behaviour does not change, and used by the stricter built-in profiles:
