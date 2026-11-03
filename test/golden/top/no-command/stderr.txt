@@ -26,6 +26,9 @@ Commands:
   inspect [options] <file>       summarise a quiz: question types, points,
                                  sections, tags, banks and where the right
                                  answers sit
+  brief [options] <dir>          ask what a quiz is for and write brief.yaml
+                                 (and an empty content/ folder) for an agent to
+                                 write it from
   stats [options] <files...>     progress across attempts at one quiz: score by
                                  date, tags, weakest tags, questions missed,
                                  criteria
