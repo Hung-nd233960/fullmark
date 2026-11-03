@@ -18,7 +18,7 @@ As in step 2 ([STEP2.md](STEP2.md), Handoff): Opus writes a slice's full brief h
 | 3c `inspect`, `new`, `template` | done, reviewed, gaps decided | `e71ce68`..`3602a3d` |
 | 3d 3c's fixes, `stats` | done, reviewed, gaps decided | `fd466d1`, `2dfd341` |
 | 3g 3d's fixes, `brief` through flags | done, reviewed, gaps decided | `27a61a4`..`2e6b449` |
-| 3i 3g's fixes, `brief --tui` | with Sonnet | |
+| 3i 3g's fixes, `brief --tui` | done, reviewed; **its gaps for the owner** (G26 to G29) | `fb5ed78`..`546ccc0` |
 
 Step 2 is closed (STEP2.md, item 75): every "Done when" criterion passes in Chromium and Firefox; Vitest 2059 of 2059, the 2 startup tests, Playwright and axe. What step 3 inherits:
 
@@ -55,9 +55,21 @@ Step 2 is closed (STEP2.md, item 75): every "Done when" criterion passes in Chro
 
 **G22. The question file's extra fields** (3i). Beyond G11's list 3g added `flag`, `optional` (to tell `commitment` from `purpose`), `min` and `max` for numbers, `default-by-purpose` (the profile) and `default-for` on a choice (the `mix` defaults), plus a top-level `sections` list with `en` and `vi` titles; `kinds_other` is the `follow-up` of `content.kinds`. **Recommend:** accept them and add them to COMMANDS.md's question-file paragraph, since 3h and 3i read the same file.
 
-### Next steps, in order
+**3i's review (2026-11-03).** Typecheck, Biome and Vitest clean: 98 files, **2466 of 2466**, the 2 startup tests. Playwright in Chromium: **193 passed**, 128 skipped, none failed (run in review). Goldens: 19 changed (17 `rules/*` for the `brief.vague` row, once; `brief/tui` for the terminal message in place of "not available yet"; `brief/help` for the `--tui` line); 3 new (`brief/tui-json`, `brief/tui-and-web`, `brief/tui-accept-defaults`). The byte-identity test compares 11 answer sets (every purpose, Vietnamese both ways, *other*, purpose changed on the way back, `--weak-topics yes`, several answers changed, a flag pre-fill kept) through the form and the flags: the whole file, `defaults_applied` and the warnings. `@clack/prompts` 1.8.1 and its four dependencies, all MIT, are in the notices and load only from the form's chunk (`test/cli-graph.test.ts`). **The notices script changed:** clack's MIT text is worded differently, and as the first MIT text it would have become the one the page's Licences popup shows (9 build goldens changed in Sonnet's first run); the script now always takes a shown text from a package the page ships, and gives clack's copyright line in the override, since its file runs title and copyright on one line. Reviewed and accepted; no build golden changed. Tried by hand: `< /dev/null` exits 2 with the message; under `script(1)` the form draws each step heading, the help above each question, a hint beside each choice, and Ctrl+C prints "cancelled: nothing was written", exit 2, no `DIR`. Done differently, accepted in review unless the owner says otherwise: the form returns flag-style answers and `runBrief` writes them, so byte identity holds by construction (G23: an answer left at its default is omitted); going back is from the summary screen, as COMMANDS.md says; `--language` fixes the form's language for the run; the number and word checks moved to `src/core/brief/questions.ts`, shared by the flags and the form; the form's own words (steps, summary, validation) are in `src/cli/brief-tui.ts` in `en` and `vi`.
 
-1. **3i with Sonnet** (the owner's go, 2026-11-03; G12 and G23 to G25 decided).
+**3i's gaps, for the owner:**
+
+**G26. Which error wins without a terminal** (3h). The terminal check runs before the flags are checked, so `quiz brief d --tui --purpose exam < /dev/null` says "needs an interactive terminal", not that `exam` is not a purpose. Both exit 2. **Recommend:** check the flags first: an agent that prepares a form learns of its own mistake whatever terminal it has; COMMANDS.md's exit list gains the order (flags, then `brief.yaml` exists, then the terminal).
+
+**G27. "Nothing selected" in a select** (3i). COMMANDS.md says purpose and scope "start with nothing selected". Scope does; clack's select always has its cursor on the first row, so Enter on purpose picks **Self-study**. Nothing is pre-chosen and the summary lists it, but one key gives an answer recorded `user`. **Recommend:** accept, and say so in COMMANDS.md ("nothing is pre-chosen; the cursor starts on the first choice, and the summary shows the answer before anything is written"). The other way, a "Choose one" row that cannot be confirmed, is clack against its grain.
+
+**G28. The step heading** (3i). COMMANDS.md's example is *Quiz 1/2*; the form shows "Step 1/2: About the material" (the section's title from the question file). **Recommend:** accept; COMMANDS.md's example becomes "Step 1/2: About the material".
+
+**G29. A terminal that reports no width** (3h). Under `script(1)` the width starts at 0 and clack then draws one character per line; the test sets `stty cols 100` first. A real terminal reporting 0 (some serial consoles, some CI shells with a pty) would see the same. **Recommend:** the form falls back to 80 columns when the width is 0 or missing; a unit test with a 0-column output stream.
+
+
+
+1. **The owner decides G26 to G29** (3i's gaps, above). They go into COMMANDS.md and become the next slice's first tasks; 3j's brief comes next, since it needs no board.
 2. **Whenever the owner is ready:** the form boards on the Design canvas (3v, G7), as 2v did for the page. Only 3e, 3f and 3h wait for them.
 
 ### Open proposals carried over from step 2
