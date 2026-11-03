@@ -370,22 +370,16 @@ code {
 }
 .page-head {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 0 16px;
+  flex-direction: column;
+  gap: 2px;
   border-bottom: 2px solid #000;
   padding-bottom: 6px;
 }
+/* a page after the paper (the materials, the key): its own title on the first line, the quiz and its version under it;
+   both wrap as long as they need, so no title is too long */
 .page-title {
   font-size: 15pt;
   font-weight: 700;
-  white-space: nowrap;
-}
-/* the quiz and its version keep to one line; when the title leaves no room they drop below it, at the right */
-.page-sub {
-  margin-left: auto;
-  text-align: right;
 }
 .detach {
   font-size: 9.5pt;

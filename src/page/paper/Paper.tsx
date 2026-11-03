@@ -438,12 +438,12 @@ function Sheet({ d, t }: { d: PaperData; t: T }) {
   );
 }
 
-/** The head of a page after the paper: its title at the left, the quiz and its version at the right, a 2px rule. */
+/** The head of a page after the paper: its title on its own line, the quiz and its version under it, a 2px rule. */
 function PageHead({ title, d, t }: { title: string; d: PaperData; t: T }) {
   return (
     <div class="page-head">
-      <span class="page-title">{title}</span>
-      <span class="page-sub">{versionLine(d, t)}</span>
+      <div class="page-title">{title}</div>
+      <div class="page-sub">{versionLine(d, t)}</div>
     </div>
   );
 }
