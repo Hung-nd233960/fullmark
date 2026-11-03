@@ -217,6 +217,7 @@ These are written up in `proposals/`. They are ideas, not promises, and nothing 
 | [reference-sheet.md](proposals/reference-sheet.md) | Reference sheets (formulas, constants, unit conversion tables) the learner opens during a quiz, appended to printed papers | adopted in v1 (2026-10-28) as quiz-level `materials`: Markdown sheets in a docked sidebar and on a printed page |
 | [library-query.md](proposals/library-query.md) | Filter terms on `library list` (`tag:fourier score:<70 -taken:never`), with `--names` for batch use | adopted in v1: the field names of `library list --json` |
 | [vi-typo-check.md](proposals/vi-typo-check.md) | Rules that catch impossible Vietnamese syllables | the rule registry |
+| [build-log.md](proposals/build-log.md) | `--log FILE` (the `--json` lines appended to a file, for `--watch` too) and a record beside a printed paper proving which paper and key went out | `build --json`, deterministic builds |
 | [cli_integration.md](proposals/cli_integration.md) | Shell completion, prediction, a tldr page, a prompt segment | none needed |
 | [interactions.md](proposals/interactions.md) | Open questions about how the features combine | |
 
