@@ -223,3 +223,26 @@ describe("stats: criteria from the fixture reports (made by `quiz grade --json`)
     }
   });
 });
+
+describe("stats: a report whose question has an empty id (G21)", () => {
+  it("exits 1 with the fix, since such questions would merge under one key", async () => {
+    const { mkdtempSync, writeFileSync, rmSync } = await import("node:fs");
+    const { tmpdir } = await import("node:os");
+    const { runStats } = await import("../src/cli/stats");
+    const { capture } = await import("./helpers/cli");
+    const dir = mkdtempSync(join(tmpdir(), "fullmark-stats-"));
+    try {
+      const names = readdirSync(resolve(__dirname, "fixtures/stats/reports")).sort();
+      const report = JSON.parse(readFileSync(resolve(__dirname, "fixtures/stats/reports", names[0] as string), "utf8"));
+      report.questions[0].id = "";
+      writeFileSync(join(dir, "a-report.json"), JSON.stringify(report));
+      writeFileSync(join(dir, "b-report.json"), JSON.stringify(report));
+      const c = capture(dir);
+      const code = runStats(["a-report.json", "b-report.json"], { quiz: null, json: false }, c.io);
+      expect(code).toBe(1);
+      expect(c.err.join("\n")).toContain("run `quiz ids FILE`, then make it again with `quiz grade --json`");
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+});

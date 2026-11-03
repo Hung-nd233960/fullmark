@@ -143,3 +143,15 @@ describe("the brief question file", () => {
     expect(file.questions.filter((q) => q.optional).map((q) => q.key)).toEqual(["commitment"]);
   });
 });
+
+describe("the question file's schema covers the fields COMMANDS.md names (G22)", () => {
+  it("accepts flag, optional, min, max, default-by-purpose, default-for, sections and a follow-up, and uses them", () => {
+    expect(file.sections.map((s) => s.id).length).toBeGreaterThan(0);
+    const q = (key: string) => file.questions.find((x) => x.key === key);
+    expect(file.questions.every((x) => x.flag !== "")).toBe(true);
+    expect(q("commitment")).toMatchObject({ optional: true, min: 0, max: 100 });
+    expect(q("profile")?.["default-by-purpose"]).toBeDefined();
+    expect(q("mix")?.choices?.some((c) => c["default-for"] !== undefined)).toBe(true);
+    expect(q("content.kinds")?.["follow-up"]?.key).toBe("kinds_other");
+  });
+});

@@ -243,3 +243,13 @@ describe("the machine config's defaults per purpose", () => {
     }
   });
 });
+
+describe("decisions pinned from 3g's review", () => {
+  it("G20: --accept-defaults leaves commitment as default, since 0 is no goal", async () => {
+    const dir = tree();
+    await run(dir, { purpose: null, acceptDefaults: true });
+    const brief = readBrief(readFileSync(join(dir, "d/brief.yaml"), "utf8"), "brief.yaml").brief;
+    expect(brief?.commitment).toBe(0);
+    expect(brief?.decided_by).toMatchObject({ purpose: "agent", commitment: "default" });
+  });
+});

@@ -91,6 +91,7 @@ brief.mode                quality  warning  the quiz's feedback, time limit or l
 brief.generated-by        quality  warning  a quiz written from a brief does not say which model wrote it
 brief.invalid             quality  warning  brief.yaml cannot be read, so the quiz was not held against it
 brief.no-history          quality  warning  the brief asks for weak topics, but quiz brief reads no history to find them
+brief.vague               quality  warning  a text answer in the brief is shorter than its question asks for
 materials.empty           quality  warning  a materials sheet with nothing after its heading (raised when `check` loads the sheet)
 build.font-not-embedded   quality  warning  a locked look names a font the page does not embed (checked by `build`, from `--fonts none`)
 build.size                quality  warning  the built page is large (checked by `build`, from step 2 of the order of work)

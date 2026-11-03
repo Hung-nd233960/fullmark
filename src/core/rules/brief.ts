@@ -222,4 +222,14 @@ export const BRIEF_RULES: QualityRule[] = [
     // given by `quiz brief --weak-topics yes`, never by `check`
     run: () => [],
   }),
+  rule({
+    id: "brief.vague",
+    level: "warning",
+    summary: "a text answer in the brief is shorter than its question asks for",
+    why: "A one-word scope does not say what the quiz covers, so the agent has to guess; the question file gives each text answer a minimum and an example.",
+    example: `${BRIEF_EXAMPLE} quiz brief --scope signals`,
+    fix: "ask the user again, with the example from the question file, and write the brief again",
+    // given by `quiz brief` through flags (a form asks again instead), never by `check`
+    run: () => [],
+  }),
 ];
