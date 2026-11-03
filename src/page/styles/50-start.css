@@ -98,6 +98,12 @@
     color: var(--muted);
   }
 
+  /* the served page's line under the body: it belongs to it, so it closes up the gap between them */
+  .fm-submit-body + .fm-submit-served {
+    margin: -8px 0 14px;
+    color: var(--muted);
+  }
+
   .fm-submit-summary {
     display: flex;
     flex-direction: column;

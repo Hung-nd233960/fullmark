@@ -252,6 +252,22 @@
     align-items: center;
   }
 
+  .fm-sent {
+    display: inline-flex;
+    gap: 6px;
+    align-items: center;
+    font-weight: 700;
+    color: var(--ok);
+  }
+
+  .fm-send-failed {
+    flex-basis: 100%;
+    margin: 0;
+    padding-left: 10px;
+    color: var(--bad);
+    border-left: 3px solid var(--bad);
+  }
+
   .fm-nothing-missed {
     margin: 0;
     font-weight: 700;

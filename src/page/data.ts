@@ -2,6 +2,7 @@ import type { FontId } from "../core/fonts";
 import type { Quiz } from "../core/ir";
 import { decodeKey } from "../core/keyblob";
 import type { Choice } from "../core/themes";
+import type { Saved } from "./saved";
 
 /**
  * What the page needs of a quiz (TECHNICAL_DESIGN.md, section 7, "Seams for later features": a page holds a list of
@@ -140,11 +141,21 @@ export type PageQuiz = {
   hasMath?: true;
 };
 
-/** `focus`: tick the start screen's Focus mode box (step 3's `--focus`; `build` never sets it) */
+/**
+ * `focus`: tick the start screen's Focus mode box (`serve --focus`; `build` never sets it). `served`, `section` and
+ * `autosave` are set only by `src/serve/`: a page `build` writes never has them, so it holds nothing of a server.
+ */
 export type PageData = {
   version: 1;
   quizzes: PageQuiz[];
   focus?: true;
+  /** the page is served by `quiz serve` (the Submit dialog says where the answers go; Sent replaces Download results) */
+  served?: true;
+  /** `serve --section`: the id of the one section the page offers; the start screen has no picker and Start plans it */
+  section?: string;
+  /** `serve --autosave`: the attempt lives in a file, not in the browser's storage; `saved` is what the file held */
+  autosave?: true;
+  saved?: Saved;
   /** the quiz's recommended `theme` (the first quiz's, on a page of several): the page opens in it (absent: `auto`) */
   theme?: Choice;
   /** `free`: the Appearance menu; `locked`: no menu, and a stored look is ignored (absent: `free`) */

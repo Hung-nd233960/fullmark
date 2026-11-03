@@ -18,10 +18,16 @@ if (dataElement && root) {
   // first: the theme, so the page never shows another one than the learner's
   applyLook(store);
   hydrate(<App store={store} />, root);
+  (window as unknown as { fullmark: unknown }).fullmark = { events: store.events, autosave: store.autosave };
   // after hydration, so the first render is the one the build made: then a saved attempt is restored over it
-  store.restore();
-  store.run();
-  installKeys(store);
-  (window as unknown as { fullmark: unknown }).fullmark = { events: store.events };
-  store.events.emit("ready", { quizIds: [...store.quizzes.keys()] });
+  const start = (): void => {
+    store.restore();
+    store.run();
+    installKeys(store);
+    store.events.emit("ready", { quizIds: [...store.quizzes.keys()] });
+  };
+  // a served page has a second script (the server module) after this one: it is listening before anything is emitted,
+  // so a restored attempt that is submitted on the spot (its deadline passed) is heard
+  if (store.served && document.readyState === "loading") document.addEventListener("DOMContentLoaded", start);
+  else start();
 }

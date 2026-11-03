@@ -146,6 +146,7 @@ export const en = {
     ruleTimeoutBody: "Your answers are submitted as they are.",
     ruleSaved: "Saved as you go",
     ruleSavedBody: "In this browser, so you can close the page and come back.",
+    ruleSavedFileBody: "In a file on this computer, so you can close the page and come back.",
     ruleNotSaved: "Not saved",
     focusModeDetail:
       "Full screen with the sidebar closed; the time stays in the top bar. Press F to switch it, Esc to leave full screen.",
@@ -161,6 +162,7 @@ export const en = {
     // survey wording: later
     submitTitle: "Submit your answers?",
     submitBody: "You can't change them after this.",
+    submitServed: "Your answers will be sent to fullmark.",
     submitAnswered: (n: number, total: number) => `${n} of ${total} answered`,
     submitUnanswered: (n: number) => `${n} not answered`,
     submitLeft: (clock: string) => `${clock} left on the clock`,
@@ -284,6 +286,8 @@ export const en = {
     retryBody: "This replaces your results. Download them first if you want to keep them.",
     nothingMissed: "Nothing missed",
     download: "Download results",
+    sent: "Sent",
+    sendFailed: "Could not save the results. Use Download results to keep them.",
     flagForReview: "Flag for review",
     flaggedMark: "Flagged",
     sidebarLabel: "Questions",

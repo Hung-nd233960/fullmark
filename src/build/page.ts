@@ -25,6 +25,7 @@ import type {
 } from "../page/data";
 import { LicencesDialog } from "../page/Licences";
 import { messagesFor } from "../page/questions/shared";
+import type { Saved } from "../page/saved";
 import { createStore } from "../page/store";
 import { fontDataUri } from "./fonts";
 import type { Highlight } from "./highlight";
@@ -77,6 +78,12 @@ export type PageOptions = {
    * all (foundation 9).
    */
   serveModule?: string;
+  /**
+   * Only with `serveModule`: what `quiz serve` asks of the page. `section` (a section's id) leaves that part alone on
+   * the page; `autosave` keeps the attempt out of the browser's storage, and `saved` is the attempt the server's file
+   * held (the start screen offers it as Continue). A shared page has none of this in its data.
+   */
+  served?: { focus?: boolean; section?: string; autosave?: boolean; saved?: Saved };
   /** turns a registry font file's package path into a `data:` URI; absent: read from the npm package */
   fontData?: (path: string) => string;
 };
@@ -404,6 +411,17 @@ export function buildPage(quizzes: readonly BuildQuiz[], options: PageOptions): 
     font: (quizzes[0] as BuildQuiz).quiz.frontMatter.font,
     fonts: offeredFonts(options.fonts ?? "quiz", (quizzes[0] as BuildQuiz).quiz.frontMatter.font),
   };
+  if (options.serveModule !== undefined) {
+    const asked = options.served ?? {};
+    data.served = true;
+    if (asked.focus === true) data.focus = true;
+    if (asked.section !== undefined) {
+      data.section = asked.section;
+      for (const q of data.quizzes) q.sections = q.sections.filter((s) => s.id === asked.section);
+    }
+    if (asked.autosave === true) data.autosave = true;
+    if (asked.saved !== undefined) data.saved = asked.saved;
+  }
   // the token CSS comes from the theme registry, with the quiz's theme as the plain `:root` rule; the rest is the page's
   const front = (quizzes[0] as BuildQuiz).quiz.frontMatter;
   const choice = options.fonts ?? "quiz";

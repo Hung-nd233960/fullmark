@@ -2,7 +2,6 @@ import { readdirSync, readFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 import { buildPage, type PageOptions } from "../../src/build/page";
-import { serveMessages, serveMessagesFor } from "../../src/serve/messages";
 import { build } from "../helpers/page";
 
 /**
@@ -29,9 +28,19 @@ describe("a shared page carries no server code", () => {
     expect(cspOf(plain)).not.toContain("connect-src");
     expect(plain.match(/<script>/g)).toHaveLength(1);
     expect(plain).not.toContain(serveModule);
-    expect(plain).not.toContain("data-fm-serve");
     expect(plain).not.toContain("./submit");
+    expect(plain).not.toContain("./progress");
     expect(plain).not.toContain("fetch(");
+  });
+
+  it("has a PageData with no `served`, and a runtime with nothing that emits `sent` or `send-failed`", () => {
+    const data = /<script type="application\/json" id="fm-data">([\s\S]*?)<\/script>/.exec(plain)?.[1] ?? "";
+    const parsed = JSON.parse(data) as Record<string, unknown>;
+    for (const key of ["served", "section", "autosave", "saved", "focus"]) expect(parsed).not.toHaveProperty(key);
+    // the page only listens for the two events; the module is the one that emits them
+    expect(runtime).not.toMatch(/emit\(["']sent["']/);
+    expect(runtime).not.toMatch(/emit\(["']send-failed["']/);
+    expect(serveModule).toMatch(/emit\(.{0,12}["']send-failed["']/);
   });
 
   it("is the same bytes with the option absent or undefined", () => {
@@ -60,14 +69,13 @@ describe("the served page", () => {
     expect(csp).toContain("connect-src 'self'");
     const scripts = /script-src ([^;]*)/.exec(csp)?.[1]?.split(" ") ?? [];
     expect(scripts).toHaveLength(2);
-    expect(served).toContain("data-fm-serve");
   });
 
-  it("differs from the shared page by the module, its hash and connect-src, and nothing else", () => {
+  it("differs from the shared page by the module, its hash, connect-src and `served: true`, and nothing else", () => {
     const withoutModule = served.replace(`<script>${serveModule}</script>\n`, "");
     const csp = cspOf(served);
     const base = cspOf(plain);
-    const stripped = withoutModule.replace(csp, base);
+    const stripped = withoutModule.replace(csp, base).replace(',"served":true', "");
     expect(stripped).toBe(plain);
     expect(csp.replace(/ 'sha256-[^']*'(?=;)/, "").replace("; connect-src 'self'", "")).toBe(base);
   });
@@ -77,17 +85,56 @@ describe("the served page", () => {
   });
 });
 
-describe("the module's messages", () => {
-  it("has the same keys in English and Vietnamese, and picks by the page's lang", () => {
-    expect(Object.keys(serveMessages.vi)).toEqual(Object.keys(serveMessages.en));
-    expect(serveMessagesFor("vi")).toBe(serveMessages.vi);
-    expect(serveMessagesFor("vi-VN")).toBe(serveMessages.vi);
-    expect(serveMessagesFor("en")).toBe(serveMessages.en);
-    expect(serveMessagesFor("")).toBe(serveMessages.en);
+describe("what `quiz serve` asks of the page", () => {
+  const dataOf = (html: string): Record<string, unknown> =>
+    JSON.parse(/<script type="application\/json" id="fm-data">([\s\S]*?)<\/script>/.exec(html)?.[1] ?? "");
+  const two = build(
+    [
+      "---",
+      "title: Two parts",
+      "---",
+      "",
+      "# Algebra",
+      "",
+      "## One {type=single id=a}",
+      "",
+      "- [x] Yes",
+      "- [ ] No",
+      "",
+      "# Geometry",
+      "",
+      "## Two {type=single id=b}",
+      "",
+      "- [x] Yes",
+      "- [ ] No",
+      "",
+    ].join("\n"),
+  );
+
+  it("`focus` ticks the box and `served` is set, and nothing else is added", () => {
+    const data = dataOf(buildPage([two], { ...options, serveModule, served: { focus: true } }));
+    expect(data.served).toBe(true);
+    expect(data.focus).toBe(true);
+    expect(data).not.toHaveProperty("section");
+    expect(data).not.toHaveProperty("autosave");
   });
-  it("names Download results as the page's own button is named", async () => {
-    const { en, vi } = await import("../../src/core/i18n");
-    expect(serveMessages.en.failed).toContain(en.page.download);
-    expect(serveMessages.vi.failed).toContain(vi.page.download);
+
+  it("`section` leaves that one section on the page, and the key still holds them all", () => {
+    const data = dataOf(buildPage([two], { ...options, serveModule, served: { section: "geometry" } }));
+    expect(data.section).toBe("geometry");
+    const sections = (data.quizzes as { sections: { id: string }[] }[])[0]?.sections.map((x) => x.id);
+    expect(sections).toEqual(["geometry"]);
+  });
+
+  it("`autosave` and `saved` go into the data only on a served page", () => {
+    const saved = { v: 1 as const, startMs: null, attempt: { quizHash: two.hash ?? "", phase: "answering" as const } };
+    const data = dataOf(
+      buildPage([two], { ...options, serveModule, served: { autosave: true, saved: saved as never } }),
+    );
+    expect(data.autosave).toBe(true);
+    expect(data).toHaveProperty("saved");
+    const shared = dataOf(buildPage([two], { ...options, served: { autosave: true } }));
+    expect(shared).not.toHaveProperty("served");
+    expect(shared).not.toHaveProperty("autosave");
   });
 });

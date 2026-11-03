@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "preact/hooks";
+import { useLayoutEffect, useRef } from "preact/hooks";
 import { readAnswer } from "../../core/attempt/answers";
 import type { PageQuestion } from "../data";
 import { acceptedNumber, CommaWarning, type Ctx, Html, wantsPoint } from "./shared";
@@ -8,14 +8,16 @@ type BlanksQuestion = Extract<PageQuestion, { type: "blanks" }>;
 /**
  * The prompt's blanks are `<input>`s written into its HTML at build. Preact does not render inside that HTML: the
  * component sits in the card's prompt slot (so the hint comes after it), listens at the prompt (event delegation)
- * and, after each render, sets the boxes' value, `disabled` and result from the stored answer and the grader's word.
+ * and, after each render, sets the boxes' value, `disabled` and result from the stored answer and the grader's word. It
+ * does so in a layout effect, in the same commit as the render: a post-paint effect (`useEffect`) would leave the boxes
+ * unmarked for a frame after Submit, and waits on `requestAnimationFrame`, which a busy or hidden page delays.
  */
 export function BlanksPrompt({ q, c }: { q: BlanksQuestion; c: Ctx }) {
   const root = useRef<HTMLDivElement>(null);
   const given = readAnswer("blanks", c.answer)?.blanks ?? [];
   const results = c.submitted ? (c.result?.results ?? []) : [];
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     root.current?.querySelectorAll<HTMLInputElement>("input.fm-blank").forEach((el) => {
       const i = Number(el.dataset.blank);
       const text = given[i] ?? "";

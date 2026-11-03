@@ -117,7 +117,7 @@ function Facts({ t, page }: { t: PageMessages; page: PageQuiz }) {
 }
 
 /** The rules cells: feedback, what happens at the deadline (timed quizzes), and whether the attempt is saved. */
-function Rules({ t, state }: { t: PageMessages; state: QuizState }) {
+function Rules({ t, state, autosave }: { t: PageMessages; state: QuizState; autosave: boolean }) {
   const page = state.page;
   const blocked = state.blocked.value;
   const cells: {
@@ -164,7 +164,7 @@ function Rules({ t, state }: { t: PageMessages; state: QuizState }) {
           id: "saved",
           icon: "save",
           title: t.ruleSaved,
-          body: t.ruleSavedBody,
+          body: autosave ? t.ruleSavedFileBody : t.ruleSavedBody,
         },
   );
   return (
@@ -627,8 +627,8 @@ function QuizView({ state, api, store, last }: { state: QuizState; api: Api; sto
           {attempt.phase === "start" ? (
             <>
               <Facts t={t} page={page} />
-              {state.resume.value === null ? <Picker t={t} state={state} /> : null}
-              <Rules t={t} state={state} />
+              {state.resume.value === null && store.section === undefined ? <Picker t={t} state={state} /> : null}
+              <Rules t={t} state={state} autosave={store.autosave} />
               <FocusBox t={t} store={store} />
               {state.resume.value === null ? (
                 <div class="fm-start">
@@ -666,6 +666,8 @@ function QuizView({ state, api, store, last }: { state: QuizState; api: Api; sto
                   onNew={() => store.newAttempt(page.id)}
                   onRetry={() => store.retry(page.id)}
                   replaying={state.replay.value !== null}
+                  served={store.served}
+                  delivery={state.delivery.value}
                 />
               ) : null}
             </>

@@ -8,6 +8,10 @@ export type PageEvents = {
   ready: { quizIds: string[] };
   progress: { quizId: string; attempt: Attempt };
   submit: { quizId: string; attempt: Attempt };
+  /** emitted by the server module (never by the page) once the server has taken a submit */
+  sent: { quizId?: string };
+  /** emitted by the server module when the server could not take a submit */
+  "send-failed": { quizId?: string };
 };
 
 type Listener<K extends keyof PageEvents> = (event: PageEvents[K]) => void;

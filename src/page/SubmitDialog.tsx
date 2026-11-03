@@ -94,6 +94,11 @@ export function SubmitDialog({
     >
       <h2 id={`${id}/submit-title`}>{t.submitTitle}</h2>
       <p class="fm-submit-body">{t.submitBody}</p>
+      {store.served ? (
+        <p class="fm-submit-served" data-served-line>
+          {t.submitServed}
+        </p>
+      ) : null}
       <ul class="fm-submit-summary">
         {submitSummary(t, state).map((line) => (
           <li key={line.kind} data-line={line.kind}>

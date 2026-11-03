@@ -20,6 +20,7 @@ import {
   readLook,
   readSaved,
   replayAttemptKey,
+  type Saved,
   type Saver,
   saverOver,
   saveText,
@@ -71,6 +72,8 @@ export type QuizState = {
   sheet: Signal<number>;
   /** the start screen's Materials panel is open */
   shelf: Signal<boolean>;
+  /** a served page: whether the server took the submitted attempt (the module says so through `sent` and `send-failed`) */
+  delivery: Signal<"waiting" | "sent" | "failed">;
 };
 
 /** The browser's screen, for Focus mode: set once the page is running, never at build */
@@ -132,6 +135,12 @@ export type StartOptions = { part?: string | null; seed?: string; now?: Date };
 
 export type Store = {
   events: Events;
+  /** the page is served by `quiz serve` (`PageData.served`) */
+  served: boolean;
+  /** the attempt lives in a file the server keeps, not in the browser's storage (`PageData.autosave`) */
+  autosave: boolean;
+  /** `serve --section`: the one section the page offers (its id) */
+  section: string | undefined;
   screen: Screen;
   look: Look;
   /** `Map<QuizId, Attempt>` (TECHNICAL_DESIGN.md, seam 2), with the rest of each quiz's state beside it */
@@ -312,11 +321,13 @@ export function createStore(data: PageData, deps: Deps = {}): Store {
   const runs = new Map<string, Run>();
   /** the section of every question, per quiz */
   const sectionOf = new Map<string, Map<string, string>>();
-  const saver: Saver | null = deps.storage
-    ? saverOver(deps.storage, () => {
-        for (const state of quizzes.values()) state.blocked.value = true;
-      })
-    : null;
+  // under `serve --autosave` the file is the one copy of the attempt: the browser's storage is not used
+  const saver: Saver | null =
+    deps.storage && data.autosave !== true
+      ? saverOver(deps.storage, () => {
+          for (const state of quizzes.values()) state.blocked.value = true;
+        })
+      : null;
 
   for (const page of data.quizzes) {
     const ids = page.sections.flatMap((s) => s.questions.map((q) => q.id));
@@ -329,7 +340,8 @@ export function createStore(data: PageData, deps: Deps = {}): Store {
       replay: signal(null),
       key: signal(null),
       startedAt: null,
-      part: signal(null),
+      // `serve --section`: the page offers this one part and Start plans it
+      part: signal(data.section ?? null),
       resume: signal(null),
       blocked: signal(false),
       elapsed: signal(0),
@@ -344,6 +356,7 @@ export function createStore(data: PageData, deps: Deps = {}): Store {
       side: signal("questions"),
       sheet: signal(0),
       shelf: signal(false),
+      delivery: signal("waiting"),
     });
   }
   const need = (quizId: string): QuizState => {
@@ -513,6 +526,7 @@ export function createStore(data: PageData, deps: Deps = {}): Store {
     state.startedAt = null;
     state.part.value = null;
     state.resume.value = null;
+    state.delivery.value = "waiting";
     state.elapsed.value = 0;
     state.said.value = "";
     state.checks.value = {};
@@ -534,9 +548,51 @@ export function createStore(data: PageData, deps: Deps = {}): Store {
     grading(state, attempt);
   }
 
+  // the server module (when the page has one) says whether it could hand the submit over
+  events.on("sent", ({ quizId }) => {
+    for (const state of quizzes.values()) {
+      if ((quizId === undefined || quizId === state.page.id) && state.attempt.value.phase === "submitted") {
+        state.delivery.value = "sent";
+      }
+    }
+  });
+  events.on("send-failed", ({ quizId }) => {
+    for (const state of quizzes.values()) {
+      if ((quizId === undefined || quizId === state.page.id) && state.attempt.value.phase === "submitted") {
+        state.delivery.value = "failed";
+      }
+    }
+  });
+
+  /** A saved attempt found on start: shown, submitted now (its deadline passed) or offered as Continue. */
+  const offerSaved = (state: QuizState, saved: Saved, at: number): void => {
+    const { attempt, startMs } = saved;
+    const page = state.page;
+    const limit = limitOf(page, attempt);
+    if (attempt.phase === "submitted") {
+      state.attempt.value = attempt;
+      state.startedAt = startMs;
+      grading(state, attempt);
+      return;
+    }
+    const started = startMs ?? at;
+    if (limit !== undefined && at >= started + limit * 1000) {
+      // the deadline passed while the page was closed: the attempt is submitted now, as of the deadline
+      state.attempt.value = attempt;
+      state.startedAt = started;
+      beginRun(state, started, at);
+      finish(state, at, true);
+      return;
+    }
+    state.resume.value = resumeOf(page, attempt, started);
+  };
+
   const store: Store = {
     look,
     events,
+    served: data.served === true,
+    autosave: data.autosave === true,
+    section: data.section,
     screen,
     quizzes,
     dispatch(quizId, action) {
@@ -564,7 +620,7 @@ export function createStore(data: PageData, deps: Deps = {}): Store {
       const o = options instanceof Date ? { now: options } : options;
       const at = o.now?.getTime() ?? now();
       const key = keyOf(state);
-      const part = o.part ?? null;
+      const part = o.part === undefined ? state.part.value : o.part;
       const seed = o.seed ?? drawSeed(bytes);
       const plan: Plan =
         part === null
@@ -636,6 +692,22 @@ export function createStore(data: PageData, deps: Deps = {}): Store {
         state.sidebar.value = sidebarStart(saver?.get(sidebarKey(state.page)) ?? null, width);
       }
       look.load();
+      if (data.autosave === true) {
+        // `serve --autosave`: the server's file stands in for the browser's storage, and is offered as Continue
+        const text = data.saved === undefined ? null : JSON.stringify(data.saved);
+        for (const state of quizzes.values()) {
+          const saved = readSaved(text, state.page);
+          if (saved === null) continue;
+          // the file holds the attempt's zoneless local start time (a results file has no millisecond clock)
+          const started = saved.attempt.state.startedAt;
+          offerSaved(
+            state,
+            saved.startMs === null && started !== null ? { ...saved, startMs: new Date(started).getTime() } : saved,
+            now(),
+          );
+        }
+        return;
+      }
       if (saver === null) return;
       // the probe: a browser that refuses to save says so now, not at the first answer
       saver.set("fullmark:v1:probe", "1");
@@ -666,24 +738,7 @@ export function createStore(data: PageData, deps: Deps = {}): Store {
           if (text !== null) saver.remove(mine);
           continue;
         }
-        const { attempt, startMs } = saved;
-        const limit = limitOf(page, attempt);
-        if (attempt.phase === "submitted") {
-          state.attempt.value = attempt;
-          state.startedAt = startMs;
-          grading(state, attempt);
-          continue;
-        }
-        const started = startMs ?? at;
-        if (limit !== undefined && at >= started + limit * 1000) {
-          // the deadline passed while the page was closed: the attempt is submitted now, as of the deadline
-          state.attempt.value = attempt;
-          state.startedAt = started;
-          beginRun(state, started, at);
-          finish(state, at, true);
-          continue;
-        }
-        state.resume.value = resumeOf(page, attempt, started);
+        offerSaved(state, saved, at);
       }
     },
     continueAttempt(quizId) {

@@ -70,6 +70,8 @@ export function ResultsCard({
   onNew,
   onRetry,
   replaying = false,
+  served = false,
+  delivery = "waiting",
 }: {
   page: PageQuiz;
   state: Pick<QuizState, "attempt">;
@@ -79,6 +81,9 @@ export function ResultsCard({
   onRetry(): void;
   /** a replay (`quiz replay`) has no Start screen to go back to: no New attempt */
   replaying?: boolean;
+  /** a served page: once the server has the results, **Sent** takes the place of Download results (not a button) */
+  served?: boolean;
+  delivery?: "waiting" | "sent" | "failed";
 }) {
   const t: PageMessages = messagesFor(page);
   const attempt = state.attempt.value;
@@ -182,15 +187,33 @@ export function ResultsCard({
             {t.nothingMissed}
           </p>
         ) : null}
-        <button type="button" class="fm-button" data-action="export" title={t.exportHint} onClick={onDownload}>
-          <Icon name="download" size={18} />
-          {t.download}
-        </button>
+        {served ? (
+          // the live region is always there, so that the word is announced when it appears
+          <span class="fm-delivery" aria-live="polite">
+            {delivery === "sent" ? (
+              <span class="fm-sent" data-sent>
+                <Icon name="check" size={18} />
+                {t.sent}
+              </span>
+            ) : null}
+          </span>
+        ) : null}
+        {delivery === "sent" ? null : (
+          <button type="button" class="fm-button" data-action="export" title={t.exportHint} onClick={onDownload}>
+            <Icon name="download" size={18} />
+            {t.download}
+          </button>
+        )}
         {replaying ? null : (
           <button type="button" class="fm-button" data-action="new-attempt" onClick={onNew}>
             {t.newAttempt}
           </button>
         )}
+        {delivery === "failed" ? (
+          <p class="fm-send-failed" role="alert" data-send-failed>
+            {t.sendFailed}
+          </p>
+        ) : null}
       </div>
       <dialog ref={dialog} class="fm-dialog" aria-labelledby={`${id}/retry-title`}>
         <h2 id={`${id}/retry-title`}>{t.retryQuestion}</h2>
