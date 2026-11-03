@@ -50,7 +50,7 @@ function bigQuiz(count = COUNT): string {
   return parts.join("\n");
 }
 
-test("a 300-question quiz with images is interactive within the budget", async ({ page }, info) => {
+test("a 300-question quiz with images is interactive within the budget", async ({ browser }, info) => {
   test.setTimeout(120_000);
   const dir = mkdtempSync(join(tmpdir(), "fm-budget-"));
   execFileSync(process.execPath, ["-e", `require("fs").mkdirSync(${JSON.stringify(join(dir, ".git"))})`]);
@@ -60,9 +60,13 @@ test("a 300-question quiz with images is interactive within the budget", async (
   run(dir, "build", "big.md", "--built-at", "2026-10-28T10:00:00+07:00");
   const url = `file:///${join(dir, "big.html").replaceAll("\\", "/")}`;
 
-  /** From the start of the navigation until the first choice stays chosen; a fresh page each time. */
+  /**
+   * From the start of the navigation until the first choice stays chosen. Each round is a fresh browser context: in
+   * one context the second round would find the first round's saved attempt and offer Continue, not Start.
+   */
   const measure = async (): Promise<number> => {
-    const fresh = await page.context().newPage();
+    const context = await browser.newContext();
+    const fresh = await context.newPage();
     // what the page said, so that a page that never starts says why
     const said: string[] = [];
     fresh.on("pageerror", (e) => said.push(`pageerror: ${e.message}`));
@@ -76,13 +80,13 @@ test("a 300-question quiz with images is interactive within the budget", async (
       const first = fresh.locator(".fm-question").first();
       while (!(await first.isVisible())) {
         if (performance.now() - start > 30_000) {
-          const start = await fresh.getByRole("button", { name: "Start" }).count();
+          const start = await fresh.getByRole("button", { name: "Start", exact: true }).count();
           throw new Error(
             `no question showed within 30 s (Start buttons on the page: ${start}); the page said:\n${said.join("\n") || "(nothing)"}`,
           );
         }
         await fresh
-          .getByRole("button", { name: "Start" })
+          .getByRole("button", { name: "Start", exact: true })
           .click({ timeout: 2000 })
           .catch(() => undefined);
       }
@@ -94,7 +98,7 @@ test("a 300-question quiz with images is interactive within the budget", async (
       await expect(fresh.locator(".fm-question img")).toHaveCount(COUNT / IMAGE_EVERY);
       return took;
     } finally {
-      await fresh.close();
+      await context.close();
     }
   };
 
@@ -102,7 +106,7 @@ test("a 300-question quiz with images is interactive within the budget", async (
   for (let round = 0; round < 2; round++) {
     times.push(await measure());
     console.log(
-      `budget: 300 questions: ${times.at(-1)?.toFixed(0)} ms (limit ${LIMIT_MS} ms), ${info.project.name} ${page.context().browser()?.version()}, ${process.platform} ${process.arch}`,
+      `budget: 300 questions: ${times.at(-1)?.toFixed(0)} ms (limit ${LIMIT_MS} ms), ${info.project.name} ${browser.version()}, ${process.platform} ${process.arch}`,
     );
     if ((times.at(-1) ?? Number.POSITIVE_INFINITY) < LIMIT_MS) break;
   }
