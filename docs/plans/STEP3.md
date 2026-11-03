@@ -15,7 +15,7 @@ As in step 2 ([STEP2.md](STEP2.md), Handoff): Opus writes a slice's full brief h
 | plan | approved (2026-11-03): gaps G1 to G4, G6, G7, G9, G10, G11 and G5 decided; G8 and G12 open; the slice order and 3a's brief approved | this file |
 | 3a the one-shot server and `quiz serve` | done, reviewed, gaps decided | `b9ca8c1`, `730a7ae` |
 | 3b 3a's fixes, `--section`, `--focus`, `--autosave` | done, reviewed, gaps decided | `7fa0ba3`..`4a1e0bf` |
-| 3c `inspect`, `new`, `template` | **brief drafted, waiting for the owner** (G8 for `inspect`, G13) | |
+| 3c `inspect`, `new`, `template` | with Sonnet | |
 
 Step 2 is closed (STEP2.md, item 75): every "Done when" criterion passes in Chromium and Firefox; Vitest 2059 of 2059, the 2 startup tests, Playwright and axe. What step 3 inherits:
 
@@ -34,7 +34,7 @@ Step 2 is closed (STEP2.md, item 75): every "Done when" criterion passes in Chro
 
 ### Next steps, in order
 
-1. **The owner approves 3c's brief** (below), with its G8 proposal for `inspect` and G13. Then 3c with Sonnet. G8 for `stats` comes with 3d's brief; G12 with 3i's.
+1. **3c with Sonnet** (brief approved with G8 for `inspect` and G13, 2026-11-03). G8 for `stats` comes with 3d's brief; G12 with 3i's.
 2. **Whenever the owner is ready:** the form boards on the Design canvas (3v, G7), as 2v did for the page. Only 3e, 3f and 3h wait for them.
 
 ### Open proposals carried over from step 2
@@ -77,7 +77,7 @@ The design docs leave these open. Each needs the owner's yes before the slice th
 
 **G7. The forms need boards** (3e, 3f, 3h). The Design canvas has none for `review`, `grade --web` or `brief --web`. **Decided by the owner on 2026-11-03:** the boards wait until the owner is ready, and the slices are reordered so only 3e, 3f and 3h wait for them. **Recommend:** the owner draws three boards (and their phone width) before 3e; they reuse the page's tokens, themes and fonts, follow `ui_lang` (`review`, `grade --web`) or `--language` (`brief`), and use the page's question rendering for `review` and `grade --web`. Until then the slices that need no design go first.
 
-**G8. `--json` and the human output of `inspect` and `stats`** (3c, 3d). COMMANDS.md gives `stats`'s top-level keys only and `inspect` none. **Recommend:** the shapes are proposed in each slice's brief and approved by the owner with it, then written into COMMANDS.md before Sonnet starts.
+**G8. `--json` and the human output of `inspect` and `stats`** (3c, 3d). COMMANDS.md gives `stats`'s top-level keys only and `inspect` none. **Decided by the owner on 2026-11-03 for `inspect`** (3c's brief, written into COMMANDS.md); `stats`' shape comes with 3d's brief. **Recommend:** the shapes are proposed in each slice's brief and approved by the owner with it, then written into COMMANDS.md before Sonnet starts.
 
 **G9. Interrupted and refused submits** (3a). **Decided by the owner on 2026-11-03, as recommended**, and written into the design docs. **Recommend:** Ctrl+C on a one-shot server prints `{"status": "interrupted"}` as the second `--json` line and exits 2; a POST that fails validation (wrong quiz id, a body that is not a valid attempt for this quiz) gets HTTP 400, the page says "could not save, use Export", and the server keeps waiting. A second submit after the first is never accepted (the server is closing).
 
@@ -85,7 +85,7 @@ The design docs leave these open. Each needs the owner's yes before the slice th
 
 **G11. The brief question file** (3g). Section 7 names it as YAML that people write; nothing gives its shape. **Decided by the owner on 2026-11-03, as recommended (YAML)**, and written into COMMANDS.md, `quiz brief`. **Recommend:** `src/brief/questions.yaml`, shipped in the bundle as data, one entry per brief key: `key`, `kind` (`choice`, `multi`, `text`, `number`), `label`, `help`, `choices` with a `hint` each, `min-words` with `example`, `follow-up` (for `other`), `human-only`, `default`, and `section` (the steps of `--tui`); every text in `en` and `vi`. A zod schema checks it in a unit test; the flags' `--help` text, the web form and the TUI all read it, so they cannot drift.
 
-**G13. A quiz started from a template keeps the template's ids** (3c). A built-in template is an example with a quiz `id` (`rust-basics`) and question ids; `new TEMPLATE` and `new --from FILE` "copy" it, so two quizzes would share a quiz id and question ids, and in step 4's library their histories would mix. **Recommend:** `new` without `--skeleton` copies everything except the identity: the front matter's `id` is removed (it then defaults to the new file's name, slugged) and every question's `id` is removed, and `new` ends by saying "run `quiz ids FILE` to give the questions ids". `--skeleton` already does this (QUIZ_SYNTAX.md, section 9). `template add` stores the quiz as given; the ids are dropped when a quiz is started from it.
+**G13. A quiz started from a template keeps the template's ids** (3c). A built-in template is an example with a quiz `id` (`rust-basics`) and question ids; `new TEMPLATE` and `new --from FILE` "copy" it, so two quizzes would share a quiz id and question ids, and in step 4's library their histories would mix. **Decided by the owner on 2026-11-03, as recommended**, and written into COMMANDS.md, `quiz new`. **Recommend:** `new` without `--skeleton` copies everything except the identity: the front matter's `id` is removed (it then defaults to the new file's name, slugged) and every question's `id` is removed, and `new` ends by saying "run `quiz ids FILE` to give the questions ids". `--skeleton` already does this (QUIZ_SYNTAX.md, section 9). `template add` stores the quiz as given; the ids are dropped when a quiz is started from it.
 
 **G12. `@clack/prompts`** (3i). A new runtime dependency, already named in section 3. **Recommend:** pinned exactly, MIT (in the allow-list), listed in `--acknowledgements` and `THIRD_PARTY_NOTICES.md`, loaded only by `brief --tui`, with the byte-identity test driving it through a pseudo-terminal (`node:child_process` with a scripted stdin) rather than a new test dependency. If clack cannot be driven that way, the slice stops and reports.
 
@@ -172,7 +172,7 @@ The order (owner, 2026-11-03) puts the server first, since four commands stand o
 
 ## Slice 3c: `start.spec.ts:202`, then `inspect`, `new` and `template`
 
-**Draft, for the owner to approve** (with G8 for `inspect`, and G13).
+**Approved by the owner on 2026-11-03**, with G8 for `inspect` and G13.
 
 ### Read first
 

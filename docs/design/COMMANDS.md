@@ -406,6 +406,19 @@ quiz inspect FILE [--review REVIEW] [--json]
 
 Summarises a quiz: question types, points, sections, tags, banks and the spread of answer positions. With `--review`, counts of kept, to fix and to drop.
 
+**Output** (owner, 2026-11-03). The quiz is checked first; whenever it parses, the summary is printed, then the issues as `check` prints them.
+
+```text
+rust-basics · Rust basics · version 9f3a
+18 questions · 25 points · 3 sections · time limit 25m
+Types      single 8 (10 points) · multi 3 (5) · code 2 (6) · essay 1 (4)
+Sections   ownership 6 questions, 8 points · collections 6, 10, pick 4 · traits 6, 7
+Tags       rust 18 · borrowing 5 · no tag 2
+Positions  A 5 · B 6 · C 3 · D 2
+```
+
+Points count a bank's `pick`, not its pool. **Positions** counts the correct choices of `single` and `multi` questions by letter, in source order, as `answers.position-skew` does. `--json`: `{"status": "done" | "failed", "quiz": {"id", "title", "hash", "short"}, "questions", "points", "timeLimit", "types": [{"type", "count", "points"}], "sections": [{"id", "title", "questions", "points", "pick", "time"}], "tags": [{"tag", "count", "points"}], "positions": {"A": 5, …}, "review", "errors", "warnings"}`; `review` is `{"keep", "fix", "drop", "notJudged"}` with `--review`, else null.
+
 Exit: `0` done, `1` check errors, `2` I/O error.
 
 ### quiz new
@@ -417,7 +430,7 @@ quiz new TEMPLATE [PATH]
 quiz new --from FILE [--skeleton] [PATH]
 ```
 
-Copies a template and its assets to `PATH` (default: the current folder). Never overwrites: an existing file exits 2.
+Copies a template and its assets to `PATH` (default: the current folder). Never overwrites: an existing file exits 2. **A new quiz gets its own identity** (owner, 2026-11-03): the copy drops the front matter's `id` (so it defaults to the new file's name, slugged) and every question's `id`, and `new` ends by saying to run `quiz ids FILE`. Otherwise two quizzes would share ids, and their histories would mix in a library. The built-in templates are built from `examples/` and `templates/blank/` into the package, so each has one source.
 
 | Option | Meaning |
 |---|---|
