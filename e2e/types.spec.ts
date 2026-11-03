@@ -25,6 +25,20 @@ async function arrange(list: Locator, target: number[]): Promise<void> {
 
 const exam = buildIn("examples/exam/quiz.md", "exam.md");
 
+// a failure of an attribute check (`data-result` on a blank, `readonly` on a code box) is shown with the page's own
+// state, so that a recurrence carries its cause: whether the page was visible and focused, and what the boxes held
+test.afterEach(async ({ page }, info) => {
+  if (info.status === info.expectedStatus || page.isClosed()) return;
+  const state = await page.evaluate(() => ({
+    visibility: document.visibilityState,
+    focused: document.hasFocus(),
+    phase: document.querySelector(".fm-quiz")?.getAttribute("data-phase") ?? null,
+    blanks: [...document.querySelectorAll('article[data-qid="b1"] input.fm-blank')].map((el) => el.outerHTML),
+    codeBox: document.querySelector('article[data-qid="k1"] textarea')?.outerHTML ?? null,
+  }));
+  await info.attach("page-state", { body: JSON.stringify(state, null, 2), contentType: "application/json" });
+});
+
 test("every simple type: status and points on the page equal quiz grade", async ({ page, context }) => {
   let blocked = 0;
   await context.route(/^https?:/, (route) => {
