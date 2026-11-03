@@ -1,6 +1,6 @@
 # fullmark 1.0 docs
 
-The design of fullmark 1.0 (the TypeScript rewrite) and the plans it is built from. The design docs say what 1.0 is; the plans say how it is being built, step by step. Where the two disagree, the design docs win.
+The design of fullmark 1.0 (the TypeScript rewrite) and the plans it is built from. The design docs say what 1.0 is; the plans say how it is being built, step by step. Where the two disagree, the design docs win. The design docs state what is decided, without dates; who decided it and when is in the plans and the git history.
 
 ## Where to start
 

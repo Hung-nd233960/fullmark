@@ -9,7 +9,7 @@ fullmark 1.0 is a TypeScript rewrite: Markdown quizzes in, one offline HTML page
 
 ## How the work runs
 
-- **Slices, briefs, reviews.** Each step is cut into slices. The planner writes a slice's full brief in the plan, the owner approves it, and one implementing agent builds it from the brief alone. The planner then reviews it, running the tests and trying it by hand, and brings every gap to the owner with a recommendation. The owner decides, the decision goes into `docs/design/`, and it becomes the next brief's first tasks.
+- **Slices, briefs, reviews.** Each step is cut into slices. The planner writes a slice's full brief in the plan, the owner approves it, and one implementing agent builds it from the brief alone. The planner then reviews it, running the tests and trying it by hand, and brings every gap to the owner with a recommendation. The owner decides, the decision goes into `docs/design/` as plain statements, with no "(owner, date)" marker (the plan and git record who decided what, and when), and it becomes the next brief's first tasks.
 - **Never decide a gap yourself.** If the design leaves something open, write it as a numbered gap (`G38`, …) in the plan's "Gaps" list, with a recommendation, and ask. A choice made while implementing is reported under "done differently" in the review, never left silent.
 - **Record as you go.** Update the Handoff's status table after every round, write each slice's review at the end of its section, and commit after each round.
 
