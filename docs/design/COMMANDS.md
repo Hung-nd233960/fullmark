@@ -280,6 +280,8 @@ quiz brief DIR [--web [--no-open] [--timeout SECONDS] [--port N] | --tui]
 
 Writes `DIR/brief.yaml` and an empty `DIR/content/` for a quiz an agent will write. One question file drives the flags, the `--web` form and the `--tui` form, so all three ask the same questions in the same words.
 
+**The question file** (owner, 2026-11-03) is `src/brief/questions.yaml`, shipped with fullmark and checked against a zod schema by a test. One entry per brief key: `key`, `kind` (`choice`, `multi`, `text` or `number`), `label` and `help`, `choices` each with a `label` and `hint`, `min-words` with an `example`, `follow-up` (the text box for *other*), `human-only`, `default`, and `section` (the steps of `--tui`). Every text is given in `en` and `vi`. The flags take their allowed values, defaults, detail rules and `--help` text from it; the forms take everything, in the language of `--language`.
+
 **Detail rules.** The question file can give a text answer a minimum (`min-words`, plus an example of a good answer). The scope needs at least 4 words, for example "lectures 3 to 5, the Fourier transform" rather than "signals". Both forms show the example and ask again when an answer is too short. Through flags, a short answer is accepted with a `brief.vague` warning, which `--json` lists, so the agent can go back to the user.
 
 | Option | Values | Default | Human-only |

@@ -12,7 +12,7 @@ As in step 2 ([STEP2.md](STEP2.md), Handoff): Opus writes a slice's full brief h
 
 | Slice | State | Commits |
 |---|---|---|
-| plan | **drafted, waiting for the owner**: the gaps below (G1 to G4 and G6 decided; G5 and G7 to G12 open), the slice order, and 3a's brief | this file |
+| plan | **drafted, waiting for the owner**: the gaps below (G1 to G4, G6, G7 and G11 decided; G5, G8, G9, G10 and G12 open) and 3a's brief; the slice order approved | this file |
 
 Step 2 is closed (STEP2.md, item 75): every "Done when" criterion passes in Chromium and Firefox; Vitest 2059 of 2059, the 2 startup tests, Playwright and axe. What step 3 inherits:
 
@@ -25,9 +25,8 @@ Step 2 is closed (STEP2.md, item 75): every "Done when" criterion passes in Chro
 
 ### Next steps, in order
 
-1. **The owner decides G5 and G7 to G12** (below; G1 to G4 and G6 decided 2026-11-03). Each has a recommendation.
-2. **The owner approves the slice order** and 3a's brief (below). Then 3a with Sonnet.
-3. **Before 3e (the first form):** the owner draws the form boards on the Design canvas (G7), as 2v did for the page. 3a to 3d need no new design.
+1. **The owner decides G9 and G10** (3a needs them) and approves 3a's brief (below). Then 3a with Sonnet. G5 is needed by 3b, G8 by 3c, G12 by 3i.
+2. **Whenever the owner is ready:** the form boards on the Design canvas (3v, G7), as 2v did for the page. Only 3e, 3f and 3h wait for them.
 
 ### Open proposals carried over from step 2
 
@@ -67,7 +66,7 @@ The design docs leave these open. Each needs the owner's yes before the slice th
 
 **G6. `build --watch` and `--serve`** (3j). The design says only "rebuild on change; keep the last good page; reload after each rebuild". **Decided by the owner on 2026-11-03, as recommended**, and written into the design docs. **Recommend:** `--watch` watches each `FILE`, the files its quiz hash covers (assets, `materials` and their assets) and the build file, debounced 100 ms; a rebuild that fails prints its errors and keeps the page on disk and in the server. `--serve` is not the one-shot server: it serves the last good page at a token URL until Ctrl+C, with the reload code as its only module (no submit, no autosave); the page learns of a rebuild by Server-Sent Events (`GET /events?token=…`) and reloads. Ctrl+C exits 0 (the user's normal way out), not 2 as for `serve`. `--watch` with `--print` is allowed and rebuilds the paper. `--serve` with several files serves an index of the pages.
 
-**G7. The forms need boards** (3e, 3f, 3h). The Design canvas has none for `review`, `grade --web` or `brief --web`. **Recommend:** the owner draws three boards (and their phone width) before 3e; they reuse the page's tokens, themes and fonts, follow `ui_lang` (`review`, `grade --web`) or `--language` (`brief`), and use the page's question rendering for `review` and `grade --web`. Until then the slices that need no design go first.
+**G7. The forms need boards** (3e, 3f, 3h). The Design canvas has none for `review`, `grade --web` or `brief --web`. **Decided by the owner on 2026-11-03:** the boards wait until the owner is ready, and the slices are reordered so only 3e, 3f and 3h wait for them. **Recommend:** the owner draws three boards (and their phone width) before 3e; they reuse the page's tokens, themes and fonts, follow `ui_lang` (`review`, `grade --web`) or `--language` (`brief`), and use the page's question rendering for `review` and `grade --web`. Until then the slices that need no design go first.
 
 **G8. `--json` and the human output of `inspect` and `stats`** (3c, 3d). COMMANDS.md gives `stats`'s top-level keys only and `inspect` none. **Recommend:** the shapes are proposed in each slice's brief and approved by the owner with it, then written into COMMANDS.md before Sonnet starts.
 
@@ -75,7 +74,7 @@ The design docs leave these open. Each needs the owner's yes before the slice th
 
 **G10. Where the browser module and the forms live in the bundle** (3a). **Recommend:** `dist/serve.js`, a second esbuild IIFE beside `dist/page.js`, built by `scripts/build-page.mjs` and read by `src/serve/` at run time, so `build` never reads it; its own entry in `scripts/bundles.mjs` and in the notices test. The forms are their own Preact entries (`dist/review.js`, `dist/grade-form.js`, `dist/brief-form.js`) sharing the page's components and styles, each under the 60 KB budget.
 
-**G11. The brief question file** (3g). Section 7 names it as YAML that people write; nothing gives its shape. **Recommend:** `src/brief/questions.yaml`, shipped in the bundle as data, one entry per brief key: `key`, `kind` (`choice`, `multi`, `text`, `number`), `label`, `help`, `choices` with a `hint` each, `min-words` with `example`, `follow-up` (for `other`), `human-only`, `default`, and `section` (the steps of `--tui`); every text in `en` and `vi`. A zod schema checks it in a unit test; the flags' `--help` text, the web form and the TUI all read it, so they cannot drift.
+**G11. The brief question file** (3g). Section 7 names it as YAML that people write; nothing gives its shape. **Decided by the owner on 2026-11-03, as recommended (YAML)**, and written into COMMANDS.md, `quiz brief`. **Recommend:** `src/brief/questions.yaml`, shipped in the bundle as data, one entry per brief key: `key`, `kind` (`choice`, `multi`, `text`, `number`), `label`, `help`, `choices` with a `hint` each, `min-words` with `example`, `follow-up` (for `other`), `human-only`, `default`, and `section` (the steps of `--tui`); every text in `en` and `vi`. A zod schema checks it in a unit test; the flags' `--help` text, the web form and the TUI all read it, so they cannot drift.
 
 **G12. `@clack/prompts`** (3i). A new runtime dependency, already named in section 3. **Recommend:** pinned exactly, MIT (in the allow-list), listed in `--acknowledgements` and `THIRD_PARTY_NOTICES.md`, loaded only by `brief --tui`, with the byte-identity test driving it through a pseudo-terminal (`node:child_process` with a scripted stdin) rather than a new test dependency. If clack cannot be driven that way, the slice stops and reports.
 
@@ -87,16 +86,16 @@ The design docs leave these open. Each needs the owner's yes before the slice th
 | **3b** | 3a's fixes; `serve --section`, `--focus`, `--autosave`; Firefox through the whole submit; the samples line | G5 |
 | **3c** | `inspect` (with `--review` waiting for 3e), `new TEMPLATE`, `new --from [--skeleton]`, `template list/add/rm`, the built-in templates | G4, G8 |
 | **3d** | `stats`: `src/core/stats/` (per question, per tag, per criterion, across versions), the survey table, human and `--json` | G3, G8 |
-| **3v** | The owner's form boards (G7); no code | G7 |
+| **3g** | `brief` through flags: the question file, every option, defaults written with `decided_by`, `brief.vague`, exit 3 and `needs_input`, `--accept-defaults`, `--json`, `content/` | G11 |
+| **3i** | `brief --tui` with `@clack/prompts`; flags and `--tui` write byte-identical `brief.yaml` | G11, G12 |
+| **3j** | `build --watch` and `--serve`: watching, the last good page, `--json` per rebuild, the reload server | G6 |
+| **3v** | The owner's form boards (G7), whenever the owner is ready; no code. Only 3e, 3f and 3h wait for it | G7 |
 | **3e** | `review`: `review-v1` in `ir.ts` and its JSON Schema, the form (verdict, then reasons; The rest is fine; the Finish dialog), merge, `--since` with the diff; `check --review` with `review.fix`, `review.drop` and `review.unconfirmed`; `inspect --review` | G1, G2, G3, boards |
 | **3f** | `grade --web` and `--name`: the grading form on the rubric modes, pre-filled from `--grades`, `kind: human` and `reviewed`, then the report | boards |
-| **3g** | `brief` through flags: the question file, every option, defaults written with `decided_by`, `brief.vague`, exit 3 and `needs_input`, `--accept-defaults`, `--json`, `content/` | G11 |
-| **3h** | `brief --web`: the form from the question file, the detail rules, the summary screen, `--language` for the form | G11, boards |
-| **3i** | `brief --tui` with `@clack/prompts`; the three-way byte-identity test that closes step 3's criterion | G11, G12 |
-| **3j** | `build --watch` and `--serve`: watching, the last good page, `--json` per rebuild, the reload server | G6 |
+| **3h** | `brief --web`: the form from the question file, the detail rules, the summary screen, `--language` for the form; the three-way byte-identity test (flags, `--web`, `--tui`) that closes step 3's criterion | G11, boards |
 | **3z** | Acceptance: every "Done when" item checked in Chromium and Firefox, samples tried by the owner | |
 
-The order puts the server first, since four commands stand on it, and the slices without design work (3c, 3d) before the forms, so they run while the owner draws the boards. 3j comes last because its server is the one long-running exception and is easiest to review once the one-shot server is settled. Later briefs stay outlines until the slice before is reviewed.
+The order (owner, 2026-11-03) puts the server first, since four commands stand on it, then every slice that needs no form board (3c, 3d, 3g, 3i, 3j), so the owner's form design (3v) can come whenever the owner is ready; the three forms come last. Later briefs stay outlines until the slice before is reviewed.
 
 ## Slice 3a: the one-shot server and `quiz serve`
 
