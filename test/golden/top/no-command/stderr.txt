@@ -23,4 +23,7 @@ Commands:
                                  page
   replay [options] <results...>  write an attempt as a page already submitted:
                                  the answers, the explanations and the grades
+  serve [options] <file>         serve a quiz on 127.0.0.1 and write the results
+                                 when the learner presses Submit (one submit
+                                 only)
   help [command]                 help for a command

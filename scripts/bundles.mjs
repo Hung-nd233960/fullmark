@@ -36,3 +36,10 @@ export const PAGE_BUNDLE = {
   legalComments: "none",
   ...JSX,
 };
+
+/**
+ * The browser half of `src/serve/` (`dist/serve.js`): a second IIFE beside the page runtime, added only to a page built
+ * in memory for serving (TECHNICAL_DESIGN.md, section 7, foundation 9). The forms of later slices are their own
+ * entries in the same way.
+ */
+export const SERVE_BUNDLE = { ...PAGE_BUNDLE };

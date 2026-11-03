@@ -22,6 +22,9 @@ const BUILD_ONLY = [
   "// src/cli/build.ts",
 ];
 
+/** The one-shot server (`src/serve/`): only the commands that serve load it. */
+const SERVE_ONLY = ["// src/serve/"];
+
 function entry(prefix: string): string {
   const name = files.find((f) => f === `${prefix}.js` || (f.startsWith(`${prefix}-`) && f.endsWith(".js")));
   if (!name) throw new Error(`dist/${prefix}*.js not found: run npm run build`);
@@ -61,7 +64,24 @@ describe("what each command loads", () => {
     for (const marker of BUILD_ONLY) expect(text, marker).toContain(marker);
   });
 
+  it("the serve command holds the page builder and the server (so the checks below are not empty)", () => {
+    const text = textOf(closure(entry("serve")));
+    for (const marker of [...BUILD_ONLY, ...SERVE_ONLY]) expect(text, marker).toContain(marker);
+  });
+
+  it("the build and replay commands never load the server", () => {
+    for (const name of ["build", "replay-command"]) {
+      const text = textOf(closure(entry(name)));
+      for (const marker of SERVE_ONLY) expect(text, `${name}: ${marker}`).not.toContain(marker);
+    }
+  });
+
   for (const name of ["main", "check", "rules", "ids", "grade", "acknowledgements"]) {
+    it(`${name} never loads the one-shot server`, () => {
+      const text = textOf(closure(entry(name)));
+      for (const marker of SERVE_ONLY) expect(text, marker).not.toContain(marker);
+    });
+
     it(`${name} never reaches the page builder, the renderer or the build's Markdown-to-HTML path`, () => {
       const list = closure(entry(name));
       expect(list.some((f) => f.startsWith("build-"))).toBe(false);

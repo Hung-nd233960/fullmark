@@ -71,6 +71,12 @@ export type PageOptions = {
   fonts?: FontsChoice;
   /** the build options as given, for the Information tab; absent or `null` is the default (build inputs only) */
   given?: { profile?: string | null; fonts?: FontsChoice | null; uiLang?: "en" | "vi" | null; strict?: boolean };
+  /**
+   * The browser half of the one-shot server (`dist/serve.js`), for a page built in memory for `quiz serve`: a second
+   * script, its hash in the CSP and `connect-src 'self'`. Absent, the page is a shared page and has no server code at
+   * all (foundation 9).
+   */
+  serveModule?: string;
   /** turns a registry font file's package path into a `data:` URI; absent: read from the npm package */
   fontData?: (path: string) => string;
 };
@@ -378,6 +384,8 @@ const escapeAttr = (text: string): string =>
 export function buildPage(quizzes: readonly BuildQuiz[], options: PageOptions): string {
   if (quizzes.length === 0) throw new Error("a page needs at least one quiz");
   if (options.runtime.toLowerCase().includes("</script")) throw new Error("the runtime holds a closing script tag");
+  if (options.serveModule?.toLowerCase().includes("</script"))
+    throw new Error("the server module holds a closing script tag");
   const maths = options.math?.start();
   // the Information tab names Shiki only when some code was coloured
   let coloured = false;
@@ -425,13 +433,14 @@ export function buildPage(quizzes: readonly BuildQuiz[], options: PageOptions): 
   );
   const csp = [
     "default-src 'none'",
-    `script-src ${sha256Source(options.runtime)}`,
+    `script-src ${[options.runtime, ...(options.serveModule === undefined ? [] : [options.serveModule])].map(sha256Source).join(" ")}`,
     `style-src ${[css, ...(fontCss === null ? [] : [fontCss]), ...(mathCss === null ? [] : [mathCss])].map(sha256Source).join(" ")}`,
     "img-src data:",
     "media-src data:",
     "font-src data:",
     "base-uri 'none'",
     "form-action 'none'",
+    ...(options.serveModule === undefined ? [] : ["connect-src 'self'"]),
   ].join("; ");
   return [
     "<!doctype html>",
@@ -451,6 +460,7 @@ export function buildPage(quizzes: readonly BuildQuiz[], options: PageOptions): 
     licencesHtml,
     `<script type="application/json" id="fm-data">${scriptJson(data)}</script>`,
     `<script>${options.runtime}</script>`,
+    ...(options.serveModule === undefined ? [] : [`<script>${options.serveModule}</script>`]),
     "</body>",
     "</html>",
     "",

@@ -7,6 +7,7 @@ import type { IdsOptions, Io } from "./ids";
 import type { ReplayCommandOptions } from "./replay-command";
 import type { RulesOptions } from "./rules";
 import { seededIds } from "./seed";
+import type { ServeOptions } from "./serve";
 
 export const VERSION = "1.0.0-alpha.0";
 
@@ -250,6 +251,37 @@ export function buildProgram(outcome: Outcome = { exit: EXIT.done }, io: Io = te
         version: VERSION,
       };
       outcome.exit = await (await import("./replay-command")).runReplay(results, opts, io);
+    });
+
+  program
+    .command("serve")
+    .description("serve a quiz on 127.0.0.1 and write the results when the learner presses Submit (one submit only)")
+    .argument("<file>", "the quiz .md (a built page is refused: use its Export button)")
+    .option("--out <results>", "the results file (default: <quiz-id>-results-<time>.json next to the quiz)")
+    .option("--timeout <seconds>", "how long to wait for a submit; 0 waits forever (default 1800)")
+    .option("--open", "open the page in the default browser")
+    .option("--port <n>", "the port on 127.0.0.1 (default: a free one)")
+    .option("--profile <name>", "the check profile; overrides the quiz's profile")
+    .option("--config <toml>", "use this config file instead of the nearest fullmark.toml")
+    .option("--fonts <which>", "which fonts the page embeds: quiz (the quiz's own), all or none")
+    .option("--focus", "(not available yet)")
+    .option("--section <s>", "(not available yet)")
+    .option("--autosave <progress>", "(not available yet)")
+    .option("--json", "print a listening line, then the outcome, as JSON on stdout")
+    .action(async (file: string, options: Record<string, unknown>) => {
+      const opts: ServeOptions = {
+        out: (options.out as string | undefined) ?? null,
+        timeout: (options.timeout as string | undefined) ?? null,
+        open: Boolean(options.open),
+        port: (options.port as string | undefined) ?? null,
+        json: Boolean(options.json),
+        profile: (options.profile as string | undefined) ?? null,
+        config: (options.config as string | undefined) ?? null,
+        fonts: (options.fonts as string | undefined) ?? null,
+        later: ["focus", "section", "autosave"].filter((name) => options[name] !== undefined),
+        version: VERSION,
+      };
+      outcome.exit = await (await import("./serve")).runServe(file, opts, io);
     });
   return program;
 }

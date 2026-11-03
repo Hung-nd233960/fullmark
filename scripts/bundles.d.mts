@@ -21,3 +21,4 @@ export const PAGE_BUNDLE: {
   jsx: "automatic";
   jsxImportSource: string;
 };
+export const SERVE_BUNDLE: typeof PAGE_BUNDLE;

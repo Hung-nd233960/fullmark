@@ -3,7 +3,7 @@
 import { readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { build } from "esbuild";
-import { PAGE_BUNDLE } from "./bundles.mjs";
+import { PAGE_BUNDLE, SERVE_BUNDLE } from "./bundles.mjs";
 import { minifyCss } from "./minify-css.mjs";
 
 const root = resolve(import.meta.dirname, "..");
@@ -12,6 +12,14 @@ await build({
   ...PAGE_BUNDLE,
   entryPoints: [join(root, "src/page/main.tsx")],
   outfile: join(root, "dist/page.js"),
+  logLevel: "warning",
+});
+
+// The server module for served pages (`quiz serve`): read by src/serve/ only, so `quiz build` never reads it.
+await build({
+  ...SERVE_BUNDLE,
+  entryPoints: [join(root, "src/serve/module.ts")],
+  outfile: join(root, "dist/serve.js"),
   logLevel: "warning",
 });
 

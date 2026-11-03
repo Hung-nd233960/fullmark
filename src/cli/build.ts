@@ -96,7 +96,7 @@ export function systemOpen(path: string): Promise<void> {
 }
 
 /** `dist/`: `page.js` and `page.css` sit beside `cli.js`. Run from the sources (tests), they are in `<repo>/dist`. */
-function runtimeFolder(): string {
+export function runtimeFolder(): string {
   const here = dirname(fileURLToPath(import.meta.url));
   return existsSync(join(here, "page.js")) ? here : resolve(here, "..", "..", "dist");
 }

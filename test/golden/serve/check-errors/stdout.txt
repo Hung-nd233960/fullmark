@@ -1,0 +1,6 @@
+profile default (built-in) from the default; config: none
+quiz.md:5: error choice.correct-count: a single-answer question needs exactly one [x], not 0
+    fix: mark one choice, or use type=multi
+quiz.md:10: error question.type-missing: the question has no `type`
+    fix: add type=... : one of single, multi, truefalse, numeric, short, blanks, fields, ordering, matching, essay, code, scale
+quiz.md: 2 errors, 0 warnings

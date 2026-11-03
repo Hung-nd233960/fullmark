@@ -1,0 +1,27 @@
+Usage: quiz serve [options] <file>
+
+serve a quiz on 127.0.0.1 and write the results when the learner presses Submit
+(one submit only)
+
+Arguments:
+  file                   the quiz .md (a built page is refused: use its Export
+                         button)
+
+Options:
+  --out <results>        the results file (default:
+                         <quiz-id>-results-<time>.json next to the quiz)
+  --timeout <seconds>    how long to wait for a submit; 0 waits forever (default
+                         1800)
+  --open                 open the page in the default browser
+  --port <n>             the port on 127.0.0.1 (default: a free one)
+  --profile <name>       the check profile; overrides the quiz's profile
+  --config <toml>        use this config file instead of the nearest
+                         fullmark.toml
+  --fonts <which>        which fonts the page embeds: quiz (the quiz's own), all
+                         or none
+  --focus                (not available yet)
+  --section <s>          (not available yet)
+  --autosave <progress>  (not available yet)
+  --json                 print a listening line, then the outcome, as JSON on
+                         stdout
+  -h, --help             help for the command

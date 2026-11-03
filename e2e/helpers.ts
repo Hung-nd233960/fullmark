@@ -1,4 +1,4 @@
-import { execFileSync } from "node:child_process";
+import { type ChildProcess, execFileSync, spawn } from "node:child_process";
 import { copyFileSync, cpSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
@@ -150,4 +150,97 @@ export function replayOf(extra: string[], name: string): string {
   writeFileSync(join(dir, `${name}-grades.json`), JSON.stringify(grades));
   run(dir, "replay", `${name}.json`, "--quiz", "essay.md", "--no-open", "--built-at", "2026-10-28T10:00:00+07:00");
   return `file:///${join(dir, `${name}-replay.html`).replaceAll("\\", "/")}`;
+}
+
+// -- the one-shot server ---------------------------------------------------------------------------------------------
+
+export type ServedEnd = {
+  code: number | null;
+  signal: NodeJS.Signals | null;
+  lines: Record<string, unknown>[];
+  stderr: string;
+};
+
+/** A `quiz serve --json` subprocess: its `listening` line read, the rest collected until it exits. */
+export type Served = {
+  url: string;
+  port: number;
+  pid: number;
+  child: ChildProcess;
+  /** the first line, as `listening` printed it */
+  listening: Record<string, unknown>;
+  /** waits for the process to end: its exit code and every JSON line it printed (the `listening` line first) */
+  end(): Promise<ServedEnd>;
+};
+
+/**
+ * Starts `quiz serve QUIZ --json ...args` in `dir` and waits for its `listening` line. Every served command's contract
+ * test uses this (STEP3.md, "Rules for every slice"): drive the page or the form, or POST, then read `end()`.
+ */
+export async function serveProcess(dir: string, args: string[]): Promise<Served> {
+  const child = spawn(process.execPath, [cli, ...args, "--json"], {
+    cwd: dir,
+    env: { ...process.env, FORCE_COLOR: undefined, NO_COLOR: "1" },
+    stdio: ["ignore", "pipe", "pipe"],
+  });
+  let out = "";
+  let stderr = "";
+  child.stderr?.on("data", (c: Buffer) => {
+    stderr += c.toString("utf8");
+  });
+  const ended = new Promise<{ code: number | null; signal: NodeJS.Signals | null }>((resolve) => {
+    child.once("close", (code, signal) => resolve({ code, signal }));
+  });
+  const parse = (): Record<string, unknown>[] =>
+    out
+      .split("\n")
+      .filter((l) => l.trim() !== "")
+      .map((l) => JSON.parse(l) as Record<string, unknown>);
+  const listening = await new Promise<Record<string, unknown>>((resolve, reject) => {
+    child.stdout?.on("data", (c: Buffer) => {
+      out += c.toString("utf8");
+      const first = out.split("\n")[0];
+      if (out.includes("\n") && first) resolve(JSON.parse(first) as Record<string, unknown>);
+    });
+    ended.then(() => reject(new Error(`serve ended before it listened:\n${out}\n${stderr}`)));
+  });
+  return {
+    url: String(listening.url),
+    port: Number(listening.port),
+    pid: Number(listening.pid),
+    child,
+    listening,
+    async end() {
+      const result = await ended;
+      return { ...result, lines: parse(), stderr };
+    },
+  };
+}
+
+/** The JSON lines of a served command with what changes between runs masked, as the golden files hold them. */
+export function maskLines(lines: Record<string, unknown>[], dir: string): string {
+  const mask = (line: Record<string, unknown>) =>
+    JSON.stringify(line, (key, value) =>
+      key === "url"
+        ? "<url>"
+        : key === "port"
+          ? 0
+          : key === "pid"
+            ? 0
+            : typeof value === "string"
+              ? value.replaceAll(dir, "<dir>")
+              : value,
+    );
+  return `${lines.map(mask).join("\n")}\n`;
+}
+
+/** Compares masked lines with `e2e/golden/<name>.jsonl`; `FULLMARK_GOLDEN_UPDATE=1` rewrites the file. */
+export function expectGolden(name: string, text: string): void {
+  const file = join(root, "e2e", "golden", `${name}.jsonl`);
+  if (process.env.FULLMARK_GOLDEN_UPDATE === "1") {
+    mkdirSync(join(root, "e2e", "golden"), { recursive: true });
+    writeFileSync(file, text);
+    return;
+  }
+  expect(text).toBe(readFileSync(file, "utf8"));
 }
