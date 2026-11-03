@@ -111,12 +111,17 @@ export async function collect() {
     .map((name) => {
       const p = readPackage(name);
       const key = p.body.replace(/\s+/g, " ");
+      const w = wanted.get(name);
+      // a text a page shows is the wording of a package the page ships, so a CLI-only package that words the same
+      // licence differently (its line breaks) never changes what the page's Licences popup shows
+      const shipsInPage = w.where.some((x) => x !== "cli");
       let index = texts.findIndex((t) => t.key === key && t.licence === p.licence);
       if (index < 0) {
         index = texts.length;
-        texts.push({ key, licence: p.licence, body: p.body });
+        texts.push({ key, licence: p.licence, body: p.body, shipsInPage });
+      } else if (shipsInPage && !texts[index].shipsInPage) {
+        texts[index] = { key, licence: p.licence, body: p.body, shipsInPage };
       }
-      const w = wanted.get(name);
       return {
         name,
         title: w.title ?? name,

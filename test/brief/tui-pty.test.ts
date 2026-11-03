@@ -2,7 +2,7 @@ import { type ChildProcess, spawn, spawnSync } from "node:child_process";
 import { existsSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, it as baseIt, describe, expect } from "vitest";
 import { loadQuestions } from "../../src/cli/brief-questions";
 
 /**
@@ -59,7 +59,8 @@ function drive(dir: string, steps: [after: string, keys: string][]): Promise<{ c
   });
 }
 
-describe.skipIf(!hasScript)("quiz brief --tui under script(1)", () => {
+describe("quiz brief --tui under script(1)", () => {
+  const it = baseIt.skipIf(!hasScript);
   it("answers through a pseudo-terminal and writes the brief the flags write", async () => {
     const dir = mkdtempSync(join(tmpdir(), "fullmark-pty-"));
     dirs.push(dir);
@@ -125,8 +126,4 @@ describe.skipIf(!hasScript)("quiz brief --tui under script(1)", () => {
     expect(r.stderr).toContain("--tui needs an interactive terminal: use --web, or give the answers as flags");
     expect(existsSync(join(dir, "d"))).toBe(false);
   });
-});
-
-describe.skipIf(hasScript)("quiz brief --tui under script(1) (skipped: script(1) of util-linux is not here)", () => {
-  it.skip("needs Linux and script(1)", () => undefined);
 });

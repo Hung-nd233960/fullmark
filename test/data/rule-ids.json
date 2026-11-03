@@ -17,6 +17,7 @@
   "brief.mode",
   "brief.no-history",
   "brief.past-exams",
+  "brief.vague",
   "build.answer-sheet-empty",
   "build.font-not-embedded",
   "build.size",
