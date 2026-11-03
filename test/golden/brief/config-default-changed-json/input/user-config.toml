@@ -1,0 +1,9 @@
+[brief.purpose.exam-prep]
+mix = ["calculation", "essay"]
+count = 30
+minutes = 90
+difficulty = "harder"
+mode = "timed-exam"
+
+[brief.purpose.self-study]
+count = 10

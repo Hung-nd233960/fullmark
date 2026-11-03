@@ -164,3 +164,25 @@ bogus = 1
     ]);
   });
 });
+
+describe("[brief.purpose.<purpose>] in the machine config", () => {
+  it("is read into the defaults of the purpose, in the user config only", () => {
+    const text = '[brief.purpose.exam-prep]\ncount = 30\nmix = ["essay"]\ndifficulty = "harder"\n';
+    const user = parseConfig(text, "config.toml", "user");
+    expect(user.errors).toEqual([]);
+    expect(user.data?.briefDefaults).toEqual({ "exam-prep": { count: 30, mix: ["essay"], difficulty: "harder" } });
+    // a project file has no such table: it is an unknown key
+    expect(errorsOf(text)).toEqual(["fullmark.toml:1: unknown key `brief`"]);
+  });
+
+  it("names the line of an unknown purpose, key or value", () => {
+    expect(errorsOf("[brief.purpose.exam]\n", "user")).toEqual(["fullmark.toml:1: unknown purpose `exam`"]);
+    expect(errorsOf("[brief.purpose.survey]\nminuts = 1\n", "user")).toEqual([
+      "fullmark.toml:2: unknown key `minuts` in [brief.purpose.survey]",
+    ]);
+    expect(errorsOf("[brief.purpose.survey]\ncount = 0\nminutes = -2\n", "user")).toEqual([
+      "fullmark.toml:2: `count` must be a whole number, 1 or more, not number 0",
+      "fullmark.toml:3: `minutes` must be a number, 0 or more (0 for no limit), not number -2",
+    ]);
+  });
+});

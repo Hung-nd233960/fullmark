@@ -1,0 +1,2 @@
+the config has errors
+user-config.toml:2: `difficulty` must be one of: "warm-up", "like-the-exam", "harder", not string "hard"

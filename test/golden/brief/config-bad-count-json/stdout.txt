@@ -1,0 +1,1 @@
+{"status":"error","message":"the config has errors","errors":[{"file":"user-config.toml","line":2,"message":"`count` must be a whole number, 1 or more, not number 0"}]}

@@ -1,0 +1,3 @@
+the config has errors
+user-config.toml:2: unknown key `minuts` in [brief.purpose.exam-prep]
+    fix: did you mean `minutes`?

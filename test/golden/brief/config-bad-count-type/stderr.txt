@@ -1,0 +1,2 @@
+the config has errors
+user-config.toml:2: `count` must be a whole number, 1 or more, not string "thirty"

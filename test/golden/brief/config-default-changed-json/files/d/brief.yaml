@@ -1,0 +1,34 @@
+purpose: exam-prep
+scope: "lectures 3 to 5, the Fourier transform"
+content:
+  kinds: []
+  kinds_other: ""
+  elsewhere: ""
+count: 12
+minutes: 90
+mix:
+  - calculation
+  - essay
+difficulty: harder
+mode: timed-exam
+language: en
+request: ""
+weak_topics: false
+commitment: 0
+focus_tags: []
+profile: "exam"
+decided_by:
+  purpose: user
+  scope: user
+  content: default
+  count: user
+  minutes: default
+  mix: default
+  difficulty: default
+  mode: default
+  language: default
+  request: default
+  weak_topics: default
+  commitment: default
+  focus_tags: default
+  profile: default

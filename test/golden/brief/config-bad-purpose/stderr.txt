@@ -1,0 +1,3 @@
+the config has errors
+user-config.toml:2: unknown purpose `exam`
+    fix: the purposes are: self-study, exam-prep, classmates, survey

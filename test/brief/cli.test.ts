@@ -202,3 +202,44 @@ describe("quiz brief through flags", () => {
     expect(c.out[0]).toBe("wrote d/brief.yaml and d/content/");
   });
 });
+
+describe("the machine config's defaults per purpose", () => {
+  const withConfig = (toml: string) => {
+    const dir = tree({ "config.toml": toml });
+    const c = capture(dir, { FULLMARK_CONFIG: "config.toml" });
+    return { dir, c };
+  };
+
+  it("replace the defaults of one purpose, recorded as defaults, and a flag still wins", async () => {
+    const { dir, c } = withConfig(
+      '[brief.purpose.exam-prep]\nmix = ["calculation", "essay"]\ncount = 30\nminutes = 90\n[brief.purpose.survey]\ncount = 5\n',
+    );
+    expect(await runBrief("d", { ...GIVEN, minutes: "45" }, c.io)).toBe(0);
+    const brief = readBrief(readFileSync(join(dir, "d/brief.yaml"), "utf8"), "brief.yaml").brief;
+    expect([brief?.count, brief?.minutes, brief?.mix]).toEqual([30, 45, ["calculation", "essay"]]);
+    expect(brief?.decided_by).toMatchObject({ count: "default", minutes: "user", mix: "default" });
+    // another purpose keeps the built-in defaults
+    const other = tree();
+    expect(await runBrief("d", { ...GIVEN, purpose: "self-study" }, capture(other).io)).toBe(0);
+    expect(readFileSync(join(other, "d/brief.yaml"), "utf8")).toContain("count: 20");
+  });
+
+  it("an error names config.toml and its line, and nothing is written", async () => {
+    const cases: [string, number, RegExp][] = [
+      ["[brief.purpose.exam]\ncount = 3\n", 1, /unknown purpose `exam`/],
+      ['[brief.purpose.exam-prep]\nlanguage = "vi"\n', 2, /unknown key `language`/],
+      ['[brief.purpose.exam-prep]\nmix = ["essay", "poetry"]\n', 2, /"poetry".*not one of/],
+      ["[brief.purpose.exam-prep]\ncount = 2.5\n", 2, /`count` must be a whole number/],
+      ["[brief.purpose.exam-prep]\nminutes = -1\n", 2, /`minutes` must be a number, 0 or more/],
+      ['[brief.purpose.exam-prep]\nmode = "exam"\n', 2, /`mode` must be one of/],
+    ];
+    for (const [toml, line, message] of cases) {
+      const { dir, c } = withConfig(toml);
+      expect(await runBrief("d", GIVEN, c.io), toml).toBe(2);
+      const error = JSON.parse(c.out[0] as string);
+      expect(error.errors[0], toml).toMatchObject({ file: "config.toml", line });
+      expect(error.errors[0].message, toml).toMatch(message);
+      expect(existsSync(join(dir, "d"))).toBe(false);
+    }
+  });
+});

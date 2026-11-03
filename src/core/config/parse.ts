@@ -1,6 +1,6 @@
 import { parse as parseToml } from "smol-toml";
 import { FONT_CHOICES, type FontsChoice } from "../fonts";
-import { QUESTION_TYPES, type QuestionType } from "../ir";
+import { BriefSchema, MIX_KINDS, PURPOSES, QUESTION_TYPES, type QuestionType } from "../ir";
 import type { Level } from "../issue";
 import { suggest } from "../parse/report";
 import { findRule, RULES } from "../rules/registry";
@@ -117,6 +117,8 @@ export function parseConfig(text: string, file: string, kind: "project" | "user"
     else
       fail(["fonts"], `\`fonts\` must be ${FONT_CHOICES.map((c) => `"${c}"`).join(", ")}, not ${describe(doc.fonts)}`);
   }
+
+  if (kind === "user" && doc.brief !== undefined) readBriefDefaults(doc.brief, data, fail);
 
   const profiles = doc.profiles;
   if (profiles !== undefined) {
@@ -363,4 +365,95 @@ export function parseConfig(text: string, file: string, kind: "project" | "user"
     }
     return where;
   }
+}
+
+const BRIEF_KEYS = ["count", "minutes", "mix", "difficulty", "mode"] as const;
+
+/**
+ * `[brief.purpose.<purpose>]` in the machine `config.toml` (COMMANDS.md, `quiz brief`, "Defaults per purpose"): the
+ * defaults of `count`, `minutes`, `mix`, `difficulty` and `mode` for a purpose. The values are the ones the flags take,
+ * checked against the brief's schema; an unknown purpose, key or value is an error with its line.
+ */
+function readBriefDefaults(
+  brief: unknown,
+  data: ConfigFileData,
+  fail: (path: readonly string[], message: string, fix?: string) => void,
+): void {
+  if (!isTable(brief))
+    return fail(["brief"], `\`brief\` must be a table, not ${describe(brief)}`, "write [brief.purpose.exam-prep]");
+  for (const key of Object.keys(brief)) {
+    if (key !== "purpose")
+      fail(
+        ["brief", key],
+        `unknown key \`${key}\` in [brief]`,
+        "the key is `purpose`: write [brief.purpose.exam-prep]",
+      );
+  }
+  const purposes = brief.purpose;
+  if (purposes === undefined) return;
+  if (!isTable(purposes)) return fail(["brief", "purpose"], `\`purpose\` must be a table, not ${describe(purposes)}`);
+  for (const [name, table] of Object.entries(purposes)) {
+    const path = ["brief", "purpose", name];
+    if (!(PURPOSES as readonly string[]).includes(name)) {
+      const near = suggest(name, PURPOSES);
+      fail(
+        path,
+        `unknown purpose \`${name}\``,
+        near ? `did you mean \`${near}\`?` : `the purposes are: ${PURPOSES.join(", ")}`,
+      );
+      continue;
+    }
+    if (!isTable(table)) {
+      fail(path, `\`${name}\` must be a table, not ${describe(table)}`, `write [brief.purpose.${name}]`);
+      continue;
+    }
+    const values: Record<string, string | number | string[]> = {};
+    for (const [key, value] of Object.entries(table)) {
+      const at = [...path, key];
+      if (!(BRIEF_KEYS as readonly string[]).includes(key)) {
+        const near = suggest(key, BRIEF_KEYS);
+        fail(
+          at,
+          `unknown key \`${key}\` in [brief.purpose.${name}]`,
+          near ? `did you mean \`${near}\`?` : `the keys are: ${BRIEF_KEYS.join(", ")}`,
+        );
+        continue;
+      }
+      const checked = briefValue(key as (typeof BRIEF_KEYS)[number], value);
+      if ("error" in checked) fail(at, checked.error);
+      else values[key] = checked.value;
+    }
+    data.briefDefaults[name as (typeof PURPOSES)[number]] = values;
+  }
+}
+
+/** A value of a purpose's table, or what is wrong with it. Checked as the flags are. */
+function briefValue(
+  key: (typeof BRIEF_KEYS)[number],
+  value: unknown,
+): { value: string | number | string[] } | { error: string } {
+  const bad = (error: string): { error: string } => ({ error });
+  const good = (v: string | number | string[]): { value: string | number | string[] } => ({ value: v });
+  const options = (list: readonly string[]): string => list.map((x) => `"${x}"`).join(", ");
+  if (key === "count") {
+    return typeof value === "number" && Number.isInteger(value) && value >= 1
+      ? good(value)
+      : bad(`\`count\` must be a whole number, 1 or more, not ${describe(value)}`);
+  }
+  if (key === "minutes") {
+    return typeof value === "number" && Number.isFinite(value) && value >= 0
+      ? good(value)
+      : bad(`\`minutes\` must be a number, 0 or more (0 for no limit), not ${describe(value)}`);
+  }
+  if (key === "mix") {
+    if (!Array.isArray(value)) return bad(`\`mix\` must be a list of: ${options(MIX_KINDS)}, not ${describe(value)}`);
+    const wrong = value.find((v) => typeof v !== "string" || !(MIX_KINDS as readonly string[]).includes(v));
+    return wrong === undefined
+      ? good(value as string[])
+      : bad(`\`mix\` has ${describe(wrong)}, which is not one of: ${options(MIX_KINDS)}`);
+  }
+  const allowed = BriefSchema.shape[key].options as readonly string[];
+  return typeof value === "string" && allowed.includes(value)
+    ? good(value)
+    : bad(`\`${key}\` must be one of: ${options(allowed)}, not ${describe(value)}`);
 }

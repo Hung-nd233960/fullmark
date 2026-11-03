@@ -1,0 +1,3 @@
+the config has errors
+user-config.toml:1: unknown key `defaults` in [brief]
+    fix: the key is `purpose`: write [brief.purpose.exam-prep]

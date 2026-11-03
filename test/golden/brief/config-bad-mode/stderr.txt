@@ -1,0 +1,2 @@
+the config has errors
+user-config.toml:2: `mode` must be one of: "each-question", "at-the-end", "timed-exam", not string "exam"

@@ -22,7 +22,7 @@ import {
 import { resolveProfile, unknownProfileMessage } from "../core/config/resolve";
 import { WriteError, writeFileAtomic } from "./atomic";
 import { loadQuestions } from "./brief-questions";
-import { loadConfig } from "./config";
+import { loadConfig, type Machine } from "./config";
 import { EXIT, type ExitCode } from "./exit-codes";
 import { fail } from "./fail";
 import type { Io } from "./ids";
@@ -117,7 +117,7 @@ const exampleIn = (q: Question, lang: Lang): string => q.example?.[lang] ?? "";
 export async function runBrief(
   dir: string,
   opts: BriefOptions,
-  io: Io & { questions?: QuestionFile },
+  io: Io & { questions?: QuestionFile; machine?: Machine },
 ): Promise<ExitCode> {
   const json = opts.json;
   const say = (line: string): void => (json ? io.err(line) : io.out(line));

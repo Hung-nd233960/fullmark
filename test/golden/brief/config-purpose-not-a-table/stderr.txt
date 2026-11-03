@@ -1,0 +1,2 @@
+the config has errors
+user-config.toml:2: `purpose` must be a table, not string "exam-prep"

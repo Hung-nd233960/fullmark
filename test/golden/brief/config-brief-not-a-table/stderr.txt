@@ -1,0 +1,3 @@
+the config has errors
+user-config.toml:1: `brief` must be a table, not number 3
+    fix: write [brief.purpose.exam-prep]

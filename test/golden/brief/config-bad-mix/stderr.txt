@@ -1,0 +1,2 @@
+the config has errors
+user-config.toml:3: `mix` has string "poetry", which is not one of: "recall", "understanding", "calculation", "code", "essay"

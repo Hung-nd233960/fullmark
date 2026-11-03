@@ -1,0 +1,3 @@
+the config has errors
+user-config.toml:3: unknown key `language` in [brief.purpose.exam-prep]
+    fix: the keys are: count, minutes, mix, difficulty, mode
