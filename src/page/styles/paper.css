@@ -171,6 +171,10 @@ code {
 }
 .gb {
   height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
 }
 
 /* parts and questions */
@@ -375,6 +379,7 @@ code {
 .page-title {
   font-size: 15pt;
   font-weight: 700;
+  white-space: nowrap;
 }
 .detach {
   font-size: 9.5pt;
@@ -497,8 +502,7 @@ code {
 
 /* a study sheet: no name boxes, no marker's table; each answer under its question behind a 1.5px rule */
 .study-head {
-  border-bottom: 2px solid #000;
-  padding-bottom: 6px;
+  padding-bottom: 2px;
 }
 .study-head .title {
   margin: 0;

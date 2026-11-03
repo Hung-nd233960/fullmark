@@ -34,6 +34,12 @@ const TRY = {
   "paper-exam":
     "quiz build --print --seed 101 --answer-sheet: the exam paper, every type, a part of long answers; print it or save as PDF (the footer and page breaks show there)",
   "paper-mockup": "quiz build --print, no seed: the board's header, the marker's table, no paper code",
+  "paper-key":
+    "quiz build --print --seed 101 --answer-sheet --answers key: the exam paper, then the answer key on a new page (the grid with its letters, a table with notes on partial credit, each rubric, the sample answers)",
+  "paper-materials":
+    "quiz build --print --answers key on a quiz with three sheets: the header's Materials line, the materials page (tables, maths) after the last question, then the key",
+  "paper-inline":
+    "quiz build --print --answers inline: a study sheet, each answer, explanation, rubric and sample answer under its question; no name boxes",
   "paper-exam-vi": "the paper with --ui-lang vi: Mã đề, Câu 1., Phiếu trả lời",
   "vi-fonts": "built with --fonts all: Vietnamese text with stacked diacritics; Appearance > Font offers all four fonts; the Licences button lists their notices",
 };
@@ -68,6 +74,9 @@ for (const s of sources) {
 // printed papers (`quiz build --print`): the file, the flags and the name
 const papers = [
   { name: "paper-exam", file: join("test", "fixtures", "paper", "exam.md"), flags: ["--seed", "101", "--answer-sheet"] },
+  { name: "paper-key", file: join("test", "fixtures", "paper", "exam.md"), flags: ["--seed", "101", "--answer-sheet", "--answers", "key"] },
+  { name: "paper-inline", file: join("test", "fixtures", "paper", "exam.md"), flags: ["--seed", "101", "--answers", "inline"] },
+  { name: "paper-materials", file: join("test", "fixtures", "paper", "materials-quiz.md"), flags: ["--answers", "key"] },
   { name: "paper-mockup", file: join("test", "fixtures", "page", "mockup.md"), flags: [] },
   { name: "paper-exam-vi", file: join("test", "fixtures", "paper", "exam.md"), flags: ["--seed", "102", "--ui-lang", "vi"] },
 ];
