@@ -1,7 +1,7 @@
 import type { ComponentChildren } from "preact";
 import type { PaperMessages } from "../../core/i18n/paper";
 import { Html } from "../questions/shared";
-import type { PaperData, PaperPart, PaperQuestion } from "./data";
+import type { KeyEntry, PaperData, PaperPart, PaperQuestion, RubricView } from "./data";
 
 type T = PaperMessages;
 
@@ -34,7 +34,7 @@ const Boxes = ({ count }: { count: number }) => (
 );
 
 /** What goes with the head (the number, the prompt and the start of the answer space) and what may follow on the next page. */
-function body(q: PaperQuestion, t: T): { head: ComponentChildren; rest: ComponentChildren } {
+function body(q: PaperQuestion, t: T, study: boolean): { head: ComponentChildren; rest: ComponentChildren } {
   switch (q.type) {
     case "single":
     case "multi": {
@@ -183,6 +183,10 @@ function body(q: PaperQuestion, t: T): { head: ComponentChildren; rest: Componen
     }
     case "essay":
     case "code":
+      // a study sheet has no ruled lines: nobody writes on it
+      if (study) {
+        return { head: q.starterHtml === null ? null : <Html class="body starter" html={q.starterHtml} />, rest: null };
+      }
       return {
         head: (
           <>
@@ -195,8 +199,83 @@ function body(q: PaperQuestion, t: T): { head: ComponentChildren; rest: Componen
   }
 }
 
-function Question({ q, t }: { q: PaperQuestion; t: T }) {
-  const { head, rest } = body(q, t);
+/** An answer cell: the answer's lines, the partial-credit note after them, then the explanation. */
+function AnswerCell({ k }: { k: KeyEntry }) {
+  return (
+    <>
+      {k.lines.map((line, i) => (
+        <div class="ans" key={i}>
+          {line}
+          {i === k.lines.length - 1 && k.note !== null ? <span class="pnote"> ({k.note})</span> : null}
+        </div>
+      ))}
+      {k.explanationHtml === null ? null : <Html class="expl" html={k.explanationHtml} />}
+    </>
+  );
+}
+
+/** A rubric as a table (additive, banded) or a list (holistic); a preset by its name and the names of its criteria. */
+function RubricTable({ r, t }: { r: RubricView; t: T }) {
+  const valueHead = r.mode === "additive" ? t.pointsColumn : t.weight;
+  const hasValues = r.rows.some((row) => row.value !== null);
+  return (
+    <>
+      {r.preset === null ? null : <div class="preset">{r.preset}</div>}
+      {r.mode === "holistic" ? (
+        r.rows.length === 0 ? null : (
+          <ul class="criteria">
+            {r.rows.map((row, i) => (
+              <li key={i} dangerouslySetInnerHTML={{ __html: row.html }} />
+            ))}
+          </ul>
+        )
+      ) : (
+        <table class="box-table crit">
+          <thead>
+            <tr>
+              <th class="left">{t.criterion}</th>
+              {hasValues ? <th class="val">{valueHead}</th> : null}
+            </tr>
+          </thead>
+          <tbody>
+            {r.rows.map((row, i) => (
+              <tr key={i}>
+                <td dangerouslySetInnerHTML={{ __html: row.html }} />
+                {hasValues ? <td class="n">{row.value}</td> : null}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+      {r.line === null ? null : <div class="scale-line">{r.line}</div>}
+    </>
+  );
+}
+
+/** The study sheet's block under a question: ANSWER, the answer, the explanation, the rubric and the sample answer. */
+function AnswerBlock({ k, t }: { k: KeyEntry; t: T }) {
+  return (
+    <div class="answer-block">
+      <div class="label">{t.answer}</div>
+      <AnswerCell k={k} />
+      {k.rubric === null ? null : (
+        <div class="sub">
+          <div class="label">{t.rubric}</div>
+          <RubricTable r={k.rubric} t={t} />
+        </div>
+      )}
+      {k.sampleHtml === null ? null : (
+        <div class="sub">
+          <div class="label">{t.sampleAnswer}</div>
+          <Html class="sample" html={k.sampleHtml} />
+        </div>
+      )}
+    </div>
+  );
+}
+
+function Question({ q, t, study }: { q: PaperQuestion; t: T; study: boolean }) {
+  const { head, rest } = body(q, t, study);
   return (
     <section class="q">
       <div class="q-head">
@@ -207,28 +286,31 @@ function Question({ q, t }: { q: PaperQuestion; t: T }) {
         {head}
       </div>
       {rest}
+      {study && q.key !== undefined ? <AnswerBlock k={q.key} t={t} /> : null}
     </section>
   );
 }
 
+const versionLine = (d: PaperData, t: T): string => `${d.title} · ${t.version} ${d.version}`;
+
+/** A study sheet's head: nobody sits it, so no name boxes and no marker's table. */
+function StudyHead({ d, t }: { d: PaperData; t: T }) {
+  return (
+    <header class="study-head">
+      <h1 class="title">{d.title}</h1>
+      <Facts d={d} t={t} />
+    </header>
+  );
+}
+
 function Header({ d, t }: { d: PaperData; t: T }) {
-  const facts = [
-    d.time === null ? null : t.timeAllowed(d.time),
-    d.total === null ? null : t.total(d.total),
-    `${t.version} ${d.version}`,
-  ].filter((x) => x !== null);
   return (
     <table class="box-table head">
       <tbody>
         <tr>
           <td rowSpan={2} class="title-cell">
             <h1 class="title">{d.title}</h1>
-            <div class="facts">{facts.join(" · ")}</div>
-            {d.code === null ? null : (
-              <div class="facts">
-                {t.paperCode}: <b>{d.code}</b>
-              </div>
-            )}
+            <Facts d={d} t={t} />
           </td>
           <td>{t.name}:</td>
         </tr>
@@ -244,6 +326,25 @@ function Header({ d, t }: { d: PaperData; t: T }) {
         </tr>
       </tbody>
     </table>
+  );
+}
+
+function Facts({ d, t }: { d: PaperData; t: T }) {
+  const facts = [
+    d.time === null ? null : t.timeAllowed(d.time),
+    d.total === null ? null : t.total(d.total),
+    `${t.version} ${d.version}`,
+  ].filter((x) => x !== null);
+  return (
+    <>
+      <div class="facts">{facts.join(" · ")}</div>
+      {d.code === null ? null : (
+        <div class="facts">
+          {t.paperCode}: <b>{d.code}</b>
+        </div>
+      )}
+      {d.materials === null ? null : <div class="facts small">{t.materialsAfter}</div>}
+    </>
   );
 }
 
@@ -295,11 +396,34 @@ function Marker({ d, t }: { d: PaperData; t: T }) {
   );
 }
 
+/** The grid of numbered boxes: empty on the answer sheet, with the letters in them on the key. */
+function Grid({ numbers, fill }: { numbers: number[]; fill: (n: number) => string }) {
+  const rows: number[][] = [];
+  for (let i = 0; i < numbers.length; i += 10) rows.push(numbers.slice(i, i + 10));
+  return (
+    <div class="grid">
+      {rows.flatMap((nums, r) => {
+        const slots = Array.from({ length: 10 }, (_, i) => nums[i] ?? null);
+        return [
+          ...slots.map((n, i) => (
+            <div class={n === null ? "gn gx" : "gn"} key={`n${r}-${i}`}>
+              {n}
+            </div>
+          )),
+          ...slots.map((n, i) => (
+            <div class={n === null ? "gb gx" : "gb"} key={`b${r}-${i}`}>
+              {n === null ? null : fill(n)}
+            </div>
+          )),
+        ];
+      })}
+    </div>
+  );
+}
+
 function Sheet({ d, t }: { d: PaperData; t: T }) {
   const sheet = d.sheet;
   if (sheet === null) return null;
-  const rows: number[][] = [];
-  for (let i = 0; i < sheet.numbers.length; i += 10) rows.push(sheet.numbers.slice(i, i + 10));
   return (
     <div class="sheet">
       <div class="heading">{t.answerSheet}</div>
@@ -309,28 +433,117 @@ function Sheet({ d, t }: { d: PaperData; t: T }) {
           {t.paperCode}: <span class="box wide" />
         </div>
       )}
-      <div class="grid">
-        {rows.flatMap((nums, r) => {
-          const slots = Array.from({ length: 10 }, (_, i) => nums[i] ?? null);
-          return [
-            ...slots.map((n, i) => (
-              <div class={n === null ? "gn gx" : "gn"} key={`n${r}-${i}`}>
-                {n}
-              </div>
-            )),
-            ...slots.map((n, i) => <div class={n === null ? "gb gx" : "gb"} key={`b${r}-${i}`} />),
-          ];
-        })}
-      </div>
+      <Grid numbers={sheet.numbers} fill={() => ""} />
     </div>
   );
 }
 
+/** The head of a page after the paper: its title at the left, the quiz and its version at the right, a 2px rule. */
+function PageHead({ title, d, t }: { title: string; d: PaperData; t: T }) {
+  return (
+    <div class="page-head">
+      <span class="page-title">{title}</span>
+      <span>{versionLine(d, t)}</span>
+    </div>
+  );
+}
+
+/** The materials page: on a new page after the last question, before the key, so the key can be removed alone. */
+function MaterialsPage({ d, t }: { d: PaperData; t: T }) {
+  if (d.materials === null) return null;
+  return (
+    <section class="materials-page">
+      <PageHead title={t.materials} d={d} t={t} />
+      <div class="detach">{t.detach}</div>
+      {d.materials.map((m, i) => (
+        <section class="mat" key={i}>
+          <h2 class="heading">{m.name}</h2>
+          <Html class="mat-body" html={m.html} />
+        </section>
+      ))}
+    </section>
+  );
+}
+
+/** The answer key: the sheet's questions in the grid, the others in a table, then each rubric. */
+function KeyPage({ d, t }: { d: PaperData; t: T }) {
+  const all = d.parts.flatMap((p) => p.questions);
+  const onGrid = new Set(d.sheet?.numbers ?? []);
+  const gridded = all.filter((q) => onGrid.has(q.number));
+  const rest = all.filter((q) => !onGrid.has(q.number));
+  const explained = gridded.filter((q) => q.key?.explanationHtml);
+  const head = d.code === null ? t.answerKey : t.answerKeyCode(d.code);
+  return (
+    <section class="key-page">
+      <PageHead title={head} d={d} t={t} />
+      {d.sheet === null ? null : (
+        <>
+          <div class="heading">{t.sheetQuestions}</div>
+          <Grid numbers={d.sheet.numbers} fill={(n) => gridded.find((q) => q.number === n)?.key?.sheet ?? ""} />
+          {explained.length === 0 ? null : (
+            <div class="explained">
+              <div class="heading">{t.explanations}</div>
+              {explained.map((q) => (
+                <div class="expl-row" key={q.number}>
+                  <b>{q.number}.</b> <Html tag="span" html={q.key?.explanationHtml ?? ""} />
+                </div>
+              ))}
+            </div>
+          )}
+          {rest.length === 0 ? null : <div class="heading">{t.otherQuestions}</div>}
+        </>
+      )}
+      {rest.length === 0 ? null : (
+        <table class="box-table key-table">
+          <thead>
+            <tr>
+              <th class="no">{t.numberColumn}</th>
+              <th class="left">{t.answer}</th>
+              <th class="pts">{t.pointsColumn}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rest.map((q) =>
+              q.key === undefined ? null : (
+                <tr key={q.number}>
+                  <td class="n">{q.number}</td>
+                  <td>
+                    <AnswerCell k={q.key} />
+                  </td>
+                  <td class="n">{q.key.points ?? "—"}</td>
+                </tr>
+              ),
+            )}
+          </tbody>
+        </table>
+      )}
+      {all.map((q) =>
+        q.key?.rubric ? (
+          <section class="mark-block" key={q.number}>
+            <div class="heading">
+              {t.question(q.number)} {t.rubric}
+              {q.pointsLabel === null ? null : <span class="part-points"> ({q.pointsLabel})</span>}
+            </div>
+            <RubricTable r={q.key.rubric} t={t} />
+            {q.key.sampleHtml === null ? null : (
+              <div class="sample-block">
+                <div class="label">{t.sampleAnswer}</div>
+                <Html class="sample" html={q.key.sampleHtml} />
+              </div>
+            )}
+          </section>
+        ) : null,
+      )}
+    </section>
+  );
+}
+
 export function Paper({ d, t }: { d: PaperData; t: T }) {
+  const study = d.answers === "inline";
   return (
     <main class="paper">
-      <Header d={d} t={t} />
-      <Marker d={d} t={t} />
+      {study ? <StudyHead d={d} t={t} /> : <Header d={d} t={t} />}
+      {study ? null : <Marker d={d} t={t} />}
       <Sheet d={d} t={t} />
       {d.parts.map((part, i) => (
         <div class="part-block" key={i}>
@@ -341,10 +554,12 @@ export function Paper({ d, t }: { d: PaperData; t: T }) {
           )}
           {part.introHtml === "" ? null : <Html class="intro" html={part.introHtml} />}
           {part.questions.map((q) => (
-            <Question q={q} t={t} key={q.number} />
+            <Question q={q} t={t} study={study} key={q.number} />
           ))}
         </div>
       ))}
+      <MaterialsPage d={d} t={t} />
+      {d.answers === "key" ? <KeyPage d={d} t={t} /> : null}
     </main>
   );
 }

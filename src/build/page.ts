@@ -125,7 +125,7 @@ const ENTITIES: [string, string][] = [
 ];
 
 /** The text of rendered HTML, for an `aria-label` or an `<option>`: tags go, the entities the renderer writes are decoded. */
-const plain = (html: string): string =>
+export const plain = (html: string): string =>
   ENTITIES.reduce((text, [entity, char]) => text.replaceAll(entity, char), html.replace(/<[^>]*>/g, "")).trim();
 
 /**
@@ -144,7 +144,7 @@ function criteriaOf(q: { rubric: Rubric | null; showRubric: boolean }, md: Md): 
 }
 
 /** A model answer as HTML. Code is shown as code, in a fence longer than any run of backticks inside it. */
-function sampleHtml(q: Question, md: Md): string | null {
+export function sampleHtml(q: Question, md: Md): string | null {
   if ((q.type !== "essay" && q.type !== "code") || q.sampleAnswer === null) return null;
   if (q.type === "essay") return md.block(q.sampleAnswer);
   const longest = Math.max(2, ...[...q.sampleAnswer.matchAll(/`+/g)].map((m) => m[0].length));

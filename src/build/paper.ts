@@ -8,12 +8,14 @@ import { type PaperMessages, paperEn, paperVi } from "../core/i18n/paper";
 import type { Question } from "../core/ir";
 import { toBase64 } from "../core/keyblob";
 import { planFor } from "../core/plan";
+import { resolveRubric } from "../core/rubric/model";
 import type { PageQuestion } from "../page/data";
-import type { PaperData, PaperPart, PaperQuestion } from "../page/paper/data";
+import type { KeyEntry, PaperData, PaperPart, PaperQuestion, RubricView } from "../page/paper/data";
 import { Paper } from "../page/paper/Paper";
 import { num } from "../page/results";
 import { fontDataUri } from "./fonts";
-import { type BuildQuiz, pageQuizOf } from "./page";
+import { type BuildQuiz, pageQuizOf, plain, sampleHtml } from "./page";
+import { keyAnswerOf, partialOf } from "./paper-answers";
 import { createRenderer } from "./render";
 import type { MathTools } from "./tex";
 
@@ -29,6 +31,10 @@ export type PaperOptions = {
   /** `--seed S`: the paper code, printed as given; null: the quiz's short version draws the orders and no code is printed */
   seed: string | null;
   answerSheet: boolean;
+  /** `none` (default): an exam paper; `key`: the key on a new page after the paper; `inline`: each answer under its question */
+  answers?: "none" | "key" | "inline";
+  /** false (`--materials none`): leave out the materials page and the header's line about it */
+  materials?: boolean;
   math?: MathTools;
   fonts?: FontsChoice;
   fontData?: (path: string) => string;
@@ -75,7 +81,9 @@ export function buildPaper(built: BuildQuiz, options: PaperOptions): { html: str
     ...(options.seed === null ? {} : { seed: options.seed }),
     quizHash: hash,
   });
-  const page = pageQuizOf(built, plan, { math: maths?.render });
+  const mode = options.answers ?? "none";
+  const withSheets = options.materials !== false;
+  const page = pageQuizOf(withSheets ? built : { ...built, sheets: [] }, plan, { math: maths?.render });
   const lang = page.uiLang;
   const t = lang === "vi" ? paperVi : paperEn;
   const label = (points: number): string => (lang === "vi" ? vi : en).page.pointsLabel(num(points, lang));
@@ -86,8 +94,63 @@ export function buildPaper(built: BuildQuiz, options: PaperOptions): { html: str
   const source = new Map<string, Question>();
   for (const s of quiz.sections) for (const q of s.questions) source.set(q.id, q);
 
+  const rubricOf = (ir: Question): RubricView | null => {
+    if (mode === "none" || (ir.type !== "essay" && ir.type !== "code") || !ir.graded) return null;
+    const r = resolveRubric(ir.rubric);
+    const text = (source: string): string => md.inline(source);
+    if (r.mode === "holistic") {
+      return {
+        preset: null,
+        mode: "holistic",
+        rows: r.criteria.map((c) => ({ html: text(c.text), value: null })),
+        line: t.scoreRange(label(ir.points)),
+      };
+    }
+    if (r.mode === "additive") {
+      return {
+        preset: null,
+        mode: "additive",
+        rows: r.criteria.map((c) => ({ html: text(c.text), value: num(c.max, lang) })),
+        line: null,
+      };
+    }
+    const round = r.round === "ielts" ? t.roundIelts : r.round === "down" ? t.roundDown : t.roundNearest;
+    const preset = ir.rubric?.preset ?? null;
+    return {
+      preset: preset === null ? null : t.presetName[preset],
+      mode: "banded",
+      rows: r.criteria.map((c) => ({ html: text(c.text), value: preset === null ? num(c.weight, lang) : null })),
+      line: t.bandsLine(num(r.scale.min, lang), num(r.scale.max, lang), num(r.scale.step, lang), round),
+    };
+  };
+
+  const keyOf = (q: PageQuestion, ir: Question): KeyEntry => {
+    const a = keyAnswerOf(ir, {
+      order: plan.optionOrder?.[q.id],
+      partial: partialOf(quiz, ir),
+      t,
+      points: label,
+      label: (s) => plain(md.inline(s)),
+    });
+    const sample = sampleHtml(ir, md);
+    return {
+      lines: a.lines,
+      note: a.note,
+      points: q.points > 0 ? num(q.points, lang) : null,
+      sheet: a.sheet,
+      explanationHtml: ir.explanation ? md.block(ir.explanation.text) : null,
+      rubric: rubricOf(ir),
+      sampleHtml: ir.graded ? sample : null,
+    };
+  };
+
   const questionOf = (q: PageQuestion, n: number): PaperQuestion => {
     const ir = source.get(q.id) as Question;
+    const asked = questionAsked(q, ir, n);
+    return mode === "none" ? asked : { ...asked, key: keyOf(q, ir) };
+  };
+
+  const questionAsked = (q: PageQuestion, ir: Question, n: number): PaperQuestion => {
     const base = {
       number: n,
       pointsLabel: q.points > 0 ? label(q.points) : null,
@@ -169,7 +232,7 @@ export function buildPaper(built: BuildQuiz, options: PaperOptions): { html: str
   }
   // the answer sheet: single-choice and true/false questions, in paper order
   let sheet: PaperData["sheet"] = null;
-  if (options.answerSheet) {
+  if (options.answerSheet && mode !== "inline") {
     const all = parts.flatMap((p) => p.questions);
     const onSheet = all.filter((q) => q.type === "single" || q.type === "truefalse");
     if (onSheet.length === 0) {
@@ -200,6 +263,11 @@ export function buildPaper(built: BuildQuiz, options: PaperOptions): { html: str
     total: total > 0 ? label(total) : null,
     totalMax: num(total, lang),
     parts,
+    answers: mode,
+    // the sheet's own `#` heading is the heading above it here
+    materials:
+      page.materials?.map((m) => ({ name: m.name, html: m.html.replace(/^\s*<h1[^>]*>[\s\S]*?<\/h1>\s*/, "") })) ??
+      null,
     sheet,
   };
 

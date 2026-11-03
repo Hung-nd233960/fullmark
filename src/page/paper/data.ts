@@ -1,9 +1,35 @@
 /**
  * What the printed paper needs (TECHNICAL_DESIGN.md, section 8, "Printable paper"): text is HTML rendered at build, in
- * the order the plan drew. It holds no key, no explanation, no sample answer and no rubric: `answers: none` is an exam
- * paper, and nothing of the answer is ever put in here.
+ * the order the plan drew. With `answers: none` it holds no key, no explanation, no sample answer and no rubric (an
+ * exam paper): a question's `key` is set only for `key` and `inline`, and nothing of the answer is ever put in here
+ * otherwise.
  */
-type Base = { number: number; pointsLabel: string | null; promptHtml: string };
+type Base = { number: number; pointsLabel: string | null; promptHtml: string; key?: KeyEntry };
+
+/** A rubric as the key prints it (TECHNICAL_DESIGN.md, section 6): a preset by its name and criteria, not its descriptors. */
+export type RubricView = {
+  /** the heading's number and points are the question's; a preset's name goes here */
+  preset: string | null;
+  mode: "holistic" | "additive" | "banded";
+  /** the criteria: HTML, with the points (additive) or the weight (banded) as the paper writes them */
+  rows: { html: string; value: string | null }[];
+  /** the scale line of a banded rubric, or "Score 0 to 4 points" of a holistic one; null for an additive one */
+  line: string | null;
+};
+
+/** What the key says about one question. */
+export type KeyEntry = {
+  /** the answer cell's lines, plain text */
+  lines: string[];
+  note: string | null;
+  /** the points as a number ("2"), or null when the question is not marked */
+  points: string | null;
+  /** the letter or T/F for the answer sheet's grid; null: not on the sheet */
+  sheet: string | null;
+  explanationHtml: string | null;
+  rubric: RubricView | null;
+  sampleHtml: string | null;
+};
 
 export type PaperQuestion = Base &
   (
@@ -42,6 +68,10 @@ export type PaperData = {
   total: string | null;
   totalMax: string;
   parts: PaperPart[];
+  /** `none` is an exam paper; `key` adds the key page after the paper; `inline` is a study sheet */
+  answers: "none" | "key" | "inline";
+  /** the materials page, when the paper carries it: each sheet's heading and its content as HTML */
+  materials: { name: string; html: string }[] | null;
   /** the answer sheet: the numbers of its questions in paper order, and the sentence under its heading */
   sheet: { numbers: number[]; note: string } | null;
 };

@@ -353,3 +353,171 @@ code {
   font-size: 9.5pt;
   margin: 2px 0 6px;
 }
+
+/* the materials page and the answer key: each on a new page, with the head of the board (15pt bold title at the left,
+   the quiz and its version at the right, a 2px rule) */
+.materials-page,
+.key-page {
+  break-before: page;
+}
+.materials-page > * + *,
+.key-page > * + * {
+  margin-top: 14px;
+}
+.page-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+  border-bottom: 2px solid #000;
+  padding-bottom: 6px;
+}
+.page-title {
+  font-size: 15pt;
+  font-weight: 700;
+}
+.detach {
+  font-size: 9.5pt;
+}
+.facts.small {
+  font-size: 9.5pt;
+}
+.mat {
+  break-inside: auto;
+}
+.mat > .heading {
+  margin: 0;
+  break-after: avoid;
+}
+.mat-body > * + * {
+  margin-top: 8px;
+}
+.mat-body table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  border-top: 1px solid #000;
+  border-left: 1px solid #000;
+}
+.mat-body thead {
+  display: table-header-group;
+}
+.mat-body tr {
+  break-inside: avoid;
+}
+.mat .mat-body tr td,
+.mat .mat-body tr th {
+  border-right: 1px solid #000;
+  border-bottom: 1px solid #000;
+  padding: 5px 8px;
+  text-align: left;
+  vertical-align: top;
+}
+.mat .mat-body tr th {
+  border-bottom: 2px solid #000;
+  font-weight: 700;
+}
+.mat-body h2,
+.mat-body h3,
+.mat-body h4,
+.mat-body h5,
+.mat-body h6 {
+  margin: 0;
+  font-size: 11pt;
+  font-weight: 700;
+  break-after: avoid;
+}
+.mat-body ul,
+.mat-body ol {
+  margin: 0;
+  padding-left: 1.4em;
+}
+
+/* the key's table and rubrics */
+.key-table {
+  break-inside: auto;
+}
+.key-table tr {
+  break-inside: avoid;
+}
+.key-table th.no {
+  width: 44px;
+}
+.key-table th.pts {
+  width: 60px;
+}
+.expl,
+.pnote {
+  font-size: 9.5pt;
+}
+.expl {
+  margin-top: 2px;
+}
+.explained .expl-row {
+  margin-top: 4px;
+  font-size: 9.5pt;
+  break-inside: avoid;
+}
+.explained > .heading {
+  break-after: avoid;
+}
+.mark-block {
+  break-inside: avoid;
+}
+.mark-block > * + * {
+  margin-top: 6px;
+}
+.mark-block > .heading {
+  break-after: avoid;
+}
+.crit th.val {
+  width: 70px;
+}
+.scale-line,
+.preset {
+  font-size: 9.5pt;
+}
+.preset {
+  font-weight: 700;
+}
+.criteria {
+  margin: 0;
+  padding-left: 1.4em;
+}
+.sample-block .label,
+.answer-block .label {
+  font-size: 0.72em;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.sample {
+  margin-top: 2px;
+}
+
+/* a study sheet: no name boxes, no marker's table; each answer under its question behind a 1.5px rule */
+.study-head {
+  border-bottom: 2px solid #000;
+  padding-bottom: 6px;
+}
+.study-head .title {
+  margin: 0;
+  font-size: 15pt;
+  font-weight: 700;
+  line-height: 1.25;
+}
+.study-head .facts {
+  margin-top: 4px;
+}
+.answer-block {
+  margin: 6px 0 0 22px;
+  border-left: 1.5px solid #000;
+  padding-left: 10px;
+  break-inside: avoid;
+}
+.answer-block > * + * {
+  margin-top: 4px;
+}
+.answer-block .sub > * + * {
+  margin-top: 4px;
+}
