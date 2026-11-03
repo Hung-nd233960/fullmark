@@ -53,7 +53,8 @@ describe("expandInputs", () => {
   });
 
   it("prints every path with / and relative to the working directory", () => {
-    expect(expandInputs(["deep\\x\\c.md", join(dir, "a.md")], dir).files).toEqual(["deep/x/c.md", "a.md"]);
+    // the platform's own separator (a backslash on Windows) comes in; a slash goes out, on every platform
+    expect(expandInputs([join("deep", "x", "c.md"), join(dir, "a.md")], dir).files).toEqual(["deep/x/c.md", "a.md"]);
   });
 
   it("does not let a glob match a folder", () => {

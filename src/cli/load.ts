@@ -113,24 +113,28 @@ export function loadQuiz(file: string, options: ParseOptions = {}): LoadedQuiz {
       return null;
     }
     const key = slashes(relative(folder, lexical));
-    let real: string;
-    try {
-      real = realpathSync(lexical);
-      if (!statSync(real).isFile()) throw new Error("not a file");
-    } catch {
-      problem(missing.rule, `${missing.what} "${path}" does not exist`, missing.fix);
-      return null;
-    }
-    const actual = caseMismatch(folder, relative(folder, lexical));
-    if (actual !== null) {
+    // a file whose name differs only in letter case: found by realpath on a case-insensitive disk (Windows, macOS),
+    // and not at all on a case-sensitive one (Linux); either way the fix names the file as it is
+    const caseProblem = (): boolean => {
+      const actual = caseMismatch(folder, relative(folder, lexical));
+      if (actual === null) return false;
       const shown = slashes(relative(fromDir, join(folder, actual)));
       problem(
         missing.rule,
         `${missing.what} "${path}" does not exist`,
         `the file is \`${shown}\`; paths match letter case exactly`,
       );
+      return true;
+    };
+    let real: string;
+    try {
+      real = realpathSync(lexical);
+      if (!statSync(real).isFile()) throw new Error("not a file");
+    } catch {
+      if (!caseProblem()) problem(missing.rule, `${missing.what} "${path}" does not exist`, missing.fix);
       return null;
     }
+    if (caseProblem()) return null;
     if (!inside(realFolder, real)) {
       problem(
         "asset.outside",
