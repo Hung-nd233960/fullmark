@@ -443,7 +443,7 @@ function PageHead({ title, d, t }: { title: string; d: PaperData; t: T }) {
   return (
     <div class="page-head">
       <span class="page-title">{title}</span>
-      <span>{versionLine(d, t)}</span>
+      <span class="page-sub">{versionLine(d, t)}</span>
     </div>
   );
 }
