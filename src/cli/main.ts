@@ -283,7 +283,10 @@ export function buildProgram(outcome: Outcome = { exit: EXIT.done }, io: Io = te
     )
     .argument("<dir>", "the folder for brief.yaml and content/ (created when missing)")
     .option("--web", "ask in a form in the browser (not available yet)")
-    .option("--tui", "ask in the terminal (not available yet)")
+    .option(
+      "--tui",
+      "ask in the terminal, drawn on stderr (stdin and stderr must be terminals); the other flags pre-fill it",
+    )
     .option("--no-open", "with --web: do not open the browser")
     .option("--timeout <seconds>", "with --web: how long to wait for the form (default 1800)")
     .option("--port <n>", "with --web: the port on 127.0.0.1")

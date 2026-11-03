@@ -1,1 +1,1 @@
---tui is not available yet: give the answers as flags (quiz brief --help)
+--tui needs an interactive terminal: use --web, or give the answers as flags

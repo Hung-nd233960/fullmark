@@ -1,0 +1,1 @@
+{"status":"error","message":"--tui needs an interactive terminal: use --web, or give the answers as flags"}

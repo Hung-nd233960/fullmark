@@ -9,7 +9,8 @@ Arguments:
 
 Options:
   --web                   ask in a form in the browser (not available yet)
-  --tui                   ask in the terminal (not available yet)
+  --tui                   ask in the terminal, drawn on stderr (stdin and stderr
+                          must be terminals); the other flags pre-fill it
   --no-open               with --web: do not open the browser
   --timeout <seconds>     with --web: how long to wait for the form (default
                           1800)

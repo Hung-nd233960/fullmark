@@ -1,13 +1,16 @@
 import { existsSync, statSync } from "node:fs";
 import { mkdir } from "node:fs/promises";
 import { join, resolve } from "node:path";
+import type { Readable, Writable } from "node:stream";
 import {
   defaultOf,
   type Lang,
+  parseNumber,
   type Question,
   type QuestionFile,
   type QuestionValue,
   questionOf,
+  wordCount,
 } from "../core/brief/questions";
 import {
   type Answer,
@@ -62,10 +65,31 @@ export type BriefWarning = {
   example?: string;
 };
 
+/** The answers someone gave (through flags, or by changing a default in a form): what `decided_by: user` records. */
+export type Given = {
+  purpose?: Purpose;
+  scope?: string;
+  kinds?: ContentKind[];
+  kindsOther?: string;
+  elsewhere?: string;
+  count?: number;
+  minutes?: number;
+  mix?: MixKind[];
+  difficulty?: string;
+  mode?: string;
+  weakTopics?: boolean;
+  commitment?: number;
+  language?: Lang;
+  request?: string;
+  profile?: string;
+};
+
+/** Where `--tui` asks: stdin and stderr, unless a test hands it streams of its own. */
+export type TuiStreams = { input: Readable; output: Writable };
+
 class Usage extends Error {}
 
 const list = (values: readonly string[]): string => values.join(", ");
-const wordsOf = (text: string): number => text.split(/\s+/).filter((w) => w !== "").length;
 
 /** The values a choice or multi question accepts, from the question file. */
 const valuesOf = (q: Question): string[] => (q.choices ?? []).map((c) => c.value);
@@ -90,18 +114,9 @@ function manyOf(q: Question, flag: string, given: string): string[] {
 }
 
 function numberOf(q: Question, flag: string, given: string, whole: boolean): number {
-  const min = q.min ?? 0;
-  const range = q.max === undefined ? `${min} or more` : `from ${min} to ${q.max}`;
-  const text = given.trim();
-  const n = Number(text);
-  if (
-    !(whole ? /^\d+$/ : /^\d+(\.\d+)?$/).test(text) ||
-    !Number.isFinite(n) ||
-    n < min ||
-    (q.max !== undefined && n > q.max)
-  )
-    throw new Usage(`--${flag} must be ${whole ? "a whole number" : "a number"}, ${range}, not "${given}"`);
-  return n;
+  const parsed = parseNumber(q, given, whole);
+  if ("problem" in parsed) throw new Usage(`--${flag} ${parsed.problem}`);
+  return parsed.value;
 }
 
 const asDecider = (given: boolean, accepted = false): Decider => (given ? "user" : accepted ? "agent" : "default");
@@ -117,16 +132,26 @@ const exampleIn = (q: Question, lang: Lang): string => q.example?.[lang] ?? "";
 export async function runBrief(
   dir: string,
   opts: BriefOptions,
-  io: Io & { questions?: QuestionFile; machine?: Machine },
+  io: Io & { questions?: QuestionFile; machine?: Machine; tui?: TuiStreams },
 ): Promise<ExitCode> {
   const json = opts.json;
   const say = (line: string): void => (json ? io.err(line) : io.out(line));
-  if (opts.web || opts.tui) {
-    fail(
-      io,
-      json,
-      `${opts.web ? "--web" : "--tui"} is not available yet: give the answers as flags (quiz brief --help)`,
-    );
+  if (opts.web && opts.tui) {
+    fail(io, json, "--web and --tui cannot be used together: choose one form");
+    return EXIT.usage;
+  }
+  if (opts.web) {
+    fail(io, json, "--web is not available yet: give the answers as flags (quiz brief --help)");
+    return EXIT.usage;
+  }
+  // the form answers a person: `--accept-defaults` is for an agent that has been handed the choices
+  if (opts.tui && opts.acceptDefaults) {
+    fail(io, json, "--accept-defaults cannot be used with --tui: the person at the terminal answers");
+    return EXIT.usage;
+  }
+  const streams: TuiStreams = io.tui ?? { input: process.stdin, output: process.stderr };
+  if (opts.tui && !((streams.input as { isTTY?: boolean }).isTTY && (streams.output as { isTTY?: boolean }).isTTY)) {
+    fail(io, json, "--tui needs an interactive terminal: use --web, or give the answers as flags");
     return EXIT.usage;
   }
 
@@ -152,23 +177,7 @@ export async function runBrief(
   }
 
   // -- every flag checked before anything else happens
-  let given: {
-    purpose?: Purpose;
-    scope?: string;
-    kinds?: ContentKind[];
-    kindsOther?: string;
-    elsewhere?: string;
-    count?: number;
-    minutes?: number;
-    mix?: MixKind[];
-    difficulty?: string;
-    mode?: string;
-    weakTopics?: boolean;
-    commitment?: number;
-    language?: Lang;
-    request?: string;
-    profile?: string;
-  };
+  let given: Given;
   try {
     given = {};
     if (opts.purpose !== null) given.purpose = oneOf(q("purpose"), "purpose", opts.purpose) as Purpose;
@@ -208,10 +217,39 @@ export async function runBrief(
     return EXIT.usage;
   }
 
-  // -- human-only values: purpose has a default `--accept-defaults` may take, scope has none
+  // -- human-only values: purpose has a default `--accept-defaults` may take, scope has none. With `--tui` the flags
+  // only pre-fill the form, which asks every question
   const purposeQuestion = q("purpose");
+  if (opts.tui) {
+    const { askForm } = await import("./brief-tui");
+    const controller = new AbortController();
+    const onInterrupt = (): void => controller.abort();
+    process.once("SIGINT", onInterrupt);
+    let result: Awaited<ReturnType<typeof askForm>>;
+    try {
+      result = await askForm({
+        questions,
+        lang: given.language ?? "en",
+        prefill: given,
+        overridesOf: (p) => config.layers.user?.briefDefaults[p] ?? {},
+        profileProblem: (name) =>
+          resolveProfile(name, config.layers).profile === null ? unknownProfileMessage(name, config.layers) : null,
+        input: streams.input,
+        output: streams.output,
+        signal: controller.signal,
+      });
+    } finally {
+      process.off("SIGINT", onInterrupt);
+    }
+    if (result === "cancelled") {
+      if (json) io.out(JSON.stringify({ status: "cancelled" }));
+      io.err("cancelled: nothing was written");
+      return EXIT.usage;
+    }
+    given = result;
+  }
   const missing: string[] = [];
-  if (given.purpose === undefined && !opts.acceptDefaults) missing.push("purpose");
+  if (!opts.tui && given.purpose === undefined && !opts.acceptDefaults) missing.push("purpose");
   if (given.scope === undefined) missing.push("scope");
   if (missing.length > 0) {
     const flags = missing.map((k) =>
@@ -263,7 +301,7 @@ export async function runBrief(
     const min = rule["min-words"];
     const value = rule.key === "scope" ? given.scope : undefined;
     if (value === undefined || min === undefined) continue;
-    const words = wordsOf(value);
+    const words = wordCount(value);
     if (words >= min) continue;
     const example = exampleIn(rule, lang);
     warnings.push({

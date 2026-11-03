@@ -1,0 +1,1 @@
+--accept-defaults cannot be used with --tui: the person at the terminal answers

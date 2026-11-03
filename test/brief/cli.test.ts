@@ -178,8 +178,8 @@ describe("quiz brief through flags", () => {
     expect(readFileSync(join(other, "d/content/a.md"), "utf8")).toBe("keep");
   });
 
-  it("--web and --tui exit 2, not available yet", async () => {
-    for (const opts of [{ web: true }, { tui: true }]) {
+  it("--web exits 2, not available yet (3h)", async () => {
+    for (const opts of [{ web: true }]) {
       const dir = tree();
       const r = await run(dir, opts);
       expect(r.code).toBe(2);
