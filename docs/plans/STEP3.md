@@ -19,7 +19,7 @@ As in step 2 ([STEP2.md](STEP2.md), Handoff): Opus writes a slice's full brief h
 | 3d 3c's fixes, `stats` | done, reviewed, gaps decided | `fd466d1`, `2dfd341` |
 | 3g 3d's fixes, `brief` through flags | done, reviewed, gaps decided | `27a61a4`..`2e6b449` |
 | 3i 3g's fixes, `brief --tui` | done, reviewed, gaps decided | `fb5ed78`..`546ccc0` |
-| 3j 3i's fixes, `build --watch` and `--serve` | with Sonnet | |
+| 3j 3i's fixes, `build --watch` and `--serve` | done, reviewed; **its gaps for the owner** (G34 to G37) | `4a0835f`..`45fe811` |
 
 Step 2 is closed (STEP2.md, item 75): every "Done when" criterion passes in Chromium and Firefox; Vitest 2059 of 2059, the 2 startup tests, Playwright and axe. What step 3 inherits:
 
@@ -70,13 +70,27 @@ Step 2 is closed (STEP2.md, item 75): every "Done when" criterion passes in Chro
 
 
 
-1. **3j with Sonnet** (the owner's go, 2026-11-03; G30 to G33 decided).
-2. **Whenever the owner is ready:** the form boards on the Design canvas (3v, G7), as 2v did for the page. Only 3e, 3f and 3h wait for them.
+**3j's review (2026-11-03).** Typecheck, Biome and Vitest clean: 101 files, **2525 of 2525**, the 2 startup tests. Playwright in Chromium: **197 passed** (4 new in `e2e/watch.spec.ts`), 128 skipped, none failed (run in review). No existing golden changed; 13 new (`brief/tui-bad-flag` for G26; 7 `build/*` usage errors and a missing file; `top/help-build`; the index in `en` and `vi`; 2 e2e `jsonl` goldens). `dist/reload.js` is 178 B (170 gzipped); `dist/serve.js` unchanged; the watch code is its own CLI chunk, which `build` and `check` never load. The reload server is a sibling, `src/serve/reload-server.ts`, with no POST path at all, sharing the one-shot server's token, `Host` and refusal code; the served copy is made by `withReload` on the finished page or paper, so a paper is served the same way. Tried by hand on a copy of `examples/rust`: `--watch --serve --json` gives `listening`, `built`, a `built` line and one `reload` event for a saved edit, a `failed` line with the errors and "kept the last good page" (no event) for a saved error; the page 200, a path outside the token 403; SIGINT printed `{"status":"stopped"}`, exit 0, no process left. Done differently, accepted in review unless the owner says otherwise: each watched file's folder gets a non-recursive watch (TECHNICAL_DESIGN.md section 3 says `recursive`); the 100 ms window starts at the first event and does not slide; a reload event names its page, so with several files an edit reloads only that page and the index; an unusable input at start exits 2 before anything is watched; the human line goes to stderr with and without `--json`. **Written in review:** [proposals/print-pdf.md](../design/proposals/print-pdf.md), as "Open proposals" planned. (The "Next steps" heading below was lost in an edit of 3i's review and is restored here.)
+
+**3j's gaps, for the owner:**
+
+**G34. The index after a failed rebuild** (later). G30 sends no event for a failed rebuild, and G33 shows "last build failed" on the index, so an open index shows the note only when it is next loaded. **Recommend:** accept: the terminal already prints the errors, and the page in the browser is the last good one, as decided; COMMANDS.md says the note shows on the next load.
+
+**G35. `--open` with several files and `--serve`** (later). It opens nothing ("`--open` opens one page; built N", from several files), though the served index is one page. **Recommend:** with `--serve`, `--open` opens the index; without it, nothing, as now. One line in COMMANDS.md and in `build-watch.ts`.
+
+**G36. The config is not watched** (later). `fullmark.toml` and the machine config are read once, so a profile change needs a restart. **Recommend:** leave it, and say so in COMMANDS.md's `--watch` row ("a change to the config needs a restart").
+
+**G37. The watcher is per folder, not `recursive`** (docs only). **Recommend:** accept, and change TECHNICAL_DESIGN.md section 3's Watching row to "`node:fs.watch` on each watched file's folder, not recursive: only the files the quiz hash covers matter, and a rename save is seen in its folder".
+
+### Next steps, in order
+
+1. **The owner decides G34 to G37** (3j's gaps, above). They go into the design docs and become the next slice's first tasks.
+2. **The form boards on the Design canvas** (3v, G7), as 2v did for the page: every slice left (3e, 3f, 3h) waits for them.
 
 ### Open proposals carried over from step 2
 
 - [build-log.md](../design/proposals/build-log.md): stays a proposal, not in step 3. `build --watch --json` already gives one line per rebuild, which is all v1 promises.
-- **The PDF through the teacher's own browser** (raised in 2k's review): not yet written as a proposal. Recommendation: write it as `proposals/print-pdf.md` during 3j's review, since it would reuse `build --watch --serve`'s long-running server; it stays out of v1.
+- [print-pdf.md](../design/proposals/print-pdf.md) (raised in 2k's review, written in 3j's): stays a proposal, out of v1.
 - [TODO.md](../design/TODO.md)'s only item (1.0 and 0.x share `config.toml`) is due before step 4, not here.
 
 ## Goal
