@@ -222,7 +222,7 @@ function Header({ d, t }: { d: PaperData; t: T }) {
       <tbody>
         <tr>
           <td rowSpan={2} class="title-cell">
-            <div class="title">{d.title}</div>
+            <h1 class="title">{d.title}</h1>
             <div class="facts">{facts.join(" · ")}</div>
             {d.code === null ? null : (
               <div class="facts">

@@ -120,6 +120,7 @@ code {
   width: 58%;
 }
 .head .title {
+  margin: 0;
   font-size: 15pt;
   font-weight: 700;
   line-height: 1.25;
