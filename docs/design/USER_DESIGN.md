@@ -97,7 +97,7 @@ The owner has lecture slides and wants a practice quiz.
 ### 4.2 Taking a quiz and getting feedback
 
 1. **Take.** The learner opens `quiz.html` by double-click, or the agent serves it with `quiz serve quiz.md --open`. The page grades choice, numeric and short answers on its own, and shows feedback as the quiz is set up (instantly, or at the end). The learner's progress is kept in the browser, so closing the tab does not lose an essay; if storage is blocked the page says so once.
-2. **Export.** After **Submit**, **Export** writes `<id>-results-<time>.json` (`serve` writes it itself). The learner gives it to the agent.
+2. **Export.** After **Submit**, **Download results** writes `<id>-results-<time>.json` (`serve` writes it itself). The learner gives it to the agent.
 3. **Grade.** `quiz grade results.json --quiz quiz.md --json` re-grades with the shared grader and writes two files: a report (score, per-section and per-tag results, every wrong answer with its explanation, and the essays and code laid out for grading) and a grades template with each rubric's structure and empty cells. `--quiz` must match the version the learner took (the `quizHash`); a mismatch exits 1.
 4. **Agent grading of essays and code.** The agent reads each answer against its rubric and fills the template: a score per criterion (`additive`), a band per criterion (`banded`) or one score (`holistic`), a note for every lost mark, a justification and one concrete improvement. It never computes totals. Then `quiz grade results.json --quiz quiz.md --grades results-grades.json` validates (a lost mark without a note, a score off its step, an unknown criterion, a half-filled question all exit 1 with every problem listed), computes the totals and writes the final report. Code is judged by reading; it is never run. See [TECHNICAL_DESIGN.md](TECHNICAL_DESIGN.md), section 6.
 5. **Human grading.** `quiz grade results.json --quiz quiz.md --web` opens a form with the answer next to the rubric, pre-filled with the agent's grades to accept or adjust. It records a human grader and keeps the earlier file; the newest grades file counts.
@@ -177,7 +177,7 @@ The full table, with formats, is [COMMANDS.md](COMMANDS.md#files). By who writes
 |---|---|
 | **The author or an agent** | `quiz.md` and `assets/`; filled-in `*-grades.json` (the grader) |
 | **The user** | `fullmark.toml` (check rules; agents never edit it to pass `check`); `config.toml` (library path, shelf folders, personal profiles, default fonts); `build.toml` |
-| **The learner, through the page or a form** | `*-results-*.json` (**Export**, `serve`, `library take`); `review.json` (`review`) |
+| **The learner, through the page or a form** | `*-results-*.json` (**Download results**, `serve`, `library take`); `review.json` (`review`) |
 | **`brief`** | `brief.yaml` and `content/` |
 | **fullmark, from a command** | `quiz.html`; `*-report.md` and `*-report.json`; a grades template; `check.json`, `library.toml`, `fullmark-shelf.json` |
 

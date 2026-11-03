@@ -75,7 +75,7 @@ A path is printed relative to the working directory when it lies under it, else 
 |---|---|---|
 | `quiz.md` plus `assets/` | fullmark Markdown (`quiz guide`) | the author or an agent |
 | `quiz.html` | one self-contained offline page | `build`, `library share` |
-| `*-results-*.json` | `results-v2` (serialised Attempt); the page names it `<quiz id>-results-YYYYMMDD-HHMMSS.json`, local time | the page (**Export**), `serve`, `library take` |
+| `*-results-*.json` | `results-v2` (serialised Attempt); the page names it `<quiz id>-results-YYYYMMDD-HHMMSS.json`, local time | the page (**Download results**), `serve`, `library take` |
 | `*-report.md`, `*-report.json` | `report-v2` (the JSON; TECHNICAL_DESIGN.md, section 6) | `grade`, `library grade` |
 | `*-grades.json` | `grades-v2`: the grader's identity, and per question the rubric mode with scores or bands per criterion and notes | template from `grade --json`, filled in by an agent or through `grade --web` |
 | `review.json` | `review-v1`: keep, fix or drop per question | `review` |
@@ -223,18 +223,18 @@ Serves the page on 127.0.0.1. When the learner presses **Submit** (or **Finish**
 
 | Argument or option | Meaning |
 |---|---|
-| `FILE` | The quiz `.md`. Given a `.html`, `serve` exits 2 with "serve takes the quiz source; to collect results from a built page, use its Export button" |
+| `FILE` | The quiz `.md`. Given a `.html`, `serve` exits 2 with "serve takes the quiz source; to collect results from a built page, use its **Download results** button" |
 | `--out RESULTS` | Results file. Default: `<quiz-id>-results-<time>.json` next to the source |
 | `--timeout SECONDS` | Default `1800`. `0` waits forever. Exits 2 on timeout |
 | `--open` | Open the page in the browser |
 | `--focus` | Tick **Focus mode** on the start screen, so pressing Start enters fullscreen with the sidebar closed (TECHNICAL_DESIGN.md, section 8). A page cannot go fullscreen without a click |
 | `--section S` | Serve only this section. Results record `plan.source: "section"` |
-| `--autosave PROGRESS` | Keep the attempt in progress in this file, so it resumes after the server or the browser closes. The file is a `results-v2` document whose attempt is still in progress, written atomically at most once a second. Started again with the same file, the page offers to resume it; a file for another version of the quiz exits 1, naming that version, and is left alone. The browser's storage is not used, so the file is the only copy. Deleted once the results are written (owner, 2026-11-03) |
+| `--autosave PROGRESS` | Keep the attempt in progress in this file, so it resumes after the server or the browser closes. The file is a `results-v2` document whose attempt is still in progress, written atomically at most once a second. Started again with the same file, the page offers to resume it. The file is matched by its `quizHash`, which names one quiz and one version; its attempt's phase is `answering`. A file for another version, one that is not a results file, one already submitted, or one for another section exits 1, saying why, and is left alone. The same file as `--out` exits 2, since this one is deleted once the results are written. The browser's storage is not used, so the file is the only copy (owner, 2026-11-03, from 3b's review) |
 | `--json` | Two JSON lines. As soon as the server is up: `{"status": "listening", "url", "port", "pid"}`. At the end: `{"status": "submitted", "results", "score"}`, or `{"status": "timeout"}` or `{"status": "interrupted"}` (Ctrl+C), with nothing written. Check errors give one line instead, before any server starts: `{"status": "failed", "errors", "warnings"}`, the issues in `check --json`'s shape, as `build` gives them. A results file that cannot be written gives `{"status": "error", "message"}` as the second line (owner, 2026-11-03). A caller running `serve` in the background reads the URL from the first line |
 
 Exit: `0` submitted, `1` check errors in `FILE`, `2` timeout, interrupted (Ctrl+C), a `.html` given, or usage error.
 
-**One submit, and only a valid one** (owner, 2026-11-03). A submit the server cannot accept (another quiz id, a body that is not a valid attempt at this quiz's version) gets HTTP 400; the page says it could not save and to use **Export**, and the server keeps waiting. Once a submit is accepted the server is closing and takes no other. If the results file cannot be written, the page is told (HTTP 500) and says it could not save and to use **Export**, and the command exits 2 with the file named. The same holds for every one-shot server command.
+**One submit, and only a valid one** (owner, 2026-11-03). A submit the server cannot accept (another quiz id, a body that is not a valid attempt at this quiz's version) gets HTTP 400; the page says it could not save and to use **Download results**, and the server keeps waiting. Once a submit is accepted the server is closing and takes no other. If the results file cannot be written, the page is told (HTTP 500) and says it could not save and to use **Download results**, and the command exits 2 with the file named. The same holds for every one-shot server command.
 
 **Why only the source.** Shared pages carry no server code ([TECHNICAL_DESIGN.md](TECHNICAL_DESIGN.md), section 7, foundation 9): a built page has no submit code, no `connect-src` and a CSP hash fixed at build, so serving it would mean injecting code into finished HTML. `serve` builds the page in memory from the source, which is also what `--section` and the check errors of exit 1 need. `library take` builds from the stored source and `bundle serve` takes `BUNDLE.yaml`, so neither needs a built page.
 
@@ -805,4 +805,4 @@ Exit: `0` imported or unchanged, `1` a quiz refused or check errors (nothing imp
 | `quiz review --tui` | Dropped. Reviewing a question needs it rendered (math, code, images), which a terminal does badly; `review` stays web-only |
 | `quiz brief --tui` | Built for real (it only exited 2 in 0.x) |
 | `quiz serve --once`, `quiz review --once` | Dropped. Both always exit after one submit, so the flag has nothing to switch |
-| `quiz serve PAGE.html` | Dropped. `serve` takes only the quiz source, so shared pages carry no server code. To collect results from a built page, use its **Export** button |
+| `quiz serve PAGE.html` | Dropped. `serve` takes only the quiz source, so shared pages carry no server code. To collect results from a built page, use its **Download results** button |

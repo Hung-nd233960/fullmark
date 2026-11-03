@@ -14,7 +14,8 @@ As in step 2 ([STEP2.md](STEP2.md), Handoff): Opus writes a slice's full brief h
 |---|---|---|
 | plan | approved (2026-11-03): gaps G1 to G4, G6, G7, G9, G10, G11 and G5 decided; G8 and G12 open; the slice order and 3a's brief approved | this file |
 | 3a the one-shot server and `quiz serve` | done, reviewed, gaps decided | `b9ca8c1`, `730a7ae` |
-| 3b 3a's fixes, `--section`, `--focus`, `--autosave` | done, reviewed, **gaps waiting for the owner** | `7fa0ba3`..`4a1e0bf` |
+| 3b 3a's fixes, `--section`, `--focus`, `--autosave` | done, reviewed, gaps decided | `7fa0ba3`..`4a1e0bf` |
+| 3c `inspect`, `new`, `template` | **brief drafted, waiting for the owner** (G8 for `inspect`, G13) | |
 
 Step 2 is closed (STEP2.md, item 75): every "Done when" criterion passes in Chromium and Firefox; Vitest 2059 of 2059, the 2 startup tests, Playwright and axe. What step 3 inherits:
 
@@ -29,9 +30,11 @@ Step 2 is closed (STEP2.md, item 75): every "Done when" criterion passes in Chro
 
 **3b's review (2026-11-03).** Typecheck, Biome and Vitest clean: 88 files, **2153 of 2153**, the 2 startup tests. Playwright in Chromium: **193 passed**, 128 skipped, none failed (run in review). The runtime grew 627 B to 56,769 B gzipped (the `sent` handling moved into the page); `dist/serve.js` is 372 B. 14 page goldens regenerated for the new `dist/page.js`; no other golden changed. Screens in `docs/screens/3b/` reviewed: the dialog's line, **Sent**, the could-not-save line. Tried by hand: an unknown section lists the three slugs and titles and exits 2; `--autosave` and `--out` naming one file exits 2. **`types.spec.ts:28`: cause not shown.** It did not recur in 2 full runs and 64 repeats, some under load; `BlanksPrompt` now marks its boxes in a layout effect (the one asynchronous step found) and a failure attaches the page state. Still open. **A second unexplained failure, older than 3b:** `e2e/start.spec.ts:202` fails 3 or 4 of 40 repeats, on 3b's tree and on `b231c4e` alike: the saved attempt is not found after the reload. **Found in review:** after **Sent** the server has exited, but **Retry missed** and **New attempt** still show; what they do on a served page is not decided. Done differently, accepted in review: `sent` and `send-failed` carry `quizId` (the bundle seam); a served page starts after `DOMContentLoaded` so a timed attempt that expired while the server was down still reaches it; `--section` drops the other sections from `PageData`; under `--autosave` the Rules cell says "In a file on this computer" and nothing goes in `localStorage`.
 
+**3b's gaps decided by the owner on 2026-11-03**, all as recommended, and written into COMMANDS.md (`--autosave`: matched by `quizHash` alone, the phase `answering`, an unusable file exits 1, the same file as `--out` exits 2) and TECHNICAL_DESIGN.md (foundation 9: after **Sent**, **Retry missed** and **New attempt** work as practice and are not sent). The page's button is **Download results** everywhere in the design docs (it was "Export" in places). A section attempt keeps the quiz's `time_limit`, since a section's `time` is only a suggestion (QUIZ_SYNTAX.md, section 3): no change. `start.spec.ts:202` is 3c's first task; `types.spec.ts:28` stays open, watched by its new attachment.
+
 ### Next steps, in order
 
-1. **3b with Sonnet** (brief approved with G5, 2026-11-03). G8 is needed by 3c, G12 by 3i.
+1. **The owner approves 3c's brief** (below), with its G8 proposal for `inspect` and G13. Then 3c with Sonnet. G8 for `stats` comes with 3d's brief; G12 with 3i's.
 2. **Whenever the owner is ready:** the form boards on the Design canvas (3v, G7), as 2v did for the page. Only 3e, 3f and 3h wait for them.
 
 ### Open proposals carried over from step 2
@@ -81,6 +84,8 @@ The design docs leave these open. Each needs the owner's yes before the slice th
 **G10. Where the browser module and the forms live in the bundle** (3a). **Decided by the owner on 2026-11-03, as recommended**, and written into the design docs. **Recommend:** `dist/serve.js`, a second esbuild IIFE beside `dist/page.js`, built by `scripts/build-page.mjs` and read by `src/serve/` at run time, so `build` never reads it; its own entry in `scripts/bundles.mjs` and in the notices test. The forms are their own Preact entries (`dist/review.js`, `dist/grade-form.js`, `dist/brief-form.js`) sharing the page's components and styles, each under the 60 KB budget.
 
 **G11. The brief question file** (3g). Section 7 names it as YAML that people write; nothing gives its shape. **Decided by the owner on 2026-11-03, as recommended (YAML)**, and written into COMMANDS.md, `quiz brief`. **Recommend:** `src/brief/questions.yaml`, shipped in the bundle as data, one entry per brief key: `key`, `kind` (`choice`, `multi`, `text`, `number`), `label`, `help`, `choices` with a `hint` each, `min-words` with `example`, `follow-up` (for `other`), `human-only`, `default`, and `section` (the steps of `--tui`); every text in `en` and `vi`. A zod schema checks it in a unit test; the flags' `--help` text, the web form and the TUI all read it, so they cannot drift.
+
+**G13. A quiz started from a template keeps the template's ids** (3c). A built-in template is an example with a quiz `id` (`rust-basics`) and question ids; `new TEMPLATE` and `new --from FILE` "copy" it, so two quizzes would share a quiz id and question ids, and in step 4's library their histories would mix. **Recommend:** `new` without `--skeleton` copies everything except the identity: the front matter's `id` is removed (it then defaults to the new file's name, slugged) and every question's `id` is removed, and `new` ends by saying "run `quiz ids FILE` to give the questions ids". `--skeleton` already does this (QUIZ_SYNTAX.md, section 9). `template add` stores the quiz as given; the ids are dropped when a quiz is started from it.
 
 **G12. `@clack/prompts`** (3i). A new runtime dependency, already named in section 3. **Recommend:** pinned exactly, MIT (in the allow-list), listed in `--acknowledgements` and `THIRD_PARTY_NOTICES.md`, loaded only by `brief --tui`, with the byte-identity test driving it through a pseudo-terminal (`node:child_process` with a scripted stdin) rather than a new test dependency. If clack cannot be driven that way, the slice stops and reports.
 
@@ -164,3 +169,45 @@ The order (owner, 2026-11-03) puts the server first, since four commands stand o
 ### Done when
 
 `npm run check` passes in Chromium (Firefox on the owner's machine); `types.spec.ts:28` has a shown cause and a fix; a served section attempt and a resumed `--autosave` attempt each grade with `quiz grade` to what the page showed. Report as the rules say, with screens of the dialog line and **Sent** in `docs/screens/3b/`.
+
+## Slice 3c: `start.spec.ts:202`, then `inspect`, `new` and `template`
+
+**Draft, for the owner to approve** (with G8 for `inspect`, and G13).
+
+### Read first
+
+- COMMANDS.md: `quiz inspect`, `quiz new`, `quiz template`, "Exit codes", "Paths in output", "Files".
+- QUIZ_SYNTAX.md: section 9 (structure and content), and the **S** and **C** column of the tables in sections 2 to 4.
+- TECHNICAL_DESIGN.md section 7, "Files, formats and safe writes" (atomic writes).
+- This plan: "Rules for every slice", G4 (decided), G8, G13, and 3b's review (the `start.spec.ts:202` paragraph).
+- Code: `src/cli/main.ts`, `src/cli/load.ts`, `src/cli/check.ts` (how a quiz is loaded and checked, and how issues are printed), `src/cli/atomic.ts`, `src/core/rules/quality.ts` (`answers.position-skew`, for the answer positions), `src/core/ir.ts` (the quiz IR), `src/core/parse/` only as far as the skeleton needs, `examples/`, `templates/blank/`, `e2e/start.spec.ts`.
+
+### Decided for this slice
+
+- **`inspect` (G8, for the owner to approve).** It checks the quiz (exit 1 on errors), and prints the summary whenever the quiz parses, with the issues after it, as `check` prints them. Human output:
+
+  ```text
+  rust-basics · Rust basics · version 9f3a
+  18 questions · 25 points · 3 sections · time limit 25m
+  Types      single 8 (10 points) · multi 3 (5) · code 2 (6) · essay 1 (4) · …
+  Sections   ownership 6 questions, 8 points · collections 6, 10, pick 4 · …
+  Tags       rust 18 · borrowing 5 · … · no tag 2
+  Positions  A 5 · B 6 · C 3 · D 2 (correct choices of single and multi, in source order)
+  ```
+
+  `--json`: `{"status": "done" | "failed", "quiz": {"id", "title", "hash", "short"}, "questions", "points", "timeLimit", "types": [{"type", "count", "points"}], "sections": [{"id", "title", "questions", "points", "pick", "time"}], "tags": [{"tag", "count", "points"}], "positions": {"A": 5, …}, "errors", "warnings"}`. Points count a bank's `pick`, not its pool. Positions read the source order, as `answers.position-skew` does, and share its counting code. `--review` exits 2 "not available yet" until 3e, which adds `"review": {"keep", "fix", "drop", "notJudged"}`.
+- **Built-in templates:** one source each, no copies in the repo: `npm run build` copies `examples/<name>/` (calculus, rust, ielts, medical, exam, survey) and `templates/blank/` into `dist/templates/<name>/`; `dist` is what the package ships. A test checks that `dist/templates` matches its sources and that each template passes `check`.
+- **User templates:** the `templates/` folder next to `config.toml` (`FULLMARK_CONFIG` honoured), as COMMANDS.md says, with `list`, `add` and `rm` exactly as specified there.
+- **`new`:** G13; never overwrites (an existing target file exits 2 before anything is written); copies the one `.md`, `assets/` and `materials/`; `--skeleton` follows QUIZ_SYNTAX.md section 9 to the letter, in a module of its own under `src/core/` (pure, no `node:*`), shared by `new --from --skeleton` and `template add --skeleton`.
+
+### Tasks
+
+1. **`e2e/start.spec.ts:202`** ("a page reopened after the deadline submits on open"): fails 3 or 4 of 40 repeats since before step 3; after the reload the saved attempt is not found. Show the cause (3b suspected the test's `addInitScript` racing the page's save on unload), then fix the test or the page. No retries, no longer timeouts, no flaky marks without the cause.
+2. `inspect`, with goldens: every example, a quiz with check errors, a bank, a quiz with no tags; human and `--json`.
+3. The skeleton module with unit tests per QUIZ_SYNTAX.md section 9 bullet; a skeleton of every example fails `check` with one error per emptied field and passes the structural check of `template add --skeleton`.
+4. `new TEMPLATE`, `new --from [--skeleton]`, `template list/add/rm`, the built-in templates in `dist/templates/`; goldens for every exit of COMMANDS.md, the `ignored` user template, a name taken by a built-in, `--replace`, `unchanged`.
+5. `quiz --help` and the top-level goldens gain the new commands.
+
+### Done when
+
+`npm run check` passes in Chromium, and `start.spec.ts:202` passes 40 of 40 repeats with its cause shown; `quiz new rust demo/` then `quiz ids demo/quiz.md` then `quiz check demo/quiz.md` passes; `quiz new --from examples/rust/quiz.md --skeleton s/` fails `check` with only emptied-field errors. Report as the rules say.
