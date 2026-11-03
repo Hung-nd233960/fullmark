@@ -23,6 +23,13 @@ Commands:
                                  page
   replay [options] <results...>  write an attempt as a page already submitted:
                                  the answers, the explanations and the grades
+  inspect [options] <file>       summarise a quiz: question types, points,
+                                 sections, tags, banks and where the right
+                                 answers sit
+  new [options] [args...]        start a quiz from a template (quiz template
+                                 list) or from an existing quiz
+  template                       the templates you start quizzes from: built-in
+                                 and your own
   serve [options] <file>         serve a quiz on 127.0.0.1 and write the results
                                  when the learner presses Submit (one submit
                                  only)

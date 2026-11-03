@@ -5,7 +5,7 @@ import { describe, expect, it } from "vitest";
 /**
  * A command loads only what it uses (TECHNICAL_DESIGN.md, section 7, "CLI startup"). tsup splits `dist/` into chunks
  * with the commands' lazy `import()` as the boundaries; this reads the chunks' static `import` lines (the ones Node
- * runs at load) and checks that `--version`, `--acknowledgements`, `check`, `rules`, `ids` and `grade` never reach the page builder, the
+ * runs at load) and checks that `--version`, `--acknowledgements`, `check`, `rules`, `ids`, `grade`, `inspect`, `new` and `template` never reach the page builder, the
  * page renderer (Preact and the components) or the Markdown-to-HTML path of `build`.
  */
 const dist = resolve(import.meta.dirname, "..", "dist");
@@ -76,7 +76,7 @@ describe("what each command loads", () => {
     }
   });
 
-  for (const name of ["main", "check", "rules", "ids", "grade", "acknowledgements"]) {
+  for (const name of ["main", "check", "rules", "ids", "grade", "acknowledgements", "inspect", "new", "template"]) {
     it(`${name} never loads the one-shot server`, () => {
       const text = textOf(closure(entry(name)));
       for (const marker of SERVE_ONLY) expect(text, marker).not.toContain(marker);

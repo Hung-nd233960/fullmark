@@ -4,6 +4,8 @@ import type { CheckOptions } from "./check";
 import { EXIT, type ExitCode } from "./exit-codes";
 import type { GradeOptions } from "./grade";
 import type { IdsOptions, Io } from "./ids";
+import type { InspectOptions } from "./inspect";
+import type { NewOptions } from "./new";
 import type { ReplayCommandOptions } from "./replay-command";
 import type { RulesOptions } from "./rules";
 import { seededIds } from "./seed";
@@ -251,6 +253,81 @@ export function buildProgram(outcome: Outcome = { exit: EXIT.done }, io: Io = te
         version: VERSION,
       };
       outcome.exit = await (await import("./replay-command")).runReplay(results, opts, io);
+    });
+
+  program
+    .command("inspect")
+    .description("summarise a quiz: question types, points, sections, tags, banks and where the right answers sit")
+    .argument("<file>", "a quiz .md")
+    .option("--profile <name>", "the check profile; overrides the quiz's profile")
+    .option("--config <toml>", "use this config file instead of the nearest fullmark.toml")
+    .option("--review <review.json>", "also count the kept, to-fix and to-drop questions (not available yet)")
+    .option("--json", "print the summary as one JSON object on stdout")
+    .option("--plain", "no colours, even in a terminal")
+    .action(async (file: string, options: Record<string, unknown>) => {
+      const opts: InspectOptions = {
+        profile: (options.profile as string | undefined) ?? null,
+        config: (options.config as string | undefined) ?? null,
+        review: (options.review as string | undefined) ?? null,
+        json: Boolean(options.json),
+        plain: Boolean(options.plain) || noColor(),
+      };
+      outcome.exit = (await import("./inspect")).runInspect(file, opts, io);
+    });
+
+  program
+    .command("new")
+    .description("start a quiz from a template (quiz template list) or from an existing quiz")
+    .argument("[args...]", "TEMPLATE [PATH], or with --from only the PATH (default: the current folder)")
+    .option("--from <file>", "start from this quiz .md and its assets, in place of a template")
+    .option("--skeleton", "with --from: keep the structure and empty the content")
+    .action(async (args: string[], options: { from?: string; skeleton?: boolean }) => {
+      const opts: NewOptions = { from: options.from ?? null, skeleton: Boolean(options.skeleton) };
+      outcome.exit = await (await import("./new")).runNew(args, opts, io);
+    });
+
+  const template = program
+    .command("template")
+    .description("the templates you start quizzes from: built-in and your own");
+  template
+    .command("list")
+    .description("every template and where it comes from")
+    .option("--json", "print the templates as a JSON array")
+    .action(async (options: { json?: boolean }) => {
+      outcome.exit = (await import("./template")).runTemplateList(Boolean(options.json), io);
+    });
+  template
+    .command("add")
+    .description("store a quiz and its assets as your own template")
+    .argument("<file>", "a quiz .md")
+    .option("--as <name>", "the template's name: a slug (default: the file name, slugged)")
+    .option("--skeleton", "store the structure without the content, as new --from --skeleton makes it")
+    .option("--replace", "overwrite one of your templates of that name")
+    .option("--json", "print the outcome as one JSON object")
+    .action(async (file: string, options: { as?: string; skeleton?: boolean; replace?: boolean; json?: boolean }) => {
+      outcome.exit = await (await import("./template")).runTemplateAdd(
+        file,
+        {
+          as: options.as ?? null,
+          skeleton: Boolean(options.skeleton),
+          replace: Boolean(options.replace),
+          json: Boolean(options.json),
+        },
+        io,
+      );
+    });
+  template
+    .command("rm")
+    .description("delete one of your templates")
+    .argument("<name>", "the template's name")
+    .option("--yes", "do not ask first")
+    .option("--json", "print the outcome as one JSON object (never asks: needs --yes)")
+    .action(async (name: string, options: { yes?: boolean; json?: boolean }) => {
+      outcome.exit = await (await import("./template")).runTemplateRemove(
+        name,
+        { yes: Boolean(options.yes), json: Boolean(options.json) },
+        io,
+      );
     });
 
   program
