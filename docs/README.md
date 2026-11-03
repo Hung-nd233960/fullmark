@@ -43,6 +43,7 @@ One file per step (`STEP1.md`, `STEP2.md` and so on), written when the step star
 |---|---|
 | [app-window.md](design/proposals/app-window.md) | Knowing when the quiz window closes, and an app window |
 | [background-serve.md](design/proposals/background-serve.md) | `--background` for the one-shot server |
+| [brief-purposes.md](design/proposals/brief-purposes.md) | Briefs fitted to a subject: template overrides, the brief as a survey |
 | [cli_integration.md](design/proposals/cli_integration.md) | Shell completion, prediction, a tldr page, Starship |
 | [guide-web.md](design/proposals/guide-web.md) | `quiz guide --web`: the authoring guide with live examples |
 | [import-clone.md](design/proposals/import-clone.md) | `library import --clone` from a Git URL |

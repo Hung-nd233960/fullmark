@@ -82,7 +82,7 @@ A path is printed relative to the working directory when it lies under it, else 
 | `brief.yaml` plus `content/` | brief | `brief` |
 | build file (`build.toml`) | what `build --build-file` builds: files, and per entry the `build` options | the user |
 | `fullmark.toml` | check config: default profile, custom profiles, rule levels and options, custom checks | the user (agents never edit it to make `check` pass) |
-| `config.toml` | machine config: library path, shelf folders (by shelf name; `public` in v1), personal profiles, default `fonts` | `library init`, `library publish`, the user |
+| `config.toml` | machine config: library path, shelf folders (by shelf name; `public` in v1), personal profiles, default `fonts`, each brief purpose's defaults (`[brief.purpose.<purpose>]`) | `library init`, `library publish`, the user |
 | `check.json` | the resolved rules a library version was registered with | `library register` |
 | `library.toml` | the library's index of quizzes | `library` commands |
 | `fullmark-shelf.json` | shelf manifest | `library publish` |
@@ -296,7 +296,7 @@ Writes `DIR/brief.yaml` and an empty `DIR/content/` for a quiz an agent will wri
 | `--elsewhere` | text: material not in `content/` | empty | no |
 | `--count` | number of questions | `20` | no |
 | `--minutes` | time limit, `0` for none | `0` | no |
-| `--mix` | comma list: `recall`, `understanding`, `calculation`, `code`, `essay` | per purpose | no |
+| `--mix` | comma list: `recall`, `understanding`, `calculation`, `code`, `essay` | per purpose: `self-study` recall, understanding, calculation; `exam-prep` understanding, calculation, essay; `classmates` recall, understanding; `survey` none | no |
 | `--difficulty` | `warm-up`, `like-the-exam`, `harder` | `like-the-exam` | no |
 | `--mode` | `each-question`, `at-the-end`, `timed-exam` | `at-the-end` | no |
 | `--weak-topics` | `yes`, `no` | `no` | no |
@@ -312,7 +312,21 @@ Writes `DIR/brief.yaml` and an empty `DIR/content/` for a quiz an agent will wri
 | `--accept-defaults` | Also fill human-only values that have a default, recorded as `decided_by: agent`. Only when the user has handed those choices over |
 | `--json` | `{"status", "brief", "defaults_applied", "warnings"}`, or `{"status": "needs_input", "missing": [...], "how"}` |
 
-Exit: `0` written, `2` usage error, timeout, form cancelled, or `--tui` without a terminal; `3` purpose or scope missing and no form asked for (nothing written).
+**Defaults per purpose** (owner, 2026-11-03). The defaults of `count`, `minutes`, `mix`, `difficulty` and `mode` can be changed for each purpose in the machine config, for every subject:
+
+```toml
+# config.toml
+[brief.purpose.exam-prep]
+mix = ["calculation", "essay"]
+count = 30
+minutes = 90
+```
+
+Values are checked as the flags are; an unknown purpose, key or value exits 2 with `config.toml:line`. A value taken from here is a default (`decided_by: default`). Briefs fitted to a subject or a template: [proposals/brief-purposes.md](proposals/brief-purposes.md).
+
+**Also** (owner, 2026-11-03): `commitment` is never required: without `--commitment`, or left empty in a form, it is `0`, no goal, and the agent writes no `pass_mark`. `focus_tags` is always `[]` here, since `quiz brief` reads no history; with `--weak-topics yes` the warning `brief.no-history` says to pick the weak topics from the learner's reports (the library's brief fills them, step 4). A `DIR` that already holds `brief.yaml` exits 2 before asking anything: edit it, or delete it to start again; an existing `content/` is kept, a missing `DIR` is created.
+
+Exit: `0` written, `2` usage error, timeout, form cancelled, `--tui` without a terminal, or `DIR/brief.yaml` exists; `3` purpose or scope missing and no form asked for (nothing written).
 
 **The file.** `brief.yaml` holds every key below, always. `quiz brief` fills the defaults when it writes, so a reader never fills any: `check` treats a missing key like an unknown one, as `brief.invalid` (a warning), and then does not hold the quiz against the brief.
 

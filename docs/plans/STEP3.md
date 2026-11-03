@@ -17,7 +17,7 @@ As in step 2 ([STEP2.md](STEP2.md), Handoff): Opus writes a slice's full brief h
 | 3b 3a's fixes, `--section`, `--focus`, `--autosave` | done, reviewed, gaps decided | `7fa0ba3`..`4a1e0bf` |
 | 3c `inspect`, `new`, `template` | done, reviewed, gaps decided | `e71ce68`..`3602a3d` |
 | 3d 3c's fixes, `stats` | done, reviewed, gaps decided | `fd466d1`, `2dfd341` |
-| 3g 3d's fixes, `brief` through flags | **brief drafted, waiting for the owner** (G15 to G18) | |
+| 3g 3d's fixes, `brief` through flags | **brief ready, waiting for the owner's go** | |
 
 Step 2 is closed (STEP2.md, item 75): every "Done when" criterion passes in Chromium and Firefox; Vitest 2059 of 2059, the 2 startup tests, Playwright and axe. What step 3 inherits:
 
@@ -44,7 +44,7 @@ Step 2 is closed (STEP2.md, item 75): every "Done when" criterion passes in Chro
 
 ### Next steps, in order
 
-1. **The owner decides G15 to G18 and approves 3g's brief** (below). Then 3g with Sonnet. G12 comes with 3i's brief.
+1. **3g's brief is ready** (G15 to G18 decided, 2026-11-03), **waiting for the owner's go.** Then 3g with Sonnet. G12 comes with 3i's brief.
 2. **Whenever the owner is ready:** the form boards on the Design canvas (3v, G7), as 2v did for the page. Only 3e, 3f and 3h wait for them.
 
 ### Open proposals carried over from step 2
@@ -99,13 +99,13 @@ The design docs leave these open. Each needs the owner's yes before the slice th
 
 **G14. `stats` cannot score an attempt from a results file alone** (3d). A `results-v2` file holds the answers and the version (`quizHash`), but no score and no quiz id, so `stats RESULTS... [--quiz FILE]` can neither grade an attempt on an older version (its key is in a source it is not given) nor tell two quizzes apart, though COMMANDS.md promises "any versions" and exit 2 for different quizzes. The JSON report (`report-v2`, written by `grade --json`) has what is missing: the quiz's id and version, and per question `earned`, `points`, `status`, tags and criteria, graded against the version the attempt was taken on. **Decided by the owner on 2026-11-03, as recommended**, and written into COMMANDS.md, `quiz stats`. **Recommend:** `stats` takes `*-report.json` files, of any version, and also results files whose version matches `--quiz` (graded on the spot, as `grade` would); a results file of another version exits 1 naming it, with the fix "grade it with that version: `quiz grade FILE --quiz OLD.md --json`". Different quiz ids exit 2. In step 4 the library already keeps a report per attempt, so `library stats` reads the same thing.
 
-**G15. `commitment` is missing from the reader** (3g). COMMANDS.md's file table lists `commitment` (from `--commitment`, a number, `0` for none), but `BriefSchema` in `src/core/ir.ts` has no such key, so a brief `quiz brief` writes would be `brief.invalid` to `check`. **Recommend:** add `commitment` (an integer from 0 to 100) to `BriefSchema` and to the brief fixtures, as COMMANDS.md says.
+**G15. `commitment` is missing from the reader** (3g). COMMANDS.md's file table lists `commitment` (from `--commitment`, a number, `0` for none), but `BriefSchema` in `src/core/ir.ts` has no such key, so a brief `quiz brief` writes would be `brief.invalid` to `check`. **Decided by the owner on 2026-11-03, as recommended:** the key is always in the file, the answer never required (`0` is no goal). **Recommend:** add `commitment` (an integer from 0 to 100) to `BriefSchema` and to the brief fixtures, as COMMANDS.md says.
 
-**G16. `--mix`'s default is "per purpose", with no table** (3g). **Recommend:** `self-study`: `recall`, `understanding`, `calculation`; `exam-prep`: `understanding`, `calculation`, `essay`; `classmates`: `recall`, `understanding`; `survey`: empty. Written into the question file as each choice's default, and into COMMANDS.md.
+**G16. `--mix`'s default is "per purpose", with no table** (3g). **Decided by the owner on 2026-11-03:** the table below, and the machine config's `[brief.purpose.<purpose>]` tables change a purpose's defaults (`count`, `minutes`, `mix`, `difficulty`, `mode`); briefs fitted to a subject are [proposals/brief-purposes.md](../design/proposals/brief-purposes.md). **Recommend:** `self-study`: `recall`, `understanding`, `calculation`; `exam-prep`: `understanding`, `calculation`, `essay`; `classmates`: `recall`, `understanding`; `survey`: empty. Written into the question file as each choice's default, and into COMMANDS.md.
 
-**G17. `focus_tags` outside a library** (3g). The file fills it "from earlier results when `weak_topics` is true", but `quiz brief` is a core command with no history to read. **Recommend:** `quiz brief` always writes `focus_tags: []`; with `--weak-topics yes` it warns (`brief.no-history`, listed in `--json`'s `warnings`) that the agent should pick the weak topics from the learner's reports, or use the library's brief in step 4, which fills it from `stats`.
+**G17. `focus_tags` outside a library** (3g). The file fills it "from earlier results when `weak_topics` is true", but `quiz brief` is a core command with no history to read. **Decided by the owner on 2026-11-03, as recommended.** **Recommend:** `quiz brief` always writes `focus_tags: []`; with `--weak-topics yes` it warns (`brief.no-history`, listed in `--json`'s `warnings`) that the agent should pick the weak topics from the learner's reports, or use the library's brief in step 4, which fills it from `stats`.
 
-**G18. A `DIR` that already holds `brief.yaml`** (3g). Nothing says. **Recommend:** never overwrite, as `new`: exit 2 before asking anything, "DIR/brief.yaml already exists: edit it, or delete it to start again". An existing `content/` is kept as it is, and a missing `DIR` is created.
+**G18. A `DIR` that already holds `brief.yaml`** (3g). Nothing says. **Decided by the owner on 2026-11-03, as recommended.** **Recommend:** never overwrite, as `new`: exit 2 before asking anything, "DIR/brief.yaml already exists: edit it, or delete it to start again". An existing `content/` is kept as it is, and a missing `DIR` is created.
 
 **G12. `@clack/prompts`** (3i). A new runtime dependency, already named in section 3. **Recommend:** pinned exactly, MIT (in the allow-list), listed in `--acknowledgements` and `THIRD_PARTY_NOTICES.md`, loaded only by `brief --tui`, with the byte-identity test driving it through a pseudo-terminal (`node:child_process` with a scripted stdin) rather than a new test dependency. If clack cannot be driven that way, the slice stops and reports.
 
@@ -271,11 +271,11 @@ The order (owner, 2026-11-03) puts the server first, since four commands stand o
 
 ## Slice 3g: 3d's fixes, then `brief` through flags
 
-**Draft, for the owner to approve** (with G15 to G18).
+**Ready**: G15 to G18 decided by the owner on 2026-11-03; waiting for the owner's go.
 
 ### Read first
 
-- COMMANDS.md: `quiz brief` (all of it: the question file, the detail rules, both option tables, "The file"), "Exit codes", "Common options" (`--json`).
+- COMMANDS.md: `quiz brief` (all of it: the question file, the detail rules, both option tables, "Defaults per purpose", "Also", "The file"), "Exit codes", "Common options" (`--json`).
 - TECHNICAL_DESIGN.md section 5: the `brief.*` rows of the rule catalogue and "Where the config comes from" (the profile from the brief); section 9, the `brief` forms row.
 - USER_DESIGN.md: the "Brief" step of the loop (item 1) and the agent's limits (the **Author** row).
 - This plan: "Rules for every slice", G11 (decided), G15 to G18, and 3d's decided gaps.
@@ -288,6 +288,7 @@ The order (owner, 2026-11-03) puts the server first, since four commands stand o
 - **The writer:** one pure function in `src/core/brief/` takes the answers (each marked `user`, `default` or `agent`) and returns the YAML text: every key always, in the file table's order, `decided_by` for every key, and the same bytes for the same answers, however they were given. 3h and 3i call the same function; the three-way test in 3h depends on it.
 - **Flags:** every option of COMMANDS.md's table, values checked against the question file (a bad one exits 2 naming the allowed values); `--kinds-other` without `other` in `--kinds` exits 2. Defaults from the question file, recorded `default`; human-only values without a flag make the run exit 3 with `{"status": "needs_input", "missing": ["purpose", "scope"], "how": "…"}` (the `how` names the flags and `--web`), nothing written. `--accept-defaults` fills human-only values that have a default (`purpose`), recorded `agent`; `scope` has none, so it still needs a flag.
 - **Detail rules:** a text answer under its `min-words` is written with the warning `brief.vague` (the key, the word count, the question file's example), in `--json`'s `warnings`; exit 0.
+- **Defaults per purpose:** the question file holds each purpose's defaults; the machine config's `[brief.purpose.<purpose>]` tables replace them, read through the existing config loader, with `config.toml:line` errors (an unknown purpose, key or value).
 - **Not in this slice:** `--web` and `--tui` exit 2 "not available yet" (3h, 3i).
 
 ### Tasks
@@ -296,8 +297,9 @@ The order (owner, 2026-11-03) puts the server first, since four commands stand o
 2. G15: `commitment` in `BriefSchema` and the brief fixtures; the `brief.*` goldens updated and counted.
 3. The question file, its schema and tests (G11, G16's defaults).
 4. The writer, with unit tests: byte-identical output for the same answers given in any order; every key present; `decided_by` right for flags, defaults and `--accept-defaults`; the profile resolved from the purpose; Vietnamese text and YAML quoting edges (colons, `#`, leading spaces, multi-line `request`).
-5. `quiz brief DIR` with flags: G17, G18, exit 3, `--json`, `content/` created, goldens for every exit; `check` reads every written brief without `brief.invalid`.
-6. `quiz --help` and the top-level goldens gain `brief`.
+5. `quiz brief DIR` with flags: G17 (`brief.no-history` registered as a warning), G18, exit 3, `--json`, `content/` created, goldens for every exit; `check` reads every written brief without `brief.invalid`.
+6. `[brief.purpose.<purpose>]` in the machine config, with goldens for a changed default and for each config error.
+7. `quiz --help` and the top-level goldens gain `brief`.
 
 ### Done when
 
