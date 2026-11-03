@@ -17,7 +17,7 @@ As in step 2 ([STEP2.md](STEP2.md), Handoff): Opus writes a slice's full brief h
 | 3b 3a's fixes, `--section`, `--focus`, `--autosave` | done, reviewed, gaps decided | `7fa0ba3`..`4a1e0bf` |
 | 3c `inspect`, `new`, `template` | done, reviewed, gaps decided | `e71ce68`..`3602a3d` |
 | 3d 3c's fixes, `stats` | done, reviewed, gaps decided | `fd466d1`, `2dfd341` |
-| 3g 3d's fixes, `brief` through flags | with Sonnet | |
+| 3g 3d's fixes, `brief` through flags | done, reviewed; **its gaps for the owner** (G19 to G22) | `27a61a4`..`2e6b449` |
 
 Step 2 is closed (STEP2.md, item 75): every "Done when" criterion passes in Chromium and Firefox; Vitest 2059 of 2059, the 2 startup tests, Playwright and axe. What step 3 inherits:
 
@@ -42,9 +42,21 @@ Step 2 is closed (STEP2.md, item 75): every "Done when" criterion passes in Chro
 
 **3d's gaps decided by the owner on 2026-11-03**, all as recommended, and written into COMMANDS.md (`quiz stats`: matched by id only, `--quiz` renames titles and tags, `attempts` on criteria, holistic criteria left out, bands to one decimal, the survey `answers`, unanswered is not missed, a results file without `--quiz` exits 1; `quiz new`: the id from a name starting with a digit, too long, or empty) and TECHNICAL_DESIGN.md section 6 (a report question's `hash`). **G3 changes for `stats`:** the match by question hash is removed (unreachable: a question without an id fails `check`); `review` still refuses such a quiz. Removing that path, the band's one decimal and the id edges are 3g's first tasks.
 
+**3g's review (2026-11-03).** Typecheck, Biome and Vitest clean: 96 files, **2422 of 2422**, the 2 startup tests (run alone, as `npm test` runs them; inside a single run of every file at once the `check` budget test reads 240 ms against 180, which is that invocation's load, not a regression). Playwright in Chromium: **193 passed**, 128 skipped, none failed (run in review). Firefox not run (not installed here, as before). Goldens: 23 existing cases changed (4 `stats` cases for the one-decimal bands, 17 `rules/*` cases for the `brief.no-history` row, `top/help` and `top/no-command` for `brief`); 49 new (5 `new/id-*`, `check/brief-no-commitment`, 29 `brief/*`, 14 `brief/config-*`). The question file ships as `dist/brief/questions.yaml` (13 KB, copied by `scripts/build-brief.mjs`); `brief` and its `--help` are lazy chunks, so startup is untouched. Tried by hand: the "Done when" command writes `d/brief.yaml` and `d/content/`, and `check` on a quiz beside it gives no `brief.invalid`; the flags in another order write the same bytes; without `--scope` exit 3 with `needs_input`, nothing written; `--scope x` and `"ch 3"` write with `brief.vague` (the word count and the example); `--accept-defaults` writes `purpose: self-study` as `agent`; `--purpose exam` exits 2 naming the four values; a second run on the same `DIR` exits 2 with G18's message; a scope with `: ` and `#` and a two-line `request` with leading spaces are written quoted and read back. Done differently, accepted in review unless the owner says otherwise: a whitespace-only `--scope` counts as missing (exit 3); an existing `brief.yaml` is reported before a missing value (exit 2 before exit 3, as G18 says "before asking anything"); `--profile` is checked against the built-in and configured profiles (exit 2 naming them); a `config.toml` error under `[brief.purpose.*]` also stops the other commands, since the file is read once; `--timeout`, `--port` and `--no-open` are accepted and ignored without `--web`; lists are written in the question file's order, so `--kinds a,b` and `b,a` give the same bytes; `decided_by.content` is the strongest of its three answers.
+
+**3g's gaps, for the owner:**
+
+**G19. `brief.vague` is not in the rule catalogue** (3i). It is emitted with a rule id, but TECHNICAL_DESIGN.md section 5 and the registry list only `brief.no-history`. **Recommend:** register it as a warning, beside `brief.no-history` ("given by `quiz brief` through flags, not by `check`"), in section 5 and the registry; the 17 `rules/*` goldens change again, once.
+
+**G20. `commitment` and `--accept-defaults`** (3i). `commitment` is human-only with the default `0` and may be left empty; without `--commitment` 3g writes `0` as `default`, with or without `--accept-defaults`. COMMANDS.md says `--accept-defaults` fills "human-only values that have a default" as `agent`, which would make it `agent`. **Recommend:** keep 3g's reading: `0` is no goal, so nothing is chosen for the learner and it stays `default`; COMMANDS.md says `--accept-defaults` fills only the human-only values that need an answer (today `purpose`).
+
+**G21. `stats` and a report question with an empty `id`** (3i). Not in the brief: with the hash match gone (3d's G3 change), such questions would all merge under one key, so 3g exits 1 with the fix "run `quiz ids FILE`, then make it again with `quiz grade --json`". **Recommend:** keep it and write it into COMMANDS.md, `quiz stats`.
+
+**G22. The question file's extra fields** (3i). Beyond G11's list 3g added `flag`, `optional` (to tell `commitment` from `purpose`), `min` and `max` for numbers, `default-by-purpose` (the profile) and `default-for` on a choice (the `mix` defaults), plus a top-level `sections` list with `en` and `vi` titles; `kinds_other` is the `follow-up` of `content.kinds`. **Recommend:** accept them and add them to COMMANDS.md's question-file paragraph, since 3h and 3i read the same file.
+
 ### Next steps, in order
 
-1. **3g with Sonnet** (the owner's go, 2026-11-03; G15 to G18 decided). G12 comes with 3i's brief.
+1. **The owner decides G19 to G22** (3g's gaps, above). They go into the design docs and become 3i's first tasks; 3i's brief comes with G12.
 2. **Whenever the owner is ready:** the form boards on the Design canvas (3v, G7), as 2v did for the page. Only 3e, 3f and 3h wait for them.
 
 ### Open proposals carried over from step 2
