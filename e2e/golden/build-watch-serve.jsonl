@@ -1,0 +1,6 @@
+{"status":"listening","url":"<url>","port":0,"pid":0}
+{"status":"built","output":"quiz.html","bytes":0,"errors":[],"warnings":[]}
+{"status":"built","output":"quiz.html","bytes":0,"errors":[],"warnings":[]}
+{"status":"failed","output":null,"bytes":null,"errors":[{"rule":"syntax.container","level":"error","file":"quiz.md","line":10,"message":"a closing ::: with no container open","fix":"remove it"}],"warnings":[]}
+{"status":"built","output":"quiz.html","bytes":0,"errors":[],"warnings":[]}
+{"status":"stopped"}

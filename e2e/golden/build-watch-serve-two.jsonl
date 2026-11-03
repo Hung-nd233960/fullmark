@@ -1,0 +1,6 @@
+{"status":"listening","url":"<url>","port":0,"pid":0}
+{"status":"built","file":"a.md","output":"a.html","bytes":0,"errors":[],"warnings":[]}
+{"status":"built","file":"b.md","output":"b.html","bytes":0,"errors":[],"warnings":[]}
+{"status":"built","file":"a.md","output":"a.html","bytes":0,"errors":[],"warnings":[]}
+{"status":"built","file":"b.md","output":"b.html","bytes":0,"errors":[],"warnings":[]}
+{"status":"stopped"}

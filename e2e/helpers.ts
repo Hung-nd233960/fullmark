@@ -169,6 +169,12 @@ export type Served = {
   child: ChildProcess;
   /** the first line, as `listening` printed it */
   listening: Record<string, unknown>;
+  /** every JSON line printed so far, the `listening` line first */
+  lines(): Record<string, unknown>[];
+  /** what the process has written to stderr so far */
+  errText(): string;
+  /** waits (bounded) until a line printed so far satisfies `pred`; fails with what was printed */
+  waitLine(pred: (line: Record<string, unknown>) => boolean, ms?: number): Promise<Record<string, unknown>>;
   /** waits for the process to end: its exit code and every JSON line it printed (the `listening` line first) */
   end(): Promise<ServedEnd>;
 };
@@ -210,6 +216,17 @@ export async function serveProcess(dir: string, args: string[]): Promise<Served>
     pid: Number(listening.pid),
     child,
     listening,
+    lines: parse,
+    errText: () => stderr,
+    async waitLine(pred, ms = 10_000) {
+      const deadline = Date.now() + ms;
+      for (;;) {
+        const found = parse().find(pred);
+        if (found) return found;
+        if (Date.now() > deadline) throw new Error(`no such line in ${ms} ms:\n${out}\n${stderr}`);
+        await new Promise((done) => setTimeout(done, 25));
+      }
+    },
     async end() {
       const result = await ended;
       return { ...result, lines: parse(), stderr };
@@ -227,9 +244,11 @@ export function maskLines(lines: Record<string, unknown>[], dir: string): string
           ? 0
           : key === "pid"
             ? 0
-            : typeof value === "string"
-              ? value.replaceAll(dir, "<dir>")
-              : value,
+            : key === "bytes" && typeof value === "number"
+              ? 0
+              : typeof value === "string"
+                ? value.replaceAll(dir, "<dir>")
+                : value,
     );
   return `${lines.map(mask).join("\n")}\n`;
 }
