@@ -12,9 +12,9 @@ As in step 2 ([STEP2.md](STEP2.md), Handoff): Opus writes a slice's full brief h
 
 | Slice | State | Commits |
 |---|---|---|
-| plan | approved (2026-11-03): gaps G1 to G4, G6, G7, G9, G10 and G11 decided; G5, G8 and G12 open; the slice order and 3a's brief approved | this file |
+| plan | approved (2026-11-03): gaps G1 to G4, G6, G7, G9, G10, G11 and G5 decided; G8 and G12 open; the slice order and 3a's brief approved | this file |
 | 3a the one-shot server and `quiz serve` | done, reviewed, gaps decided | `b9ca8c1`, `730a7ae` |
-| 3b 3a's fixes, `--section`, `--focus`, `--autosave` | **brief drafted, waiting for G5** | |
+| 3b 3a's fixes, `--section`, `--focus`, `--autosave` | with Sonnet | |
 
 Step 2 is closed (STEP2.md, item 75): every "Done when" criterion passes in Chromium and Firefox; Vitest 2059 of 2059, the 2 startup tests, Playwright and axe. What step 3 inherits:
 
@@ -29,7 +29,7 @@ Step 2 is closed (STEP2.md, item 75): every "Done when" criterion passes in Chro
 
 ### Next steps, in order
 
-1. **The owner decides G5** (`--autosave`), which 3b's brief (below) waits for. Then 3b with Sonnet. G8 is needed by 3c, G12 by 3i.
+1. **3b with Sonnet** (brief approved with G5, 2026-11-03). G8 is needed by 3c, G12 by 3i.
 2. **Whenever the owner is ready:** the form boards on the Design canvas (3v, G7), as 2v did for the page. Only 3e, 3f and 3h wait for them.
 
 ### Open proposals carried over from step 2
@@ -66,7 +66,7 @@ The design docs leave these open. Each needs the owner's yes before the slice th
 
 **G4. `quiz template` and the built-in templates** (3c). `new TEMPLATE` reads user templates and names `quiz template list`, but section 12 lists `new` without `template`. **Decided by the owner on 2026-11-03, as recommended**, and written into the design docs. **Recommend:** `template list`, `add` and `rm` come in step 3 with `new` (they share the skeleton code and the template folder), and the seven built-ins are made from `examples/` (`blank` stays as it is). `section 12` gains `template`. `guide` and `agent-guide` stay out (they need the authoring guide's content, a writing task of its own); they go into step 4 or a step of their own, the owner's choice.
 
-**G5. `serve --autosave PROGRESS`** (3b). **Recommend:** the file is a `results-v2` document with the attempt's state still `in-progress` (the shape the page already autosaves), written atomically on each `progress` event, at most once a second. On start, a file whose `quizId` and `quizHash` match is handed to the page, which opens on it as a resume (the start screen's resume path, already built in 2d); a file for another version exits 1, naming the version, and is left alone. It is deleted after the results are written. `--autosave` with `--section` keeps the section's plan.
+**G5. `serve --autosave PROGRESS`** (3b). **Decided by the owner on 2026-11-03, as recommended**, and written into COMMANDS.md. **Recommend:** the file is a `results-v2` document with the attempt's state still `in-progress` (the shape the page already autosaves), written atomically on each `progress` event, at most once a second. On start, a file whose `quizId` and `quizHash` match is handed to the page, which opens on it as a resume (the start screen's resume path, already built in 2d); a file for another version exits 1, naming the version, and is left alone. It is deleted after the results are written. `--autosave` with `--section` keeps the section's plan.
 
 **G6. `build --watch` and `--serve`** (3j). The design says only "rebuild on change; keep the last good page; reload after each rebuild". **Decided by the owner on 2026-11-03, as recommended**, and written into the design docs. **Recommend:** `--watch` watches each `FILE`, the files its quiz hash covers (assets, `materials` and their assets) and the build file, debounced 100 ms; a rebuild that fails prints its errors and keeps the page on disk and in the server. `--serve` is not the one-shot server: it serves the last good page at a token URL until Ctrl+C, with the reload code as its only module (no submit, no autosave); the page learns of a rebuild by Server-Sent Events (`GET /events?token=…`) and reloads. Ctrl+C exits 0 (the user's normal way out), not 2 as for `serve`. `--watch` with `--print` is allowed and rebuilds the paper. `--serve` with several files serves an index of the pages.
 
@@ -134,7 +134,7 @@ The order (owner, 2026-11-03) puts the server first, since four commands stand o
 
 ## Slice 3b: 3a's fixes, then `--section`, `--focus` and `--autosave`
 
-**Draft, for the owner to approve with G5.**
+**Approved by the owner on 2026-11-03**, with G5.
 
 ### Read first
 
