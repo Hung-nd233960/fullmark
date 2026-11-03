@@ -164,8 +164,8 @@ Checks the quiz (under the profile, as `check` does), then writes one self-conta
 | `--materials none` | With `--print`: leave out the materials page that otherwise follows the last question when the quiz has `materials` (TECHNICAL_DESIGN.md, Printable paper). `none` is the only value; another, or no `--print`, exits 2. On a quiz without materials it does nothing |
 | `--built-at ISO` | Pin the build time, so a build is byte-identical across runs. Default: now |
 | `--ui-lang en\|vi` | Language of the interface for this build, overriding the quiz's `ui_lang`. The questions are not translated, and grading still follows the quiz's `lang`: the key and the quiz's version are unchanged, so a results file from the page grades as before |
-| `--watch` | Rebuild whenever `FILE` or its `assets/` change. Keeps the last good page when a save has errors. Runs until Ctrl+C |
-| `--serve` | With `--watch`: serve on 127.0.0.1 and reload the browser after each rebuild. Only the served copy gets the reload code |
+| `--watch` | Rebuild whenever `FILE` changes, or any file its version covers (assets, `materials` sheets and their assets), or the build file; changes are gathered for 100 ms. A save with errors prints them and keeps the last good page, on disk and in the server. Works with `--print` too. Runs until Ctrl+C, which exits `0` |
+| `--serve` | With `--watch`: serve the last good page on 127.0.0.1 at a token URL, and reload the browser after each rebuild through Server-Sent Events (`GET /events`). This server is not one-shot: it takes no submit and has no autosave, only the reload code, which only the served copy carries, and it runs until Ctrl+C. With several files it serves an index of the pages |
 | `--json` | `{"status", "output", "bytes", "errors", "warnings"}`: `status` is `"built"` or `"failed"`, `output` the page's path or null, `errors` and `warnings` the issues in `check --json`'s shape. A failed build has `output` and `bytes` null; a file that cannot be read or written gives `{"status": "error", "file", "message"}`, as `check --json` does. With `--watch`, one JSON line per rebuild. With several files, one such line per file (with `"file"`), then `{"status": "done", "ok", "failed"}` |
 | `--plain` | As everywhere: no colours, no progress line |
 
@@ -263,7 +263,7 @@ A form where the learner judges every question: keep, fix or drop, with a reason
 | `--timeout`, `--open`, `--port` | As for `serve`, so the timeout is `1800` seconds. The server exits after the first **Finish** |
 | `--json` | `{"status", "review", "keep", "fix", "drop"}` |
 
-Exit: `0` written, `2` timeout or usage error.
+Exit: `0` written, `1` check errors in `FILE`, or a question without an id (nothing is served; the message says to run `quiz ids FILE` first, since a verdict follows its question by id), `2` timeout or usage error.
 
 ### quiz brief
 
@@ -385,7 +385,7 @@ Progress across several attempts at one quiz: score by date, percent per tag, th
 
 | Argument or option | Meaning |
 |---|---|
-| `RESULTS...` | Two or more results files of the same quiz (any versions) |
+| `RESULTS...` | Two or more results files of the same quiz (any versions). Questions are matched across versions by id; a question without one is matched by its question hash, so it is counted per version and marked "no id" |
 | `--quiz FILE` | The current source, to name questions and tags |
 | `--json` | `{"attempts": [...], "tags": [...], "weakest": [...], "questions": [...]}` |
 

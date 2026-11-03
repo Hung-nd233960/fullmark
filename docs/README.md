@@ -28,7 +28,7 @@ The full table, with what each step contains and when it is done, is [TECHNICAL_
 | 0 | The quiz syntax, and 0.x's test data rewritten in it | done |
 | 1 | The core: parser, rules and profiles, grader and rubrics; `check`, `rules`, `grade`, `ids` | done: [plans/STEP1.md](plans/STEP1.md) |
 | 2 | `build`, the page runtime, themes and fonts, `replay`, the printable paper | done: [plans/STEP2.md](plans/STEP2.md) |
-| 3 | `serve`, `review`, `grade --web`, `brief`, `stats`, `inspect`, `new`, `build --watch` | drafted: [plans/STEP3.md](plans/STEP3.md) |
+| 3 | `serve`, `review`, `grade --web`, `brief`, `stats`, `inspect`, `new`, `template`, `build --watch` | drafted: [plans/STEP3.md](plans/STEP3.md) |
 | 4 | The library | not written yet |
 | 5 | `publish` and `import` | not written yet |
 | 6 | Moving the owner's 0.x history into a 1.0 library | not written yet |
