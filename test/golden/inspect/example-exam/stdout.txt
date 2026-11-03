@@ -1,4 +1,4 @@
-quiz · Timed exam: Introductory statistics · version 468e
+intro-statistics · Timed exam: Introductory statistics · version 004c
 8 questions · 9 points · 3 sections · time limit 20m
 Types     single 3 (2 points) · multi 1 (2) · truefalse 1 (1) · numeric 2 (3) · blanks 1 (1)
 Sections  concepts 3 questions, 4 points, 8m · calculations 3, 4, 12m · bonus 2, 1, pick 1

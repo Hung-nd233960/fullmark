@@ -281,8 +281,13 @@ export function buildProgram(outcome: Outcome = { exit: EXIT.done }, io: Io = te
     .argument("[args...]", "TEMPLATE [PATH], or with --from only the PATH (default: the current folder)")
     .option("--from <file>", "start from this quiz .md and its assets, in place of a template")
     .option("--skeleton", "with --from: keep the structure and empty the content")
-    .action(async (args: string[], options: { from?: string; skeleton?: boolean }) => {
-      const opts: NewOptions = { from: options.from ?? null, skeleton: Boolean(options.skeleton) };
+    .option("--json", "print the outcome as one JSON object")
+    .action(async (args: string[], options: { from?: string; skeleton?: boolean; json?: boolean }) => {
+      const opts: NewOptions = {
+        from: options.from ?? null,
+        skeleton: Boolean(options.skeleton),
+        json: Boolean(options.json),
+      };
       outcome.exit = await (await import("./new")).runNew(args, opts, io);
     });
 

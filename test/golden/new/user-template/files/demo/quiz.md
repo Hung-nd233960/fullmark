@@ -1,5 +1,6 @@
 ---
 title: Signals week
+id: demo
 ---
 
 # Part one {id=part-one}

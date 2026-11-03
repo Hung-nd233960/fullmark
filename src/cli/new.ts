@@ -1,9 +1,10 @@
 import { existsSync, readFileSync } from "node:fs";
 import { basename, dirname, join, resolve } from "node:path";
-import { skeleton, withoutIdentity } from "../core/skeleton";
+import { skeleton, withoutIdentity, withQuizId } from "../core/skeleton";
+import { ID_FORMAT, slug } from "../core/slug";
 import { writeFileAtomic } from "./atomic";
 import type { CheckIo } from "./check";
-import { humanIssue } from "./check";
+import { humanIssue, issueJson } from "./check";
 import { EXIT, type ExitCode } from "./exit-codes";
 import { fail } from "./fail";
 import type { Io } from "./ids";
@@ -11,7 +12,7 @@ import { type LoadedQuiz, loadQuiz } from "./load";
 import { readFailure, shownPath } from "./paths";
 import { findTemplate, listTemplates, machineOf, readTemplate, type TemplateFiles } from "./templates";
 
-export type NewOptions = { from: string | null; skeleton: boolean };
+export type NewOptions = { from: string | null; skeleton: boolean; json?: boolean };
 
 /** A quiz file read with the files it refers to: what `new --from` and `template add` copy. */
 export type QuizSource = { loaded: LoadedQuiz; name: string; text: string; files: { path: string; bytes: Buffer }[] };
@@ -45,6 +46,19 @@ export function copyOf(
   };
 }
 
+/**
+ * The fresh quiz `id` of a new quiz (COMMANDS.md, `quiz new`): the folder's name when the file is `quiz.md`, else the
+ * file's name, slugged. A name that is no id (it must start with a letter) gets `quiz-` in front; a name with no
+ * letters or digits gives none, and the id then defaults to the file's name.
+ */
+export function freshId(folder: string, file: string): string | null {
+  const stem = file.replace(/\.md$/i, "");
+  const base = slug(stem.toLowerCase() === "quiz" ? basename(folder) : stem);
+  if (base === "") return null;
+  const id = (ID_FORMAT.test(base) ? base : `quiz-${base}`).slice(0, 64).replace(/-+$/, "");
+  return ID_FORMAT.test(id) ? id : null;
+}
+
 const fromTemplate = (t: TemplateFiles): { name: string; text: string; files: TemplateFiles["files"] } => ({
   name: t.md.name,
   text: t.md.bytes.toString("utf8"),
@@ -57,19 +71,21 @@ const fromTemplate = (t: TemplateFiles): { name: string; text: string; files: Te
  * a file that exists exits 2 before anything is written.
  */
 export async function runNew(positional: readonly string[], opts: NewOptions, io: CheckIo): Promise<ExitCode> {
-  const say = (line: string): void => io.out(line);
+  const json = opts.json === true;
+  // with --json the human text goes to stderr and stdout holds the one object
+  const say = (line: string): void => (json ? io.err(line) : io.out(line));
   const template = opts.from === null ? positional[0] : undefined;
   const target = opts.from === null ? positional[1] : positional[0];
   if (opts.from !== null && positional.length > 1) {
-    fail(io, false, "give a template or --from, not both: with --from the only argument is the PATH");
+    fail(io, json, "give a template or --from, not both: with --from the only argument is the PATH");
     return EXIT.usage;
   }
   if (opts.from === null && template === undefined) {
-    fail(io, false, "give a template (quiz template list) or --from FILE");
+    fail(io, json, "give a template (quiz template list) or --from FILE");
     return EXIT.usage;
   }
   if (opts.skeleton && opts.from === null) {
-    fail(io, false, "--skeleton needs --from FILE");
+    fail(io, json, "--skeleton needs --from FILE");
     return EXIT.usage;
   }
 
@@ -81,13 +97,24 @@ export async function runNew(positional: readonly string[], opts: NewOptions, io
     try {
       source = readSource(path);
     } catch (error) {
-      fail(io, false, `cannot read the file: ${readFailure(error)}`, { file: opts.from });
+      fail(io, json, `cannot read the file: ${readFailure(error)}`, { file: opts.from });
       return EXIT.usage;
     }
     if (source.loaded.quiz === null) {
-      fail(io, false, "the quiz does not parse, so there is nothing to copy; fix these first:", { file: opts.from });
-      for (const i of source.loaded.issues.filter((x) => x.level === "error"))
-        for (const l of humanIssue({ ...i, file: shownPath(i.file, io.cwd) }, false)) io.err(l);
+      const errors = source.loaded.issues.filter((x) => x.level === "error");
+      if (json) {
+        io.out(
+          JSON.stringify({
+            status: "failed",
+            file: opts.from,
+            message: "the quiz does not parse, so there is nothing to copy",
+            errors: errors.map((i) => issueJson({ ...i, file: shownPath(i.file, io.cwd) })),
+          }),
+        );
+        io.err(`${opts.from}: the quiz does not parse, so there is nothing to copy; fix these first:`);
+      } else
+        fail(io, false, "the quiz does not parse, so there is nothing to copy; fix these first:", { file: opts.from });
+      for (const i of errors) for (const l of humanIssue({ ...i, file: shownPath(i.file, io.cwd) }, false)) io.err(l);
       return EXIT.problems;
     }
     output = copyOf(source, opts.skeleton);
@@ -96,8 +123,14 @@ export async function runNew(positional: readonly string[], opts: NewOptions, io
     const m = machineOf(io);
     const found = findTemplate(m, template as string);
     if (!found) {
-      const names = listTemplates(m).map((t) => t.name);
-      fail(io, false, `no template called "${template}"`, {}, [
+      const all = listTemplates(m);
+      const broken = all.find((t) => t.name === template && t.invalid !== null);
+      if (broken) {
+        fail(io, json, `your template "${template}" cannot be used: ${broken.invalid}`);
+        return EXIT.usage;
+      }
+      const names = all.filter((t) => t.invalid === null).map((t) => t.name);
+      fail(io, json, `no template called "${template}"`, {}, [
         `the templates are: ${[...new Set(names)].join(", ")} (quiz template list)`,
       ]);
       return EXIT.usage;
@@ -109,10 +142,22 @@ export async function runNew(positional: readonly string[], opts: NewOptions, io
     described = `template ${template}`;
   }
 
-  const dest = resolve(io.cwd, target ?? ".");
+  // PATH ending in .md is the file to write (a folder otherwise, where the quiz keeps its name)
+  const asFile = target !== undefined && /\.md$/i.test(target);
+  const full = resolve(io.cwd, target ?? ".");
+  const dest = asFile ? dirname(full) : full;
+  const first = output.files[0];
+  if (asFile && first) {
+    output.name = basename(full);
+    first.path = output.name;
+  }
+  if (first) {
+    const id = freshId(dest, output.name);
+    if (id !== null) first.bytes = Buffer.from(withQuizId(first.bytes.toString("utf8"), id), "utf8");
+  }
   const taken = output.files.find((f) => existsSync(join(dest, f.path)));
   if (taken) {
-    fail(io, false, `${shownPath(join(dest, taken.path), io.cwd)} already exists; new never overwrites`);
+    fail(io, json, `${shownPath(join(dest, taken.path), io.cwd)} already exists; new never overwrites`);
     return EXIT.usage;
   }
   try {
@@ -126,6 +171,7 @@ export async function runNew(positional: readonly string[], opts: NewOptions, io
     return EXIT.usage;
   }
   const quiz = shownPath(join(dest, output.name), io.cwd);
+  if (json) io.out(JSON.stringify({ status: "written", file: quiz, template: template ?? null }));
   const others = output.files.length - 1;
   say(
     `wrote ${quiz} from ${described}${others > 0 ? `, with ${others} file${others === 1 ? "" : "s"} beside it` : ""}`,

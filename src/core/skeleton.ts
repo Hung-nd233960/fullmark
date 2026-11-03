@@ -104,6 +104,23 @@ export function withoutIdentity(text: string): string {
   return out;
 }
 
+/**
+ * The quiz with `id: ID` written into the front matter, after its last key (a quiz that has an `id` there is returned
+ * unchanged, a quiz with no front matter too). Line endings stay as the file has them.
+ */
+export function withQuizId(text: string, id: string): string {
+  const o = outline(text);
+  if (typeof o.frontMatter !== "object") return text;
+  const body = o.lines.slice(1, o.frontMatter.close);
+  if (frontMatterEntries(body).some((e) => e.key === "id")) return text;
+  let last = o.frontMatter.close - 1;
+  while (last > 0 && (o.lines[last] ?? "").trim() === "") last--;
+  const spans = lineSpans(text);
+  const eol = /\r\n/.test(text) ? "\r\n" : "\n";
+  const at = spans[last]?.next ?? 0;
+  return `${text.slice(0, at)}id: ${id}${eol}${text.slice(at)}`;
+}
+
 // -- the skeleton -------------------------------------------------------------------------------------------------
 
 const slice = (o: Outline, u: { start: number; end: number }): string[] => o.lines.slice(u.start, u.end);

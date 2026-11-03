@@ -5,6 +5,7 @@ time_limit: 25m
 feedback: end
 shuffle_choices: true
 tags: [rust]
+id: demo
 ---
 
 # Ownership and borrowing

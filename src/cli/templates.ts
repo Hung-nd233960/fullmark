@@ -20,6 +20,8 @@ export type TemplateInfo = {
   path: string | null;
   /** a user template whose name is a built-in one: `new` uses the built-in */
   ignored: boolean;
+  /** why a user folder cannot be used (COMMANDS.md, `template list`); null for a usable template */
+  invalid: string | null;
 };
 
 /** A template read from its folder: the quiz file and the files that go with it, relative to the folder. */
@@ -57,9 +59,15 @@ const quizFiles = (folder: string): string[] =>
     .map((e) => e.name)
     .sort(compare);
 
-/** Every template: the built-in ones, then the user's by name. A user folder is a template when it holds one `.md`. */
+/** Every template: the built-in ones, then the user's by name. A user folder is usable when it holds one `.md`. */
 export function listTemplates(m: Machine): TemplateInfo[] {
-  const out: TemplateInfo[] = BUILT_IN.map((name) => ({ name, source: "built-in", path: null, ignored: false }));
+  const out: TemplateInfo[] = BUILT_IN.map((name) => ({
+    name,
+    source: "built-in",
+    path: null,
+    ignored: false,
+    invalid: null,
+  }));
   const folder = userTemplatesFolder(m);
   if (!isDir(folder)) return out;
   const names = readdirSync(folder, { withFileTypes: true })
@@ -67,12 +75,18 @@ export function listTemplates(m: Machine): TemplateInfo[] {
     .map((e) => e.name)
     .sort(compare);
   for (const name of names) {
-    if (quizFiles(join(folder, name)).length !== 1) continue;
+    const mds = quizFiles(join(folder, name));
     out.push({
       name,
       source: "user",
       path: join(folder, name),
       ignored: (BUILT_IN as readonly string[]).includes(name),
+      invalid:
+        mds.length === 1
+          ? null
+          : mds.length === 0
+            ? "no quiz .md at the top of the folder"
+            : `${mds.length} .md files at the top of the folder (${mds.join(", ")}); a template has exactly one`,
     });
   }
   return out;
@@ -83,7 +97,7 @@ export function findTemplate(m: Machine, name: string): { info: TemplateInfo; ig
   const all = listTemplates(m);
   const builtIn = all.find((t) => t.name === name && t.source === "built-in");
   if (builtIn) return { info: builtIn, ignoredUser: all.some((t) => t.name === name && t.source === "user") };
-  const user = all.find((t) => t.name === name && t.source === "user");
+  const user = all.find((t) => t.name === name && t.source === "user" && t.invalid === null);
   return user ? { info: user, ignoredUser: false } : null;
 }
 

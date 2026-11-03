@@ -1,0 +1,1 @@
+{"status":"written","file":"out/src.md","template":null}

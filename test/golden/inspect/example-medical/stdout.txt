@@ -1,4 +1,4 @@
-quiz · Cardiac physiology: a medical-science quiz · version b3c0
+cardiac-physiology · Cardiac physiology: a medical-science quiz · version 7022
 10 questions · 20 points · 3 sections · untimed
 Types     single 1 (1 point) · multi 1 (2) · truefalse 1 (1) · numeric 2 (3) · blanks 1 (1) · fields 1 (2) · ordering 1 (3) · matching 1 (3) · essay 1 (4)
 Sections  structure-and-conduction 4 questions, 8 points · haemodynamics 5, 8 · written-answer 1, 4

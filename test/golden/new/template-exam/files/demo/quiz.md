@@ -11,6 +11,7 @@ shuffle_choices: true
 partial: false
 pass_mark: 60
 tags: [statistics]
+id: demo
 ---
 
 # Part A: Concepts {id=concepts time=8m}

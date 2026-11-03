@@ -1,0 +1,2 @@
+wrote signals/week3.md from template rust
+run `quiz ids signals/week3.md` to give the questions ids

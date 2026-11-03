@@ -11,6 +11,7 @@ title: My quiz
 # partial: true                # partial credit in multi, ordering and matching
 # pass_mark: 70                # percent of auto-graded points
 # tags: [topic]
+id: mine
 ---
 
 # Section one {id=section-one}

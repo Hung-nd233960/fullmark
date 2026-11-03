@@ -2,7 +2,7 @@ import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 import { parse } from "../src/core/parse";
-import { SKELETON_RULES, SKELETON_TITLE, skeleton, withoutIdentity } from "../src/core/skeleton";
+import { SKELETON_RULES, SKELETON_TITLE, skeleton, withoutIdentity, withQuizId } from "../src/core/skeleton";
 
 const root = resolve(import.meta.dirname, "..");
 const rules = (text: string): string[] => parse(text, "quiz.md").issues.map((i) => i.rule);
@@ -293,4 +293,23 @@ describe("skeleton of every example", () => {
       expect(found.filter((r) => !SKELETON_RULES.has(r))).toEqual([]);
     });
   }
+});
+
+describe("withQuizId: a fresh quiz id after the front matter's last key", () => {
+  const text = "---\ntitle: T\ntime_limit: 5m\n---\n\n## Q {type=single id=q}\n\n- [x] a\n- [ ] b\n";
+  it("adds the id and changes nothing else", () => {
+    const out = withQuizId(text, "demo");
+    expect(out).toBe(text.replace("time_limit: 5m\n", "time_limit: 5m\nid: demo\n"));
+    expect(parse(out, "quiz.md").quiz?.frontMatter.id).toBe("demo");
+  });
+  it("keeps CRLF line endings and leaves a quiz that has an id alone", () => {
+    const crlf = text.replaceAll("\n", "\r\n");
+    expect(withQuizId(crlf, "demo")).toContain("time_limit: 5m\r\nid: demo\r\n---");
+    const has = text.replace("title: T", "title: T\nid: mine");
+    expect(withQuizId(has, "demo")).toBe(has);
+  });
+  it("goes before blank lines that end the front matter", () => {
+    const gap = text.replace("5m\n---", "5m\n\n---");
+    expect(withQuizId(gap, "demo")).toContain("5m\nid: demo\n\n---");
+  });
 });

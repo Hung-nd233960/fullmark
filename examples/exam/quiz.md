@@ -4,6 +4,7 @@ description: |
   A template for a closed-book exam: a time limit that submits automatically, no feedback until
   the end, shuffled questions and choices, a pass mark, and a random draw from a question bank.
   The answer key is still inside the HTML, so this is practice or honour-system use, not secure proctoring.
+id: intro-statistics
 time_limit: 20m
 feedback: end
 shuffle_questions: true

@@ -32,6 +32,7 @@ export function runTemplateList(json: boolean, io: CheckIo): ExitCode {
           source: t.source,
           path: t.path === null ? null : shownPath(t.path, io.cwd),
           ignored: t.ignored,
+          invalid: t.invalid,
         })),
       ),
     );
@@ -41,7 +42,7 @@ export function runTemplateList(json: boolean, io: CheckIo): ExitCode {
   for (const t of all) {
     const where = t.source === "built-in" ? "built-in" : `user  ${shownPath(t.path as string, io.cwd)}`;
     io.out(
-      `${t.name.padEnd(width)}  ${where}${t.ignored ? "  (ignored: a built-in template has this name; rename the folder)" : ""}`,
+      `${t.name.padEnd(width)}  ${where}${t.invalid !== null ? `  (invalid: ${t.invalid})` : t.ignored ? "  (ignored: a built-in template has this name; rename the folder)" : ""}`,
     );
   }
   return EXIT.done;

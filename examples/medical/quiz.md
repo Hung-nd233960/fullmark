@@ -5,6 +5,7 @@ description: |
   (structure to function), numeric answers with units, labeled fields for calculations, and an essay
   with a rubric. Put figures such as ECG strips or scans in `assets/` and reference them with
   `![alt](assets/name.png)`.
+id: cardiac-physiology
 feedback: instant
 shuffle_choices: true
 pass_mark: 60
