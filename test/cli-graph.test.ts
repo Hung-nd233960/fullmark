@@ -86,6 +86,19 @@ describe("what each command loads", () => {
     }
   });
 
+  it("the watcher and the reload server are a chunk of their own, loaded by a dynamic import() for `--watch`", () => {
+    const watch = chunkWith("// src/cli/build-watch.ts");
+    const text = textOf(closure(watch));
+    for (const marker of ["// src/cli/watcher.ts", "// src/serve/reload-server.ts", "// src/build/reload.ts"]) {
+      expect(text, marker).toContain(marker);
+    }
+    expect(readFileSync(join(dist, chunkWith("// src/cli/build.ts")), "utf8")).toContain(`import("./${watch}")`);
+    // a plain build, and `check`, never load it or the server
+    expect(closure(entry("build"))).not.toContain(watch);
+    expect(closure(entry("check"))).not.toContain(watch);
+    expect(textOf(closure(entry("check")))).not.toContain("// src/serve/");
+  });
+
   it("the prompts are a chunk of their own, loaded by a dynamic import() when the form starts", () => {
     const prompts = chunkWith("// node_modules/@clack/prompts/");
     const text = textOf(closure(prompts));
