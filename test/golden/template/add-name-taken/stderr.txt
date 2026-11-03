@@ -1,0 +1,2 @@
+you already have a template called "signals-week"
+use --replace to overwrite it, or --as signals-week-2

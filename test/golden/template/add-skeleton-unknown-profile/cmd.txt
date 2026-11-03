@@ -1,0 +1,6 @@
+template
+add
+p.md
+--skeleton
+--as
+p

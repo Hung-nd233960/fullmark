@@ -1,0 +1,5 @@
+template
+add
+week.md
+--as
+signals-week

@@ -1,0 +1,1 @@
+{"status":"added","name":"week","path":"no-home/.config/fullmark/templates/week"}

@@ -1,0 +1,1 @@
+{"status":"unchanged","name":"signals-week","path":"no-home/.config/fullmark/templates/signals-week"}

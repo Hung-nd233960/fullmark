@@ -1,0 +1,1 @@
+"rust" is a built-in template and cannot be removed

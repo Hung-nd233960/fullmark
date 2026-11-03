@@ -1,0 +1,9 @@
+mock.md: the quiz fails check, so it would hand its errors to every quiz started from it:
+mock.md:7: error explanation.missing: the question has no explanation
+    fix: add a ::: explanation container below the answer
+mock.md:7: error question.untagged: the question has no tags
+    fix: add tags=topic to the heading
+mock.md:13: error explanation.missing: the question has no explanation
+    fix: add a ::: explanation container below the answer
+mock.md:13: error question.untagged: the question has no tags
+    fix: add tags=topic to the heading

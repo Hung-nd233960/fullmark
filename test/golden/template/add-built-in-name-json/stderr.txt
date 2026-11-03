@@ -1,0 +1,2 @@
+"rust" is a built-in template, and --replace does not change that
+give your template another name with --as NAME

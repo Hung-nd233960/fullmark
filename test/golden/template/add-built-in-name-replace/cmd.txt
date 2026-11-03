@@ -1,0 +1,6 @@
+template
+add
+week.md
+--as
+rust
+--replace

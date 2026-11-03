@@ -1,0 +1,3 @@
+broken.md: the quiz does not parse, so there is nothing to copy; fix these first:
+broken.md:5: error question.type-missing: the question has no `type`
+    fix: add type=... : one of single, multi, truefalse, numeric, short, blanks, fields, ordering, matching, essay, code, scale

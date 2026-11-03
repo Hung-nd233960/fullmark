@@ -1,0 +1,1 @@
+replaced template signals-week in no-home/.config/fullmark/templates/signals-week

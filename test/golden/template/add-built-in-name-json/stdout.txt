@@ -1,0 +1,1 @@
+{"status":"failed","message":"\"rust\" is a built-in template, and --replace does not change that","name":"rust"}

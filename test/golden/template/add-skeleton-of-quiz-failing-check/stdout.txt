@@ -1,0 +1,1 @@
+added template mock in no-home/.config/fullmark/templates/mock (a skeleton)

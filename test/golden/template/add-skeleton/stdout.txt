@@ -1,0 +1,1 @@
+added template signals-skeleton in no-home/.config/fullmark/templates/signals-skeleton (a skeleton)

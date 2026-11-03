@@ -1,0 +1,3 @@
+poor.md: the quiz fails check, so it would hand its errors to every quiz started from it:
+poor.md:6: error choice.count: a choice question needs at least two choices
+    fix: write each choice as - [ ] text, with - [x] for the right one

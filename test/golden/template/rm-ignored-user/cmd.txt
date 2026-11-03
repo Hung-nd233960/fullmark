@@ -1,0 +1,4 @@
+template
+rm
+rust
+--yes

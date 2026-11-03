@@ -1,0 +1,6 @@
+template
+add
+src/quiz.md
+--as
+rust-skeleton
+--skeleton

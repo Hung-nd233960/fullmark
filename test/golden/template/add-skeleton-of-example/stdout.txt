@@ -1,0 +1,1 @@
+added template rust-skeleton in no-home/.config/fullmark/templates/rust-skeleton (a skeleton)

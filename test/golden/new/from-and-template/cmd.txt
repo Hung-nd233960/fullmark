@@ -1,0 +1,5 @@
+new
+blank
+--from
+plain.md
+demo

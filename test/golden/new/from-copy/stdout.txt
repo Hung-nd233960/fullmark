@@ -1,0 +1,2 @@
+wrote demo/quiz.md from src/quiz.md, with 1 file beside it
+run `quiz ids demo/quiz.md` to give the questions ids

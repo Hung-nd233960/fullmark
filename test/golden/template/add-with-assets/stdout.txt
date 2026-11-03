@@ -1,0 +1,1 @@
+added template calc in no-home/.config/fullmark/templates/calc

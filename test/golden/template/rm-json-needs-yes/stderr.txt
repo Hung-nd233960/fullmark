@@ -1,0 +1,1 @@
+remove "signals-week"? pass --yes to confirm: --json never prompts

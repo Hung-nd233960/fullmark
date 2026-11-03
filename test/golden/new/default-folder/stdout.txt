@@ -1,0 +1,2 @@
+wrote quiz.md from template blank
+run `quiz ids quiz.md` to give the questions ids

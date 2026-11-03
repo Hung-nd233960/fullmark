@@ -1,0 +1,9 @@
+calculus      built-in
+rust          built-in
+ielts         built-in
+medical       built-in
+exam          built-in
+survey        built-in
+blank         built-in
+rust          user  no-home/.config/fullmark/templates/rust  (ignored: a built-in template has this name; rename the folder)
+signals-week  user  no-home/.config/fullmark/templates/signals-week

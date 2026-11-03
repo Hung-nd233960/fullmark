@@ -1,0 +1,2 @@
+wrote demo/quiz.md from template rust
+run `quiz ids demo/quiz.md` to give the questions ids

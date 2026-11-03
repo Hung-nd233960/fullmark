@@ -1,0 +1,2 @@
+wrote demo/quiz.md from template ielts, with 1 file beside it
+run `quiz ids demo/quiz.md` to give the questions ids

@@ -1,0 +1,1 @@
+ignored your template "rust": a built-in template has that name; rename its folder to use it

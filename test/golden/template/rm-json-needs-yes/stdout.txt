@@ -1,0 +1,1 @@
+{"status":"error","name":"signals-week","message":"remove \"signals-week\"? pass --yes to confirm: --json never prompts"}

@@ -1,0 +1,2 @@
+wrote demo/quiz.md from template medical
+run `quiz ids demo/quiz.md` to give the questions ids
