@@ -270,6 +270,7 @@ export function buildPaper(built: BuildQuiz, options: PaperOptions): { html: str
       page.materials?.map((m) => ({ name: m.name, html: m.html.replace(/^\s*<h1[^>]*>[\s\S]*?<\/h1>\s*/, "") })) ??
       null,
     sheet,
+    typeOrder: quiz.frontMatter.typeOrderGroups,
   };
 
   const front = quiz.frontMatter;

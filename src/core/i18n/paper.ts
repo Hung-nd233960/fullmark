@@ -62,6 +62,31 @@ export const paperEn = {
   itemsWord: "item in its place",
   noSheetQuestions: "no single-choice or true/false question for the answer sheet",
   noSheetFix: "leave out --answer-sheet, or add a single-choice or true/false question",
+  groupNames: {
+    "multi+single": "Multiple choice",
+    truefalse: "True or false",
+    "matching+ordering": "Matching and ordering",
+    blanks: "Fill in the blanks",
+    "fields+numeric+short": "Short answers",
+    code: "Code",
+    essay: "Essays",
+  } as Record<string, string>,
+  typeNames: {
+    single: "Single choice",
+    multi: "Multiple choice",
+    truefalse: "True or false",
+    matching: "Matching",
+    ordering: "Ordering",
+    blanks: "Fill in the blanks",
+    short: "Short answers",
+    numeric: "Numeric answers",
+    fields: "Fields",
+    code: "Code",
+    essay: "Essays",
+    scale: "Scales",
+  } as Record<string, string>,
+  otherGroup: "Other",
+  and: "and",
 };
 
 export type PaperMessages = typeof paperEn;
@@ -126,4 +151,43 @@ export const paperVi = {
   itemsWord: "mục đúng vị trí",
   noSheetQuestions: "không có câu một lựa chọn hoặc đúng/sai nào cho phiếu trả lời",
   noSheetFix: "bỏ --answer-sheet, hoặc thêm một câu một lựa chọn hoặc đúng/sai",
+  groupNames: {
+    "multi+single": "Trắc nghiệm",
+    truefalse: "Đúng hay sai",
+    "matching+ordering": "Ghép cặp và sắp xếp",
+    blanks: "Điền vào chỗ trống",
+    "fields+numeric+short": "Trả lời ngắn",
+    code: "Lập trình",
+    essay: "Tự luận",
+  } as Record<string, string>,
+  typeNames: {
+    single: "Một lựa chọn",
+    multi: "Nhiều lựa chọn",
+    truefalse: "Đúng hay sai",
+    matching: "Ghép cặp",
+    ordering: "Sắp xếp",
+    blanks: "Điền vào chỗ trống",
+    short: "Trả lời ngắn",
+    numeric: "Đáp án số",
+    fields: "Điền các ô",
+    code: "Lập trình",
+    essay: "Tự luận",
+    scale: "Thang đánh giá",
+  } as Record<string, string>,
+  otherGroup: "Khác",
+  and: "và",
 } satisfies PaperMessages;
+
+/**
+ * The heading of a group of the key (STEP2.md, slice 2k3, decision 5): the group's own name when it is one of the
+ * default groups as a set of types, else the names of its types joined by "and".
+ */
+export function groupHeading(types: readonly string[], t: PaperMessages): string {
+  const own = t.groupNames[[...types].sort().join("+")];
+  if (own !== undefined) return own;
+  const names = types.map((x, i) => {
+    const n = t.typeNames[x] ?? x;
+    return i === 0 ? n : n.charAt(0).toLowerCase() + n.slice(1);
+  });
+  return names.length < 2 ? (names[0] ?? "") : `${names.slice(0, -1).join(", ")} ${t.and} ${names.at(-1)}`;
+}

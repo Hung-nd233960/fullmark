@@ -74,4 +74,6 @@ export type PaperData = {
   materials: { name: string; html: string }[] | null;
   /** the answer sheet: the numbers of its questions in paper order, and the sentence under its heading */
   sheet: { numbers: number[]; note: string } | null;
+  /** the quiz's `type_order` groups (its own, else the default), for the key's groups */
+  typeOrder: string[][];
 };

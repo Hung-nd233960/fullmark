@@ -63,8 +63,17 @@ describe("--answers key", () => {
     const html = paper({ seed: "101", answers: "key" }).html;
     const page = html.slice(html.indexOf('class="key-page"'));
     expect(page).not.toContain("Answer sheet questions");
-    const table = page.slice(page.indexOf("<tbody>"), page.indexOf("</tbody>"));
-    expect(count(table, "<tr>")).toBe(12);
+    const tables = page.slice(0, page.indexOf('class="mark-block"'));
+    expect(count(tables, "<tr>") - count(tables, "<thead><tr>")).toBe(12);
+  });
+  it("groups the other questions by type, in the default order, then Other", () => {
+    const html = paper({ seed: "101", answers: "key" }).html;
+    const text = visibleText(html.slice(html.indexOf('class="key-page"')));
+    const at = ["Multiple choice", "True or false", "Fill in the blanks", "Short answers", "Essays"].map((h) =>
+      text.indexOf(h),
+    );
+    expect(at.every((i) => i >= 0)).toBe(true);
+    expect([...at].sort((a, b) => a - b)).toEqual(at);
   });
   it("is in Vietnamese with ui_lang vi", () => {
     const vi = visibleText(paper({ seed: "101", answers: "key", answerSheet: true }, exam, "vi").html);
@@ -147,5 +156,50 @@ describe("materials", () => {
     const text = visibleText(paper({}, withSheets, "vi").html);
     expect(text).toContain("Tài liệu ở sau câu hỏi cuối");
     expect(text).toContain("Bạn có thể tách trang này ra. Trang này không có câu hỏi.");
+  });
+});
+
+describe("the key grouped by type", () => {
+  const headings = (q: ReturnType<typeof load>, lang?: "en" | "vi") => {
+    const html = paper({ answers: "key" }, q, lang).html;
+    const page = html.slice(html.indexOf('class="key-page"'));
+    const groups = page
+      .split('<div class="label">')
+      .slice(1)
+      .map((g) => ({
+        title: g.slice(0, g.indexOf("</div>")),
+        numbers: [...g.slice(0, g.indexOf("</table>")).matchAll(/<td class="n">(\d+)<\/td>/g)]
+          .map((m) => Number(m[1]))
+          .filter((_, i) => i % 2 === 0),
+      }));
+    return groups;
+  };
+  it("uses the default order, paper order inside a group, and Other last", () => {
+    const g = headings(load("grouped.md"));
+    expect(g.map((x) => x.title)).toEqual([
+      "Multiple choice",
+      "True or false",
+      "Matching and ordering",
+      "Short answers",
+      "Essays",
+      "Other",
+    ]);
+    expect(g.map((x) => x.numbers)).toEqual([[5], [3], [7], [2, 6, 8], [1], [4]]);
+  });
+  it("uses the quiz's own order, naming a group of several types by its types", () => {
+    const g = headings(load("grouped-custom.md"));
+    expect(g.map((x) => x.title)).toEqual(["Essays", "Short answers and numeric answers", "Single choice", "Other"]);
+    expect(g.map((x) => x.numbers)).toEqual([[1], [2, 6, 8], [5], [3, 4, 7]]);
+  });
+  it("is in Vietnamese with the approved-for-review headings", () => {
+    const g = headings(load("grouped.md"), "vi");
+    expect(g.map((x) => x.title)).toEqual([
+      "Trắc nghiệm",
+      "Đúng hay sai",
+      "Ghép cặp và sắp xếp",
+      "Trả lời ngắn",
+      "Tự luận",
+      "Khác",
+    ]);
   });
 });

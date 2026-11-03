@@ -1,0 +1,5 @@
+quiz.md:9: warning rubric.missing: the question has no rubric
+    fix: add a `rubric:` to the answer block
+quiz.md:39: warning questions.type-order: Question 6 (numeric) comes after a single question; this quiz's order is essay, short or numeric, single
+    fix: move it, or change `type_order`
+quiz.md: wrote quiz-print.html

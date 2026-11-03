@@ -1,0 +1,3 @@
+quiz.md:6: warning rubric.missing: the question has no rubric
+    fix: add a `rubric:` to the answer block
+quiz.md: wrote quiz-print.html

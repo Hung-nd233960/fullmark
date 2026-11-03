@@ -1,5 +1,5 @@
 import type { ComponentChildren } from "preact";
-import type { PaperMessages } from "../../core/i18n/paper";
+import { groupHeading, type PaperMessages } from "../../core/i18n/paper";
 import { Html } from "../questions/shared";
 import type { KeyEntry, PaperData, PaperPart, PaperQuestion, RubricView } from "./data";
 
@@ -465,6 +465,24 @@ function MaterialsPage({ d, t }: { d: PaperData; t: T }) {
   );
 }
 
+/**
+ * The key's other questions in groups, in the quiz's order and in paper order inside a group; a group without a
+ * question is left out, and the types outside the order come last under "Other".
+ */
+function keyGroups(
+  questions: PaperQuestion[],
+  order: string[][],
+  t: T,
+): { title: string; questions: PaperQuestion[] }[] {
+  const groups = order.map((types) => ({
+    title: groupHeading(types, t),
+    questions: questions.filter((q) => types.includes(q.type)),
+  }));
+  const placed = new Set(order.flat());
+  groups.push({ title: t.otherGroup, questions: questions.filter((q) => !placed.has(q.type)) });
+  return groups.filter((g) => g.questions.length > 0);
+}
+
 /** The answer key: the sheet's questions in the grid, the others in a table, then each rubric. */
 function KeyPage({ d, t }: { d: PaperData; t: T }) {
   const all = d.parts.flatMap((p) => p.questions);
@@ -493,30 +511,35 @@ function KeyPage({ d, t }: { d: PaperData; t: T }) {
           {rest.length === 0 ? null : <div class="heading">{t.otherQuestions}</div>}
         </>
       )}
-      {rest.length === 0 ? null : (
-        <table class="box-table key-table">
-          <thead>
-            <tr>
-              <th class="no">{t.numberColumn}</th>
-              <th class="left">{t.answer}</th>
-              <th class="pts">{t.pointsColumn}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rest.map((q) =>
-              q.key === undefined ? null : (
-                <tr key={q.number}>
-                  <td class="n">{q.number}</td>
-                  <td>
-                    <AnswerCell k={q.key} />
-                  </td>
-                  <td class="n">{q.key.points ?? "—"}</td>
-                </tr>
-              ),
-            )}
-          </tbody>
-        </table>
-      )}
+      {keyGroups(rest, d.typeOrder, t).map((g) => (
+        <section key={g.title}>
+          <div class="sample-block">
+            <div class="label">{g.title}</div>
+          </div>
+          <table class="box-table key-table">
+            <thead>
+              <tr>
+                <th class="no">{t.numberColumn}</th>
+                <th class="left">{t.answer}</th>
+                <th class="pts">{t.pointsColumn}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {g.questions.map((q) =>
+                q.key === undefined ? null : (
+                  <tr key={q.number}>
+                    <td class="n">{q.number}</td>
+                    <td>
+                      <AnswerCell k={q.key} />
+                    </td>
+                    <td class="n">{q.key.points ?? "—"}</td>
+                  </tr>
+                ),
+              )}
+            </tbody>
+          </table>
+        </section>
+      ))}
       {all.map((q) =>
         q.key?.rubric ? (
           <section class="mark-block" key={q.number}>
