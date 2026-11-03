@@ -41,7 +41,7 @@ function wholeStylesheet(): string {
   );
 }
 
-test("the maths looks the same with only the fonts it uses, and the page is smaller", async ({ browser }) => {
+test("the maths looks the same with only the fonts it uses, and the page is smaller", async ({ browser }, info) => {
   const rules = /<style id="fm-katex">([\s\S]*?)<\/style>/.exec(pruned)?.[1] ?? "";
   const styles = rules.slice(rules.indexOf("\n") + 1);
   const whole = pruned
@@ -67,6 +67,17 @@ test("the maths looks the same with only the fonts it uses, and the page is smal
     return image;
   };
   const a = await shoot("faces.html");
+  const again = await shoot("faces.html");
   const b = await shoot("whole.html");
-  expect(a.equals(b)).toBe(true);
+  await info.attach("only-the-faces-used.png", { body: a, contentType: "image/png" });
+  await info.attach("every-face.png", { body: b, contentType: "image/png" });
+  // a browser that does not draw the same page the same way twice cannot tell two pages apart in pixels
+  test.skip(
+    !a.equals(again),
+    `${info.project.name} drew the same page differently twice here; the comparison means nothing`,
+  );
+  expect(
+    a.equals(b),
+    "the page with only the faces it uses draws its maths differently (see the attached images)",
+  ).toBe(true);
 });

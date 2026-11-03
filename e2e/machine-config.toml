@@ -1,0 +1,2 @@
+# The machine config every Playwright test builds with (playwright.config.ts): empty, so the defaults hold
+# whatever the machine running the tests has in its own config.toml.

@@ -86,6 +86,11 @@ describe("the default from config.toml", () => {
     expect(families((await run(front, {}, 'fonts = "all"\n')).html)).toHaveLength(3);
     expect(families((await run(front, {}, 'fonts = "none"\n')).html)).toEqual([]);
   });
+  it("a machine config without `fonts` chooses nothing: the page is the one built with no config at all", async () => {
+    const none = (await run(front)).html;
+    expect(none).not.toBeNull();
+    expect((await run(front, {}, "# no fonts here\n")).html).toBe(none);
+  });
   it("the flag beats the config", async () => {
     expect(families((await run(front, { fonts: "none" }, 'fonts = "all"\n')).html)).toEqual([]);
   });

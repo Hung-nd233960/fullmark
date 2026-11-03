@@ -242,9 +242,10 @@ async function buildOne(job: Job, c: RunContext): Promise<FileResult> {
 
   // `--fonts`, else the machine config's `fonts`, else the quiz's own font
   const machine = io.machine ?? { ...realMachine(), cwd: io.cwd };
-  const machineFonts = loadConfig(machine, dirname(resolve(io.cwd, quizFile)), opts.config).layers.user?.fonts;
+  // null when the machine config has no `fonts`, undefined when there is no machine config: neither is a choice
+  const machineFonts = loadConfig(machine, dirname(resolve(io.cwd, quizFile)), opts.config).layers.user?.fonts ?? null;
   const fonts: FontsChoice = (opts.fonts as FontsChoice | null) ?? machineFonts ?? "quiz";
-  const fontsGiven = opts.fonts !== null || machineFonts !== undefined;
+  const fontsGiven = opts.fonts !== null || machineFonts !== null;
   const front = quiz.frontMatter;
   if (fonts === "none" && front.look === "locked" && front.font !== "system") {
     const family = FONT_REGISTRY[front.font].family;

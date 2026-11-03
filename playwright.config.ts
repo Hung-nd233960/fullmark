@@ -1,4 +1,9 @@
+import { resolve } from "node:path";
 import { defineConfig } from "@playwright/test";
+
+// every page a test builds reads this empty machine config, never the one of the machine running the tests
+// (`%APPDATA%\fullmark\config.toml` or `~/.config/fullmark/config.toml`), so a teacher's own settings cannot change a test
+process.env.FULLMARK_CONFIG = resolve(import.meta.dirname, "e2e", "machine-config.toml");
 
 /**
  * Browser tests (TECHNICAL_DESIGN.md, section 11): Chromium and Firefox. Firefox isolates `file://` storage per file

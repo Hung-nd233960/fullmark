@@ -63,12 +63,24 @@ test("a 300-question quiz with images is interactive within the budget", async (
   /** From the start of the navigation until the first choice stays chosen; a fresh page each time. */
   const measure = async (): Promise<number> => {
     const fresh = await page.context().newPage();
+    // what the page said, so that a page that never starts says why
+    const said: string[] = [];
+    fresh.on("pageerror", (e) => said.push(`pageerror: ${e.message}`));
+    fresh.on("console", (m) => {
+      if (m.type() === "error" || m.type() === "warning") said.push(`console.${m.type()}: ${m.text()}`);
+    });
     try {
       const start = performance.now();
       await fresh.goto(url, { waitUntil: "commit" });
-      // a click before the page is interactive does nothing: click again until the question shows
+      // a click before the page is interactive does nothing: click again until the question shows, for 30 s at most
       const first = fresh.locator(".fm-question").first();
-      for (let tries = 0; tries < 200 && !(await first.isVisible()); tries++) {
+      while (!(await first.isVisible())) {
+        if (performance.now() - start > 30_000) {
+          const start = await fresh.getByRole("button", { name: "Start" }).count();
+          throw new Error(
+            `no question showed within 30 s (Start buttons on the page: ${start}); the page said:\n${said.join("\n") || "(nothing)"}`,
+          );
+        }
         await fresh
           .getByRole("button", { name: "Start" })
           .click({ timeout: 2000 })

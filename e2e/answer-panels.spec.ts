@@ -75,8 +75,9 @@ const drawn = async (row: import("@playwright/test").Locator): Promise<string> =
   (
     await row.locator("td").evaluateAll((tds) =>
       tds.map((td) => {
+        // Chromium gives `"Band "`, Firefox the list as written, `"Band" " "`: join every quoted string
         const before = getComputedStyle(td, "::before").content;
-        const made = before === "none" || before === "normal" ? "" : before.slice(1, -1);
+        const made = [...before.matchAll(/"((?:[^"\\]|\\.)*)"/g)].map((m) => m[1]).join("");
         return `${made}${td.textContent ?? ""}`;
       }),
     )
