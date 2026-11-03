@@ -219,3 +219,17 @@ describe("build.size", () => {
     }
   });
 });
+
+describe("build.answer-sheet-empty", () => {
+  it("is registered as a warning that quiz rules lists, and the exam profile makes it an error", () => {
+    for (const [profile, level] of [
+      ["default", "warning"],
+      ["exam", "error"],
+      ["draft", "info"],
+    ] as const) {
+      const c = capture(tree({}));
+      expect(runRules("build.answer-sheet-empty", opts({ json: true, profile }), c.io)).toBe(0);
+      expect(rowsOf(c.out)[0], profile).toMatchObject({ id: "build.answer-sheet-empty", kind: "quality", level });
+    }
+  });
+});

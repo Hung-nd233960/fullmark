@@ -93,3 +93,4 @@ materials.empty           quality  warning  a materials sheet with nothing after
 build.font-not-embedded   quality  warning  a locked look names a font the page does not embed (checked by `build`, from `--fonts none`)  [built-in]
 build.size                quality  warning  the built page is large (checked by `build`, from step 2 of the order of work)  [built-in]
                           options: warn-mb=20, max-mb=100
+build.answer-sheet-empty  quality  warning  the printed paper has no question for its answer sheet (checked by `build --print --answer-sheet`)  [built-in]

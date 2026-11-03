@@ -287,10 +287,15 @@ async function buildOne(job: Job, c: RunContext): Promise<FileResult> {
       },
     );
     for (const w of built.warnings) {
-      const issue: Issue = { rule: w.rule, level: "warning", file, line: 1, message: w.message, fix: w.fix };
+      // the rule's level as the profile sets it (`exam` makes it an error); `off` says nothing
+      const setting = rules?.get(w.rule);
+      if (setting?.level === "off") continue;
+      const set = setting?.level ?? "warning";
+      const level: Issue["level"] = opts.strict && set === "warning" ? "error" : set;
+      const issue: Issue = { rule: w.rule, level, file, line: 1, message: w.message, fix: w.fix };
       issues.push(issue);
       out.push(...humanIssue(issue, false));
-      if (opts.strict) return failedWith(out);
+      if (level === "error") return failedWith(out);
     }
     page = new TextEncoder().encode(built.html);
   } else {

@@ -44,4 +44,15 @@ export const BUILD_RULES: QualityRule[] = [
       .strict(),
     run: () => [],
   },
+  {
+    kind: "quality",
+    id: "build.answer-sheet-empty",
+    level: "warning",
+    summary: "the printed paper has no question for its answer sheet (checked by `build --print --answer-sheet`)",
+    why: "The answer sheet is a grid for single-choice and true/false questions; a paper with none gets no grid, so `--answer-sheet` does nothing.",
+    example: "(checked by `quiz build --print --answer-sheet`: a quiz of essays only)",
+    fix: "leave out --answer-sheet, or add a single-choice or true/false question",
+    options: z.object({}).strict(),
+    run: () => [],
+  },
 ];
