@@ -266,6 +266,13 @@ describe("build --watch", () => {
     expect(r.err).toContain("--open opens one page; built 2");
   });
 
+  it("--open with several files and --serve opens the index once (G35)", async () => {
+    const r = await watching({ "a.md": quiz(), "b.md": quiz() }, ["a.md", "b.md"], { open: true, serve: true });
+    expect(r.opened).toHaveLength(1);
+    expect(r.opened[0]).toMatch(/^http:\/\/127\.0\.0\.1:\d+\/[^/]+\/$/);
+    expect(r.err).not.toContain("--open opens one page; built 2");
+  });
+
   it("--print rebuilds the paper", async () => {
     const r = await watching({ "q.md": quiz() }, ["q.md"], { print: true });
     const paper = text(r.dir, "q-print.html");

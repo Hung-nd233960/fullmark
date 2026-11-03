@@ -52,7 +52,7 @@ These ideas are the product, and the rewrite keeps them unchanged.
 | Terminal output | `picocolors` and a small table helper, respecting `NO_COLOR` | Replaces Rich |
 | Languages | Typed message catalogs (`en.ts`, `vi.ts`), no library | A missing translation is a compile error; no page weight from an i18n framework (section 9) |
 | Terminal form | `@clack/prompts` | `brief --tui` only: select with hints, multi-select, text with validation. Textual or Ink would be overkill for a flat form |
-| Watching | `node:fs.watch` with `recursive` | Works on Windows with Node 22 |
+| Watching | `node:fs.watch` on each watched file's folder, not recursive (owner, 2026-11-03) | Only the files the quiz hash covers matter, and an editor's save by rename is seen in its folder; works on Windows with Node 22 |
 | Tests | vitest; Playwright and axe-core in TS; pdfjs-dist to read the printed paper's PDF text (tests only, never shipped; owner, 2026-11-03) | E2E tests now share a language with the code |
 | Lint and format | Biome | Already used by the format hook |
 | Distribution | npm package `fullmark` with the bins `quiz` and `fullmark`. A single binary later, through `bun build --compile` or Node SEA, if needed | |

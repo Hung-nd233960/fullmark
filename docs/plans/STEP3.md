@@ -19,7 +19,7 @@ As in step 2 ([STEP2.md](STEP2.md), Handoff): Opus writes a slice's full brief h
 | 3d 3c's fixes, `stats` | done, reviewed, gaps decided | `fd466d1`, `2dfd341` |
 | 3g 3d's fixes, `brief` through flags | done, reviewed, gaps decided | `27a61a4`..`2e6b449` |
 | 3i 3g's fixes, `brief --tui` | done, reviewed, gaps decided | `fb5ed78`..`546ccc0` |
-| 3j 3i's fixes, `build --watch` and `--serve` | done, reviewed; **its gaps for the owner** (G34 to G37) | `4a0835f`..`45fe811` |
+| 3j 3i's fixes, `build --watch` and `--serve` | done, reviewed, gaps decided (G35 built in review) | `4a0835f`..`45fe811` |
 
 Step 2 is closed (STEP2.md, item 75): every "Done when" criterion passes in Chromium and Firefox; Vitest 2059 of 2059, the 2 startup tests, Playwright and axe. What step 3 inherits:
 
@@ -72,7 +72,7 @@ Step 2 is closed (STEP2.md, item 75): every "Done when" criterion passes in Chro
 
 **3j's review (2026-11-03).** Typecheck, Biome and Vitest clean: 101 files, **2525 of 2525**, the 2 startup tests. Playwright in Chromium: **197 passed** (4 new in `e2e/watch.spec.ts`), 128 skipped, none failed (run in review). No existing golden changed; 13 new (`brief/tui-bad-flag` for G26; 7 `build/*` usage errors and a missing file; `top/help-build`; the index in `en` and `vi`; 2 e2e `jsonl` goldens). `dist/reload.js` is 178 B (170 gzipped); `dist/serve.js` unchanged; the watch code is its own CLI chunk, which `build` and `check` never load. The reload server is a sibling, `src/serve/reload-server.ts`, with no POST path at all, sharing the one-shot server's token, `Host` and refusal code; the served copy is made by `withReload` on the finished page or paper, so a paper is served the same way. Tried by hand on a copy of `examples/rust`: `--watch --serve --json` gives `listening`, `built`, a `built` line and one `reload` event for a saved edit, a `failed` line with the errors and "kept the last good page" (no event) for a saved error; the page 200, a path outside the token 403; SIGINT printed `{"status":"stopped"}`, exit 0, no process left. Done differently, accepted in review unless the owner says otherwise: each watched file's folder gets a non-recursive watch (TECHNICAL_DESIGN.md section 3 says `recursive`); the 100 ms window starts at the first event and does not slide; a reload event names its page, so with several files an edit reloads only that page and the index; an unusable input at start exits 2 before anything is watched; the human line goes to stderr with and without `--json`. **Written in review:** [proposals/print-pdf.md](../design/proposals/print-pdf.md), as "Open proposals" planned. (The "Next steps" heading below was lost in an edit of 3i's review and is restored here.)
 
-**3j's gaps, for the owner:**
+**3j's gaps decided by the owner on 2026-11-03**, all as recommended, and written into COMMANDS.md (`quiz build`: the index's note on the next load; `--open` with `--watch --serve` opens the index; the config needs a restart) and TECHNICAL_DESIGN.md section 3 (the Watching row). G35's line was made in review, with a test in `test/build/watch.test.ts`. The gaps as they were put:
 
 **G34. The index after a failed rebuild** (later). G30 sends no event for a failed rebuild, and G33 shows "last build failed" on the index, so an open index shows the note only when it is next loaded. **Recommend:** accept: the terminal already prints the errors, and the page in the browser is the last good one, as decided; COMMANDS.md says the note shows on the next load.
 
@@ -84,8 +84,7 @@ Step 2 is closed (STEP2.md, item 75): every "Done when" criterion passes in Chro
 
 ### Next steps, in order
 
-1. **The owner decides G34 to G37** (3j's gaps, above). They go into the design docs and become the next slice's first tasks.
-2. **The form boards on the Design canvas** (3v, G7), as 2v did for the page: every slice left (3e, 3f, 3h) waits for them.
+1. **The form boards on the Design canvas** (3v, G7), as 2v did for the page: every slice left (3e, 3f, 3h) waits for them. Then 3e's brief.
 
 ### Open proposals carried over from step 2
 

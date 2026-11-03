@@ -284,14 +284,21 @@ export async function runWatch(args: {
     io.roundDone?.();
     if (server !== null) io.err("watching for changes (Ctrl+C to stop)");
     else io.err(`watching ${jobs.length} file${jobs.length === 1 ? "" : "s"} for changes (Ctrl+C to stop)`);
-    // `--open` opens one page, once, after the first build: the served address, else the file
+    // `--open` opens one page, once, after the first build: the served address (with several files, the index), else
+    // the file; several files without `--serve` have no one page to open (G35)
     if (opts.open) {
-      if (jobs.length > 1) {
+      if (jobs.length > 1 && server === null) {
         io.err(`--open opens one page; built ${[...pages.values()].filter((p) => !p.failed).length}`);
       } else {
         const state = pages.get((jobs[0] as Job).target) as PageState;
         const target =
-          server !== null ? (state.html !== null ? server.url : null) : state.failed ? null : state.job.target;
+          server !== null
+            ? jobs.length > 1 || state.html !== null
+              ? server.url
+              : null
+            : state.failed
+              ? null
+              : state.job.target;
         if (target !== null) {
           try {
             await open(target);
