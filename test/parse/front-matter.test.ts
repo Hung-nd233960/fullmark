@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { parse } from "../../src/core/parse";
-import { found, parseBody } from "./helpers";
+import { found, parseBody, quizText } from "./helpers";
 
 const Q = "## Q {type=single id=q}\n\n- [x] a\n- [ ] b";
 
@@ -22,6 +22,16 @@ describe("front matter", () => {
       passMark: null,
       shuffleQuestions: false,
       shuffleChoices: false,
+      typeOrder: "none",
+      typeOrderGroups: [
+        ["single", "multi"],
+        ["truefalse"],
+        ["matching", "ordering"],
+        ["blanks"],
+        ["short", "numeric", "fields"],
+        ["code"],
+        ["essay"],
+      ],
       partial: true,
       theme: "auto",
       font: "system",
@@ -164,5 +174,52 @@ describe("front matter", () => {
     expect(found(body, "title: T\nkind: survey\npartial: true")).toEqual(["survey.forbidden@4"]);
     expect(found(body, "title: T\nkind: survey\nfeedback: instant")).toEqual(["survey.forbidden@4"]);
     expect(found(body, "title: T\nkind: survey\nfeedback: end")).toEqual([]);
+  });
+});
+
+describe("front matter: type_order", () => {
+  const fmOf = (front: string) => parseBody(Q, `title: T\n${front}`);
+  const issues = (front: string) => fmOf(front).issues.map((i) => `${i.rule}@${i.line}`);
+
+  it("reads the three modes and keeps the default order", () => {
+    for (const mode of ["none", "by-section", "by-quiz"] as const) {
+      const fm = fmOf(`type_order: ${mode}`).quiz?.frontMatter;
+      expect(fm?.typeOrder).toBe(mode);
+      expect(fm?.typeOrderGroups[0]).toEqual(["single", "multi"]);
+      expect(fm?.keyLines.type_order).toBe(3);
+    }
+  });
+
+  it("reads the long form with the quiz's own order", () => {
+    const r = fmOf("type_order:\n  by: by-quiz\n  order: [[short, single], essay, scale]");
+    expect(r.issues).toEqual([]);
+    expect(r.quiz?.frontMatter.typeOrder).toBe("by-quiz");
+    expect(r.quiz?.frontMatter.typeOrderGroups).toEqual([["short", "single"], ["essay"], ["scale"]]);
+  });
+
+  it("takes by alone with the default order", () => {
+    const fm = fmOf("type_order:\n  by: by-section").quiz?.frontMatter;
+    expect(fm?.typeOrder).toBe("by-section");
+    expect(fm?.typeOrderGroups).toHaveLength(7);
+  });
+
+  it("refuses every bad value, with the line", () => {
+    expect(issues("type_order: sorted")).toEqual(["syntax.value@3"]);
+    expect(issues("type_order: [a]")).toEqual(["syntax.value@3"]);
+    expect(issues("type_order:\n  by: nope\n  order: [single]")).toEqual(["syntax.value@4"]);
+    expect(issues("type_order:\n  by: by-quiz\n  order: [single, poem]")).toEqual(["syntax.value@5"]);
+    expect(issues("type_order:\n  by: by-quiz\n  order: [single, [multi, single]]")).toEqual(["syntax.value@5"]);
+    expect(issues("type_order:\n  by: by-quiz\n  order: []")).toEqual(["syntax.value@5"]);
+    expect(issues("type_order:\n  by: by-quiz\n  order: [[], essay]")).toEqual(["syntax.value@5"]);
+    expect(issues("type_order:\n  order: [single]")).toEqual(["syntax.value@3"]);
+    expect(issues("type_order:\n  by: by-quiz\n  sort: yes")).toEqual(["syntax.unknown-key@5"]);
+  });
+
+  it("changes the quiz hash only when it is written", async () => {
+    const { quizHash } = await import("../../src/core/hash");
+    const base = quizText(Q);
+    const withKey = quizText(Q, "title: T\ntype_order: by-quiz");
+    expect(quizHash(base, [])).toBe(quizHash(quizText(Q), []));
+    expect(quizHash(withKey, [])).not.toBe(quizHash(base, []));
   });
 });

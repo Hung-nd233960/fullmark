@@ -36,6 +36,10 @@ export const FrontMatterSchema = z.object({
   passMark: z.number().min(0).max(100).nullable(),
   shuffleQuestions: z.boolean(),
   shuffleChoices: z.boolean(),
+  /** `type_order`: whether the question types come in a set order, and over what (QUIZ_SYNTAX.md, section 2) */
+  typeOrder: z.enum(["none", "by-section", "by-quiz"]),
+  /** the order: groups of types that may mix; the owner's default unless the long form gives one */
+  typeOrderGroups: z.array(z.array(z.string())),
   partial: z.boolean(),
   theme: z.enum(THEMES),
   font: z.enum(FONTS),
@@ -219,6 +223,17 @@ export const QUESTION_TYPES = [
   "code",
   "scale",
 ] as const satisfies readonly QuestionType[];
+
+/** The default `type_order` groups (the owner's). */
+export const DEFAULT_TYPE_ORDER: readonly (readonly QuestionType[])[] = [
+  ["single", "multi"],
+  ["truefalse"],
+  ["matching", "ordering"],
+  ["blanks"],
+  ["short", "numeric", "fields"],
+  ["code"],
+  ["essay"],
+];
 
 // -- sections and the quiz --------------------------------------------------------------------------------------
 

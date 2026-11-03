@@ -1,10 +1,10 @@
 import type { Node } from "yaml";
-import { FONTS, type FrontMatter, THEMES } from "../ir";
+import { DEFAULT_TYPE_ORDER, FONTS, type FrontMatter, QUESTION_TYPES, THEMES } from "../ir";
 import { readDuration, readNumber } from "../number";
 import { ID_FORMAT, slug } from "../slug";
 import type { Outline } from "./outline";
 import { type Reporter, unknownKey } from "./report";
-import { asMap, asSeq, boolValue, type Entry, entriesOf, parseYaml, scalarText } from "./yaml-view";
+import { asMap, asSeq, boolValue, type Entry, entriesOf, parseYaml, scalarText, type YamlRoot } from "./yaml-view";
 
 const KEYS = [
   "title",
@@ -19,6 +19,7 @@ const KEYS = [
   "pass_mark",
   "shuffle_questions",
   "shuffle_choices",
+  "type_order",
   "partial",
   "theme",
   "font",
@@ -45,6 +46,8 @@ export function defaultFrontMatter(file: string): FrontMatter {
     passMark: null,
     shuffleQuestions: false,
     shuffleChoices: false,
+    typeOrder: "none",
+    typeOrderGroups: DEFAULT_TYPE_ORDER.map((g) => [...g]),
     partial: true,
     theme: "auto",
     font: "system",
@@ -54,6 +57,78 @@ export function defaultFrontMatter(file: string): FrontMatter {
     generatedBy: null,
     keyLines: {},
   };
+}
+
+const TYPE_ORDER_MODES = ["none", "by-section", "by-quiz"] as const;
+
+/** `type_order`: a mode, or `{ by, order }` with the quiz's own groups (QUIZ_SYNTAX.md, section 2). */
+function typeOrder(e: Entry, root: YamlRoot, fm: FrontMatter, r: Reporter): void {
+  const err = (line: number, expected: string) => r.error("syntax.value", line, `\`type_order\` ${expected}`);
+  const modes = `must be one of ${TYPE_ORDER_MODES.join(", ")}`;
+  const mode = (v: string | null): FrontMatter["typeOrder"] | undefined =>
+    v !== null && (TYPE_ORDER_MODES as readonly string[]).includes(v) ? (v as FrontMatter["typeOrder"]) : undefined;
+  const map = asMap(e.value);
+  if (!map) {
+    const m = mode(scalarText(e.value));
+    if (m === undefined) err(e.line, `${modes}, or a list with \`by\` and \`order\``);
+    else fm.typeOrder = m;
+    return;
+  }
+  let by: FrontMatter["typeOrder"] | undefined;
+  let order: string[][] | undefined;
+  let ok = true;
+  for (const item of map.items) {
+    const key = scalarText(item.key as Node | null) ?? "";
+    const line = root.lineOf(item.key as Node);
+    if (key === "by") {
+      by = mode(scalarText(item.value as Node | null));
+      if (by === undefined) {
+        ok = false;
+        err(line, `\`by\` ${modes}`);
+      }
+    } else if (key === "order") {
+      const seq = asSeq(item.value as Node | null);
+      const groups: string[][] = [];
+      const used = new Set<string>();
+      let good = seq !== null && seq.items.length > 0;
+      if (!good) err(line, "`order` must be a list of types and groups of types");
+      for (const g of seq?.items ?? []) {
+        const names = asSeq(g as Node | null)
+          ? (asSeq(g as Node | null)?.items ?? []).map((n) => scalarText(n as Node | null))
+          : [scalarText(g as Node | null)];
+        if (names.length === 0 || names.some((n) => n === null)) {
+          good = false;
+          err(line, "`order` must be a list of types and groups of types");
+          continue;
+        }
+        for (const n of names as string[]) {
+          if (!(QUESTION_TYPES as readonly string[]).includes(n)) {
+            good = false;
+            err(line, `\`order\` names an unknown type \`${n}\``);
+          } else if (used.has(n)) {
+            good = false;
+            err(line, `\`order\` names \`${n}\` in two places`);
+          }
+          used.add(n);
+        }
+        groups.push(names as string[]);
+      }
+      if (good) order = groups;
+      else ok = false;
+    } else {
+      const u = unknownKey("type_order key", key, ["by", "order"]);
+      r.error("syntax.unknown-key", line, u.message, u.fix);
+      ok = false;
+    }
+  }
+  if (by === undefined && ok) {
+    err(e.line, "needs `by` when it gives an `order`");
+    return;
+  }
+  if (by !== undefined && ok) {
+    fm.typeOrder = by;
+    if (order) fm.typeOrderGroups = order;
+  }
 }
 
 /** Reads and validates the front matter (QUIZ_SYNTAX.md, section 2). Always returns a front matter; problems go to `r`. */
@@ -166,6 +241,9 @@ export function parseFrontMatter(o: Outline, file: string, r: Reporter): FrontMa
         break;
       case "shuffle_choices":
         fm.shuffleChoices = flag(e) ?? fm.shuffleChoices;
+        break;
+      case "type_order":
+        typeOrder(e, yaml, fm, r);
         break;
       case "partial":
         fm.partial = flag(e) ?? fm.partial;

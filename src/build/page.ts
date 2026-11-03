@@ -111,7 +111,15 @@ function keyOf(
       return bare;
     }),
   }));
-  return { quiz: { ...quiz, file: "", sections }, explanations, samples, dataOrder };
+  // the page's plan reads `type_order` only when the quiz declares one, so an unordered quiz keeps its bytes
+  const { typeOrder, typeOrderGroups, ...front } = quiz.frontMatter;
+  const frontMatter = typeOrder === "none" ? front : { ...front, typeOrder, typeOrderGroups };
+  return {
+    quiz: { ...quiz, frontMatter: frontMatter as Quiz["frontMatter"], file: "", sections },
+    explanations,
+    samples,
+    dataOrder,
+  };
 }
 
 type Md = ReturnType<typeof createRenderer>;
