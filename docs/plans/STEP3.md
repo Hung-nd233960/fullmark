@@ -12,13 +12,13 @@ As in step 2 ([STEP2.md](STEP2.md), Handoff): Opus writes a slice's full brief h
 
 | Slice | State | Commits |
 |---|---|---|
-| plan | approved (2026-11-03): gaps G1 to G4, G6, G7, G9, G10, G11 and G5 decided; G8 and G12 open; the slice order and 3a's brief approved | this file |
+| plan | approved (2026-11-03): gaps G1 to G4, G6, G7, G9, G10, G11 and G5 decided; G8 open (G12 decided with 3i's brief); the slice order and 3a's brief approved | this file |
 | 3a the one-shot server and `quiz serve` | done, reviewed, gaps decided | `b9ca8c1`, `730a7ae` |
 | 3b 3a's fixes, `--section`, `--focus`, `--autosave` | done, reviewed, gaps decided | `7fa0ba3`..`4a1e0bf` |
 | 3c `inspect`, `new`, `template` | done, reviewed, gaps decided | `e71ce68`..`3602a3d` |
 | 3d 3c's fixes, `stats` | done, reviewed, gaps decided | `fd466d1`, `2dfd341` |
 | 3g 3d's fixes, `brief` through flags | done, reviewed, gaps decided | `27a61a4`..`2e6b449` |
-| 3i 3g's fixes, `brief --tui` | **brief drafted; G12 and G23 to G25 for the owner** | |
+| 3i 3g's fixes, `brief --tui` | with Sonnet | |
 
 Step 2 is closed (STEP2.md, item 75): every "Done when" criterion passes in Chromium and Firefox; Vitest 2059 of 2059, the 2 startup tests, Playwright and axe. What step 3 inherits:
 
@@ -57,7 +57,7 @@ Step 2 is closed (STEP2.md, item 75): every "Done when" criterion passes in Chro
 
 ### Next steps, in order
 
-1. **The owner approves 3i's brief** (below) with G12 and G23 to G25; then 3i goes to Sonnet.
+1. **3i with Sonnet** (the owner's go, 2026-11-03; G12 and G23 to G25 decided).
 2. **Whenever the owner is ready:** the form boards on the Design canvas (3v, G7), as 2v did for the page. Only 3e, 3f and 3h wait for them.
 
 ### Open proposals carried over from step 2
@@ -120,13 +120,13 @@ The design docs leave these open. Each needs the owner's yes before the slice th
 
 **G18. A `DIR` that already holds `brief.yaml`** (3g). Nothing says. **Decided by the owner on 2026-11-03, as recommended.** **Recommend:** never overwrite, as `new`: exit 2 before asking anything, "DIR/brief.yaml already exists: edit it, or delete it to start again". An existing `content/` is kept as it is, and a missing `DIR` is created.
 
-**G12. `@clack/prompts`** (3i). A new runtime dependency, already named in section 3. **Recommend:** pinned exactly, MIT (in the allow-list), listed in `--acknowledgements` and `THIRD_PARTY_NOTICES.md`, loaded only by `brief --tui`, with the byte-identity test driving it through a pseudo-terminal (`node:child_process` with a scripted stdin) rather than a new test dependency. If clack cannot be driven that way, the slice stops and reports. **Refined with 3i's brief:** a pipe is not a terminal, and `--tui` refuses one, so the byte-identity test drives the form in process, through the prompts' `input` and `output` streams (a scripted stream that reports itself as a TTY); one subprocess test runs the real command under `script(1)` for a pseudo-terminal on Linux and Ctrl+C, skipped by name elsewhere. No new test dependency. `@clack/prompts` 1.8.1 (MIT, 2026-09-13) brings `@clack/core`, `sisteransi`, `fast-wrap-ansi`, `fast-string-width` and `fast-string-truncated-width`, all MIT: each pinned through the lock file, checked against the allow-list and listed in the notices.
+**G12. `@clack/prompts`** (3i). A new runtime dependency, already named in section 3. **Decided by the owner on 2026-11-03, as recommended (with the refinement below).** **Recommend:** pinned exactly, MIT (in the allow-list), listed in `--acknowledgements` and `THIRD_PARTY_NOTICES.md`, loaded only by `brief --tui`, with the byte-identity test driving it through a pseudo-terminal (`node:child_process` with a scripted stdin) rather than a new test dependency. If clack cannot be driven that way, the slice stops and reports. **Refined with 3i's brief:** a pipe is not a terminal, and `--tui` refuses one, so the byte-identity test drives the form in process, through the prompts' `input` and `output` streams (a scripted stream that reports itself as a TTY); one subprocess test runs the real command under `script(1)` for a pseudo-terminal on Linux and Ctrl+C, skipped by name elsewhere. No new test dependency. `@clack/prompts` 1.8.1 (MIT, 2026-09-13) brings `@clack/core`, `sisteransi`, `fast-wrap-ansi`, `fast-string-width` and `fast-string-truncated-width`, all MIT: each pinned through the lock file, checked against the allow-list and listed in the notices.
 
-**G23. `decided_by` for an answer given in a form** (3i, 3h). The forms pre-fill every question that has a default; nothing says whether one the user leaves as it is was chosen by the `user` or is a `default`, and the byte-identity criterion depends on it. **Recommend:** an answer left at its pre-filled default is `default`, one the user changed (or typed, as purpose and scope always are) is `user`; the summary screen marks the defaults the same way. Then a form and a flags run that gives flags for exactly the changed answers write the same bytes, which is what the three-way test compares. 3h's `--web` follows the same rule.
+**G23. `decided_by` for an answer given in a form** (3i, 3h). **Decided by the owner on 2026-11-03, as recommended**, and written into COMMANDS.md, `quiz brief`. The forms pre-fill every question that has a default; nothing says whether one the user leaves as it is was chosen by the `user` or is a `default`, and the byte-identity criterion depends on it. **Recommend:** an answer left at its pre-filled default is `default`, one the user changed (or typed, as purpose and scope always are) is `user`; the summary screen marks the defaults the same way. Then a form and a flags run that gives flags for exactly the changed answers write the same bytes, which is what the three-way test compares. 3h's `--web` follows the same rule.
 
-**G24. Flags given with `--tui`** (3i, 3h). The forms are "in the language of `--language`", so at least that flag is meant to travel with a form; nothing says what the others do. **Recommend:** an answer flag given with a form pre-fills its question (recorded `user` when kept, as through flags), and every question is still shown, so an agent can prepare the form and the human confirms or changes it; `--language` also sets the form's language (default `en`). A bad value exits 2 before the form opens, as through flags. `--accept-defaults` with a form exits 2 (the human is there to answer). `--web` with `--tui` exits 2.
+**G24. Flags given with `--tui`** (3i, 3h). **Decided by the owner on 2026-11-03, as recommended**, and written into COMMANDS.md, `quiz brief`. The forms are "in the language of `--language`", so at least that flag is meant to travel with a form; nothing says what the others do. **Recommend:** an answer flag given with a form pre-fills its question (recorded `user` when kept, as through flags), and every question is still shown, so an agent can prepare the form and the human confirms or changes it; `--language` also sets the form's language (default `en`). A bad value exits 2 before the form opens, as through flags. `--accept-defaults` with a form exits 2 (the human is there to answer). `--web` with `--tui` exits 2.
 
-**G25. Where the form draws, and `--json`** (3i). **Recommend:** the form draws on stderr and reads stdin, so stdout holds only the `--json` line (or the human `written` line); both must be terminals, or `--tui` exits 2 with "`--tui` needs an interactive terminal: use `--web`, or give the answers as flags". A short scope is not written with `brief.vague`: the form shows the example and asks again, as COMMANDS.md says, so a `--tui` run has no warnings unless `--weak-topics` is yes (`brief.no-history`). Ctrl+C at any step writes nothing and exits 2, `{"status": "cancelled"}` with `--json`.
+**G25. Where the form draws, and `--json`** (3i). **Decided by the owner on 2026-11-03, as recommended**, and written into COMMANDS.md, `quiz brief`. **Recommend:** the form draws on stderr and reads stdin, so stdout holds only the `--json` line (or the human `written` line); both must be terminals, or `--tui` exits 2 with "`--tui` needs an interactive terminal: use `--web`, or give the answers as flags". A short scope is not written with `brief.vague`: the form shows the example and asks again, as COMMANDS.md says, so a `--tui` run has no warnings unless `--weak-topics` is yes (`brief.no-history`). Ctrl+C at any step writes nothing and exits 2, `{"status": "cancelled"}` with `--json`.
 
 ## Slices
 
@@ -326,7 +326,7 @@ The order (owner, 2026-11-03) puts the server first, since four commands stand o
 
 ## Slice 3i: 3g's fixes, then `brief --tui`
 
-**Drafted 2026-11-03; waits for the owner's yes, with G12 and G23 to G25.**
+**Approved by the owner on 2026-11-03**, with G12 and G23 to G25.
 
 ### Read first
 
