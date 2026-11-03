@@ -345,7 +345,7 @@ describe("a brief beside the quiz", () => {
     const [r] = json(c.out);
     expect(r?.profile).toBe("default");
     expect(r?.issues).toEqual([
-      expect.objectContaining({ rule: "brief.invalid", file: "brief.yaml", line: 16, level: "warning" }),
+      expect.objectContaining({ rule: "brief.invalid", file: "brief.yaml", line: 17, level: "warning" }),
     ]);
   });
 });

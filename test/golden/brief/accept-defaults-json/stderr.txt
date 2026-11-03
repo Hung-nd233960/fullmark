@@ -1,0 +1,2 @@
+wrote d/brief.yaml and d/content/
+defaults used: purpose, content, count, minutes, mix, difficulty, mode, language, request, weak_topics, commitment, profile

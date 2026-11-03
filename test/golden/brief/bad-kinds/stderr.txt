@@ -1,0 +1,1 @@
+--kinds takes a comma list of: lecture-slides, textbook, notes, past-exams, lab-manual, other; "videos" is not one of them

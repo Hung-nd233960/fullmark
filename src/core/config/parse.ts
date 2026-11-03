@@ -69,6 +69,7 @@ export function parseConfig(text: string, file: string, kind: "project" | "user"
     check: { profile: null, profileLine: 1, failOn: null, failOnLine: 1 },
     fonts: null,
     profiles: new Map(),
+    briefDefaults: {},
   };
 
   const unknownKeys = (t: Table, allowed: readonly string[], path: string[], where: string) => {

@@ -1,0 +1,6 @@
+brief
+d
+--scope
+lectures 3 to 5, the Fourier transform
+--accept-defaults
+--json

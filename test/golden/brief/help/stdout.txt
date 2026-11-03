@@ -1,0 +1,67 @@
+Usage: quiz brief [options] <dir>
+
+ask what a quiz is for and write brief.yaml (and an empty content/ folder) for
+an agent to write it from
+
+Arguments:
+  dir                     the folder for brief.yaml and content/ (created when
+                          missing)
+
+Options:
+  --web                   ask in a form in the browser (not available yet)
+  --tui                   ask in the terminal (not available yet)
+  --no-open               with --web: do not open the browser
+  --timeout <seconds>     with --web: how long to wait for the form (default
+                          1800)
+  --port <n>              with --web: the port on 127.0.0.1
+  --purpose <p>           The purpose sets the defaults of the other questions
+                          and the checks the quiz is held to; one of:
+                          self-study, exam-prep, classmates, survey; human-only;
+                          default: self-study
+  --scope <text>          Chapters, lectures or topics. Be specific, so the
+                          questions stay on them; at least 4 words, for example
+                          "lectures 3 to 5, the Fourier transform"; human-only
+  --kinds <list>          Tick every kind you will put in content/. The agent
+                          reads these files to write the questions; a comma list
+                          of: lecture-slides, textbook, notes, past-exams,
+                          lab-manual, other; default: none
+  --kinds-other <text>    Say what it is, so the agent knows how to read it;
+                          needs other in --kinds
+  --elsewhere <text>      Say where it is (a link, a book and its pages), or
+                          leave empty; default: empty
+  --count <n>             The number of questions the quiz should have. A quiz
+                          far from it gets a warning; from 1; default: 20
+  --minutes <n>           The time limit in minutes. 0 means no limit; from 0;
+                          default: 0
+  --mix <list>            Tick the kinds to include. The quiz is checked to have
+                          questions that can show each; a comma list of: recall,
+                          understanding, calculation, code, essay; default by
+                          purpose: self-study recall, understanding,
+                          calculation; exam-prep understanding, calculation,
+                          essay; classmates recall, understanding; survey none
+  --difficulty <d>        How demanding the questions should be, compared with
+                          the real thing; one of: warm-up, like-the-exam,
+                          harder; default: like-the-exam
+  --mode <m>              When the learner sees the answers; one of:
+                          each-question, at-the-end, timed-exam; default:
+                          at-the-end
+  --weak-topics <yes|no>  Needs earlier results. Without a library, the agent
+                          picks the topics from your reports; one of: yes, no;
+                          default: no
+  --commitment <n>        A percent from 1 to 100, shown as your goal on the
+                          results card. 0, or empty, means no goal; from 0 to
+                          100; human-only; default: 0
+  --language <lang>       The language the questions are written in. One quiz
+                          has one language; one of: en, vi; default: en
+  --request <text>        Free text: topics to stress, a style to match, things
+                          to avoid. Leave empty for none; default: empty
+  --profile <name>        A built-in or configured profile. Leave it to follow
+                          the purpose; most people never change it; default by
+                          purpose: self-study default; exam-prep exam;
+                          classmates default; survey survey
+  --config <toml>         use this config file instead of the nearest
+                          fullmark.toml
+  --accept-defaults       also take the default of a human-only value, recorded
+                          as decided by the agent
+  --json                  print the outcome as one JSON object on stdout
+  -h, --help              help for the command

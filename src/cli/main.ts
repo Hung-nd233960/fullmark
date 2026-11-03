@@ -1,4 +1,5 @@
 import { Command } from "commander";
+import type { BriefOptions } from "./brief";
 import type { BuildOptions } from "./build";
 import type { CheckOptions } from "./check";
 import { EXIT, type ExitCode } from "./exit-codes";
@@ -276,6 +277,62 @@ export function buildProgram(outcome: Outcome = { exit: EXIT.done }, io: Io = te
     });
 
   program
+    .command("brief")
+    .description(
+      "ask what a quiz is for and write brief.yaml (and an empty content/ folder) for an agent to write it from",
+    )
+    .argument("<dir>", "the folder for brief.yaml and content/ (created when missing)")
+    .option("--web", "ask in a form in the browser (not available yet)")
+    .option("--tui", "ask in the terminal (not available yet)")
+    .option("--no-open", "with --web: do not open the browser")
+    .option("--timeout <seconds>", "with --web: how long to wait for the form (default 1800)")
+    .option("--port <n>", "with --web: the port on 127.0.0.1")
+    .option("--purpose <p>", "what the quiz is for (human-only)")
+    .option("--scope <text>", "what the quiz covers (human-only)")
+    .option("--kinds <list>", "the material in content/")
+    .option("--kinds-other <text>", "what the other material is")
+    .option("--elsewhere <text>", "material that is not in content/")
+    .option("--count <n>", "the number of questions")
+    .option("--minutes <n>", "the time limit in minutes; 0 for none")
+    .option("--mix <list>", "the kinds of questions")
+    .option("--difficulty <d>", "how hard")
+    .option("--mode <m>", "how the quiz is taken")
+    .option("--weak-topics <yes|no>", "stress the topics done badly on")
+    .option("--commitment <n>", "the score the learner commits to, 1 to 100; 0 for none")
+    .option("--language <lang>", "the quiz's language: en or vi")
+    .option("--request <text>", "anything else for the agent")
+    .option("--profile <name>", "the check profile (default: from the purpose)")
+    .option("--config <toml>", "use this config file instead of the nearest fullmark.toml")
+    .option("--accept-defaults", "also take the default of a human-only value, recorded as decided by the agent")
+    .option("--json", "print the outcome as one JSON object on stdout")
+    .action(async (dir: string, options: Record<string, unknown>) => {
+      const text = (key: string): string | null => (options[key] as string | undefined) ?? null;
+      const opts: BriefOptions = {
+        purpose: text("purpose"),
+        scope: text("scope"),
+        kinds: text("kinds"),
+        kindsOther: text("kindsOther"),
+        elsewhere: text("elsewhere"),
+        count: text("count"),
+        minutes: text("minutes"),
+        mix: text("mix"),
+        difficulty: text("difficulty"),
+        mode: text("mode"),
+        weakTopics: text("weakTopics"),
+        commitment: text("commitment"),
+        language: text("language"),
+        request: text("request"),
+        profile: text("profile"),
+        config: text("config"),
+        acceptDefaults: Boolean(options.acceptDefaults),
+        web: Boolean(options.web),
+        tui: Boolean(options.tui),
+        json: Boolean(options.json),
+      };
+      outcome.exit = await (await import("./brief")).runBrief(dir, opts, io);
+    });
+
+  program
     .command("stats")
     .description("progress across attempts at one quiz: score by date, tags, weakest tags, questions missed, criteria")
     .argument("<files...>", "two or more reports (*-report.json) or results files (globs are expanded)")
@@ -391,6 +448,9 @@ async function main(argv: string[]): Promise<number> {
       process.stdout.write((await import("./acknowledgements")).acknowledgements());
       return EXIT.done;
     }
+    // the question file words the options of `brief`; only its help reads the file
+    if (argv.includes("brief") && (argv.includes("--help") || argv.includes("-h") || argv[2] === "help"))
+      (await import("./brief-help")).describeBriefOptions(program);
     if (argv.length <= 2) {
       program.outputHelp({ error: true });
       return EXIT.usage;

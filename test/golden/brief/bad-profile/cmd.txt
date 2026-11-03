@@ -1,0 +1,8 @@
+brief
+d
+--purpose
+exam-prep
+--scope
+lectures 3 to 5, the Fourier transform
+--profile
+nope

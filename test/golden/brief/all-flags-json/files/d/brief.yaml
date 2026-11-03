@@ -1,0 +1,36 @@
+purpose: classmates
+scope: "lectures 3 to 5, the Fourier transform"
+content:
+  kinds:
+    - lecture-slides
+    - other
+  kinds_other: "a video lecture"
+  elsewhere: "the course wiki: week 3 # notes"
+count: 8
+minutes: 30
+mix:
+  - recall
+  - code
+difficulty: harder
+mode: timed-exam
+language: vi
+request: "Focus on proofs: no tricks."
+weak_topics: true
+commitment: 80
+focus_tags: []
+profile: "exam"
+decided_by:
+  purpose: user
+  scope: user
+  content: user
+  count: user
+  minutes: user
+  mix: user
+  difficulty: user
+  mode: user
+  language: user
+  request: user
+  weak_topics: user
+  commitment: user
+  focus_tags: default
+  profile: user

@@ -1,0 +1,6 @@
+brief
+d
+--purpose
+self-study
+--scope
+signals

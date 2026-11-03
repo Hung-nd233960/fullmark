@@ -212,4 +212,14 @@ export const BRIEF_RULES: QualityRule[] = [
     fix: "fix brief.yaml: it is written by `quiz brief`, which can write it again",
     run: () => [],
   }),
+  rule({
+    id: "brief.no-history",
+    level: "warning",
+    summary: "the brief asks for weak topics, but quiz brief reads no history to find them",
+    why: "focus_tags stays empty when `quiz brief` writes the file, so the agent has to pick the weak topics itself.",
+    example: `${BRIEF_EXAMPLE} quiz brief --weak-topics yes`,
+    fix: "pick the weak topics from the learner's reports, or use the library's brief (step 4), which fills them from stats",
+    // given by `quiz brief --weak-topics yes`, never by `check`
+    run: () => [],
+  }),
 ];

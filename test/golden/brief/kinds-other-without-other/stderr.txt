@@ -1,0 +1,1 @@
+--kinds-other needs `other` in --kinds

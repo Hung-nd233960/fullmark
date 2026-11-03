@@ -44,6 +44,8 @@ describe("every rule has a fixture", () => {
     "brief.generated-by",
     "brief.mode",
     "brief.invalid",
+    // given by `quiz brief --weak-topics yes`, judged by test/brief/cli.test.ts
+    "brief.no-history",
   ]);
   const qualityFixtures = new Set(QUALITY_RULES.map((r) => r.id));
 

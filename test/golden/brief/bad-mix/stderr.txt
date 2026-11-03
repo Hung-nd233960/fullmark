@@ -1,0 +1,1 @@
+--mix takes a comma list of: recall, understanding, calculation, code, essay; "poetry" is not one of them

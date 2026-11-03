@@ -1,4 +1,4 @@
-import type { QuestionType } from "../ir";
+import type { PURPOSES, QuestionType } from "../ir";
 import type { Level } from "../issue";
 
 /** Where a setting was written: a line of a config file, or null for the built-in value. */
@@ -49,7 +49,11 @@ export type ConfigFileData = {
   /** `fonts` at the top of the machine `config.toml`: the default of `--fonts` */
   fonts: "quiz" | "all" | "none" | null;
   profiles: Map<string, ProfileDef>;
+  /** `[brief.purpose.<purpose>]` in the machine `config.toml`: the defaults of a purpose, by purpose then key */
+  briefDefaults: Partial<Record<(typeof PURPOSES)[number], Record<string, BriefDefault>>>;
 };
+
+export type BriefDefault = string | number | string[];
 
 /** A problem in a config file: always a file and a line. */
 export type ConfigError = { file: string; line: number; message: string; fix?: string };

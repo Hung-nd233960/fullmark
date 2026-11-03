@@ -1,0 +1,1 @@
+{"status":"written","brief":"d/brief.yaml","defaults_applied":["purpose","content","count","minutes","mix","difficulty","mode","language","request","weak_topics","commitment","profile"],"warnings":[]}

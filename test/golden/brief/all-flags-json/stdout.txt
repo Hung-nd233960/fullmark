@@ -1,0 +1,1 @@
+{"status":"written","brief":"d/brief.yaml","defaults_applied":[],"warnings":[{"rule":"brief.no-history","message":"focus_tags is empty: quiz brief reads no history; pick the weak topics from the learner's reports, or use the library's brief (step 4), which fills them from stats"}]}

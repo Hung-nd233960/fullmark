@@ -90,6 +90,7 @@ brief.past-exams          quality  error    the brief says the quiz mirrors past
 brief.mode                quality  error    the quiz's feedback, time limit or look does not fit the brief's mode  [profile exam]
 brief.generated-by        quality  error    a quiz written from a brief does not say which model wrote it  [profile exam]
 brief.invalid             quality  error    brief.yaml cannot be read, so the quiz was not held against it  [profile exam]
+brief.no-history          quality  error    the brief asks for weak topics, but quiz brief reads no history to find them  [profile exam]
 materials.empty           quality  error    a materials sheet with nothing after its heading (raised when `check` loads the sheet)  [profile exam]
 build.font-not-embedded   quality  error    a locked look names a font the page does not embed (checked by `build`, from `--fonts none`)  [profile exam]
 build.size                quality  error    the built page is large (checked by `build`, from step 2 of the order of work)  [profile exam]

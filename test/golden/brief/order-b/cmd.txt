@@ -1,0 +1,13 @@
+brief
+d
+--count
+12
+--mix
+recall,essay
+--scope
+lectures 3 to 5, the Fourier transform
+--json
+--kinds
+textbook,notes
+--purpose
+exam-prep

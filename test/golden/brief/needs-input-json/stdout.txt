@@ -1,0 +1,1 @@
+{"status":"needs_input","missing":["purpose","scope"],"how":"give --purpose (self-study, exam-prep, classmates, survey) and --scope TEXT, or --accept-defaults to take the default purpose; or ask the user in a form with --web"}

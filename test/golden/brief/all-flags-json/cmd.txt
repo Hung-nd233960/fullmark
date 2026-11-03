@@ -1,0 +1,33 @@
+brief
+d
+--purpose
+classmates
+--scope
+lectures 3 to 5, the Fourier transform
+--kinds
+lecture-slides,other
+--kinds-other
+a video lecture
+--elsewhere
+the course wiki: week 3 # notes
+--count
+8
+--minutes
+30
+--mix
+recall,code
+--difficulty
+harder
+--mode
+timed-exam
+--weak-topics
+yes
+--commitment
+80
+--language
+vi
+--request
+Focus on proofs: no tricks.
+--profile
+exam
+--json

@@ -1,0 +1,3 @@
+warning brief.vague: --scope has 1 word; 4 or more say what the quiz covers, for example "lectures 3 to 5, the Fourier transform"
+wrote d/brief.yaml and d/content/
+defaults used: content, count, minutes, mix, difficulty, mode, language, request, weak_topics, commitment, profile
