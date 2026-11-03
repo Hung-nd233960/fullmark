@@ -17,7 +17,7 @@ As in step 2 ([STEP2.md](STEP2.md), Handoff): Opus writes a slice's full brief h
 | 3b 3a's fixes, `--section`, `--focus`, `--autosave` | done, reviewed, gaps decided | `7fa0ba3`..`4a1e0bf` |
 | 3c `inspect`, `new`, `template` | done, reviewed, gaps decided | `e71ce68`..`3602a3d` |
 | 3d 3c's fixes, `stats` | done, reviewed, gaps decided | `fd466d1`, `2dfd341` |
-| 3g 3d's fixes, `brief` through flags | **brief ready, waiting for the owner's go** | |
+| 3g 3d's fixes, `brief` through flags | with Sonnet | |
 
 Step 2 is closed (STEP2.md, item 75): every "Done when" criterion passes in Chromium and Firefox; Vitest 2059 of 2059, the 2 startup tests, Playwright and axe. What step 3 inherits:
 
@@ -44,7 +44,7 @@ Step 2 is closed (STEP2.md, item 75): every "Done when" criterion passes in Chro
 
 ### Next steps, in order
 
-1. **3g's brief is ready** (G15 to G18 decided, 2026-11-03), **waiting for the owner's go.** Then 3g with Sonnet. G12 comes with 3i's brief.
+1. **3g with Sonnet** (the owner's go, 2026-11-03; G15 to G18 decided). G12 comes with 3i's brief.
 2. **Whenever the owner is ready:** the form boards on the Design canvas (3v, G7), as 2v did for the page. Only 3e, 3f and 3h wait for them.
 
 ### Open proposals carried over from step 2
@@ -271,7 +271,7 @@ The order (owner, 2026-11-03) puts the server first, since four commands stand o
 
 ## Slice 3g: 3d's fixes, then `brief` through flags
 
-**Ready**: G15 to G18 decided by the owner on 2026-11-03; waiting for the owner's go.
+**Approved by the owner on 2026-11-03**, with G15 to G18.
 
 ### Read first
 
