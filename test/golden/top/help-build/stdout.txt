@@ -1,0 +1,42 @@
+Usage: quiz build [options] [files...]
+
+check a quiz, then write it as one offline HTML page
+
+Arguments:
+  files                 quiz .md files (globs are expanded); with --build-file,
+                        only those of its entries
+
+Options:
+  -o, --output <out>    the page to write (default: the quiz file with .html);
+                        with several files or a build file, a folder
+  --profile <name>      the check profile; overrides the quiz's profile
+  --config <toml>       use this config file instead of the nearest
+                        fullmark.toml
+  --strict              warnings count as errors, and nothing is written
+  --built-at <iso>      pin the build time, so a build is byte-identical across
+                        runs (default: now)
+  --build-file <build>  build what a build file lists (TOML): its [[build]]
+                        entries, in order
+  --json                print one JSON object per file on stdout
+  --open                open the page after building (one file)
+  --print               write a printable exam paper (static HTML, black on
+                        white) instead of the page
+  --seed <s>            with --print: shuffle reproducibly; 1 to 8 letters or
+                        digits, printed as the paper code
+  --answer-sheet        with --print: a grid of boxes for the single-choice and
+                        true/false answers
+  --answers <mode>      with --print: none (an exam paper), key (the answer key
+                        on a new page) or inline (a study sheet)
+  --materials <which>   with --print: none leaves the materials page out
+  --ui-lang <lang>      the page's language for this build, en or vi (default:
+                        the quiz's ui_lang)
+  --fonts <which>       which fonts the page embeds: quiz (the quiz's own), all
+                        or none (default: fonts in config.toml, else quiz)
+  --plain               no colours and no progress line, even in a terminal
+  --watch               rebuild when the quiz, the files it uses or the build
+                        file change; Ctrl+C stops (exit 0)
+  --serve               with --watch: serve the last good page on 127.0.0.1 and
+                        reload it after each rebuild
+  --port <n>            with --serve: the port on 127.0.0.1 (default: a free
+                        one)
+  -h, --help            help for the command

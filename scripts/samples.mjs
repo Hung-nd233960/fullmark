@@ -1,7 +1,7 @@
 // Builds every example and every page fixture into samples/, with an index, for trying the page by hand.
 // Run with `npm run samples` (it builds dist first). samples/ is git-ignored: regenerate it, never commit it.
 import { execFileSync } from "node:child_process";
-import { existsSync, mkdirSync, readdirSync, rmSync, writeFileSync } from "node:fs";
+import { copyFileSync, existsSync, mkdirSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
 const OUT = "samples";
@@ -71,6 +71,10 @@ const SERVED = [
     command: "node dist/cli.js brief samples/brief-tui --tui",
     try: "quiz brief --tui: asks every question in the terminal, in two steps (Quiz 1/2 style progress), with each question's help and each choice's hint. Purpose and scope start empty; a scope under four words is asked again with the example. The summary lists every answer and marks the defaults; pick Change on any line to go back (change the purpose and the defaults that follow it are refilled), then Write brief.yaml: samples/brief-tui/brief.yaml and an empty content/ are written. Ctrl+C at any step writes nothing and exits 2. Run it again: it exits 2 because brief.yaml exists. Pre-fill with flags (--scope \"...\" --language vi) and the form opens with them, in Vietnamese; the same answers through flags (quiz brief samples/brief-flags --purpose ... --scope ...) write the same bytes. With stdin from /dev/null it exits 2: --tui needs a terminal.",
   },
+  {
+    command: "node dist/cli.js build samples/watch/quiz.md --watch --serve --open",
+    try: "quiz build --watch --serve: samples/watch/quiz.md (a copy of the Rust example, made when the samples are built) is built, served on 127.0.0.1 and opened in your browser. Edit and save it: the page reloads within a second and shows the change. Save an error (an unclosed ::: or a question with no id): the terminal prints the errors and 'kept the last good page', and the page does not reload; fix it and the page reloads. samples/watch/quiz.html on disk is what quiz build writes (no reload code). Ctrl+C in the terminal exits 0. Add --json to see one line per build, and give two files (samples/watch/quiz.md samples/watch/second.md) to see the index of pages, which notes a failed rebuild at its next load.",
+  },
 ];
 
 // extra `build` flags for a page
@@ -88,6 +92,11 @@ const sources = [
     .filter((f) => f.endsWith(".md"))
     .map((f) => ({ name: f.slice(0, -3), file: join("test", "fixtures", "page", f) })),
 ];
+
+// the folder `build --watch --serve` is tried in: copies, so editing them never touches examples/
+mkdirSync(join(OUT, "watch"), { recursive: true });
+copyFileSync(join("examples", "rust", "quiz.md"), join(OUT, "watch", "quiz.md"));
+copyFileSync(join("examples", "survey", "quiz.md"), join(OUT, "watch", "second.md"));
 
 const built = [];
 for (const s of sources) {

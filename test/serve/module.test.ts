@@ -50,11 +50,22 @@ describe("a shared page carries no server code", () => {
   it("is not changed by the server's other half existing: `build` never reads dist/serve.js", () => {
     for (const dir of ["src/build", "src/cli"]) {
       for (const f of readdirSync(join(root, dir)).filter((x) => x.endsWith(".ts"))) {
-        if (f === "serve.ts") continue;
+        // the two commands that serve; `build-watch.ts` is only loaded for `--watch` and reads `reload.js`, below
+        if (f === "serve.ts" || f === "build-watch.ts") continue;
         const text = readFileSync(join(root, dir, f), "utf8");
         expect(text, `${dir}/${f}`).not.toMatch(/from "\.\.\/serve|module-file|["\x27`]serve\.js["\x27`]/);
       }
     }
+  });
+});
+
+describe("`build --watch --serve` never takes the one-shot module", () => {
+  it("reads dist/reload.js only, and builds its served copy without `serveModule`", () => {
+    const text = readFileSync(join(root, "src/cli/build-watch.ts"), "utf8");
+    expect(text).toContain("readReloadModule");
+    expect(text).not.toContain("readServeModule");
+    expect(text).not.toContain("serveModule");
+    expect(text).not.toMatch(/["\x27`]serve\.js["\x27`]/);
   });
 });
 

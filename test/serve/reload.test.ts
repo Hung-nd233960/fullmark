@@ -120,8 +120,10 @@ describe("the index of several pages", () => {
   };
 
   it("matches its golden in English and Vietnamese", () => {
-    golden("index-en.html", buildIndex(entries, "en", reload));
-    golden("index-vi.html", buildIndex(entries, "vi", reload));
+    // a fixed script, so the golden does not move when the bundler's output does
+    const script = 'new EventSource("./events");';
+    golden("index-en.html", buildIndex(entries, "en", script));
+    golden("index-vi.html", buildIndex(entries, "vi", script));
   });
 
   it("lists the titles in order as links, with the file names and the failure note, escaped", () => {
