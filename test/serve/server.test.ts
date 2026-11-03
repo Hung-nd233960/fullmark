@@ -122,6 +122,101 @@ describe("the page and the token", () => {
   });
 });
 
+describe("the address without its trailing slash", () => {
+  it("answers 308 to the address with the slash, so the page's ./submit resolves under the token", async () => {
+    const { server } = await start();
+    const bare = new URL(server.url).pathname.slice(0, -1);
+    const r = await send(server, { path: bare });
+    expect(r.status).toBe(308);
+    expect(r.headers.location).toBe(`${bare}/`);
+    expect(r.body).toBe("");
+    // a wrong token is still 403, and a POST to the bare address is a 404, not a redirect
+    expect((await send(server, { path: "/nope" })).status).toBe(403);
+    expect((await send(server, { method: "POST", path: bare, body: "{}" })).status).toBe(404);
+  });
+
+  it("follows the redirect to the page with fetch", async () => {
+    const { server } = await start();
+    const bare = server.url.slice(0, -1);
+    const r = await fetch(bare);
+    expect(r.status).toBe(200);
+    expect(r.url).toBe(server.url);
+    expect(await r.text()).toBe("<!doctype html><p>quiz</p>");
+  });
+});
+
+describe("the progress path (--autosave)", () => {
+  const progress = (server: RunningServer, body: string, extra: { origin?: string | null } = {}) =>
+    send(server, { method: "POST", path: `${new URL(server.url).pathname}progress`, body, ...extra });
+
+  it("does not exist unless the command keeps progress: 404", async () => {
+    const { server } = await start();
+    expect((await progress(server, submitBody("quiz", attempt(HASH_A, "answering")))).status).toBe(404);
+  });
+
+  it("takes an attempt in progress with 204, hands it on, and goes on waiting", async () => {
+    const kept: string[] = [];
+    const { server, taken } = await start({
+      onProgress: (id, results) => {
+        kept.push(`${id}:${results.phase}:${results.format}`);
+        return null;
+      },
+    });
+    const r = await progress(server, submitBody("quiz", attempt(HASH_A, "answering")));
+    expect(r.status).toBe(204);
+    expect(r.body).toBe("");
+    expect(kept).toEqual(["quiz:answering:fullmark-results"]);
+    expect(taken).toEqual([]);
+    // the server is still open: a submit is taken
+    const done = await send(server, {
+      method: "POST",
+      path: `${new URL(server.url).pathname}submit`,
+      body: submitBody("quiz", attempt(HASH_A)),
+    });
+    expect(done.status).toBe(200);
+  });
+
+  it("makes the same checks as a submit: Origin, Host, quiz id, version, an attempt, the cap", async () => {
+    const kept: string[] = [];
+    const { server } = await start({
+      onProgress: (id) => {
+        kept.push(id);
+        return null;
+      },
+    });
+    const good = submitBody("quiz", attempt(HASH_A, "answering"));
+    expect((await progress(server, good, { origin: null })).status).toBe(403);
+    expect((await progress(server, good, { origin: "http://evil.example" })).status).toBe(403);
+    expect((await progress(server, "nope")).status).toBe(400);
+    expect((await progress(server, submitBody("other", attempt(HASH_A, "answering")))).status).toBe(400);
+    expect((await progress(server, submitBody("quiz", attempt(HASH_B, "answering")))).status).toBe(400);
+    expect((await progress(server, JSON.stringify({ quizId: "quiz", attempt: {} }))).status).toBe(400);
+    expect((await progress(server, submitBody("quiz", attempt(HASH_A, "submitted")))).status).toBe(400);
+    expect((await progress(server, "x".repeat(MAX_BODY_BYTES + 1))).status).toBe(413);
+    expect(kept).toEqual([]);
+  });
+
+  it("answers 400 with the reason when onProgress refuses, and 409 once the submit is in", async () => {
+    let refuse: string | null = "no good";
+    const { server } = await start({
+      onProgress: () => refuse,
+      quizIds: { quiz: HASH_A, other: HASH_A },
+      predicate: (a) => a.size === 2,
+    });
+    const r = await progress(server, submitBody("quiz", attempt(HASH_A, "answering")));
+    expect(r.status).toBe(400);
+    expect(r.body).toBe("no good");
+    refuse = null;
+    expect((await progress(server, submitBody("quiz", attempt(HASH_A, "answering")))).status).toBe(204);
+    await send(server, {
+      method: "POST",
+      path: `${new URL(server.url).pathname}submit`,
+      body: submitBody("quiz", attempt(HASH_A)),
+    });
+    expect((await progress(server, submitBody("quiz", attempt(HASH_A, "answering")))).status).toBe(409);
+  });
+});
+
 describe("the submit", () => {
   const post = (server: RunningServer, body: string | Buffer, extra: { origin?: string | null; host?: string } = {}) =>
     send(server, { method: "POST", path: `${new URL(server.url).pathname}submit`, body, ...extra });

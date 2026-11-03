@@ -1,7 +1,7 @@
 import { randomBytes, timingSafeEqual } from "node:crypto";
 import { createServer, type IncomingMessage, type Server, type ServerResponse } from "node:http";
 import type { AddressInfo } from "node:net";
-import { AttemptSchema, type Results, resultsOf } from "../core/attempt";
+import { type Attempt, AttemptSchema, type Results, resultsOf } from "../core/attempt";
 
 /** The body cap of a submit (TECHNICAL_DESIGN.md, foundation 4). */
 export const MAX_BODY_BYTES = 10 * 1024 * 1024;
@@ -33,6 +33,11 @@ export type ServerOptions = {
    * and ends with `error`.
    */
   onSubmit(quizId: string, results: Results): Promise<string | null> | string | null;
+  /**
+   * `--autosave`: called with each valid progress post (an attempt in `answering`), answered 204. Returns a plain-words
+   * problem when it cannot be kept (400). Absent: the progress path does not exist (404).
+   */
+  onProgress?(quizId: string, results: Results): string | null;
   /** a timer, so a test never waits for a real one; it returns the function that cancels it */
   setTimer?: (fire: () => void, ms: number) => () => void;
 };
@@ -98,13 +103,20 @@ export async function startServer(options: ServerOptions): Promise<RunningServer
     setTimeout(() => server.closeAllConnections(), 200).unref();
   };
 
-  const submit = async (req: IncomingMessage, res: ServerResponse): Promise<void> => {
+  /**
+   * Reads and checks a POST body, which is the same for a submit and a progress post: within the cap, JSON, a quiz this
+   * server takes, an attempt on the version served. Null once the refusal has been sent.
+   */
+  const readPost = async (
+    req: IncomingMessage,
+    res: ServerResponse,
+  ): Promise<{ quizId: string; attempt: Attempt } | null> => {
     const length = Number(req.headers["content-length"] ?? "0");
     if (length > MAX_BODY_BYTES) {
       res.setHeader("Connection", "close");
       refuse(res, 413);
       req.destroy();
-      return;
+      return null;
     }
     const chunks: Buffer[] = [];
     let size = 0;
@@ -114,33 +126,63 @@ export async function startServer(options: ServerOptions): Promise<RunningServer
         res.setHeader("Connection", "close");
         refuse(res, 413);
         req.destroy();
-        return;
+        return null;
       }
       chunks.push(chunk as Buffer);
     }
-    if (closing) return refuse(res, 409, "this server has already taken its submit");
+    if (closing) {
+      refuse(res, 409, "this server has already taken its submit");
+      return null;
+    }
     let body: unknown;
     try {
       body = JSON.parse(Buffer.concat(chunks).toString("utf8"));
     } catch {
-      return refuse(res, 400, "the body is not JSON");
+      refuse(res, 400, "the body is not JSON");
+      return null;
     }
     const { quizId, attempt } = (body ?? {}) as { quizId?: unknown; attempt?: unknown };
     if (typeof quizId !== "string" || !Object.hasOwn(options.quizIds, quizId)) {
-      return refuse(res, 400, "this server does not take a submit for that quiz");
+      refuse(res, 400, "this server does not take a submit for that quiz");
+      return null;
     }
-    if (accepted.has(quizId)) return refuse(res, 409, "this quiz was already submitted");
+    if (accepted.has(quizId)) {
+      refuse(res, 409, "this quiz was already submitted");
+      return null;
+    }
     const parsed = AttemptSchema.safeParse(attempt);
-    if (!parsed.success) return refuse(res, 400, "the body is not an attempt");
-    if (parsed.data.quizHash !== options.quizIds[quizId]) {
-      return refuse(res, 400, "the attempt was taken on another version of the quiz");
+    if (!parsed.success) {
+      refuse(res, 400, "the body is not an attempt");
+      return null;
     }
-    if (parsed.data.phase !== "submitted") return refuse(res, 400, "the attempt is not submitted");
+    if (parsed.data.quizHash !== options.quizIds[quizId]) {
+      refuse(res, 400, "the attempt was taken on another version of the quiz");
+      return null;
+    }
+    return { quizId, attempt: parsed.data };
+  };
+
+  /** A progress post (`--autosave`): kept by `onProgress`, answered 204; nothing is accepted and the server goes on. */
+  const progress = async (req: IncomingMessage, res: ServerResponse): Promise<void> => {
+    const read = await readPost(req, res);
+    if (read === null) return;
+    if (read.attempt.phase !== "answering") return refuse(res, 400, "the attempt is not in progress");
+    const problem = options.onProgress?.(read.quizId, resultsOf(read.attempt)) ?? null;
+    if (problem !== null) return refuse(res, 400, problem);
+    res.writeHead(204, { "Cache-Control": "no-store" });
+    res.end();
+  };
+
+  const submit = async (req: IncomingMessage, res: ServerResponse): Promise<void> => {
+    const read = await readPost(req, res);
+    if (read === null) return;
+    const { quizId, attempt: parsed } = read;
+    if (parsed.phase !== "submitted") return refuse(res, 400, "the attempt is not submitted");
     // from here a second request for this id must wait its turn: claim it before the (async) write
     accepted.add(quizId);
     let problem: string | null;
     try {
-      problem = await options.onSubmit(quizId, resultsOf(parsed.data));
+      problem = await options.onSubmit(quizId, resultsOf(parsed));
     } catch (error) {
       accepted.delete(quizId);
       refuse(res, 500, "the results could not be written");
@@ -164,11 +206,18 @@ export async function startServer(options: ServerOptions): Promise<RunningServer
     if (!tokenOk(first)) return refuse(res, 403);
     if (req.method === "POST") {
       if (!originOk(req.headers.origin)) return refuse(res, 403);
-      if (rest.join("/") !== "submit") return refuse(res, 404);
-      submit(req, res).catch(() => {
+      const target = rest.join("/");
+      if (target !== "submit" && !(target === "progress" && options.onProgress !== undefined)) return refuse(res, 404);
+      (target === "submit" ? submit : progress)(req, res).catch(() => {
         if (!res.headersSent) refuse(res, 500);
         else res.end();
       });
+      return;
+    }
+    // the page's relative `./submit` resolves against the address, so the address must end in a slash
+    if (req.method === "GET" && rest.length === 0) {
+      res.writeHead(308, { "Cache-Control": "no-store", Location: `/${first}/`, "X-Content-Type-Options": "nosniff" });
+      res.end();
       return;
     }
     const page = options.pages[rest.join("/")];
