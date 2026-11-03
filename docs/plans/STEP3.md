@@ -15,7 +15,8 @@ As in step 2 ([STEP2.md](STEP2.md), Handoff): Opus writes a slice's full brief h
 | plan | approved (2026-11-03): gaps G1 to G4, G6, G7, G9, G10, G11 and G5 decided; G8 and G12 open; the slice order and 3a's brief approved | this file |
 | 3a the one-shot server and `quiz serve` | done, reviewed, gaps decided | `b9ca8c1`, `730a7ae` |
 | 3b 3a's fixes, `--section`, `--focus`, `--autosave` | done, reviewed, gaps decided | `7fa0ba3`..`4a1e0bf` |
-| 3c `inspect`, `new`, `template` | done, reviewed, **gaps waiting for the owner** | `e71ce68`..`3602a3d` |
+| 3c `inspect`, `new`, `template` | done, reviewed, gaps decided | `e71ce68`..`3602a3d` |
+| 3d 3c's fixes, `stats` | **brief drafted, waiting for the owner** (G8 for `stats`, G14) | |
 
 Step 2 is closed (STEP2.md, item 75): every "Done when" criterion passes in Chromium and Firefox; Vitest 2059 of 2059, the 2 startup tests, Playwright and axe. What step 3 inherits:
 
@@ -34,9 +35,11 @@ Step 2 is closed (STEP2.md, item 75): every "Done when" criterion passes in Chro
 
 **3c's review (2026-11-03).** Typecheck, Biome and Vitest clean: 92 files, **2284 of 2284** (74 new golden cases), the 2 startup tests (`--version` 24 ms, `check` 85 ms). Playwright in Chromium: **193 passed**, 128 skipped, none failed. **`start.spec.ts:202`: cause shown.** After `page.reload()`, Chromium handed the reloaded document a `localStorage` snapshot older than the old document's last write; the test's init script read that snapshot (seen empty in every failing run, while a fresh tab saw the key). The page saved correctly and is unchanged; the test now edits the saved text it read from the old page. 40 of 40 in review. Only the two top-level help goldens changed (the three commands). Tried by hand: `template list` shows the seven built-ins; `new rust demo/`, `ids`, `check` pass; `new` again exits 2; a skeleton of `rust` fails `check` with 30 emptied-field errors; `inspect examples/exam/quiz.md` prints the summary. **Found in review:** that example has no `id`, so its id shows as `quiz`, the file name: the same collision as Sonnet's gap 2.
 
+**3c's gaps decided by the owner on 2026-11-03**, all as recommended, and written into COMMANDS.md (`quiz new`: `PATH` a folder or an `.md` file, a fresh quiz `id` from the target's name, `--json`, `--from` copies only what the quiz references; `quiz inspect`'s details; `template list` shows `invalid` folders; `template add` and `rm` `--json`) and QUIZ_SYNTAX.md section 9 (`materials` emptied, how each answer shape is emptied, which errors a skeleton gives). `examples/exam` and `examples/medical` get an `id`. The id, `new --json` and `invalid` are 3d's first tasks.
+
 ### Next steps, in order
 
-1. **3c with Sonnet** (brief approved with G8 for `inspect` and G13, 2026-11-03). G8 for `stats` comes with 3d's brief; G12 with 3i's.
+1. **The owner decides G14 and approves 3d's brief** (below) with its G8 proposal for `stats`. Then 3d with Sonnet. G12 comes with 3i's brief.
 2. **Whenever the owner is ready:** the form boards on the Design canvas (3v, G7), as 2v did for the page. Only 3e, 3f and 3h wait for them.
 
 ### Open proposals carried over from step 2
@@ -88,6 +91,8 @@ The design docs leave these open. Each needs the owner's yes before the slice th
 **G11. The brief question file** (3g). Section 7 names it as YAML that people write; nothing gives its shape. **Decided by the owner on 2026-11-03, as recommended (YAML)**, and written into COMMANDS.md, `quiz brief`. **Recommend:** `src/brief/questions.yaml`, shipped in the bundle as data, one entry per brief key: `key`, `kind` (`choice`, `multi`, `text`, `number`), `label`, `help`, `choices` with a `hint` each, `min-words` with `example`, `follow-up` (for `other`), `human-only`, `default`, and `section` (the steps of `--tui`); every text in `en` and `vi`. A zod schema checks it in a unit test; the flags' `--help` text, the web form and the TUI all read it, so they cannot drift.
 
 **G13. A quiz started from a template keeps the template's ids** (3c). A built-in template is an example with a quiz `id` (`rust-basics`) and question ids; `new TEMPLATE` and `new --from FILE` "copy" it, so two quizzes would share a quiz id and question ids, and in step 4's library their histories would mix. **Decided by the owner on 2026-11-03, as recommended**, and written into COMMANDS.md, `quiz new`. **Recommend:** `new` without `--skeleton` copies everything except the identity: the front matter's `id` is removed (it then defaults to the new file's name, slugged) and every question's `id` is removed, and `new` ends by saying "run `quiz ids FILE` to give the questions ids". `--skeleton` already does this (QUIZ_SYNTAX.md, section 9). `template add` stores the quiz as given; the ids are dropped when a quiz is started from it.
+
+**G14. `stats` cannot score an attempt from a results file alone** (3d). A `results-v2` file holds the answers and the version (`quizHash`), but no score and no quiz id, so `stats RESULTS... [--quiz FILE]` can neither grade an attempt on an older version (its key is in a source it is not given) nor tell two quizzes apart, though COMMANDS.md promises "any versions" and exit 2 for different quizzes. The JSON report (`report-v2`, written by `grade --json`) has what is missing: the quiz's id and version, and per question `earned`, `points`, `status`, tags and criteria, graded against the version the attempt was taken on. **Recommend:** `stats` takes `*-report.json` files, of any version, and also results files whose version matches `--quiz` (graded on the spot, as `grade` would); a results file of another version exits 1 naming it, with the fix "grade it with that version: `quiz grade FILE --quiz OLD.md --json`". Different quiz ids exit 2. In step 4 the library already keeps a report per attempt, so `library stats` reads the same thing.
 
 **G12. `@clack/prompts`** (3i). A new runtime dependency, already named in section 3. **Recommend:** pinned exactly, MIT (in the allow-list), listed in `--acknowledgements` and `THIRD_PARTY_NOTICES.md`, loaded only by `brief --tui`, with the byte-identity test driving it through a pseudo-terminal (`node:child_process` with a scripted stdin) rather than a new test dependency. If clack cannot be driven that way, the slice stops and reports.
 
@@ -213,3 +218,40 @@ The order (owner, 2026-11-03) puts the server first, since four commands stand o
 ### Done when
 
 `npm run check` passes in Chromium, and `start.spec.ts:202` passes 40 of 40 repeats with its cause shown; `quiz new rust demo/` then `quiz ids demo/quiz.md` then `quiz check demo/quiz.md` passes; `quiz new --from examples/rust/quiz.md --skeleton s/` fails `check` with only emptied-field errors. Report as the rules say.
+
+## Slice 3d: 3c's fixes, then `stats`
+
+**Draft, for the owner to approve** (with G14 and G8 for `stats`).
+
+### Read first
+
+- COMMANDS.md: `quiz stats`, `quiz new`, `quiz template` ("`template list`"), "Several files".
+- TECHNICAL_DESIGN.md section 4, "Plan and Attempt" (scores per question and per tag) and section 10, "Decisions on the new features" (missed); section 6, "Where grades show up" (the `stats` row) and the report paragraph of "`grades-v2`".
+- This plan: "Rules for every slice", G3, G8, G14, and 3c's decided gaps.
+- Code: `src/core/report/build.ts` (`Report`), `src/cli/grade.ts` (loading and grading results), `src/cli/new.ts`, `src/cli/templates.ts`, `src/core/skeleton.ts` (`withoutIdentity`).
+
+### Decided for this slice
+
+- **The fixes from 3c:** `new` writes a fresh quiz `id` (the folder's name for `quiz.md`, else the file's), takes `PATH` ending in `.md` as the file, and has `--json`; `template list` shows `invalid` folders with the reason; `examples/exam` and `examples/medical` gain an `id` (their goldens change: report the count).
+- **`stats` (G8, for the owner to approve).** Inputs as G14. Each attempt counts only the questions it had (`plan.questions`), so a section or retry attempt never counts as a low score on the whole quiz. Questions match across versions by id, and without one by question hash (G3). Pending grades count as not yet scored.
+
+  ```text
+  rust-basics · Rust basics · 5 attempts, 2 versions
+  Attempts   3 Oct 62% · 10 Oct 71% (section ownership) · 17 Oct 80% · …
+  Tags       borrowing 54% (13 of 24 points) · traits 70% · ownership 88% · no tag 75%
+  Weakest    borrowing, traits
+  Missed     q-k7m2qx "Which borrow…" wrong in 4 of 5 · q-a1b2c3 3 of 5 · …
+  Criteria   interp 60% over 4 attempts · LR band 5.5 average · …
+  ```
+
+  `--json`: `{"status": "done", "quiz": {"id", "title"}, "attempts": [{"file", "submitted", "version", "plan", "earned", "points", "percent", "pending"}], "tags": [{"tag", "earned", "points", "percent", "attempts"}], "weakest": [tag], "questions": [{"id", "hash", "title", "seen", "missed", "earned", "points", "changed"}], "criteria": [{"question", "criterion", "earned", "max", "percent", "band"}]}`. **Weakest:** the up to three tags with the lowest percent, of those seen in at least two attempts. **Missed:** wrong or partly right, by count, then by id; at most ten in human output, all in JSON. A survey shows "Answers over time" instead: per question, each attempt's answer in date order. `--quiz` names questions and tags from the current source; without it, from the newest report.
+
+### Tasks
+
+1. 3c's fixes above, with goldens.
+2. `src/core/stats/` (pure, no `node:*`): attempts in, the summary out, with unit tests for sections, retries, two versions, a question without an id, pending grades, surveys and criteria (an IELTS band and an additive rubric).
+3. `quiz stats` in `src/cli/stats.ts`: loading reports and results, the G14 refusals, human and `--json`, goldens from fixtures made with `grade --json` (never by hand).
+
+### Done when
+
+`npm run check` passes in Chromium; five attempts over two versions of one fixture give the summary above in shape; a results file of an older version exits 1 with the fix; two quizzes exit 2. Report as the rules say.

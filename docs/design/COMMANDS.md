@@ -417,7 +417,7 @@ Tags       rust 18 · borrowing 5 · no tag 2
 Positions  A 5 · B 6 · C 3 · D 2
 ```
 
-Points count a bank's `pick`, not its pool. **Positions** counts the correct choices of `single` and `multi` questions by letter, in source order, as `answers.position-skew` does. `--json`: `{"status": "done" | "failed", "quiz": {"id", "title", "hash", "short"}, "questions", "points", "timeLimit", "types": [{"type", "count", "points"}], "sections": [{"id", "title", "questions", "points", "pick", "time"}], "tags": [{"tag", "count", "points"}], "positions": {"A": 5, …}, "review", "errors", "warnings"}`; `review` is `{"keep", "fix", "drop", "notJudged"}` with `--review`, else null.
+Points count a bank's `pick`, not its pool: each question in a bank carries `pick` over the pool's size of its points, so types, tags and sections add up to the total (a share may show as a decimal). Question counts are the pool's. Untagged questions are the last row of Tags, "no tag" (`{"tag": null}` in JSON). The Positions row is left out when no question has a right answer (a survey); the JSON keeps the zeros. A quiz that does not parse prints only its issues, with `"quiz": null`. `errors` and `warnings` are the issue objects of `check --json`. **Positions** counts the correct choices of `single` and `multi` questions by letter, in source order, as `answers.position-skew` does. `--json`: `{"status": "done" | "failed", "quiz": {"id", "title", "hash", "short"}, "questions", "points", "timeLimit", "types": [{"type", "count", "points"}], "sections": [{"id", "title", "questions", "points", "pick", "time"}], "tags": [{"tag", "count", "points"}], "positions": {"A": 5, …}, "review", "errors", "warnings"}`; `review` is `{"keep", "fix", "drop", "notJudged"}` with `--review`, else null.
 
 Exit: `0` done, `1` check errors, `2` I/O error.
 
@@ -426,11 +426,11 @@ Exit: `0` done, `1` check errors, `2` I/O error.
 **changed**: starts from a user template or an existing quiz as well as a built-in template. `templates` is now `quiz template list`.
 
 ```text
-quiz new TEMPLATE [PATH]
-quiz new --from FILE [--skeleton] [PATH]
+quiz new TEMPLATE [PATH] [--json]
+quiz new --from FILE [--skeleton] [PATH] [--json]
 ```
 
-Copies a template and its assets to `PATH` (default: the current folder). Never overwrites: an existing file exits 2. **A new quiz gets its own identity** (owner, 2026-11-03): the copy drops the front matter's `id` (so it defaults to the new file's name, slugged) and every question's `id`, and `new` ends by saying to run `quiz ids FILE`. Otherwise two quizzes would share ids, and their histories would mix in a library. The built-in templates are built from `examples/` and `templates/blank/` into the package, so each has one source.
+Copies a template and its assets to `PATH` (default: the current folder). `PATH` is a folder, where the quiz is written as `quiz.md`, or a file ending in `.md`, written under that name (owner, 2026-11-03). Never overwrites: an existing file exits 2. **A new quiz gets its own identity** (owner, 2026-11-03): the copy drops every question's `id` and writes a fresh quiz `id` into the front matter, the target's name slugged: the folder's name when the file is `quiz.md` (`quiz new rust demo/` gives `id: demo`), else the file's name (`quiz new rust signals/week3.md` gives `id: week3`). `new` ends by saying to run `quiz ids FILE`. Otherwise two quizzes would share ids, and their histories would mix in a library. The built-in templates are built from `examples/` and `templates/blank/` into the package, so each has one source. A template folder is copied whole; `--from FILE` copies only the assets and `materials` sheets the quiz references, so unrelated files never travel. `--json`: `{"status": "written", "file", "template"}` (`template` is null with `--from`), or `{"status": "error", "message"}`.
 
 | Option | Meaning |
 |---|---|
@@ -476,7 +476,7 @@ quiz template rm NAME [--yes] [--json]
 
 **User templates.** A `templates/` folder next to `config.toml` holds your own. Each is a folder with one quiz `.md` (the only `.md` at its top level) and its `assets/` and `materials/`, named by the folder, so `templates/signals-week/` is used as `quiz new signals-week`. `quiz template add` writes these folders; you can also make one by hand. No other location is searched, not even a project folder. Built-in templates: `calculus`, `rust`, `ielts`, `medical`, `exam`, `survey`, `blank`. **Built-in names are reserved**: a user template cannot take one, so a name means one template. Core commands need no library, so templates do not either.
 
-**`template list`.** Every template with its source: `built-in`, or `user` and its path. A user folder whose name is, or later becomes, a built-in one (a release added that template after you made yours) is listed as `ignored`, with a note to rename the folder; `quiz new` uses the built-in one and says that it ignored a user template. `--json`: `[{"name", "source", "path", "ignored"}]`.
+**`template list`.** Every template with its source: `built-in`, or `user` and its path. A user folder whose name is, or later becomes, a built-in one (a release added that template after you made yours) is listed as `ignored`, with a note to rename the folder; `quiz new` uses the built-in one and says that it ignored a user template. A user folder that does not hold exactly one `.md` at its top level is listed as `invalid`, with the reason, and cannot be used (owner, 2026-11-03). `--json`: `[{"name", "source", "path", "ignored", "invalid"}]`, `invalid` the reason or null.
 
 **`template add FILE`.** Stores a quiz and its assets as a user template. The name is `--as NAME`, else the file name slugged.
 
@@ -489,7 +489,9 @@ quiz template rm NAME [--yes] [--json]
 - **Checks.** A full quiz must pass `check` under its own profile, so a broken template does not hand its errors to every quiz started from it. A skeleton fails `check` by design, so it gets a structural check instead: the front matter parses, sections and questions are well formed, the profile exists, the assets are there. Either must hold at least one question.
 - **Name collisions.** A name taken by a built-in template is refused (exit 1) and `--replace` does not change that. A name taken by one of your templates exits 1 and suggests a free name; `--replace` overwrites it. Adding content identical to what is stored under that name is `unchanged` (exit 0).
 
-**`template rm NAME`.** Deletes a user template's folder, after asking unless `--yes`. One template per command. A built-in template is refused (exit 1).
+**`template rm NAME`.** Deletes a user template's folder, after asking unless `--yes`. One template per command. A built-in template is refused (exit 1). With `--json` and without `--yes` it exits 2, since `--json` never prompts.
+
+**`--json`** (owner, 2026-11-03): `add` gives `{"status": "added" | "replaced" | "unchanged" | "failed" | "error", "name", "path"}`, with the issues on `failed`; `rm` gives `{"status": "removed" | "error", "name", "path"}`.
 
 Exit: `0` listed, added, unchanged or removed, `1` check errors, name taken or a built-in refused, `2` unknown template or I/O error.
 

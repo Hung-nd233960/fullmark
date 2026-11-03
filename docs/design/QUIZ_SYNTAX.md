@@ -458,14 +458,14 @@ One quality rule belongs here because the syntax raises it: `question.points-ign
 
 `quiz new --skeleton` keeps every **S** field above and empties every **C** field:
 
-- Front matter: kept, except `title`, `description`, `id` and `generated_by`, which are emptied (`title` to a placeholder).
+- Front matter: kept, except `title`, `description`, `id`, `generated_by` and `materials`, which are emptied (`title` to the placeholder `TODO: the quiz's title`); the sheets are not copied.
 - Sections: titles, ids, times, picks and instructions kept; passages emptied.
 - Questions: heading attributes kept except `id` and `source`; the prompt, hint and explanation emptied.
-- Answers: the shape is kept (the number of choices with every `[x]` cleared, the number of blanks, fields and their labels, the length of an ordering or matching list), the key is emptied.
+- Answers: the shape is kept (the number of choices with every `[x]` cleared, the number of blanks, fields and their labels, the length of an ordering or matching list), the key is emptied. In the file (owner, 2026-11-03, from 3c): a blank becomes `[[]]` (`[[=]]` for a numeric one), a matching pair `- ? ::` and a distractor `- ::`, a `truefalse` an empty `answer` block, a passage an empty `::: passage`; hint and explanation containers are dropped.
 - Rubrics: kept whole.
 - Banks: the `pick` count kept, every question in the bank blanked.
 
-A skeleton fails `check` by design, with one error per empty field, which is the author's to-do list. Once the questions are written, `quiz ids` gives them new ids, so no history from the source quiz is carried over.
+A skeleton fails `check` by design, which is the author's to-do list: one `question.id-missing` and one `question.prompt-empty` per question, and each type's own key error (empty choice text has no error of its own; `choice.correct-count` covers it). Once the questions are written, `quiz ids` gives them new ids, so no history from the source quiz is carried over.
 
 ## 10. Reserved
 
