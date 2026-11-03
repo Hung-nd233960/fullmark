@@ -1,0 +1,404 @@
+# The brief question file (COMMANDS.md, `quiz brief`; TECHNICAL_DESIGN.md section 7).
+# One entry per question, in the order of the brief.yaml file table. The flags of `quiz brief`, the `--web` form and the
+# `--tui` form all read this file, so they ask the same questions in the same words. Every text is given in en and vi.
+# A test checks it against the brief schema: every key once, every choice a value the schema accepts, no text missing.
+#
+# key           the brief key; content.kinds and content.elsewhere are the keys inside `content`
+# flag          the option of `quiz brief` that answers it
+# kind          choice (one of the choices), multi (several), text, number
+# section       the step it belongs to (--tui: "Quiz 1/2")
+# human-only    only the user may choose it; a run without it exits 3, unless `optional`
+# optional      may be left empty: the default is used and nothing is asked again
+# default       the value when nothing is given; default-by-purpose changes it for a purpose; a choice's
+#               default-for lists the purposes for which it is in a multi's default
+# min-words     a text answer shorter than this is vague; `example` shows a good one
+# follow-up     the text box that opens when the choice named in `when` is picked
+
+sections:
+  - id: about
+    title:
+      en: About the material
+      vi: Về tài liệu
+  - id: quiz
+    title:
+      en: The quiz
+      vi: Bài kiểm tra
+
+questions:
+  - key: purpose
+    flag: purpose
+    kind: choice
+    section: about
+    human-only: true
+    default: self-study
+    label:
+      en: What is the quiz for?
+      vi: Bài kiểm tra này dùng để làm gì?
+    help:
+      en: The purpose sets the defaults of the other questions and the checks the quiz is held to.
+      vi: Mục đích quyết định giá trị mặc định của các câu hỏi khác và các quy tắc kiểm tra áp dụng cho bài.
+    choices:
+      - value: self-study
+        label:
+          en: Self-study
+          vi: Tự học
+        hint:
+          en: Practice for yourself, to find what you do not know yet.
+          vi: Tự luyện tập để tìm ra phần mình chưa biết.
+      - value: exam-prep
+        label:
+          en: Exam preparation
+          vi: Ôn thi
+        hint:
+          en: A mock exam, checked more strictly.
+          vi: Một đề thi thử, được kiểm tra chặt chẽ hơn.
+      - value: classmates
+        label:
+          en: For classmates
+          vi: Cho bạn cùng lớp
+        hint:
+          en: A quiz you share with others.
+          vi: Bài bạn chia sẻ cho người khác.
+      - value: survey
+        label:
+          en: Survey
+          vi: Khảo sát
+        hint:
+          en: Questions without right answers, to collect opinions.
+          vi: Câu hỏi không có đáp án đúng, để thu thập ý kiến.
+
+  - key: scope
+    flag: scope
+    kind: text
+    section: about
+    human-only: true
+    min-words: 4
+    label:
+      en: What should the quiz cover?
+      vi: Bài kiểm tra nên bao gồm nội dung gì?
+    help:
+      en: Chapters, lectures or topics. Be specific, so the questions stay on them.
+      vi: Các chương, bài giảng hoặc chủ đề. Hãy nêu cụ thể để câu hỏi không đi lạc.
+    example:
+      en: lectures 3 to 5, the Fourier transform
+      vi: bài giảng 3 đến 5, phép biến đổi Fourier
+
+  - key: content.kinds
+    flag: kinds
+    kind: multi
+    section: about
+    default: []
+    label:
+      en: What material is in the content folder?
+      vi: Thư mục content chứa những tài liệu nào?
+    help:
+      en: Tick every kind you will put in content/. The agent reads these files to write the questions.
+      vi: Chọn mọi loại tài liệu bạn sẽ đặt vào content/. Trợ lý đọc các tệp này để viết câu hỏi.
+    choices:
+      - value: lecture-slides
+        label:
+          en: Lecture slides
+          vi: Slide bài giảng
+        hint:
+          en: PDF or PowerPoint slides.
+          vi: Slide PDF hoặc PowerPoint.
+      - value: textbook
+        label:
+          en: Textbook
+          vi: Giáo trình
+        hint:
+          en: A chapter or more of a textbook.
+          vi: Một hoặc nhiều chương giáo trình.
+      - value: notes
+        label:
+          en: Notes
+          vi: Ghi chú
+        hint:
+          en: Your own notes or a classmate's.
+          vi: Ghi chú của bạn hoặc của bạn học.
+      - value: past-exams
+        label:
+          en: Past exams
+          vi: Đề thi cũ
+        hint:
+          en: Earlier exam papers, to match their style.
+          vi: Các đề thi trước, để bám sát dạng đề.
+      - value: lab-manual
+        label:
+          en: Lab manual
+          vi: Tài liệu thực hành
+        hint:
+          en: Instructions for lab sessions.
+          vi: Hướng dẫn cho các buổi thực hành.
+      - value: other
+        label:
+          en: Something else
+          vi: Loại khác
+        hint:
+          en: Name it in the box that opens.
+          vi: Ghi rõ vào ô hiện ra.
+    follow-up:
+      key: kinds_other
+      flag: kinds-other
+      when: other
+      label:
+        en: What other material?
+        vi: Tài liệu loại khác là gì?
+      help:
+        en: Say what it is, so the agent knows how to read it.
+        vi: Cho biết đó là gì để trợ lý biết cách đọc.
+
+  - key: content.elsewhere
+    flag: elsewhere
+    kind: text
+    section: about
+    default: ""
+    label:
+      en: Is there material that is not in the content folder?
+      vi: Có tài liệu nào không nằm trong thư mục content không?
+    help:
+      en: Say where it is (a link, a book and its pages), or leave empty.
+      vi: Cho biết nó ở đâu (đường dẫn, sách và số trang), hoặc để trống.
+
+  - key: count
+    flag: count
+    kind: number
+    section: quiz
+    min: 1
+    default: 20
+    label:
+      en: How many questions?
+      vi: Bao nhiêu câu hỏi?
+    help:
+      en: The number of questions the quiz should have. A quiz far from it gets a warning.
+      vi: Số câu hỏi của bài. Bài lệch nhiều so với số này sẽ bị cảnh báo.
+
+  - key: minutes
+    flag: minutes
+    kind: number
+    section: quiz
+    min: 0
+    default: 0
+    label:
+      en: How many minutes?
+      vi: Bao nhiêu phút?
+    help:
+      en: The time limit in minutes. 0 means no limit.
+      vi: Thời gian làm bài tính bằng phút. 0 nghĩa là không giới hạn.
+
+  - key: mix
+    flag: mix
+    kind: multi
+    section: quiz
+    default: []
+    label:
+      en: What kinds of questions?
+      vi: Những dạng câu hỏi nào?
+    help:
+      en: Tick the kinds to include. The quiz is checked to have questions that can show each.
+      vi: Chọn các dạng cần có. Bài sẽ được kiểm tra xem có câu hỏi phù hợp với từng dạng không.
+    choices:
+      - value: recall
+        default-for: [self-study, classmates]
+        label:
+          en: Recall
+          vi: Ghi nhớ
+        hint:
+          en: Facts, definitions, terms.
+          vi: Sự kiện, định nghĩa, thuật ngữ.
+      - value: understanding
+        default-for: [self-study, exam-prep, classmates]
+        label:
+          en: Understanding
+          vi: Hiểu
+        hint:
+          en: Why and how, not only what.
+          vi: Tại sao và như thế nào, không chỉ là cái gì.
+      - value: calculation
+        default-for: [self-study, exam-prep]
+        label:
+          en: Calculation
+          vi: Tính toán
+        hint:
+          en: Problems with a number or several fields as the answer.
+          vi: Bài toán có đáp án là một số hoặc nhiều ô.
+      - value: code
+        label:
+          en: Code
+          vi: Lập trình
+        hint:
+          en: Write or fix a piece of code.
+          vi: Viết hoặc sửa một đoạn mã.
+      - value: essay
+        default-for: [exam-prep]
+        label:
+          en: Essay
+          vi: Tự luận
+        hint:
+          en: Written answers, graded against a rubric.
+          vi: Câu trả lời viết, chấm theo thang tiêu chí.
+
+  - key: difficulty
+    flag: difficulty
+    kind: choice
+    section: quiz
+    default: like-the-exam
+    label:
+      en: How hard?
+      vi: Độ khó?
+    help:
+      en: How demanding the questions should be, compared with the real thing.
+      vi: Mức độ đòi hỏi của câu hỏi so với bài thi thật.
+    choices:
+      - value: warm-up
+        label:
+          en: Warm-up
+          vi: Khởi động
+        hint:
+          en: Easier than the exam, to build confidence.
+          vi: Dễ hơn bài thi, để lấy đà.
+      - value: like-the-exam
+        label:
+          en: Like the exam
+          vi: Như bài thi
+        hint:
+          en: The level you expect to meet.
+          vi: Mức độ bạn dự kiến gặp.
+      - value: harder
+        label:
+          en: Harder
+          vi: Khó hơn
+        hint:
+          en: Harder than the exam, to be safe.
+          vi: Khó hơn bài thi, cho chắc ăn.
+
+  - key: mode
+    flag: mode
+    kind: choice
+    section: quiz
+    default: at-the-end
+    label:
+      en: How should it be taken?
+      vi: Làm bài theo cách nào?
+    help:
+      en: When the learner sees the answers.
+      vi: Khi nào người học xem được đáp án.
+    choices:
+      - value: each-question
+        label:
+          en: Check each question
+          vi: Kiểm tra từng câu
+        hint:
+          en: Feedback straight after each answer.
+          vi: Có phản hồi ngay sau mỗi câu trả lời.
+      - value: at-the-end
+        label:
+          en: Check at the end
+          vi: Kiểm tra ở cuối
+        hint:
+          en: All answers are shown after submitting.
+          vi: Đáp án hiện ra sau khi nộp bài.
+      - value: timed-exam
+        label:
+          en: Timed exam
+          vi: Thi tính giờ
+        hint:
+          en: A time limit and a locked page, like the real exam.
+          vi: Có giới hạn thời gian và trang bị khóa, như thi thật.
+
+  - key: language
+    flag: language
+    kind: choice
+    section: quiz
+    default: en
+    label:
+      en: What language is the quiz in?
+      vi: Bài kiểm tra viết bằng ngôn ngữ nào?
+    help:
+      en: The language the questions are written in. One quiz has one language.
+      vi: Ngôn ngữ của các câu hỏi. Mỗi bài chỉ dùng một ngôn ngữ.
+    choices:
+      - value: en
+        label:
+          en: English
+          vi: Tiếng Anh
+        hint:
+          en: The questions are in English.
+          vi: Câu hỏi bằng tiếng Anh.
+      - value: vi
+        label:
+          en: Vietnamese
+          vi: Tiếng Việt
+        hint:
+          en: The questions are in Vietnamese.
+          vi: Câu hỏi bằng tiếng Việt.
+
+  - key: request
+    flag: request
+    kind: text
+    section: quiz
+    default: ""
+    label:
+      en: Anything else for the agent?
+      vi: Còn điều gì khác cho trợ lý không?
+    help:
+      en: "Free text: topics to stress, a style to match, things to avoid. Leave empty for none."
+      vi: "Văn bản tự do: chủ đề cần nhấn mạnh, phong cách cần theo, điều cần tránh. Để trống nếu không có."
+
+  - key: weak_topics
+    flag: weak-topics
+    kind: choice
+    section: quiz
+    default: "no"
+    label:
+      en: Stress the topics you did badly on?
+      vi: Nhấn mạnh các chủ đề bạn làm kém?
+    help:
+      en: Needs earlier results. Without a library, the agent picks the topics from your reports.
+      vi: Cần kết quả các lần trước. Khi chưa có thư viện, trợ lý chọn chủ đề từ các báo cáo của bạn.
+    choices:
+      - value: "yes"
+        label:
+          en: Yes
+          vi: Có
+        hint:
+          en: Put more questions on the weak topics.
+          vi: Đặt nhiều câu hỏi hơn vào các chủ đề yếu.
+      - value: "no"
+        label:
+          en: No
+          vi: Không
+        hint:
+          en: Cover the scope evenly.
+          vi: Phủ đều phạm vi.
+
+  - key: commitment
+    flag: commitment
+    kind: number
+    section: quiz
+    human-only: true
+    optional: true
+    min: 0
+    max: 100
+    default: 0
+    label:
+      en: What score are you committing to?
+      vi: Bạn cam kết đạt số điểm nào?
+    help:
+      en: A percent from 1 to 100, shown as your goal on the results card. 0, or empty, means no goal.
+      vi: Một phần trăm từ 1 đến 100, hiện làm mục tiêu trên thẻ kết quả. 0 hoặc để trống nghĩa là không đặt mục tiêu.
+
+  - key: profile
+    flag: profile
+    kind: text
+    section: quiz
+    default: default
+    default-by-purpose:
+      exam-prep: exam
+      survey: survey
+    label:
+      en: Which check profile?
+      vi: Dùng bộ quy tắc kiểm tra nào?
+    help:
+      en: A built-in or configured profile. Leave it to follow the purpose; most people never change it.
+      vi: Một bộ quy tắc có sẵn hoặc do bạn cấu hình. Để mặc định theo mục đích; hầu hết mọi người không đổi.

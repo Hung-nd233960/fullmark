@@ -16,7 +16,7 @@
     "THIRD_PARTY_NOTICES.md"
   ],
   "scripts": {
-    "build": "tsup && node scripts/build-page.mjs && node scripts/build-templates.mjs",
+    "build": "tsup && node scripts/build-page.mjs && node scripts/build-templates.mjs && node scripts/build-brief.mjs",
     "test": "vitest run test/startup.test.ts && vitest run --exclude test/startup.test.ts",
     "typecheck": "tsc --noEmit",
     "lint": "biome check",
