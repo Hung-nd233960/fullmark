@@ -17,7 +17,8 @@ As in step 2 ([STEP2.md](STEP2.md), Handoff): Opus writes a slice's full brief h
 | 3b 3a's fixes, `--section`, `--focus`, `--autosave` | done, reviewed, gaps decided | `7fa0ba3`..`4a1e0bf` |
 | 3c `inspect`, `new`, `template` | done, reviewed, gaps decided | `e71ce68`..`3602a3d` |
 | 3d 3c's fixes, `stats` | done, reviewed, gaps decided | `fd466d1`, `2dfd341` |
-| 3g 3d's fixes, `brief` through flags | done, reviewed; **its gaps for the owner** (G19 to G22) | `27a61a4`..`2e6b449` |
+| 3g 3d's fixes, `brief` through flags | done, reviewed, gaps decided | `27a61a4`..`2e6b449` |
+| 3i 3g's fixes, `brief --tui` | **brief drafted; G12 and G23 to G25 for the owner** | |
 
 Step 2 is closed (STEP2.md, item 75): every "Done when" criterion passes in Chromium and Firefox; Vitest 2059 of 2059, the 2 startup tests, Playwright and axe. What step 3 inherits:
 
@@ -44,7 +45,7 @@ Step 2 is closed (STEP2.md, item 75): every "Done when" criterion passes in Chro
 
 **3g's review (2026-11-03).** Typecheck, Biome and Vitest clean: 96 files, **2422 of 2422**, the 2 startup tests (run alone, as `npm test` runs them; inside a single run of every file at once the `check` budget test reads 240 ms against 180, which is that invocation's load, not a regression). Playwright in Chromium: **193 passed**, 128 skipped, none failed (run in review). Firefox not run (not installed here, as before). Goldens: 23 existing cases changed (4 `stats` cases for the one-decimal bands, 17 `rules/*` cases for the `brief.no-history` row, `top/help` and `top/no-command` for `brief`); 49 new (5 `new/id-*`, `check/brief-no-commitment`, 29 `brief/*`, 14 `brief/config-*`). The question file ships as `dist/brief/questions.yaml` (13 KB, copied by `scripts/build-brief.mjs`); `brief` and its `--help` are lazy chunks, so startup is untouched. Tried by hand: the "Done when" command writes `d/brief.yaml` and `d/content/`, and `check` on a quiz beside it gives no `brief.invalid`; the flags in another order write the same bytes; without `--scope` exit 3 with `needs_input`, nothing written; `--scope x` and `"ch 3"` write with `brief.vague` (the word count and the example); `--accept-defaults` writes `purpose: self-study` as `agent`; `--purpose exam` exits 2 naming the four values; a second run on the same `DIR` exits 2 with G18's message; a scope with `: ` and `#` and a two-line `request` with leading spaces are written quoted and read back. Done differently, accepted in review unless the owner says otherwise: a whitespace-only `--scope` counts as missing (exit 3); an existing `brief.yaml` is reported before a missing value (exit 2 before exit 3, as G18 says "before asking anything"); `--profile` is checked against the built-in and configured profiles (exit 2 naming them); a `config.toml` error under `[brief.purpose.*]` also stops the other commands, since the file is read once; `--timeout`, `--port` and `--no-open` are accepted and ignored without `--web`; lists are written in the question file's order, so `--kinds a,b` and `b,a` give the same bytes; `decided_by.content` is the strongest of its three answers.
 
-**3g's gaps, for the owner:**
+**3g's gaps decided by the owner on 2026-11-03**, all as recommended, and written into TECHNICAL_DESIGN.md section 5 (the `brief.vague` row) and COMMANDS.md (`quiz brief`: the question file's extra fields, `--accept-defaults` fills only the values that need an answer; `quiz stats`: a report question with an empty `id` exits 1). They are 3i's first tasks. The gaps as they were put:
 
 **G19. `brief.vague` is not in the rule catalogue** (3i). It is emitted with a rule id, but TECHNICAL_DESIGN.md section 5 and the registry list only `brief.no-history`. **Recommend:** register it as a warning, beside `brief.no-history` ("given by `quiz brief` through flags, not by `check`"), in section 5 and the registry; the 17 `rules/*` goldens change again, once.
 
@@ -56,7 +57,7 @@ Step 2 is closed (STEP2.md, item 75): every "Done when" criterion passes in Chro
 
 ### Next steps, in order
 
-1. **The owner decides G19 to G22** (3g's gaps, above). They go into the design docs and become 3i's first tasks; 3i's brief comes with G12.
+1. **The owner approves 3i's brief** (below) with G12 and G23 to G25; then 3i goes to Sonnet.
 2. **Whenever the owner is ready:** the form boards on the Design canvas (3v, G7), as 2v did for the page. Only 3e, 3f and 3h wait for them.
 
 ### Open proposals carried over from step 2
@@ -119,7 +120,13 @@ The design docs leave these open. Each needs the owner's yes before the slice th
 
 **G18. A `DIR` that already holds `brief.yaml`** (3g). Nothing says. **Decided by the owner on 2026-11-03, as recommended.** **Recommend:** never overwrite, as `new`: exit 2 before asking anything, "DIR/brief.yaml already exists: edit it, or delete it to start again". An existing `content/` is kept as it is, and a missing `DIR` is created.
 
-**G12. `@clack/prompts`** (3i). A new runtime dependency, already named in section 3. **Recommend:** pinned exactly, MIT (in the allow-list), listed in `--acknowledgements` and `THIRD_PARTY_NOTICES.md`, loaded only by `brief --tui`, with the byte-identity test driving it through a pseudo-terminal (`node:child_process` with a scripted stdin) rather than a new test dependency. If clack cannot be driven that way, the slice stops and reports.
+**G12. `@clack/prompts`** (3i). A new runtime dependency, already named in section 3. **Recommend:** pinned exactly, MIT (in the allow-list), listed in `--acknowledgements` and `THIRD_PARTY_NOTICES.md`, loaded only by `brief --tui`, with the byte-identity test driving it through a pseudo-terminal (`node:child_process` with a scripted stdin) rather than a new test dependency. If clack cannot be driven that way, the slice stops and reports. **Refined with 3i's brief:** a pipe is not a terminal, and `--tui` refuses one, so the byte-identity test drives the form in process, through the prompts' `input` and `output` streams (a scripted stream that reports itself as a TTY); one subprocess test runs the real command under `script(1)` for a pseudo-terminal on Linux and Ctrl+C, skipped by name elsewhere. No new test dependency. `@clack/prompts` 1.8.1 (MIT, 2026-09-13) brings `@clack/core`, `sisteransi`, `fast-wrap-ansi`, `fast-string-width` and `fast-string-truncated-width`, all MIT: each pinned through the lock file, checked against the allow-list and listed in the notices.
+
+**G23. `decided_by` for an answer given in a form** (3i, 3h). The forms pre-fill every question that has a default; nothing says whether one the user leaves as it is was chosen by the `user` or is a `default`, and the byte-identity criterion depends on it. **Recommend:** an answer left at its pre-filled default is `default`, one the user changed (or typed, as purpose and scope always are) is `user`; the summary screen marks the defaults the same way. Then a form and a flags run that gives flags for exactly the changed answers write the same bytes, which is what the three-way test compares. 3h's `--web` follows the same rule.
+
+**G24. Flags given with `--tui`** (3i, 3h). The forms are "in the language of `--language`", so at least that flag is meant to travel with a form; nothing says what the others do. **Recommend:** an answer flag given with a form pre-fills its question (recorded `user` when kept, as through flags), and every question is still shown, so an agent can prepare the form and the human confirms or changes it; `--language` also sets the form's language (default `en`). A bad value exits 2 before the form opens, as through flags. `--accept-defaults` with a form exits 2 (the human is there to answer). `--web` with `--tui` exits 2.
+
+**G25. Where the form draws, and `--json`** (3i). **Recommend:** the form draws on stderr and reads stdin, so stdout holds only the `--json` line (or the human `written` line); both must be terminals, or `--tui` exits 2 with "`--tui` needs an interactive terminal: use `--web`, or give the answers as flags". A short scope is not written with `brief.vague`: the form shows the example and asks again, as COMMANDS.md says, so a `--tui` run has no warnings unless `--weak-topics` is yes (`brief.no-history`). Ctrl+C at any step writes nothing and exits 2, `{"status": "cancelled"}` with `--json`.
 
 ## Slices
 
@@ -130,7 +137,7 @@ The design docs leave these open. Each needs the owner's yes before the slice th
 | **3c** | `inspect` (with `--review` waiting for 3e), `new TEMPLATE`, `new --from [--skeleton]`, `template list/add/rm`, the built-in templates | G4, G8 |
 | **3d** | `stats`: `src/core/stats/` (per question, per tag, per criterion, across versions), the survey table, human and `--json` | G3, G8 |
 | **3g** | `brief` through flags: the question file, every option, defaults written with `decided_by`, `brief.vague`, exit 3 and `needs_input`, `--accept-defaults`, `--json`, `content/` | G11 |
-| **3i** | `brief --tui` with `@clack/prompts`; flags and `--tui` write byte-identical `brief.yaml` | G11, G12 |
+| **3i** | 3g's fixes; `brief --tui` with `@clack/prompts`; flags and `--tui` write byte-identical `brief.yaml` | G11, G12, G23 to G25 |
 | **3j** | `build --watch` and `--serve`: watching, the last good page, `--json` per rebuild, the reload server | G6 |
 | **3v** | The owner's form boards (G7), whenever the owner is ready; no code. Only 3e, 3f and 3h wait for it | G7 |
 | **3e** | `review`: `review-v1` in `ir.ts` and its JSON Schema, the form (verdict, then reasons; The rest is fine; the Finish dialog), merge, `--since` with the diff; `check --review` with `review.fix`, `review.drop` and `review.unconfirmed`; `inspect --review` | G1, G2, G3, boards |
@@ -316,3 +323,37 @@ The order (owner, 2026-11-03) puts the server first, since four commands stand o
 ### Done when
 
 `npm run check` passes in Chromium; `quiz brief d --purpose exam-prep --scope "lectures 3 to 5, the Fourier transform" --json` writes a `d/brief.yaml` that `check` reads cleanly, and the same answers given in another flag order write the same bytes; without `--scope` it exits 3 and writes nothing. Report as the rules say.
+
+## Slice 3i: 3g's fixes, then `brief --tui`
+
+**Drafted 2026-11-03; waits for the owner's yes, with G12 and G23 to G25.**
+
+### Read first
+
+- COMMANDS.md: `quiz brief` (all of it, especially `--tui`, the question file, the detail rules and "The file"), "Exit codes", "Common options"; `quiz stats`'s `FILE...` row and exit list.
+- TECHNICAL_DESIGN.md section 3 (the terminal form row), section 5 (the `brief.*` rows), section 7 (Budgets: `@clack/prompts` loads only for `brief --tui`), the notices paragraph and its allow-list.
+- This plan: "Rules for every slice", G12, G19 to G25, and 3g's review.
+- Code: `src/cli/brief.ts`, `src/cli/brief-help.ts`, `src/cli/brief-questions.ts`, `src/core/brief/` (`questions.ts`, `write.ts`), `src/brief/questions.yaml`, `src/core/rules/brief.ts`, `src/cli/stats.ts`, `scripts/notices.mjs`, `test/notices.test.ts`, `test/startup.test.ts`, `test/golden/brief/`.
+
+### Decided for this slice
+
+- **3g's fixes:** `brief.vague` registered as a warning beside `brief.no-history` (G19), its `run` returning nothing; the `rules/*` goldens change once, counted. G20, G21 and G22 are already what the code does: only the docs changed, and a test pins each (`--accept-defaults` leaves `commitment` as `default`; a report with an empty question `id` exits 1 with the fix; the question file's schema covers every field COMMANDS.md now names).
+- **The dependency** (G12): `@clack/prompts` pinned exactly (1.8.1, or the newest at least two weeks old when the slice starts), loaded by a dynamic `import()` inside the `--tui` path only; a test checks that `brief` through flags and `check` do not load it. `--acknowledgements`, `THIRD_PARTY_NOTICES.md` and the notices test gain it and its dependencies; the allow-list is not widened.
+- **The form** reads the question file and nothing else for its words: each section a step with progress (*Quiz 1/2*); each question's label and help; a `choice` as a select and a `multi` as a multi-select, each choice with its hint; the follow-up text box when *other* is picked; `text` with its `min-words` (show the example, ask again); `number` with `min` and `max`; human-only questions start empty and cannot be skipped, an `optional` one may be left empty. The defaults that depend on the purpose (`mix`, `profile`, the machine config's `[brief.purpose.*]`) are filled after purpose is answered, so changing purpose on the way back refills the ones still at their default.
+- **The summary screen** lists every answer, marks the defaults (G23), and lets the user go back to any question; only **Write** writes. The answers go through the same writer as the flags (`emitBrief`), so nothing new decides the bytes.
+- **Flags with `--tui`** (G24), **the streams, `--json` and Ctrl+C** (G25), as decided. G18's check (an existing `brief.yaml`) runs before the form opens.
+- **Not in this slice:** `--web` (3h). Its "not available yet" stays.
+
+### Tasks
+
+1. 3g's fixes above (G19's registration, tests pinning G20 to G22).
+2. G12: the dependency, its notices and the load test.
+3. The form as a module over injected `input` and `output` streams, so it can be driven in process; the summary screen; going back.
+4. `quiz brief DIR --tui`: the terminal check, flags as pre-fills, stderr drawing, `--json`, Ctrl+C, the exits; `--help` and the brief goldens updated (the `tui` golden's "not available yet" goes).
+5. **The byte-identity test:** for at least six answer sets (every purpose; English and Vietnamese; *other* with its text; a changed purpose on the way back; a defaults-only run but for purpose and scope; `--weak-topics yes`), the form and the equivalent flags run write the same bytes and the same `decided_by`.
+6. One subprocess test under `script(1)`: the real command answers through a pseudo-terminal and writes the brief; a SIGINT mid-form writes nothing. Skipped by name where `script` is not there.
+7. `npm run samples` gains a `brief --tui` line for the owner to try by hand.
+
+### Done when
+
+`npm run check` passes in Chromium; `quiz brief d --tui` in a real terminal asks every question in the question file's words, shows the summary, and writes a `d/brief.yaml` byte-identical to the flags run with the same answers; Ctrl+C writes nothing; `quiz brief d --tui < /dev/null` exits 2 with the message; `check` does not load `@clack/prompts`. Report as the rules say.
