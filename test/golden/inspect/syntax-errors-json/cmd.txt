@@ -1,0 +1,3 @@
+inspect
+broken.md
+--json

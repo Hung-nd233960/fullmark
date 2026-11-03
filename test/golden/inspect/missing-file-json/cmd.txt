@@ -1,0 +1,3 @@
+inspect
+nope.md
+--json

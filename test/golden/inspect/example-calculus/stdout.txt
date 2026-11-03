@@ -1,0 +1,7 @@
+calculus-1 · Calculus I: derivatives · version dcfb
+12 questions · 22 points · 3 sections · time limit 30m
+Types     single 4 (4 points) · multi 1 (2) · truefalse 1 (1) · numeric 2 (2) · short 1 (1) · blanks 1 (3) · fields 1 (4) · essay 1 (5)
+Sections  limits-and-continuity 3 questions, 4 points · derivative-rules 5, 10 · applications-and-integrals 4, 8
+Tags      derivatives 5 · continuity 2 · applications 1 · ftc 1 · integrals 1 · limits 1 · theory 1
+Positions A 2 · B 4 · C 0 · D 1 · E 0
+calculus/quiz.md: 0 errors, 0 warnings

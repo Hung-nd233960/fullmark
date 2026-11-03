@@ -1,0 +1,6 @@
+plain · Plain · version 5040
+2 questions · 3 points · no sections · untimed
+Types     single 1 (1 point) · multi 1 (2)
+Tags      no tag 2
+Positions A 2 · B 0 · C 1
+plain.md: 0 errors, 0 warnings

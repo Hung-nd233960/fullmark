@@ -1,0 +1,3 @@
+inspect
+rust/quiz.md
+--json

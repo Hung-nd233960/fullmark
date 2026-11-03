@@ -1,0 +1,7 @@
+rust-basics · Rust basics · version 2e3b
+10 questions · 14 points · 3 sections · time limit 25m
+Types     single 4 (4 points) · multi 1 (2) · truefalse 1 (1) · short 2 (2) · blanks 1 (2) · code 1 (3)
+Sections  ownership-and-borrowing 5 questions, 7 points · values-and-control-flow 4, 4 · write-some-code 1, 3
+Tags      borrowing 3 · basics 2 · ownership 2 · collections 1 · functions 1 · pattern-matching 1
+Positions A 1 · B 4 · C 1 · D 1 · E 0
+rust/quiz.md: 0 errors, 0 warnings

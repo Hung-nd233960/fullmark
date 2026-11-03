@@ -1,0 +1,6 @@
+study-habits · Study habits check-in · version eac5
+8 questions · 0 points · 2 sections · untimed
+Types     single 2 (0 points) · multi 1 (0) · fields 1 (0) · ordering 1 (0) · essay 1 (0) · scale 2 (0)
+Sections  how-you-study 4 questions, 0 points · how-it-feels 4, 0
+Tags      no tag 8
+survey/quiz.md: 0 errors, 0 warnings

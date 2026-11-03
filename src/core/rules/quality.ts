@@ -1,5 +1,6 @@
 import { z } from "zod";
 import type { Question, Quiz } from "../ir";
+import { correctPositions } from "../positions";
 import { file } from "./example";
 import type { Finding, QualityRule, RuleContext } from "./types";
 
@@ -297,7 +298,7 @@ export const QUALITY_RULES: QualityRule[] = [
       const counts = new Map<number, number>();
       for (const q of singles) {
         if (q.type !== "single") continue;
-        const at = q.choices.findIndex((c) => c.correct);
+        const at = correctPositions(q)[0] ?? -1;
         counts.set(at, (counts.get(at) ?? 0) + 1);
       }
       let place = -1;

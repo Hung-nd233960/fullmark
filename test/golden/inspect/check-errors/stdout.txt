@@ -1,0 +1,14 @@
+plain · Plain · version 5040
+2 questions · 3 points · no sections · untimed
+Types     single 1 (1 point) · multi 1 (2)
+Tags      no tag 2
+Positions A 2 · B 0 · C 1
+plain.md:6: error explanation.missing: the question has no explanation
+    fix: add a ::: explanation container below the answer
+plain.md:6: error question.untagged: the question has no tags
+    fix: add tags=topic to the heading
+plain.md:12: error explanation.missing: the question has no explanation
+    fix: add a ::: explanation container below the answer
+plain.md:12: error question.untagged: the question has no tags
+    fix: add tags=topic to the heading
+plain.md: 4 errors, 0 warnings

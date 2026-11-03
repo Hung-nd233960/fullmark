@@ -1,0 +1,6 @@
+ielts-writing · IELTS Academic Writing practice · version af86
+2 questions · 30 points · 2 sections · time limit 1h
+Types     essay 2 (30 points)
+Sections  task-1 1 question, 10 points, 20m · task-2 1, 20, 40m
+Tags      task1 1 · task2 1
+ielts/quiz.md: 0 errors, 0 warnings

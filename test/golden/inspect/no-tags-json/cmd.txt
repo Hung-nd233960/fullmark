@@ -1,0 +1,3 @@
+inspect
+plain.md
+--json

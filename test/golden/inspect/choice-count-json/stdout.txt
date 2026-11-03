@@ -1,0 +1,1 @@
+{"status":"failed","quiz":null,"questions":null,"points":null,"timeLimit":null,"types":[],"sections":[],"tags":[],"positions":{},"review":null,"errors":[{"rule":"choice.count","level":"error","file":"poor.md","line":6,"message":"a choice question needs at least two choices","fix":"write each choice as - [ ] text, with - [x] for the right one"}],"warnings":[]}
