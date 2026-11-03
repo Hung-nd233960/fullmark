@@ -1,4 +1,4 @@
-import { copyFileSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync } from "node:fs";
+import { copyFileSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { describe, expect, it } from "vitest";
@@ -22,6 +22,7 @@ function setup() {
   let interrupt: (() => void) | undefined;
   let fire: (() => void) | undefined;
   const opened: string[] = [];
+  const clock: { now: number; timer: { fire(): void; ms: number } | null } = { now: 10_000, timer: null };
   const io: ServeIo = {
     out: (t) => out.push(t),
     err: (t) => err.push(t),
@@ -41,6 +42,16 @@ function setup() {
       return () => undefined;
     },
     machine: { cwd: dir, env: {}, platform: "linux", home: dir },
+    // `--autosave`'s once-a-second rule runs on this clock: a test moves it by hand and fires the timer itself
+    autosaveClock: {
+      now: () => clock.now,
+      setTimer: (f, ms) => {
+        clock.timer = { fire: f, ms };
+        return () => {
+          clock.timer = null;
+        };
+      },
+    },
   };
   const options = (extra: Partial<ServeOptions> = {}): ServeOptions => ({
     out: null,
@@ -51,11 +62,13 @@ function setup() {
     profile: null,
     config: null,
     fonts: null,
-    later: [],
+    focus: false,
+    section: null,
+    autosave: null,
     version: "1.0.0-test",
     ...extra,
   });
-  return { dir, io, out, err, opened, options, interrupt: () => interrupt?.(), timeout: () => fire?.() };
+  return { dir, io, out, err, opened, options, clock, interrupt: () => interrupt?.(), timeout: () => fire?.() };
 }
 
 /** Waits for the `listening` line and returns its url. */
@@ -180,3 +193,219 @@ describe("quiz serve", () => {
     expect(await runServe("quiz.md", t.options({ port: "0" }), t.io)).toBe(2);
   });
 });
+
+/** The fm-data block of a served page. */
+async function dataOf(url: string): Promise<Record<string, unknown>> {
+  const html = await (await fetch(url)).text();
+  return JSON.parse(/<script type="application\/json" id="fm-data">([\s\S]*?)<\/script>/.exec(html)?.[1] ?? "");
+}
+
+const inProgress = (extra: Partial<Attempt> = {}): Attempt =>
+  attempt({
+    phase: "answering",
+    state: { ...attempt().state, submittedAt: null, answers: { m1: { choice: 0 } } },
+    ...extra,
+  });
+
+const progress = (url: string, body: unknown) => {
+  const port = new URL(url).port;
+  return fetch(`${url}progress`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Origin: `http://127.0.0.1:${port}` },
+    body: JSON.stringify(body),
+  });
+};
+
+describe("quiz serve --focus and --section", () => {
+  it("--focus puts focus and served in the page's data", async () => {
+    const t = setup();
+    const done = runServe("quiz.md", t.options({ focus: true }), t.io);
+    const url = await listening(t.out);
+    const data = await dataOf(url);
+    expect(data).toMatchObject({ served: true, focus: true });
+    t.interrupt();
+    await done;
+    const plain = setup();
+    const again = runServe("quiz.md", plain.options(), plain.io);
+    const data2 = await dataOf(await listening(plain.out));
+    expect(data2.served).toBe(true);
+    expect(data2).not.toHaveProperty("focus");
+    plain.interrupt();
+    await again;
+  });
+
+  it("--section takes a slug or a title in any case, and leaves that section alone on the page", async () => {
+    for (const name of ["sig", "SIG", "signals", "Signals"]) {
+      const t = setup();
+      const done = runServe("quiz.md", t.options({ section: name }), t.io);
+      const data = await dataOf(await listening(t.out));
+      expect(data.section, name).toBe("sig");
+      expect((data.quizzes as { sections: { id: string }[] }[])[0]?.sections.map((x) => x.id)).toEqual(["sig"]);
+      t.interrupt();
+      await done;
+    }
+  });
+
+  it("an unknown section exits 2 before anything is served, listing the valid ones", async () => {
+    const t = setup();
+    expect(await runServe("quiz.md", t.options({ section: "calculus" }), t.io)).toBe(2);
+    expect(JSON.parse(t.out[0] ?? "")).toEqual({
+      status: "error",
+      message:
+        'unknown section "calculus"; the sections are: sig (Signals), fourier (Fourier transform), sampling (Sampling)',
+    });
+    expect(t.out).toHaveLength(1);
+  });
+
+  it("takes a section attempt, which is written as the page made it", async () => {
+    const t = setup();
+    const done = runServe("quiz.md", t.options({ section: "sig", out: "r.json" }), t.io);
+    const url = await listening(t.out);
+    const mine = attempt({ plan: { source: "section", section: "sig", questions: ["m1"] } });
+    expect((await post(url, { quizId: "map", attempt: mine })).status).toBe(200);
+    expect(await done).toBe(0);
+    expect(JSON.parse(readFileSync(join(t.dir, "r.json"), "utf8")).plan).toMatchObject({
+      source: "section",
+      section: "sig",
+    });
+  });
+});
+
+describe("quiz serve --autosave", () => {
+  it("has no progress path without --autosave", async () => {
+    const t = setup();
+    const done = runServe("quiz.md", t.options(), t.io);
+    const url = await listening(t.out);
+    expect((await progress(url, { quizId: "map", attempt: inProgress() })).status).toBe(404);
+    expect(await dataOf(url)).not.toHaveProperty("autosave");
+    t.interrupt();
+    await done;
+  });
+
+  it("writes the progress as results-v2 in progress, at most once a second, and the last body wins", async () => {
+    const t = setup();
+    const done = runServe("quiz.md", t.options({ autosave: "p.json" }), t.io);
+    const url = await listening(t.out);
+    expect(await dataOf(url)).toMatchObject({ autosave: true, served: true });
+    const file = join(t.dir, "p.json");
+    const withAnswer = (n: number): Attempt => {
+      const a = inProgress();
+      a.state.timeUsed = n;
+      return a;
+    };
+    expect((await progress(url, { quizId: "map", attempt: withAnswer(1) })).status).toBe(204);
+    await settled(() => existsSync(file));
+    expect(JSON.parse(readFileSync(file, "utf8"))).toMatchObject({
+      format: "fullmark-results",
+      version: 2,
+      phase: "answering",
+      state: { timeUsed: 1 },
+    });
+    // within the second: kept, not written
+    t.clock.now += 300;
+    await progress(url, { quizId: "map", attempt: withAnswer(2) });
+    t.clock.now += 300;
+    await progress(url, { quizId: "map", attempt: withAnswer(3) });
+    await new Promise((r) => setTimeout(r, 30));
+    expect(JSON.parse(readFileSync(file, "utf8")).state.timeUsed).toBe(1);
+    expect(t.clock.timer?.ms).toBe(700);
+    t.clock.now += 400;
+    t.clock.timer?.fire();
+    await settled(() => JSON.parse(readFileSync(file, "utf8")).state.timeUsed === 3);
+    t.interrupt();
+    await done;
+  });
+
+  it("keeps the last progress on Ctrl+C, even if its second has not passed", async () => {
+    const t = setup();
+    const done = runServe("quiz.md", t.options({ autosave: "p.json" }), t.io);
+    const url = await listening(t.out);
+    const file = join(t.dir, "p.json");
+    await progress(url, { quizId: "map", attempt: inProgress() });
+    await settled(() => existsSync(file));
+    const later = inProgress();
+    later.state.timeUsed = 9;
+    t.clock.now += 100;
+    await progress(url, { quizId: "map", attempt: later });
+    t.interrupt();
+    expect(await done).toBe(2);
+    expect(JSON.parse(readFileSync(file, "utf8")).state.timeUsed).toBe(9);
+    expect(JSON.parse(t.out[1] ?? "")).toEqual({ status: "interrupted" });
+  });
+
+  it("hands a file of the same version to the page, and deletes it once the results are written", async () => {
+    const t = setup();
+    const file = join(t.dir, "p.json");
+    const kept = inProgress();
+    writeFileSync(file, `${JSON.stringify({ format: "fullmark-results", version: 2, ...kept })}\n`);
+    const done = runServe("quiz.md", t.options({ autosave: "p.json", out: "r.json" }), t.io);
+    const url = await listening(t.out);
+    const data = (await dataOf(url)) as { saved: { v: number; attempt: Attempt } };
+    expect(data.saved.v).toBe(1);
+    expect(data.saved.attempt).toEqual(kept);
+    expect(t.err.join("\n")).toContain("resuming the attempt kept in p.json");
+    expect((await post(url, { quizId: "map", attempt: attempt() })).status).toBe(200);
+    expect(await done).toBe(0);
+    expect(existsSync(join(t.dir, "r.json"))).toBe(true);
+    expect(existsSync(file)).toBe(false);
+  });
+
+  it("exits 1 naming the version for a file of another version, and leaves it alone", async () => {
+    const t = setup();
+    const file = join(t.dir, "p.json");
+    const other = `${JSON.stringify({ format: "fullmark-results", version: 2, ...inProgress({ quizHash: "c".repeat(64) }) })}\n`;
+    writeFileSync(file, other);
+    expect(await runServe("quiz.md", t.options({ autosave: "p.json" }), t.io)).toBe(1);
+    const line = JSON.parse(t.out[0] ?? "");
+    expect(line.status).toBe("error");
+    expect(line.message).toContain("version cccc");
+    expect(line.message).toContain(`version ${quizHash(text, []).slice(0, 4)}`);
+    expect(t.out).toHaveLength(1);
+    expect(readFileSync(file, "utf8")).toBe(other);
+  });
+
+  it("exits 1 for a file that is not a progress file, a submitted attempt, or another section's, leaving it alone", async () => {
+    for (const [content, section] of [
+      ["not json", null],
+      [JSON.stringify({ format: "fullmark-results", version: 2, ...attempt() }), null],
+      [JSON.stringify({ format: "fullmark-results", version: 2, ...inProgress() }), "sig"],
+    ] as const) {
+      const t = setup();
+      const file = join(t.dir, "p.json");
+      writeFileSync(file, content);
+      expect(await runServe("quiz.md", t.options({ autosave: "p.json", section }), t.io)).toBe(1);
+      expect(readFileSync(file, "utf8")).toBe(content);
+    }
+  });
+
+  it("refuses --autosave and --out naming the same file", async () => {
+    const t = setup();
+    expect(await runServe("quiz.md", t.options({ autosave: "r.json", out: "r.json" }), t.io)).toBe(2);
+  });
+
+  it("keeps the section's plan: a section attempt resumes under --section", async () => {
+    const t = setup();
+    const file = join(t.dir, "p.json");
+    const mine = inProgress({ plan: { source: "section", section: "sig", questions: ["m1"] } });
+    writeFileSync(file, JSON.stringify({ format: "fullmark-results", version: 2, ...mine }));
+    const done = runServe("quiz.md", t.options({ autosave: "p.json", section: "sig" }), t.io);
+    const data = (await dataOf(await listening(t.out))) as { saved: { attempt: Attempt }; section: string };
+    expect(data.section).toBe("sig");
+    expect(data.saved.attempt.plan).toEqual({ source: "section", section: "sig", questions: ["m1"] });
+    t.interrupt();
+    await done;
+  });
+});
+
+/** Waits (a few milliseconds at a time) until `ready` holds; the writes are asynchronous, the clock is not real. */
+async function settled(ready: () => boolean): Promise<void> {
+  for (let i = 0; i < 300; i++) {
+    try {
+      if (ready()) return;
+    } catch {
+      // the file is not there yet
+    }
+    await new Promise((r) => setTimeout(r, 10));
+  }
+  throw new Error("never settled");
+}

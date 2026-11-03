@@ -1,13 +1,16 @@
 import { readFileSync } from "node:fs";
+import { rm } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
 import { languagesUsed, loadHighlighter } from "../build/highlight";
 import { buildPage } from "../build/page";
 import { katexTools } from "../build/tex";
-import { answerProblem } from "../core/attempt";
+import { type Attempt, answerProblem, attemptOf, parseResults, type Results } from "../core/attempt";
 import { FONT_CHOICES, type FontsChoice } from "../core/fonts";
 import { en, vi } from "../core/i18n";
 import type { Quiz } from "../core/ir";
 import { buildReport } from "../core/report";
+import type { Saved } from "../page/saved";
+import { createAutosaver } from "../serve/autosave";
 import { readServeModule } from "../serve/module-file";
 import { type ServerOutcome, startServer } from "../serve/server";
 import { writeFileAtomic } from "./atomic";
@@ -29,8 +32,12 @@ export type ServeOptions = {
   profile: string | null;
   config: string | null;
   fonts: string | null;
-  /** options that arrive with slice 3b; any of them set is "not available yet" */
-  later: string[];
+  /** tick Focus mode on the start screen */
+  focus: boolean;
+  /** a section's slug or title, as given; null: the whole quiz */
+  section: string | null;
+  /** the file that keeps the attempt in progress; null: the browser keeps it */
+  autosave: string | null;
   version: string;
 };
 
@@ -39,6 +46,8 @@ export type ServeIo = BuildIo & {
   /** registers the Ctrl+C handler and returns the function that removes it; the default is `process.once("SIGINT")` */
   onInterrupt?: (handler: () => void) => () => void;
   setTimer?: (fire: () => void, ms: number) => () => void;
+  /** the clock and timer of `--autosave`'s once-a-second rule; the real ones by default */
+  autosaveClock?: { now(): number; setTimer(fire: () => void, ms: number): () => void };
 };
 
 const pad = (n: number): string => String(n).padStart(2, "0");
@@ -64,14 +73,6 @@ const wholeNumber = (text: string, min: number): number | null =>
  * the shared grader. With `--json` the first line is `listening` and the second the outcome.
  */
 export async function runServe(file: string, opts: ServeOptions, io: ServeIo): Promise<ExitCode> {
-  if (opts.later.length > 0) {
-    fail(
-      io,
-      opts.json,
-      `${opts.later.map((o) => `--${o}`).join(", ")} is not available yet: it arrives in a later release`,
-    );
-    return EXIT.usage;
-  }
   if (/\.html?$/i.test(file)) {
     fail(io, opts.json, "serve takes the quiz source; to collect results from a built page, use its Export button");
     return EXIT.usage;
@@ -132,6 +133,75 @@ export async function runServe(file: string, opts: ServeOptions, io: ServeIo): P
     if (issue.level === "warning") io.err(`${issue.file}:${issue.line}: warning ${issue.rule}: ${issue.message}`);
   }
 
+  // `--section`: by slug or title, ignoring case; an unknown one stops here, before anything is served
+  let section: string | null = null;
+  if (opts.section !== null) {
+    const wanted = opts.section.toLowerCase();
+    const titled = quiz.sections.filter((s) => s.title !== null && s.id !== "");
+    const found =
+      titled.find((s) => s.id.toLowerCase() === wanted) ?? titled.find((s) => (s.title ?? "").toLowerCase() === wanted);
+    if (found === undefined) {
+      const valid = titled.map((s) => `${s.id} (${s.title})`);
+      fail(
+        io,
+        opts.json,
+        `unknown section "${opts.section}"; the sections are: ${valid.length > 0 ? valid.join(", ") : "(none: the quiz has no titled section)"}`,
+      );
+      return EXIT.usage;
+    }
+    section = found.id;
+  }
+
+  // `--autosave`: a file left by an earlier run is checked before anything is served, and never overwritten unseen
+  const progressFile = opts.autosave === null ? null : resolve(io.cwd, opts.autosave);
+  const questions = new Map<string, Quiz["sections"][number]["questions"][number]>();
+  for (const s of quiz.sections) for (const q of s.questions) questions.set(q.id, q);
+  /** why an attempt does not fit this quiz's questions, or null */
+  const shapeProblem = (attempt: Pick<Attempt, "plan" | "state">): string | null => {
+    const shape: string[] = [];
+    for (const id of attempt.plan.questions) {
+      const q = questions.get(id);
+      const problem = q ? answerProblem(q.type, attempt.state.answers[id]) : "no question with this id";
+      if (problem) shape.push(`${id}: ${problem}`);
+    }
+    return shape.length > 0 ? `answers that do not fit their questions: ${shape.join("; ")}` : null;
+  };
+  let saved: Saved | undefined;
+  if (progressFile !== null) {
+    const shown = shownPath(progressFile, io.cwd);
+    let text: string | null = null;
+    try {
+      text = readFileSync(progressFile, "utf8");
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code !== "ENOENT") {
+        fail(io, opts.json, `cannot read the progress file: ${readFailure(error)}`, { file: shown });
+        return EXIT.usage;
+      }
+    }
+    if (text !== null) {
+      const read = parseResults(text);
+      const refuse = (message: string): ExitCode => {
+        fail(io, opts.json, `${message}; nothing was served and the file was left alone`, { file: shown });
+        return EXIT.problems;
+      };
+      if (!read.ok) return refuse(`this is not a progress file (${read.message.split("\n")[0]})`);
+      const attempt = attemptOf(read.results);
+      if (attempt.quizHash !== hash) {
+        return refuse(
+          `this attempt was taken on version ${attempt.quizHash.slice(0, 4)} of the quiz; the quiz now is version ${hash.slice(0, 4)}`,
+        );
+      }
+      if (attempt.phase !== "answering") return refuse("this file holds an attempt that is not in progress");
+      if (section !== null && !(attempt.plan.source === "section" && attempt.plan.section === section)) {
+        return refuse(`this attempt is not on the section "${section}"`);
+      }
+      const problem = shapeProblem(attempt);
+      if (problem !== null) return refuse(`this attempt does not fit the quiz (${problem})`);
+      saved = { v: 1, startMs: null, attempt };
+      io.err(`resuming the attempt kept in ${shown}`);
+    }
+  }
+
   const folder = io.runtimeDir ?? runtimeFolder();
   const serveModule = readServeModule(folder);
   const runtime = (() => {
@@ -169,17 +239,51 @@ export async function runServe(file: string, opts: ServeOptions, io: ServeIo): P
       strict: false,
     },
     serveModule,
+    served: {
+      focus: opts.focus,
+      ...(section !== null ? { section } : {}),
+      ...(progressFile !== null ? { autosave: true } : {}),
+      ...(saved !== undefined ? { saved } : {}),
+    },
   });
 
   const quizId = quiz.frontMatter.id;
-  const questions = new Map<string, Quiz["sections"][number]["questions"][number]>();
-  for (const s of quiz.sections) for (const q of s.questions) questions.set(q.id, q);
   const source = resolve(io.cwd, file);
   const target =
     opts.out === null
       ? join(dirname(source), `${quizId}-results-${localStamp(clock())}.json`)
       : resolve(io.cwd, opts.out);
   const taken: { score?: ReturnType<typeof buildReport>["score"] } = {};
+  if (progressFile !== null && resolve(progressFile) === target) {
+    fail(
+      io,
+      opts.json,
+      "--autosave and --out name the same file; the progress file is deleted once the results are written",
+    );
+    return EXIT.usage;
+  }
+  const pace = io.autosaveClock ?? {
+    now: () => Date.now(),
+    setTimer: (fire: () => void, ms: number) => {
+      const handle = setTimeout(fire, ms);
+      return () => clearTimeout(handle);
+    },
+  };
+  let warned = false;
+  const autosaver =
+    progressFile === null
+      ? null
+      : createAutosaver({
+          write: (text) => writeFileAtomic(progressFile, Buffer.from(text, "utf8")),
+          remove: () => rm(progressFile, { force: true }),
+          now: pace.now,
+          setTimer: pace.setTimer,
+          onError(error) {
+            if (warned) return;
+            warned = true;
+            io.err(`warning: cannot keep the progress in ${shownPath(progressFile, io.cwd)}: ${readFailure(error)}`);
+          },
+        });
 
   let server: Awaited<ReturnType<typeof startServer>>;
   try {
@@ -190,20 +294,27 @@ export async function runServe(file: string, opts: ServeOptions, io: ServeIo): P
       timeoutMs: timeout * 1000,
       port,
       ...(io.setTimer ? { setTimer: io.setTimer } : {}),
+      ...(autosaver !== null
+        ? {
+            onProgress(_id: string, results: Results) {
+              const problem = shapeProblem(results);
+              if (problem !== null) return problem;
+              autosaver.save(`${JSON.stringify(results, null, 2)}\n`);
+              return null;
+            },
+          }
+        : {}),
       async onSubmit(_id, results) {
         // an attempt that does not fit this quiz is refused (400), as a results file is by `quiz grade`
-        const attempt = { quizHash: results.quizHash, plan: results.plan, state: results.state, phase: results.phase };
-        const shape: string[] = [];
-        for (const id of attempt.plan.questions) {
-          const q = questions.get(id);
-          const problem = q ? answerProblem(q.type, attempt.state.answers[id]) : "no question with this id";
-          if (problem) shape.push(`${id}: ${problem}`);
-        }
-        if (shape.length > 0) return `answers that do not fit their questions: ${shape.join("; ")}`;
+        const attempt = attemptOf(results);
+        const mismatch = shapeProblem(attempt);
+        if (mismatch !== null) return mismatch;
         const m = (quiz.frontMatter.uiLang === "vi" ? vi : en).report;
         const report = buildReport({ quiz, quizHash: hash, attempt, applied: null }, m);
         await writeFileAtomic(target, Buffer.from(`${JSON.stringify(results, null, 2)}\n`, "utf8"));
         taken.score = report.score;
+        // the results are on disk: the progress file has done its work
+        await autosaver?.finish();
         return null;
       },
     });
@@ -234,6 +345,8 @@ export async function runServe(file: string, opts: ServeOptions, io: ServeIo): P
 
   const outcome: ServerOutcome = await server.done;
   removeInterrupt();
+  // stopped without a submit: the last progress still waiting for its second is kept, so the attempt resumes
+  if (outcome.status !== "submitted") await autosaver?.flush();
   switch (outcome.status) {
     case "submitted": {
       const shown = shownPath(target, io.cwd);

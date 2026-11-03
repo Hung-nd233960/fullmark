@@ -19,9 +19,10 @@ Options:
                          fullmark.toml
   --fonts <which>        which fonts the page embeds: quiz (the quiz's own), all
                          or none
-  --focus                (not available yet)
-  --section <s>          (not available yet)
-  --autosave <progress>  (not available yet)
+  --focus                tick Focus mode on the start screen
+  --section <s>          serve only this section (its slug or title)
+  --autosave <progress>  keep the attempt in progress in this file, so it
+                         resumes after a restart
   --json                 print a listening line, then the outcome, as JSON on
                          stdout
   -h, --help             help for the command

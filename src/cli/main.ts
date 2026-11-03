@@ -264,9 +264,9 @@ export function buildProgram(outcome: Outcome = { exit: EXIT.done }, io: Io = te
     .option("--profile <name>", "the check profile; overrides the quiz's profile")
     .option("--config <toml>", "use this config file instead of the nearest fullmark.toml")
     .option("--fonts <which>", "which fonts the page embeds: quiz (the quiz's own), all or none")
-    .option("--focus", "(not available yet)")
-    .option("--section <s>", "(not available yet)")
-    .option("--autosave <progress>", "(not available yet)")
+    .option("--focus", "tick Focus mode on the start screen")
+    .option("--section <s>", "serve only this section (its slug or title)")
+    .option("--autosave <progress>", "keep the attempt in progress in this file, so it resumes after a restart")
     .option("--json", "print a listening line, then the outcome, as JSON on stdout")
     .action(async (file: string, options: Record<string, unknown>) => {
       const opts: ServeOptions = {
@@ -278,7 +278,9 @@ export function buildProgram(outcome: Outcome = { exit: EXIT.done }, io: Io = te
         profile: (options.profile as string | undefined) ?? null,
         config: (options.config as string | undefined) ?? null,
         fonts: (options.fonts as string | undefined) ?? null,
-        later: ["focus", "section", "autosave"].filter((name) => options[name] !== undefined),
+        focus: Boolean(options.focus),
+        section: (options.section as string | undefined) ?? null,
+        autosave: (options.autosave as string | undefined) ?? null,
         version: VERSION,
       };
       outcome.exit = await (await import("./serve")).runServe(file, opts, io);

@@ -54,8 +54,9 @@ test("Submit on the served page writes the results, prints the two lines, and gr
   await page.goto(server.url);
   await answerTwo(page);
   await submitAttempt(page);
-  const sent = page.locator("[data-fm-serve=sent]");
-  await expect(sent).toHaveText("Results sent. You can close this tab.");
+  const sent = page.locator("[data-sent]");
+  await expect(sent).toHaveText("Sent");
+  await expect(page.getByRole("button", { name: "Download results" })).toHaveCount(0);
   const onPage = await shown(page);
   const end = await server.end();
   expect(end.code).toBe(0);
@@ -125,7 +126,7 @@ test("the server refuses a wrong token, Host and Origin, and still takes the goo
   await page.goto(server.url);
   await answerTwo(page);
   await submitAttempt(page);
-  await expect(page.locator("[data-fm-serve=sent]")).toBeVisible();
+  await expect(page.locator("[data-sent]")).toBeVisible();
   expect((await server.end()).code).toBe(0);
   expect(existsSync(join(dir, "results.json"))).toBe(true);
 });
@@ -140,7 +141,7 @@ test("when the server has gone, the page says it could not save and the results 
   server.child.kill("SIGKILL");
   await server.end();
   await submitAttempt(page);
-  const failed = page.locator("[data-fm-serve=failed]");
+  const failed = page.locator("[data-send-failed]");
   await expect(failed).toContainText("Could not save the results");
   await expect(failed).toHaveAttribute("role", "alert");
   await expect(page.getByRole("button", { name: "Download results" })).toBeVisible();
@@ -154,7 +155,7 @@ test("the served page has no axe violations, before Start and with the message s
   await noViolations(page);
   await answerTwo(page);
   await submitAttempt(page);
-  await expect(page.locator("[data-fm-serve=sent]")).toBeVisible();
+  await expect(page.locator("[data-sent]")).toBeVisible();
   await noViolations(page);
   for (const theme of ["dark", "light"]) {
     await page.evaluate((t) => document.documentElement.setAttribute("data-theme", t), theme);
@@ -178,7 +179,7 @@ test("the served page makes no request but its own, and has no console errors", 
   await page.goto(server.url);
   await answerTwo(page);
   await submitAttempt(page);
-  await expect(page.locator("[data-fm-serve=sent]")).toBeVisible();
+  await expect(page.locator("[data-sent]")).toBeVisible();
   expect(problems).toEqual([]);
   expect(outside).toEqual([]);
   await server.end();
@@ -219,5 +220,195 @@ test("a Vietnamese page says so in Vietnamese when the server has gone", async (
   server.child.kill("SIGKILL");
   await server.end();
   await submitAttempt(page);
-  await expect(page.locator("[data-fm-serve=failed]")).toContainText("Không lưu được kết quả");
+  await expect(page.locator("[data-send-failed]")).toContainText("Không lưu được kết quả");
+});
+
+test("the address without its trailing slash is redirected, and a submit from it is taken", async ({ page }) => {
+  const dir = folder();
+  const server = await serve(dir, "--out", "results.json");
+  await page.goto(server.url.slice(0, -1));
+  expect(page.url()).toBe(server.url);
+  await answerTwo(page);
+  await submitAttempt(page);
+  await expect(page.locator("[data-sent]")).toHaveText("Sent");
+  expect((await server.end()).code).toBe(0);
+  expect(existsSync(join(dir, "results.json"))).toBe(true);
+});
+
+test("the Submit dialog says where the answers go, and a page from `build` does not", async ({ page }) => {
+  const dir = folder();
+  const server = await serve(dir, "--out", "results.json");
+  await page.goto(server.url);
+  await page.getByRole("button", { name: /^Start$/ }).click();
+  await page.locator(".fm-topbar [data-action=submit]").click();
+  await expect(page.locator("dialog[data-submit-dialog] [data-served-line]")).toHaveText(
+    "Your answers will be sent to fullmark.",
+  );
+  await noViolations(page);
+  server.child.kill("SIGKILL");
+  await server.end();
+  run(dir, "build", "quiz.md", "--built-at", "2026-10-28T10:00:00+07:00");
+  await page.goto(`file:///${join(dir, "quiz.html").replaceAll("\\", "/")}`);
+  await page.getByRole("button", { name: /^Start$/ }).click();
+  await page.locator(".fm-topbar [data-action=submit]").click();
+  await expect(page.locator("dialog[data-submit-dialog]")).toBeVisible();
+  await expect(page.locator("[data-served-line]")).toHaveCount(0);
+});
+
+test("--section serves one part with no picker; its results grade, with quiz grade, to the page's score", async ({
+  page,
+}) => {
+  const dir = folder();
+  const server = await serve(dir, "--out", "results.json", "--section", "SIGNALS");
+  await page.goto(server.url);
+  await page.setViewportSize({ width: 1280, height: 940 });
+  await expect(page.locator(".fm-parts")).toHaveCount(0);
+  await expect(page.locator("[data-fact=questions] .fm-tile-value")).toHaveText("6");
+  await page.getByRole("button", { name: /^Start$/ }).click();
+  await expect(page.locator(".fm-question")).toHaveCount(6);
+  await page.getByLabel(/right m1$/).check();
+  await page.getByLabel(/wrong m2$/).check();
+  await submitAttempt(page);
+  await expect(page.locator("[data-sent]")).toHaveText("Sent");
+  const onPage = await shown(page);
+  expect((await server.end()).code).toBe(0);
+  const read = parseResults(readFileSync(join(dir, "results.json"), "utf8"));
+  expect(read.ok && read.results.plan).toMatchObject({ source: "section", section: "sig" });
+  const graded = JSON.parse(run(dir, "grade", "results.json", "--quiz", "quiz.md", "--json").split("\n")[0] ?? "");
+  expect(graded.score.earned).toBe(onPage.earned);
+  expect(graded.score.points).toBe(onPage.points);
+  expect(onPage.points).toBe(6);
+});
+
+test("an unknown --section serves nothing and exits 2, listing the valid ones", () => {
+  const dir = folder();
+  const cli = join(root, "dist", "cli.js");
+  const bad = spawnSync(process.execPath, [cli, "serve", "quiz.md", "--section", "nope", "--json"], {
+    cwd: dir,
+    encoding: "utf8",
+  });
+  expect(bad.status).toBe(2);
+  expect(JSON.parse(bad.stdout).message).toBe(
+    'unknown section "nope"; the sections are: sig (Signals), fourier (Fourier transform), sampling (Sampling)',
+  );
+});
+
+test("--focus ticks Focus mode on the start screen", async ({ page }) => {
+  const dir = folder();
+  const withFocus = await serve(dir, "--out", "a.json", "--focus");
+  await page.goto(withFocus.url);
+  await expect(page.locator("[data-focus-box]")).toBeChecked();
+  withFocus.child.kill("SIGKILL");
+  await withFocus.end();
+  const without = await serve(dir, "--out", "b.json");
+  await page.goto(without.url);
+  await expect(page.locator("[data-focus-box]")).not.toBeChecked();
+});
+
+/** The progress file's answers, once the server has written them (its writes are once a second at most). */
+const kept = (file: string, question: string) => async () => {
+  try {
+    return JSON.parse(readFileSync(file, "utf8")).state.answers[question] ?? null;
+  } catch {
+    return "not yet";
+  }
+};
+const progressPosted = (page: Page) => page.waitForResponse((r) => r.url().endsWith("/progress") && r.status() === 204);
+
+test("--autosave: answer, kill the server, start it again with the file, resume, Submit; the file is gone after", async ({
+  page,
+}) => {
+  const dir = folder();
+  const file = join(dir, "progress.json");
+  const first = await serve(dir, "--out", "results.json", "--autosave", "progress.json");
+  await page.goto(first.url);
+  await page.setViewportSize({ width: 1280, height: 940 });
+  // the start screen says the attempt is kept in a file, not in the browser
+  await expect(page.locator("[data-rule=saved]")).toContainText("In a file on this computer");
+  await page.getByRole("button", { name: /^Start$/ }).click();
+  await page.getByLabel(/right m1$/).check();
+  await progressPosted(page);
+  await expect.poll(kept(file, "m1")).toEqual({ choice: 0 });
+  expect(JSON.parse(readFileSync(file, "utf8"))).toMatchObject({ format: "fullmark-results", phase: "answering" });
+  // the browser's storage holds no copy: the file is the only one
+  expect(await page.evaluate(() => window.localStorage.length)).toBe(0);
+  first.child.kill("SIGKILL");
+  await first.end();
+
+  const second = await serve(dir, "--out", "results.json", "--autosave", "progress.json");
+  await page.goto(second.url);
+  await page.setViewportSize({ width: 1280, height: 940 });
+  await expect(page.locator("[data-resume]")).toContainText("1 of 18 answered");
+  await page.getByRole("button", { name: "Continue" }).click();
+  await expect(page.getByLabel(/right m1$/)).toBeChecked();
+  await page.getByLabel(/wrong m2$/).check();
+  await submitAttempt(page);
+  await expect(page.locator("[data-sent]")).toHaveText("Sent");
+  const onPage = await shown(page);
+  const end = await second.end();
+  expect(end.code).toBe(0);
+  expect(existsSync(file)).toBe(false);
+  expect(readdirSync(dir).filter((f) => f.endsWith(".tmp"))).toEqual([]);
+  const graded = JSON.parse(run(dir, "grade", "results.json", "--quiz", "quiz.md", "--json").split("\n")[0] ?? "");
+  expect(graded.score.earned).toBe(onPage.earned);
+  expect(graded.score.points).toBe(onPage.points);
+});
+
+test("--autosave keeps the last answer on Ctrl+C, and --section keeps the section's plan on resume", async ({
+  page,
+}) => {
+  test.skip(process.platform === "win32", "a child process cannot be sent SIGINT on Windows");
+  const dir = folder();
+  const file = join(dir, "progress.json");
+  const first = await serve(dir, "--out", "results.json", "--autosave", "progress.json", "--section", "sig");
+  await page.goto(first.url);
+  await page.getByRole("button", { name: /^Start$/ }).click();
+  await page.getByLabel(/right m1$/).check();
+  await progressPosted(page);
+  first.child.kill("SIGINT");
+  const end = await first.end();
+  expect(end.code).toBe(2);
+  expect(end.lines[1]).toEqual({ status: "interrupted" });
+  expect(await kept(file, "m1")()).toEqual({ choice: 0 });
+  expect(JSON.parse(readFileSync(file, "utf8")).plan).toMatchObject({ source: "section", section: "sig" });
+  expect(existsSync(join(dir, "results.json"))).toBe(false);
+
+  const second = await serve(dir, "--out", "results.json", "--autosave", "progress.json", "--section", "sig");
+  await page.goto(second.url);
+  await page.getByRole("button", { name: "Continue" }).click();
+  await expect(page.getByLabel(/right m1$/)).toBeChecked();
+  await expect(page.locator(".fm-question")).toHaveCount(6);
+  second.child.kill("SIGKILL");
+  await second.end();
+});
+
+test("--autosave refuses a file of another version with exit 1, naming it, and leaves the file alone", async ({
+  page,
+}) => {
+  const dir = folder();
+  const file = join(dir, "progress.json");
+  const first = await serve(dir, "--out", "results.json", "--autosave", "progress.json");
+  await page.goto(first.url);
+  await page.getByRole("button", { name: /^Start$/ }).click();
+  await page.getByLabel(/right m1$/).check();
+  await progressPosted(page);
+  await expect.poll(kept(file, "m1")).toEqual({ choice: 0 });
+  first.child.kill("SIGKILL");
+  await first.end();
+  const before = readFileSync(file, "utf8");
+  // the quiz is edited: it is another version now
+  writeFileSync(
+    join(dir, "quiz.md"),
+    `${readFileSync(join(dir, "quiz.md"), "utf8")}\n## One more? {type=single id=m99}\n\n- [x] a\n- [ ] b\n`,
+  );
+  const cli = join(root, "dist", "cli.js");
+  const other = spawnSync(process.execPath, [cli, "serve", "quiz.md", "--autosave", "progress.json", "--json"], {
+    cwd: dir,
+    encoding: "utf8",
+  });
+  expect(other.status).toBe(1);
+  const line = JSON.parse(other.stdout.split("\n")[0] ?? "");
+  expect(line.status).toBe("error");
+  expect(line.message).toMatch(/taken on version [0-9a-f]{4} of the quiz; the quiz now is version [0-9a-f]{4}/);
+  expect(readFileSync(file, "utf8")).toBe(before);
 });
