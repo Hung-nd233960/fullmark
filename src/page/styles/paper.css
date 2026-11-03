@@ -495,6 +495,10 @@ code {
   margin: 0;
   padding-left: 1.4em;
 }
+/* a key group's heading never ends a page: it stays with its table's first rows */
+.key-group {
+  break-after: avoid;
+}
 .sample-block .label,
 .answer-block .label {
   font-size: 0.72em;

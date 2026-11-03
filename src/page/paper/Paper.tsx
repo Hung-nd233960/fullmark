@@ -513,7 +513,7 @@ function KeyPage({ d, t }: { d: PaperData; t: T }) {
       )}
       {keyGroups(rest, d.typeOrder, t).map((g) => (
         <section key={g.title}>
-          <div class="sample-block">
+          <div class="sample-block key-group">
             <div class="label">{g.title}</div>
           </div>
           <table class="box-table key-table">
