@@ -90,7 +90,10 @@ export function createWatcher(options: WatcherOptions): Watcher {
   };
   const flush = (): void => {
     cancel = null;
-    if (closed || pending.size === 0) return finish();
+    if (closed || pending.size === 0) {
+      finish();
+      return;
+    }
     const keys = [...pending];
     pending.clear();
     running = new Promise<void>((done) => done(options.onChange(keys))).then(
