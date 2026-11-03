@@ -203,15 +203,18 @@ test("a page reopened after the deadline submits on open", async ({ page }) => {
   await page.goto(timed.url);
   await page.getByRole("button", { name: "Start" }).click();
   await right(page, "t1");
-  // closed for ten minutes: the next load finds the saved start ten minutes back (the page saves again as it leaves, so
-  // the edit is made by a script that runs when the next load begins)
-  await page.addInitScript(() => {
-    const key = Object.keys(localStorage).find((k) => k.endsWith(":attempt"));
-    if (!key) return;
-    const saved = JSON.parse(localStorage.getItem(key) as string);
-    saved.startMs -= 600_000;
-    localStorage.setItem(key, JSON.stringify(saved));
-  });
+  // closed for ten minutes: the next load finds the saved start ten minutes back. The saved text is read here and put
+  // back, edited, by a script that runs when the next load begins. The script must not read the storage itself: Chromium
+  // can show the reloaded document a snapshot of `localStorage` from before the old document's last write (shown in 3c:
+  // a fresh tab saw the key while the reloaded page's storage stayed empty for seconds), so the test supplies the text
+  const key = await savedKey(page);
+  expect(key).not.toBeNull();
+  const saved = JSON.parse((await page.evaluate((k) => localStorage.getItem(k), key as string)) as string);
+  saved.startMs -= 600_000;
+  await page.addInitScript(
+    ([k, text]) => localStorage.setItem(k as string, text as string),
+    [key, JSON.stringify(saved)],
+  );
   await page.reload();
   await expect(page.locator(".fm-total")).toBeVisible();
   await expect(page.locator('[data-notice="timed-out"]')).toBeVisible();
