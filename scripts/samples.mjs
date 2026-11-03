@@ -53,7 +53,19 @@ const TRY = {
 const SERVED = [
   {
     command: "node dist/cli.js serve examples/calculus/quiz.md --open --out samples/calculus-results.json",
-    try: "quiz serve: the quiz is served on 127.0.0.1 and opens in your browser; answer, press Submit and confirm: the page says the results were sent, the command prints the score and exits 0, and samples/calculus-results.json is written (quiz grade grades it to the same score). Close the server with Ctrl+C instead: it prints nothing written and exits 2.",
+    try: "quiz serve: the quiz is served on 127.0.0.1 and opens in your browser; answer, press Submit and confirm: the page says the results were sent, the command prints the score and exits 0, and samples/calculus-results.json is written (quiz grade grades it to the same score). Close the server with Ctrl+C instead: it prints nothing written and exits 2. Press Submit and look at the dialog first: it says your answers will be sent to fullmark; afterwards the results card says Sent where a built page says Download results.",
+  },
+  {
+    command: "node dist/cli.js serve examples/calculus/quiz.md --open --section derivative-rules --out samples/calculus-section.json",
+    try: "quiz serve --section: only the Derivative rules part is offered, with no part picker; Start, answer and Submit. samples/calculus-section.json records a section attempt (plan source section) and quiz grade grades it to the score the page showed. Try an unknown name (--section integrals): it exits 2 and lists the sections, slug and title, before serving anything. The title works too (--section \"Derivative rules\"), in any case.",
+  },
+  {
+    command: "node dist/cli.js serve examples/calculus/quiz.md --open --focus --out samples/calculus-focus.json",
+    try: "quiz serve --focus: the start screen opens with Focus mode already ticked, so pressing Start enters full screen with the sidebar closed (a page cannot go full screen without a click). Untick it to see it off.",
+  },
+  {
+    command: "node dist/cli.js serve examples/calculus/quiz.md --open --autosave samples/calculus-progress.json --out samples/calculus-results.json",
+    try: "quiz serve --autosave: Start, answer a few questions, then press Ctrl+C in the terminal (or close the terminal). samples/calculus-progress.json holds the attempt in progress. Run the same command again and open the page: it offers Continue with your answers and the clock; Continue, finish and Submit: the progress file is deleted once samples/calculus-results.json is written. The browser's own storage is not used. Edit the quiz between the two runs and the second one exits 1, naming the two versions, and leaves the file alone.",
   },
 ];
 
