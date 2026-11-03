@@ -25,6 +25,16 @@ const BUILD_ONLY = [
 /** The one-shot server (`src/serve/`): only the commands that serve load it. */
 const SERVE_ONLY = ["// src/serve/"];
 
+/** The terminal form's prompts (`@clack/prompts`): only `brief --tui` loads them. */
+const CLACK = ["// node_modules/@clack/", "// node_modules/sisteransi/", "// node_modules/fast-wrap-ansi/"];
+
+/** The chunk that holds a source file, found by esbuild's `// path` comment. */
+function chunkWith(marker: string): string {
+  const name = files.find((f) => readFileSync(join(dist, f), "utf8").includes(marker));
+  if (!name) throw new Error(`no chunk of dist/ holds ${marker}: run npm run build`);
+  return name;
+}
+
 function entry(prefix: string): string {
   const name = files.find((f) => f === `${prefix}.js` || (f.startsWith(`${prefix}-`) && f.endsWith(".js")));
   if (!name) throw new Error(`dist/${prefix}*.js not found: run npm run build`);
@@ -75,6 +85,29 @@ describe("what each command loads", () => {
       for (const marker of SERVE_ONLY) expect(text, `${name}: ${marker}`).not.toContain(marker);
     }
   });
+
+  it("the prompts are a chunk of their own, loaded by a dynamic import() when the form starts", () => {
+    const prompts = chunkWith("// node_modules/@clack/prompts/");
+    const text = textOf(closure(prompts));
+    for (const marker of CLACK) expect(text, marker).toContain(marker);
+    const form = chunkWith("// src/cli/brief-tui.ts");
+    expect(readFileSync(join(dist, form), "utf8")).toContain(`import("./${prompts}")`);
+    expect(closure(form)).not.toContain(prompts);
+    expect(closure(chunkWith("// src/cli/brief.ts"))).not.toContain(prompts);
+  });
+
+  for (const [name, start] of [
+    ["main", entry("main")],
+    ["check", entry("check")],
+    ["brief through flags", chunkWith("// src/cli/brief.ts")],
+    ["build", entry("build")],
+    ["serve", entry("serve")],
+  ] as const) {
+    it(`${name} never loads @clack/prompts`, () => {
+      const text = textOf(closure(start));
+      for (const marker of CLACK) expect(text, marker).not.toContain(marker);
+    });
+  }
 
   for (const name of [
     "main",

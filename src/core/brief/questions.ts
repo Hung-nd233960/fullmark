@@ -138,3 +138,22 @@ export function defaultOf(
   if (q.default !== undefined) return q.default;
   return q.kind === "multi" ? [] : q.kind === "number" ? 0 : "";
 }
+
+/** The words of a text answer, as a detail rule counts them. */
+export const wordCount = (text: string): number => text.split(/\s+/).filter((w) => w !== "").length;
+
+/** A number answer checked against its question: the value, or what is wrong with it (`must be ..., not "x"`). */
+export function parseNumber(q: Question, given: string, whole: boolean): { value: number } | { problem: string } {
+  const min = q.min ?? 0;
+  const range = q.max === undefined ? `${min} or more` : `from ${min} to ${q.max}`;
+  const text = given.trim();
+  const n = Number(text);
+  if (
+    !(whole ? /^\d+$/ : /^\d+(\.\d+)?$/).test(text) ||
+    !Number.isFinite(n) ||
+    n < min ||
+    (q.max !== undefined && n > q.max)
+  )
+    return { problem: `must be ${whole ? "a whole number" : "a number"}, ${range}, not "${given}"` };
+  return { value: n };
+}

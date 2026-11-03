@@ -35,6 +35,9 @@ const TITLES = {
 };
 /** A copyright line the package's licence file does not carry (Source Serif's file names only its publisher). test/notices.test.ts pins that file's SHA-256 and fails when it changes, so this line is checked again. */
 const COPYRIGHT = {
+  // the licence file runs its title and copyright on one line ("MIT License Copyright (c) 2025-Present [Bombshell contributors](https://bomb.sh/team)"), which the line finder does not take
+  "@clack/core": "Copyright (c) 2025-Present Bombshell contributors (https://bomb.sh/team)",
+  "@clack/prompts": "Copyright (c) 2025-Present Bombshell contributors (https://bomb.sh/team)",
   "@fontsource-variable/source-serif-4":
     "Copyright 2014-2021 Adobe Systems Incorporated (http://www.adobe.com/), with Reserved Font Name 'Source'.",
 };

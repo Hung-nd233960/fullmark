@@ -31,6 +31,8 @@ SOFTWARE.
 
 ## Components
 
+- **@clack/core** 1.5.1, MIT. Copyright (c) 2025-Present Bombshell contributors (https://bomb.sh/team) (in: the CLI)
+- **@clack/prompts** 1.8.1, MIT. Copyright (c) 2025-Present Bombshell contributors (https://bomb.sh/team) (in: the CLI)
 - **@fontsource-variable/lexend** 5.3.0, OFL-1.1. Copyright 2019 The Lexend Project Authors (https://github.com/googlefonts/lexend) (in: pages that embed the font)
 - **@fontsource-variable/source-serif-4** 5.3.1, OFL-1.1. Copyright 2014-2021 Adobe Systems Incorporated (http://www.adobe.com/), with Reserved Font Name 'Source'. (in: pages that embed the font)
 - **@fontsource/be-vietnam-pro** 5.3.0, OFL-1.1. Copyright 2021 The Be Vietnam Pro Project Authors (https://github.com/bettergui/BeVietnamPro) (in: pages that embed the font)
@@ -39,6 +41,9 @@ SOFTWARE.
 - **@preact/signals-core** 1.14.5, MIT. Copyright (c) 2022-present Preact Team (in: the CLI, every page)
 - **commander** 15.0.0, MIT. Copyright (c) 2011 TJ Holowaychuk <tj@vision-media.ca> (in: the CLI)
 - **entities** 8.1.0, BSD-2-Clause. Copyright (c) Felix Böhm (in: the CLI)
+- **fast-string-truncated-width** 3.0.3, MIT. Copyright (c) 2024-present Fabio Spampinato (in: the CLI)
+- **fast-string-width** 3.0.2, MIT. Copyright (c) 2024-present Fabio Spampinato (in: the CLI)
+- **fast-wrap-ansi** 0.2.2, MIT. Copyright (c) 2025 James Garbutt (in: the CLI)
 - **katex** 0.19.1, MIT. Copyright (c) 2013-2020 Khan Academy and other contributors (in: pages with maths)
 - **linkify-it** 6.1.0, MIT. Copyright (c) 2015 Vitaly Puzrin. (in: the CLI)
 - **markdown-it** 15.0.3, MIT. Copyright (c) 2014 Vitaly Puzrin, Alex Kocharin. (in: the CLI)
@@ -49,12 +54,25 @@ SOFTWARE.
 - **preact-render-to-string** 6.8.2, MIT. Copyright (c) 2015 Jason Miller (in: the CLI)
 - **punycode.js** 2.3.1, MIT. Copyright Mathias Bynens <https://mathiasbynens.be/> (in: the CLI)
 - **shiki** 4.5.0, MIT. Copyright (c) 2021 Pine Wu (in: pages with highlighted code)
+- **sisteransi** 1.0.5, MIT. Copyright (c) 2018 Terkel Gjervig Nielsen (in: the CLI)
 - **smol-toml** 1.9.1, BSD-3-Clause. Copyright (c) Squirrel Chat et al., All rights reserved. (in: the CLI)
 - **uc.micro** 3.0.0, MIT. Copyright Mathias Bynens <https://mathiasbynens.be/> (in: the CLI)
 - **yaml** 2.9.1, ISC. Copyright Eemeli Aro <eemeli@gmail.com> (in: the CLI)
 - **zod** 4.6.7, MIT. Copyright (c) 2025 Colin McDonnell (in: the CLI, every page)
 
 ## Licence texts
+
+### MIT
+
+Applies to: @clack/core, @clack/prompts, @preact/signals, @preact/signals-core, fast-string-truncated-width, fast-string-width, fast-wrap-ansi, katex, linkify-it, markdown-it, markdown-it-container, preact, preact-render-to-string, punycode.js, shiki, sisteransi, uc.micro, zod.
+
+```text
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+```
 
 ### OFL-1.1
 
@@ -170,30 +188,6 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
-```
-
-### MIT
-
-Applies to: @preact/signals, @preact/signals-core, katex, linkify-it, markdown-it, markdown-it-container, preact, preact-render-to-string, punycode.js, shiki, uc.micro, zod.
-
-```text
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
 ```
 
 ### MIT
