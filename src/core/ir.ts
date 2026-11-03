@@ -122,7 +122,6 @@ export const BlankSchema = z.discriminatedUnion("kind", [
   z.object({ kind: z.literal("text"), line, answers: z.array(z.string()) }),
   z.object({ kind: z.literal("numeric"), line, value: z.number(), raw: z.string(), tolerance: z.number() }),
 ]);
-export type Blank = z.infer<typeof BlankSchema>;
 
 export const FieldSchema = z.object({
   line,

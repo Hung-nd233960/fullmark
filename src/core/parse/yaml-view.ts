@@ -54,18 +54,6 @@ export function scalarText(node: Node | null): string | null {
   return String(v);
 }
 
-export function isString(node: Node | null): boolean {
-  return isScalar(node) && typeof node.value === "string";
-}
-
-export function isBoolean(node: Node | null): boolean {
-  return isScalar(node) && typeof node.value === "boolean";
-}
-
-export function isNumber(node: Node | null): boolean {
-  return isScalar(node) && typeof node.value === "number";
-}
-
 export function boolValue(node: Node | null): boolean | null {
   return isScalar(node) && typeof node.value === "boolean" ? node.value : null;
 }

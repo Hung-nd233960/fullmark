@@ -1,0 +1,18 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "entry": ["src/page/main.tsx", "src/serve/module.ts", "src/serve/reload.ts", "scripts/*.mjs"],
+  "project": ["src/**/*.{ts,tsx}", "scripts/**/*.{mjs,mts}", "test/**/*.ts", "e2e/**/*.ts"],
+  "ignore": ["scripts/*.d.mts"],
+  "ignoreDependencies": [
+    "@fontsource-variable/lexend",
+    "@fontsource-variable/source-serif-4",
+    "@fontsource/be-vietnam-pro",
+    "@shikijs/core",
+    "@shikijs/engine-javascript",
+    "@shikijs/langs",
+    "katex",
+    "axe-core"
+  ],
+  "ignoreBinaries": ["script"],
+  "ignoreExportsUsedInFile": true
+}

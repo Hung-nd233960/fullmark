@@ -20,10 +20,11 @@
     "test": "vitest run test/startup.test.ts && vitest run --exclude test/startup.test.ts",
     "typecheck": "tsc --noEmit",
     "lint": "biome check",
+    "knip": "knip",
     "samples": "npm run build && node scripts/samples.mjs",
     "notices": "node scripts/notices.mjs",
     "golden:update": "node scripts/golden-update.mjs",
-    "check": "npm run typecheck && npm run lint && npm run test && npm run test:e2e",
+    "check": "npm run typecheck && npm run lint && npm run knip && npm run test && npm run test:e2e",
     "test:e2e": "npm run build && playwright test"
   },
   "devDependencies": {
@@ -33,6 +34,7 @@
     "@types/node": "24.19.2",
     "axe-core": "4.14.0",
     "esbuild": "0.28.2",
+    "knip": "6.42.1",
     "pdfjs-dist": "6.4.299",
     "tsup": "9.0.0",
     "typescript": "7.0.2",

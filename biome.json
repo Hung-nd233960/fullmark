@@ -9,6 +9,7 @@
       "*.json",
       "*.ts",
       "e2e/**",
+      "scripts/**",
       "!test/fixtures",
       "!test/data",
       "!test/golden",

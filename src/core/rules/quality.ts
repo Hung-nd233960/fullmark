@@ -2,7 +2,7 @@ import { z } from "zod";
 import type { Question, Quiz } from "../ir";
 import { correctPositions } from "../positions";
 import { file } from "./example";
-import type { Finding, QualityRule, RuleContext } from "./types";
+import type { Finding, QualityRule } from "./types";
 
 /** The question types a computer grades by itself, and so can have a key and an explanation worth checking. */
 const AUTO_TYPES: readonly Question["type"][] = [
@@ -494,5 +494,3 @@ export const QUALITY_RULES: QualityRule[] = [
     },
   }),
 ];
-
-export type { RuleContext };

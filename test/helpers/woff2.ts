@@ -104,29 +104,3 @@ export function woff2CodePoints(file: Uint8Array): Set<number> {
   }
   return out;
 }
-
-/** The metrics a size adjustment needs, in font units: `unitsPerEm` (head), ascender, descender (hhea), x-height, cap height (OS/2 v2+). */
-export function woff2Metrics(file: Uint8Array): {
-  unitsPerEm: number;
-  ascender: number;
-  descender: number;
-  lineGap: number;
-  xHeight: number;
-  capHeight: number;
-} {
-  const tables = woff2Tables(file);
-  const head = tables.get("head") as Uint8Array;
-  const hhea = tables.get("hhea") as Uint8Array;
-  const os2 = tables.get("OS/2") as Uint8Array;
-  const h = new DataView(head.buffer, head.byteOffset, head.byteLength);
-  const a = new DataView(hhea.buffer, hhea.byteOffset, hhea.byteLength);
-  const o = new DataView(os2.buffer, os2.byteOffset, os2.byteLength);
-  return {
-    unitsPerEm: h.getUint16(18),
-    ascender: a.getInt16(4),
-    descender: a.getInt16(6),
-    lineGap: a.getInt16(8),
-    xHeight: o.getInt16(86),
-    capHeight: o.getInt16(88),
-  };
-}

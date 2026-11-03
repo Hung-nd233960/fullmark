@@ -243,7 +243,6 @@ export const CODE_ROLES = {
   punctuation: "text",
   link: "info",
 } as const;
-export type CodeRole = keyof typeof CODE_ROLES;
 
 /** AA for text */
 export const TEXT_RATIO = 4.5;

@@ -3,7 +3,7 @@ import { type Attempt, AttemptSchema } from "./schema";
 
 import { RESULTS_FORMAT, RESULTS_VERSION } from "./serialise";
 
-export { RESULTS_FORMAT, RESULTS_VERSION, resultsOf } from "./serialise";
+export { RESULTS_VERSION, resultsOf } from "./serialise";
 
 /**
  * `results-v2`: the serialised `Attempt` (TECHNICAL_DESIGN.md, section 4) under `format` and `version`. Every known

@@ -1,4 +1,5 @@
-# typos for this repo: the global rules from Setups, plus docs/vi/ (Vietnamese reads as English typos).
+# typos for this repo, run in CI by .github/workflows/check.yml. Vietnamese words that read as English typos are listed
+# under extend-words; a line can also be skipped with a "spellchecker:disable-line" comment.
 [default]
 extend-ignore-re = [
   # put "spellchecker:disable-line" in a comment to skip a line on purpose
@@ -7,11 +8,27 @@ extend-ignore-re = [
   "Hung-nd\\d+",
   # plural file-type acronyms (PNGs, PDFs, ...)
   "\\b[A-Z]{2,5}s\\b",
+  # short git hashes in the plans (`7fa0ba3`)
+  "`[0-9a-f]{7,40}`",
+  # Unicode ranges in font subsets (U+0100-02BA)
+  "U\\+[0-9A-Fa-f?-]+",
 ]
+
+[default.extend-words]
+# Vietnamese words (thi: exam, thay: instead, ba: three)
+thi = "thi"
+thay = "thay"
+ba = "ba"
+# OpenType table tags read by the font tests
+loca = "loca"
+trak = "trak"
+# deliberate typos and cut strings in tests
+minuts = "minuts"
+afte = "afte"
 
 [default.extend-identifiers]
 # deliberate example of a typo caught by validation (fullmark SPEC)
 time_limt = "time_limt"
 
 [files]
-extend-exclude = ["*.lock", "*.min.js", "*.min.css", "*.svg", "*.pdf", "vendor/", "docs/vi/"]
+extend-exclude = ["*.lock", "*.min.js", "*.min.css", "*.svg", "*.pdf", "vendor/", "test/golden/", "test/fixtures/", "test/data/", "package-lock.json", "src/build/notices-data.ts", "THIRD_PARTY_NOTICES.md"]

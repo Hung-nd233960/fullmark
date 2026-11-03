@@ -18,7 +18,8 @@ const TRY = {
   mockup: "the boards' content: three parts, a 40-minute limit, a flag; the closest page to the mockup",
   map: "the question map: three parts, every result state after Submit",
   oneq: "the part list: a part of one question is a single row (double-click or Enter on a heading jumps); single and multi look different",
-  materials: "materials: the stacked sidebar, sheet chips, the Materials tab after Submit, Materials on the start screen",
+  materials:
+    "materials: the stacked sidebar, sheet chips, the Materials tab after Submit, Materials on the start screen",
   parts: "the part picker: take the whole quiz or one part",
   timed: "a 90-second limit: let it run out to see the automatic submit",
   results: "the results card, the review filter, Retry missed",
@@ -45,7 +46,8 @@ const TRY = {
   "paper-key-grouped":
     "quiz build --print --seed 101 --answers key on a quiz with its own type_order: the key's other answers in groups (Essays, Short answers and numeric answers, Single choice, Other)",
   "paper-exam-vi": "the paper with --ui-lang vi: Mã đề, Câu 1., Phiếu trả lời",
-  "vi-fonts": "built with --fonts all: Vietnamese text with stacked diacritics; Appearance > Font offers all four fonts; the Licences button lists their notices",
+  "vi-fonts":
+    "built with --fonts all: Vietnamese text with stacked diacritics; Appearance > Font offers all four fonts; the Licences button lists their notices",
 };
 
 // Served commands cannot be a file, so the index lists how to start each one by hand (one line per command, run from
@@ -56,15 +58,17 @@ const SERVED = [
     try: "quiz serve: the quiz is served on 127.0.0.1 and opens in your browser; answer, press Submit and confirm: the page says the results were sent, the command prints the score and exits 0, and samples/calculus-results.json is written (quiz grade grades it to the same score). Close the server with Ctrl+C instead: it prints nothing written and exits 2. Press Submit and look at the dialog first: it says your answers will be sent to fullmark; afterwards the results card says Sent where a built page says Download results.",
   },
   {
-    command: "node dist/cli.js serve examples/calculus/quiz.md --open --section derivative-rules --out samples/calculus-section.json",
-    try: "quiz serve --section: only the Derivative rules part is offered, with no part picker; Start, answer and Submit. samples/calculus-section.json records a section attempt (plan source section) and quiz grade grades it to the score the page showed. Try an unknown name (--section integrals): it exits 2 and lists the sections, slug and title, before serving anything. The title works too (--section \"Derivative rules\"), in any case.",
+    command:
+      "node dist/cli.js serve examples/calculus/quiz.md --open --section derivative-rules --out samples/calculus-section.json",
+    try: 'quiz serve --section: only the Derivative rules part is offered, with no part picker; Start, answer and Submit. samples/calculus-section.json records a section attempt (plan source section) and quiz grade grades it to the score the page showed. Try an unknown name (--section integrals): it exits 2 and lists the sections, slug and title, before serving anything. The title works too (--section "Derivative rules"), in any case.',
   },
   {
     command: "node dist/cli.js serve examples/calculus/quiz.md --open --focus --out samples/calculus-focus.json",
     try: "quiz serve --focus: the start screen opens with Focus mode already ticked, so pressing Start enters full screen with the sidebar closed (a page cannot go full screen without a click). Untick it to see it off.",
   },
   {
-    command: "node dist/cli.js serve examples/calculus/quiz.md --open --autosave samples/calculus-progress.json --out samples/calculus-results.json",
+    command:
+      "node dist/cli.js serve examples/calculus/quiz.md --open --autosave samples/calculus-progress.json --out samples/calculus-results.json",
     try: "quiz serve --autosave: Start, answer a few questions, then press Ctrl+C in the terminal (or close the terminal). samples/calculus-progress.json holds the attempt in progress. Run the same command again and open the page: it offers Continue with your answers and the clock; Continue, finish and Submit: the progress file is deleted once samples/calculus-results.json is written. The browser's own storage is not used. Edit the quiz between the two runs and the second one exits 1, naming the two versions, and leaves the file alone.",
   },
   {
@@ -101,7 +105,11 @@ copyFileSync(join("examples", "survey", "quiz.md"), join(OUT, "watch", "second.m
 const built = [];
 for (const s of sources) {
   try {
-    execFileSync(process.execPath, [CLI, "build", s.file, "-o", join(OUT, `${s.name}.html`), ...(FLAGS[s.name] ?? [])], { stdio: "pipe" });
+    execFileSync(
+      process.execPath,
+      [CLI, "build", s.file, "-o", join(OUT, `${s.name}.html`), ...(FLAGS[s.name] ?? [])],
+      { stdio: "pipe" },
+    );
     built.push(s);
   } catch (e) {
     console.error(`${s.file}: build failed\n${e.stderr?.toString() ?? e}`);
@@ -111,13 +119,37 @@ for (const s of sources) {
 
 // printed papers (`quiz build --print`): the file, the flags and the name
 const papers = [
-  { name: "paper-exam", file: join("test", "fixtures", "paper", "exam.md"), flags: ["--seed", "101", "--answer-sheet"] },
-  { name: "paper-key", file: join("test", "fixtures", "paper", "exam.md"), flags: ["--seed", "101", "--answer-sheet", "--answers", "key"] },
-  { name: "paper-key-grouped", file: join("test", "fixtures", "paper", "grouped-custom.md"), flags: ["--seed", "101", "--answers", "key"] },
-  { name: "paper-inline", file: join("test", "fixtures", "paper", "exam.md"), flags: ["--seed", "101", "--answers", "inline"] },
-  { name: "paper-materials", file: join("test", "fixtures", "paper", "materials-quiz.md"), flags: ["--answers", "key"] },
+  {
+    name: "paper-exam",
+    file: join("test", "fixtures", "paper", "exam.md"),
+    flags: ["--seed", "101", "--answer-sheet"],
+  },
+  {
+    name: "paper-key",
+    file: join("test", "fixtures", "paper", "exam.md"),
+    flags: ["--seed", "101", "--answer-sheet", "--answers", "key"],
+  },
+  {
+    name: "paper-key-grouped",
+    file: join("test", "fixtures", "paper", "grouped-custom.md"),
+    flags: ["--seed", "101", "--answers", "key"],
+  },
+  {
+    name: "paper-inline",
+    file: join("test", "fixtures", "paper", "exam.md"),
+    flags: ["--seed", "101", "--answers", "inline"],
+  },
+  {
+    name: "paper-materials",
+    file: join("test", "fixtures", "paper", "materials-quiz.md"),
+    flags: ["--answers", "key"],
+  },
   { name: "paper-mockup", file: join("test", "fixtures", "page", "mockup.md"), flags: [] },
-  { name: "paper-exam-vi", file: join("test", "fixtures", "paper", "exam.md"), flags: ["--seed", "102", "--ui-lang", "vi"] },
+  {
+    name: "paper-exam-vi",
+    file: join("test", "fixtures", "paper", "exam.md"),
+    flags: ["--seed", "102", "--ui-lang", "vi"],
+  },
 ];
 for (const p of papers) {
   try {
@@ -155,7 +187,10 @@ for (const r of replays) {
 
 const esc = (t) => t.replace(/&/g, "&amp;").replace(/</g, "&lt;");
 const rows = built
-  .map((s) => `<li><a href="${s.name}.html">${s.name}</a> <span>${esc(TRY[s.name] ?? "")}</span> <code>${esc(s.file)}</code></li>`)
+  .map(
+    (s) =>
+      `<li><a href="${s.name}.html">${s.name}</a> <span>${esc(TRY[s.name] ?? "")}</span> <code>${esc(s.file)}</code></li>`,
+  )
   .join("\n");
 writeFileSync(
   join(OUT, "index.html"),
@@ -173,4 +208,6 @@ ${SERVED.map((s) => `<li><code>${esc(s.command)}</code> <span>${esc(s.try)}</spa
 </ul>
 `,
 );
-console.log(`samples: ${built.length} of ${sources.length + papers.length + replays.length} pages in ${OUT}/ (open ${join(OUT, "index.html")})`);
+console.log(
+  `samples: ${built.length} of ${sources.length + papers.length + replays.length} pages in ${OUT}/ (open ${join(OUT, "index.html")})`,
+);

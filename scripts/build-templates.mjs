@@ -18,7 +18,9 @@ export const BUILT_IN = {
 /** The files of a template's source folder that ship, relative to it. */
 export function templateEntries(folder) {
   return readdirSync(folder, { withFileTypes: true })
-    .filter((e) => (e.isFile() && e.name.endsWith(".md")) || (e.isDirectory() && ["assets", "materials"].includes(e.name)))
+    .filter(
+      (e) => (e.isFile() && e.name.endsWith(".md")) || (e.isDirectory() && ["assets", "materials"].includes(e.name)),
+    )
     .map((e) => e.name);
 }
 
