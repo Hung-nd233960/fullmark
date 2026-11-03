@@ -3,7 +3,7 @@
 import { readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { build } from "esbuild";
-import { PAGE_BUNDLE, SERVE_BUNDLE } from "./bundles.mjs";
+import { PAGE_BUNDLE, RELOAD_BUNDLE, SERVE_BUNDLE } from "./bundles.mjs";
 import { minifyCss } from "./minify-css.mjs";
 
 const root = resolve(import.meta.dirname, "..");
@@ -20,6 +20,14 @@ await build({
   ...SERVE_BUNDLE,
   entryPoints: [join(root, "src/serve/module.ts")],
   outfile: join(root, "dist/serve.js"),
+  logLevel: "warning",
+});
+
+// The reload code of `build --watch --serve`: read by src/serve/ only, and added to the served copy alone.
+await build({
+  ...RELOAD_BUNDLE,
+  entryPoints: [join(root, "src/serve/reload.ts")],
+  outfile: join(root, "dist/reload.js"),
   logLevel: "warning",
 });
 

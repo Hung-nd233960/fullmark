@@ -4,7 +4,7 @@ import { readdirSync, readFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { build } from "esbuild";
 import { describe, expect, it } from "vitest";
-import { PAGE_BUNDLE, SERVE_BUNDLE } from "../scripts/bundles.mjs";
+import { PAGE_BUNDLE, RELOAD_BUNDLE, SERVE_BUNDLE } from "../scripts/bundles.mjs";
 import { ALLOWED, generate, problems } from "../scripts/notices.mjs";
 import { ACKNOWLEDGEMENTS, NOTICE_PACKAGES } from "../src/build/notices-data";
 
@@ -108,8 +108,21 @@ describe("the page runtime", () => {
       outdir: join(root, "dist-notices"),
       logLevel: "error",
     });
+    // and the reload code (dist/reload.js), added to the pages of `build --watch --serve`
+    const reload = await build({
+      ...RELOAD_BUNDLE,
+      entryPoints: [join(root, "src/serve/reload.ts")],
+      write: false,
+      metafile: true,
+      outdir: join(root, "dist-notices"),
+      logLevel: "error",
+    });
     const named = new Set<string>();
-    for (const input of [...Object.keys(built.metafile.inputs), ...Object.keys(served.metafile.inputs)]) {
+    for (const input of [
+      ...Object.keys(built.metafile.inputs),
+      ...Object.keys(served.metafile.inputs),
+      ...Object.keys(reload.metafile.inputs),
+    ]) {
       const at = input.lastIndexOf("node_modules/");
       if (at < 0) continue;
       const parts = input.slice(at + "node_modules/".length).split("/");

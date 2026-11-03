@@ -57,7 +57,7 @@ const realTimer = (fire: () => void, ms: number): (() => void) => {
   return () => clearTimeout(handle);
 };
 
-function refuse(res: ServerResponse, status: number, body = ""): void {
+export function refuse(res: ServerResponse, status: number, body = ""): void {
   res.writeHead(status, {
     "Cache-Control": "no-store",
     "Content-Type": "text/plain; charset=utf-8",

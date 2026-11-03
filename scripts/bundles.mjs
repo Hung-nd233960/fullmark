@@ -43,3 +43,9 @@ export const PAGE_BUNDLE = {
  * entries in the same way.
  */
 export const SERVE_BUNDLE = { ...PAGE_BUNDLE };
+
+/**
+ * The reload code (`dist/reload.js`): its own IIFE, which only the copy of a page that `build --watch --serve` serves
+ * carries (G31). It shares nothing with `dist/serve.js`: a reloading page has no submit or autosave code.
+ */
+export const RELOAD_BUNDLE = { ...PAGE_BUNDLE };

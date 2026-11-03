@@ -29,6 +29,11 @@ export type LoadedQuiz = {
   sheets: LoadedSheet[];
   /** the quiz hash (TECHNICAL_DESIGN.md, foundation 1): null when an asset or a sheet could not be read */
   hash: string | null;
+  /**
+   * Every file the quiz hash covers, as an absolute path: the assets and sheets the quiz and its sheets refer to, found
+   * or not (a file that appears later is watched too). `build --watch` watches these (COMMANDS.md, `--watch`).
+   */
+  covered: string[];
 };
 
 /** `a/b/../c.png` written in a file in `fromDir`, as a path from `base`, with `/` separators. */
@@ -76,6 +81,7 @@ export function loadQuiz(file: string, options: ParseOptions = {}): LoadedQuiz {
   const shownDir = slashes(dirname(file));
   const display = (rel: string): string => (shownDir === "." ? rel : `${shownDir}/${rel}`);
   const seen = new Set<string>();
+  const covered = new Set<string>();
   let readProblems = 0;
 
   type Place = { file: string; line: number };
@@ -112,6 +118,7 @@ export function loadQuiz(file: string, options: ParseOptions = {}): LoadedQuiz {
       );
       return null;
     }
+    covered.add(lexical);
     const key = slashes(relative(folder, lexical));
     // a file whose name differs only in letter case: found by realpath on a case-insensitive disk (Windows, macOS),
     // and not at all on a case-sensitive one (Linux); either way the fix names the file as it is
@@ -222,6 +229,7 @@ export function loadQuiz(file: string, options: ParseOptions = {}): LoadedQuiz {
     assets,
     sheets: failed || sheetErrors ? [] : sheets,
     hash: readProblems > 0 ? null : quizHash(text, [...assets, ...sheetTexts]),
+    covered: [...covered],
   };
 }
 

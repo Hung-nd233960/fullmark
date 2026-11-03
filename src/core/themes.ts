@@ -301,6 +301,14 @@ export function themeCss(quiz: Choice, font: FontId = "system", offered: readonl
   return `@layer tokens,base,components;@layer tokens{${common}${rules.join("")}}`;
 }
 
+/**
+ * The token CSS of a page that has no script to pick a theme (the index of `build --watch --serve`): the light set, and
+ * the dark one when the device asks for it.
+ */
+export function deviceThemeCss(): string {
+  return `${themeCss("light")}@media (prefers-color-scheme:dark){:root{${setOf(SETS.dark)}}}`;
+}
+
 // ---- which theme is shown ----
 
 /** What the page shows: `auto` follows the device; high contrast turns `light` and `paper` into `white`, `dark` into `oled`. */

@@ -323,10 +323,10 @@ describe("quiz brief --tui: the exits", () => {
     const { withWidth } = await import("../../src/cli/brief-tui");
     const zero = fakeTerminal([]);
     zero.output.columns = 0;
-    expect((withWidth(zero.output) as { columns: number }).columns).toBe(80);
+    expect((withWidth(zero.output) as unknown as { columns: number }).columns).toBe(80);
     const none = fakeTerminal([]);
     (none.output as { columns?: number }).columns = undefined;
-    expect((withWidth(none.output) as { columns: number }).columns).toBe(80);
+    expect((withWidth(none.output) as unknown as { columns: number }).columns).toBe(80);
     const real = fakeTerminal([]);
     expect(withWidth(real.output)).toBe(real.output);
     // and the form, run on a 0-column stream, still draws its steps on lines of their own

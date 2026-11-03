@@ -13,3 +13,12 @@ export function readServeModule(folder: string): string | null {
     return null;
   }
 }
+
+/** Reads `dist/reload.js`, the reload code of `build --watch --serve`; null when it is missing next to the program. */
+export function readReloadModule(folder: string): string | null {
+  try {
+    return readFileSync(join(folder, "reload.js"), "utf8");
+  } catch {
+    return null;
+  }
+}

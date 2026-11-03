@@ -9,7 +9,7 @@ import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import { build } from "esbuild";
-import { CLI_BUNDLE, CLI_EXTERNAL, PAGE_BUNDLE, SERVE_BUNDLE } from "./bundles.mjs";
+import { CLI_BUNDLE, CLI_EXTERNAL, PAGE_BUNDLE, RELOAD_BUNDLE, SERVE_BUNDLE } from "./bundles.mjs";
 
 const root = resolve(import.meta.dirname, "..");
 
@@ -68,13 +68,17 @@ async function bundled() {
   const page = await build({ ...PAGE_BUNDLE, ...shared, entryPoints: [join(root, "src/page/main.tsx")] });
   // the server module is a page script too (it ships inside a served page), so its packages count as the page's
   const serve = await build({ ...SERVE_BUNDLE, ...shared, entryPoints: [join(root, "src/serve/module.ts")] });
+  const reload = await build({ ...RELOAD_BUNDLE, ...shared, entryPoints: [join(root, "src/serve/reload.ts")] });
   const cli = await build({
     ...CLI_BUNDLE,
     ...shared,
     entryPoints: { cli: join(root, "src/cli/bin.ts"), main: join(root, "src/cli/main.ts") },
     external: CLI_EXTERNAL,
   });
-  return { cli: packagesOf(cli.metafile), page: new Set([...packagesOf(page.metafile), ...packagesOf(serve.metafile)]) };
+  return {
+    cli: packagesOf(cli.metafile),
+    page: new Set([...packagesOf(page.metafile), ...packagesOf(serve.metafile), ...packagesOf(reload.metafile)]),
+  };
 }
 
 const normalise = (text) => text.replace(/\r\n/g, "\n");
