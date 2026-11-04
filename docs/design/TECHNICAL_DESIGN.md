@@ -149,7 +149,7 @@ type Review = {
     note: string;                   // required with "other", else may be empty
     hash: string;                   // the question hash when judged (foundation 1)
     source?: string;                // fix and drop only: the question's block as judged, for the diff in --since
-    assumed?: true;                 // kept by "The rest is fine" or the Finish dialog, not judged one by one
+    assumed?: true;                 // kept by "Keep the rest" or the Finish dialog, not judged one by one
   }>;
 };
 ```
@@ -157,7 +157,7 @@ type Review = {
 - **Keyed by question id**, so a verdict follows a question when it moves or others are added. The question hash leaves the id out, so adding an id or moving a question is not a change; any edit to the block is.
 - **Reasons** are fixed ids with catalog labels in `en` and `vi`. For `fix`: `key-wrong`, `unclear`, `other`; on essays and code also `rubric-loose`, `points-misallocated`, `criterion-unclear`. For `drop`: `duplicate`, `off-scope`, `too-easy`, `other`. A reason given with the wrong verdict or type is invalid.
 - **Merging.** A question judged in a run replaces its entry; every other entry stays. Entries for questions no longer in the quiz stay too, as history; `check` ignores them.
-- **`assumed`** is set only by **The rest is fine** and by the Finish dialog's **Mark them Keep and finish**. It changes nothing in `check` or `--since` today; it records that the learner did not look. Judging that question later replaces the entry and drops the marker.
+- **`assumed`** is set only by **Keep the rest** and by the Finish dialog's **Mark them Keep and finish**. It changes nothing in `check` or `--since` today; it records that the learner did not look. Judging that question later replaces the entry and drops the marker.
 - **`source`** is the question's normalised block, as hashed, so `review --since` can show the learner's earlier reason and note beside a diff of what changed.
 
 **What `check --review` can prove.** That every flagged question was changed or removed, never that it was fixed: whether the new key is right is the learner's call. So a changed `fix` question passes, with the warning `review.unconfirmed` until a later `review --since` judges it again, and the loop closes in the learner's hands.
