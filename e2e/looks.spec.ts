@@ -185,12 +185,7 @@ test("the Font row picks each font, keeps it across a reload, and Default look r
   await page.goto(quiz.url);
   await start(page);
   await button(page).click();
-  await expect(page.locator("[data-font-row] .fm-pill")).toHaveText([
-    "System",
-    "Sans",
-    "Serif",
-    "Readable",
-  ]);
+  await expect(page.locator("[data-font-row] .fm-pill")).toHaveText(["System", "Sans", "Serif", "Readable"]);
   await expect(fontPick(page, "system")).toHaveAttribute("aria-pressed", "true");
   expect(await family(page)).toContain("Segoe UI");
   for (const id of ["sans", "serif", "readable"] as const) {
