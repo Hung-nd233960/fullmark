@@ -20,7 +20,7 @@ As in step 2 ([archive/STEP2.md](archive/STEP2.md), Handoff): Opus writes a slic
 | 3g 3d's fixes, `brief` through flags | done, reviewed, gaps decided | `27a61a4`..`2e6b449` |
 | 3i 3g's fixes, `brief --tui` | done, reviewed, gaps decided | `fb5ed78`..`546ccc0` |
 | 3j 3i's fixes, `build --watch` and `--serve` | done, reviewed, gaps decided (G35 built in review) | `4a0835f`..`45fe811` |
-| 3v the form boards (on the Design canvas) | `review` boards drafted by Opus and reviewed by the owner (2026-11-04); G38, G40 to G45 decided; **waits for the owner**: G39 (materials) and G46 (`vi` words). `grade --web` and `brief --web` boards after that | |
+| 3v the form boards (on the Design canvas) | `review` boards drafted by Opus and reviewed by the owner (2026-11-04); G38 to G45 decided; **waits for the owner**: G46 (`vi` words). `grade --web` and `brief --web` boards after that | |
 | 3e `review`, 3f `grade --web`, 3h `brief --web` | wait for 3v; briefs not written yet | |
 | 3z acceptance | last | |
 
@@ -37,7 +37,7 @@ Step 2 is closed ([archive/STEP2.md](archive/STEP2.md), item 75): every "Done wh
 
 ### Next steps, in order
 
-1. **The form boards on the Design canvas** (3v, G7), as 2v did for the page: every slice left (3e, 3f, 3h) waits for them. The `review` boards are drafted and reviewed (Gaps, "The review boards"); the owner decides G39 and G46 on the updated boards; then they are copied into `docs/mockup/` (sources and images), the decisions go into COMMANDS.md, and 3e's brief is written. The `grade --web` and `brief --web` boards follow in the same way.
+1. **The form boards on the Design canvas** (3v, G7), as 2v did for the page: every slice left (3e, 3f, 3h) waits for them. The `review` boards are drafted and reviewed (Gaps, "The review boards"); the owner decides G46 on the ReviewVi board; then they are copied into `docs/mockup/` (sources and images), the decisions go into COMMANDS.md, and 3e's brief is written. The `grade --web` and `brief --web` boards follow in the same way.
 
 ### Open proposals carried over from step 2
 
@@ -139,11 +139,11 @@ The design docs left these open, or a slice's review found them. Each needs the 
 
 **G37. The watcher is per folder, not `recursive`** (docs only). **Decided by the owner on 2026-11-03, as recommended.** **Recommend:** accept, and change TECHNICAL_DESIGN.md section 3's Watching row to "`node:fs.watch` on each watched file's folder, not recursive: only the files the quiz hash covers matter, and a rename save is seen in its folder".
 
-**The review boards (3v).** Opus drafted them on the Design canvas on 2026-11-04, in a new row titled "Forms: quiz review": **Review** (1280 px, interactive; Tweaks for theme, `locked`, `lang`, `--since`, the dialogs, materials and the sidebar), **ReviewSince** (`--since`), **ReviewFinish** (the dialog), **ReviewPhone** (390 px, interactive) and **ReviewVi** (`ui_lang` vi). They use the page's tokens, the Quiz board's top bar, status line, card and 320 px sidebar. **The owner reviewed them on 2026-11-04**: G38, G40, G41, G43, G44 and G45 as recommended, G42 changed (below), and **The rest is fine** renamed **Keep the rest** ("Giữ các câu còn lại" in `vi`, G46); all written into COMMANDS.md, `quiz review`, and TECHNICAL_DESIGN.md section 4 (`assumed`). G39's materials and G46's `vi` labels wait for the owner, on the updated boards.
+**The review boards (3v).** Opus drafted them on the Design canvas on 2026-11-04, in a new row titled "Forms: quiz review": **Review** (1280 px, interactive; Tweaks for theme, `locked`, `lang`, `--since`, the dialogs, materials and the sidebar), **ReviewSince** (`--since`), **ReviewFinish** (the dialog), **ReviewPhone** (390 px, interactive) and **ReviewVi** (`ui_lang` vi). They use the page's tokens, the Quiz board's top bar, status line, card and 320 px sidebar. **The owner reviewed them on 2026-11-04**: G38, G40, G41, G43, G44 and G45 as recommended, G42 changed (below), and **The rest is fine** renamed **Keep the rest** ("Giữ các câu còn lại" in `vi`, G46); all written into COMMANDS.md, `quiz review`, and TECHNICAL_DESIGN.md section 4 (`assumed`). G39 was decided after a redraw (below); G46's `vi` words wait for the owner, on the ReviewVi board.
 
 **G38. The review form's keys** (3e). **Decided by the owner on 2026-11-04, as recommended**, and written into COMMANDS.md. `1`, `2`, `3` give Keep, Fix, Drop to the current question; `N` moves to the next question not judged; `Q` and `Esc` as on the page.
 
-**G39. The verdict map, and materials** (3e). The map is **decided by the owner on 2026-11-04, as recommended**, and written into COMMANDS.md. The owner asked whether the form should show the materials. **Recommend:** yes, read-only, as the page's sidebar does after Submit: when the quiz has materials the sidebar is **Questions & materials** with two tabs (Questions, the verdict map, 320 px; Materials, the sheet chips over the open sheet, 40%), `Q` and `M` open each tab. A question can only be judged fairly with the sheets the learner had (a sheet may give an answer away, or a question may need a formula no sheet has), and the reasons stay per question: a sheet's problem is written as a note on the question it affects. Drawn on the Review board (its Materials tab; `materials: none` in Tweaks gives the plain Questions sidebar).
+**G39. The verdict map, and materials** (3e). **Decided by the owner on 2026-11-04**, and written into COMMANDS.md: the sidebar is the page's while answering, as on the Quiz board, with verdicts in place of answers. With materials it is one stacked block, Questions over Materials (part tabs with a ring for the share judged, the chosen part's grid, the legend and keys, then the sheet chips and the open sheet, read-only); without, the collapsible part list. The first draft had a separate 320 px map and a Materials tab, which the owner rejected: the form should look like the quiz. A sheet's problem is written as a note on the question it affects. The boards are 1280 × 940, as the page's, with the column scrolling.
 
 **G40. What a question shows in review** (3e). **Decided by the owner on 2026-11-04, as recommended**, and written into COMMANDS.md: the key state, with a `short` question's patterns shown as written.
 
