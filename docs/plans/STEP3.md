@@ -20,7 +20,7 @@ As in step 2 ([archive/STEP2.md](archive/STEP2.md), Handoff): Opus writes a slic
 | 3g 3d's fixes, `brief` through flags | done, reviewed, gaps decided | `27a61a4`..`2e6b449` |
 | 3i 3g's fixes, `brief --tui` | done, reviewed, gaps decided | `fb5ed78`..`546ccc0` |
 | 3j 3i's fixes, `build --watch` and `--serve` | done, reviewed, gaps decided (G35 built in review) | `4a0835f`..`45fe811` |
-| 3v the form boards (on the Design canvas) | `review` boards drafted by Opus and reviewed by the owner (2026-11-04); G38 to G47 decided (2026-11-04); boards copied into `docs/mockup/`. **Next:** 3e's brief `grade --web` and `brief --web` boards after that | |
+| 3v the form boards (on the Design canvas) | `review` boards drafted by Opus and reviewed by the owner (2026-11-04); G38 to G47 decided (2026-11-04); boards and images in `docs/mockup/`. **Next:** 3e's brief `grade --web` and `brief --web` boards after that | |
 | 3e `review`, 3f `grade --web`, 3h `brief --web` | wait for 3v; briefs not written yet | |
 | 3z acceptance | last | |
 
@@ -37,7 +37,7 @@ Step 2 is closed ([archive/STEP2.md](archive/STEP2.md), item 75): every "Done wh
 
 ### Next steps, in order
 
-1. **The form boards on the Design canvas** (3v, G7), as 2v did for the page: every slice left (3e, 3f, 3h) waits for them. The `review` boards are done: reviewed, G38 to G47 decided and in COMMANDS.md, the sources copied into `docs/mockup/boards/`. Their images (`docs/mockup/images/Review*.png`) wait for the owner's export from the canvas, as for the page boards. Next, 3e's brief, with G47 (the page's Font row by category) and the `vi` words of G46 as its first tasks. The `grade --web` and `brief --web` boards follow in the same way.
+1. **The form boards on the Design canvas** (3v, G7), as 2v did for the page: every slice left (3e, 3f, 3h) waits for them. The `review` boards are done: reviewed, G38 to G47 decided and in COMMANDS.md, the sources copied into `docs/mockup/boards/`. Their images are in `docs/mockup/images/Review*.png` (the owner's export, scaled to board size). Next, 3e's brief, with G47 (the page's Font row by category) and the `vi` words of G46 as its first tasks. The `grade --web` and `brief --web` boards follow in the same way.
 
 ### Open proposals carried over from step 2
 
