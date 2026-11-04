@@ -1,0 +1,39 @@
+{
+  "format": "fullmark-review",
+  "questions": {
+    "q-chain": {
+      "hash": "10670e67ef3afc692e22124644a87383bdc02cc663e8ffede6870209e19eb7bf",
+      "note": "",
+      "reasons": [],
+      "source": "## Chain rule {type=single}\n\n- [x] f'(g) g'\n- [ ] f g\n",
+      "verdict": "fix"
+    },
+    "q-power": {
+      "hash": "857984dfd455ec328aa844467de0af207a40a9c78c87f85074cfdf61431915e3",
+      "note": "",
+      "reasons": [],
+      "verdict": "keep",
+      "source": "x"
+    },
+    "q-product": {
+      "hash": "76e6ee885c7a9777010c94f4f6265303e197289623d315725170e487c26c7e08",
+      "note": "",
+      "reasons": [
+        "other"
+      ],
+      "source": "## Product rule {type=truefalse}\n\n```answer\nvalue: true\n```\n",
+      "verdict": "drop"
+    },
+    "q-sum": {
+      "assumed": true,
+      "hash": "9ac9604f94c0829c5fc076f47544af786491fe45e234dc12ce9aae9864312000",
+      "note": "",
+      "reasons": [],
+      "verdict": "maybe"
+    }
+  },
+  "quizHash": "abc",
+  "quizId": "calc",
+  "reviewedAt": "2026-10-28T10:00:00+07:00",
+  "version": 2
+}

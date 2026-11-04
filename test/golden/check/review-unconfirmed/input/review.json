@@ -1,0 +1,27 @@
+{
+  "format": "fullmark-review",
+  "questions": {
+    "q-chain": {
+      "hash": "10670e67ef3afc692e22124644a87383bdc02cc663e8ffede6870209e19eb7bf",
+      "note": "",
+      "reasons": [
+        "unclear"
+      ],
+      "source": "## Chain rule {type=single}\n\n- [x] f'(g) g'\n- [ ] f g\n",
+      "verdict": "fix"
+    },
+    "q-product": {
+      "hash": "76e6ee885c7a9777010c94f4f6265303e197289623d315725170e487c26c7e08",
+      "note": "",
+      "reasons": [
+        "duplicate"
+      ],
+      "source": "## Product rule {type=truefalse}\n\n```answer\nvalue: true\n```\n",
+      "verdict": "drop"
+    }
+  },
+  "quizHash": "c40e0970871b2bc294b1a2478596426e6bbbd20a8250a3d8fcd8ff2c1cdedb1a",
+  "quizId": "calc",
+  "reviewedAt": "2026-10-28T10:00:00+07:00",
+  "version": 2
+}

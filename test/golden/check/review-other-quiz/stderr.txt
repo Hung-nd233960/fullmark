@@ -1,0 +1,1 @@
+quiz.md: review.json is the review of the quiz "algebra", not of "calc"

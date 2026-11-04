@@ -1,0 +1,22 @@
+{
+  "format": "fullmark-review",
+  "questions": {
+    "q-power": {
+      "hash": "857984dfd455ec328aa844467de0af207a40a9c78c87f85074cfdf61431915e3",
+      "note": "",
+      "reasons": [],
+      "verdict": "keep"
+    },
+    "q-sum": {
+      "assumed": true,
+      "hash": "9ac9604f94c0829c5fc076f47544af786491fe45e234dc12ce9aae9864312000",
+      "note": "",
+      "reasons": [],
+      "verdict": "keep"
+    }
+  },
+  "quizHash": "c40e0970871b2bc294b1a2478596426e6bbbd20a8250a3d8fcd8ff2c1cdedb1a",
+  "quizId": "calc",
+  "reviewedAt": "2026-10-28T10:00:00+07:00",
+  "version": 2
+}

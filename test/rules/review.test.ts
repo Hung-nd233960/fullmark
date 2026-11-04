@@ -3,11 +3,12 @@ import { type Layers, resolveProfile } from "../../src/core/config/resolve";
 import type { Quiz } from "../../src/core/ir";
 import type { Issue } from "../../src/core/issue";
 import { parse } from "../../src/core/parse";
+import { shortDate } from "../../src/core/review/counts";
 import { merge } from "../../src/core/review/merge";
 import type { Review } from "../../src/core/review/schema";
 import { reviewTarget } from "../../src/core/review/target";
 import { runChecks } from "../../src/core/rules/check";
-import { reviewFindings, shortDate } from "../../src/core/rules/review";
+import { reviewFindings } from "../../src/core/rules/review";
 
 const NONE: Layers = { user: null, project: null };
 

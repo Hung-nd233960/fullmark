@@ -77,7 +77,7 @@ describe("readReview", () => {
     const read = readReview(text({ version: 1, quiz: "x", items: [], problems: [] }));
     expect(read.ok).toBe(false);
     expect(!read.ok && read.problems).toEqual([
-      "a fullmark 0.x review: 1.0 does not read it; judge the quiz again with `quiz review` (0.x reviews judged 0.x quizzes)",
+      "a fullmark 0.x review: 1.0 does not read it; judge the quiz again with `quiz review`",
     ]);
   });
 

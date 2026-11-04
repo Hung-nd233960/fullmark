@@ -9,7 +9,7 @@ export function fail(
   io: Io,
   json: boolean,
   message: string,
-  extra: { file?: string; errors?: unknown[] } = {},
+  extra: { file?: string; errors?: unknown[]; problems?: string[] } = {},
   details: string[] = [],
 ): void {
   if (json) {
@@ -19,6 +19,7 @@ export function fail(
         ...(extra.file !== undefined ? { file: extra.file } : {}),
         message,
         ...(extra.errors ? { errors: extra.errors } : {}),
+        ...(extra.problems ? { problems: extra.problems } : {}),
       }),
     );
   }

@@ -11,8 +11,8 @@ Options:
   --config <toml>         use this config file instead of the nearest
                           fullmark.toml
   --strict                warnings count as errors
-  --review <review.json>  also fail until every flagged question changed (not
-                          available yet: it arrives with quiz review)
+  --review <review.json>  also fail until every question marked fix has changed
+                          and every one marked drop is gone (one quiz only)
   --json                  print one JSON object per file on stdout
   --plain                 no colours and no progress line, even in a terminal
   -h, --help              help for the command

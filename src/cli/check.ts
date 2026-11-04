@@ -14,6 +14,7 @@ import type { ConfigError } from "../core/config/types";
 import type { Brief } from "../core/ir";
 import type { Issue } from "../core/issue";
 import type { ParseTex } from "../core/parse/tex";
+import type { Review } from "../core/review/schema";
 import { readBrief } from "../core/rules/brief-read";
 import { runChecks } from "../core/rules/check";
 import { type LoadedConfig, loadConfig, type Machine, realMachine } from "./config";
@@ -23,6 +24,7 @@ import { expandInputs } from "./files";
 import type { Io } from "./ids";
 import { type LoadedQuiz, loadQuiz } from "./load";
 import { readFailure, shownPath } from "./paths";
+import { loadReview } from "./review-file";
 
 export type CheckOptions = {
   profile: string | null;
@@ -54,8 +56,10 @@ export type FileOutcome =
       resolved: ResolvedProfile;
       /** the quiz as loaded, for the commands that go on to use it (`build`) */
       loaded: LoadedQuiz;
+      /** the review given with `--review`, for `inspect`'s counts; null without it */
+      review: Review | null;
     }
-  | { status: "error"; file: string; message: string; configErrors?: ConfigError[] };
+  | { status: "error"; file: string; message: string; configErrors?: ConfigError[]; problems?: string[] };
 
 /** Files under `dir/content`, relative and with `/`, `README.md` left out; null when there is no such folder. */
 export function listContent(dir: string): string[] | null {
@@ -89,6 +93,19 @@ export function checkFile(file: string, opts: CheckOptions, io: CheckIo): FileOu
     loaded = loadQuiz(path, { parseTex: io.parseTex ?? lazyParseTex() });
   } catch (error) {
     return { status: "error", file, message: `cannot read the file: ${readFailure(error)}` };
+  }
+  let review: Review | null = null;
+  if (opts.review !== null) {
+    const got = loadReview(opts.review, loaded, io.cwd);
+    if (!("review" in got)) {
+      return {
+        status: "error",
+        file,
+        message: got.message,
+        ...(got.problems.length > 0 ? { problems: got.problems } : {}),
+      };
+    }
+    review = got.review;
   }
   const dir = dirname(path);
   const config: LoadedConfig = loadConfig(machine, dir, opts.config);
@@ -178,6 +195,7 @@ export function checkFile(file: string, opts: CheckOptions, io: CheckIo): FileOu
     brief,
     briefIssues,
     contentFiles,
+    review,
   });
   const counts: Counts = {
     errors: result.issues.filter((i) => i.level === "error").length,
@@ -195,6 +213,7 @@ export function checkFile(file: string, opts: CheckOptions, io: CheckIo): FileOu
     header: describeProfile(resolved.profile, choice, config.files),
     resolved: resolved.profile,
     loaded,
+    review,
   };
 }
 
@@ -220,6 +239,7 @@ export function humanIssue(i: Issue, color: boolean): string[] {
 export function describeOutcome(r: FileOutcome, several: boolean, color: boolean): string[] {
   if (r.status === "error") {
     const out = [`${r.file}: ${r.message}`];
+    for (const p of r.problems ?? []) out.push(`    ${p}`);
     for (const e of r.configErrors ?? []) {
       out.push(`${e.file}:${e.line}: ${e.message}`);
       if (e.fix) out.push(`    fix: ${e.fix}`);
@@ -260,16 +280,12 @@ export function runCheck(patterns: readonly string[], opts: CheckOptions, io: Ch
   let ok = 0;
   let failed = 0;
 
-  if (opts.review !== null) {
-    fail(
-      io,
-      opts.json,
-      "quiz check --review is not available yet: it needs the review.json that `quiz review` writes, which arrives with that command",
-    );
-    return EXIT.usage;
-  }
   if (inputs.files.length === 0 && inputs.errors.length === 0) {
     fail(io, opts.json, "nothing to work on: give at least one quiz file");
+    return EXIT.usage;
+  }
+  if (opts.review !== null && several) {
+    fail(io, opts.json, "--review takes one quiz");
     return EXIT.usage;
   }
 
@@ -282,6 +298,7 @@ export function runCheck(patterns: readonly string[], opts: CheckOptions, io: Ch
             file: r.file,
             message: r.message,
             ...(r.configErrors ? { errors: r.configErrors } : {}),
+            ...(r.problems ? { problems: r.problems } : {}),
           }),
         );
         for (const line of describeOutcome(r, several, false)) io.err(line);

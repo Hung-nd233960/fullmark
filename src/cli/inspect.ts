@@ -1,5 +1,6 @@
 import pc from "picocolors";
 import { summarise, summaryLines } from "../core/inspect";
+import { reviewCounts, reviewRow } from "../core/review/counts";
 import { type CheckIo, type CheckOptions, checkFile, describeOutcome, humanIssue, issueJson } from "./check";
 import { EXIT, type ExitCode } from "./exit-codes";
 import { fail } from "./fail";
@@ -18,14 +19,6 @@ export type InspectOptions = {
  * `check` prints them. Exit 0 done, 1 check errors, 2 an I/O error or a config that does not load.
  */
 export function runInspect(pattern: string, opts: InspectOptions, io: CheckIo): ExitCode {
-  if (opts.review !== null) {
-    fail(
-      io,
-      opts.json,
-      "quiz inspect --review is not available yet: it needs the review.json that `quiz review` writes, which arrives with that command",
-    );
-    return EXIT.usage;
-  }
   const inputs = expandInputs([pattern], io.cwd);
   const bad = inputs.errors[0];
   if (bad) {
@@ -37,7 +30,7 @@ export function runInspect(pattern: string, opts: InspectOptions, io: CheckIo): 
     profile: opts.profile,
     config: opts.config,
     strict: false,
-    review: null,
+    review: opts.review,
     json: opts.json,
     plain: opts.plain,
   };
@@ -46,6 +39,7 @@ export function runInspect(pattern: string, opts: InspectOptions, io: CheckIo): 
     fail(io, opts.json, result.message, {
       file: result.file,
       ...(result.configErrors ? { errors: result.configErrors } : {}),
+      ...(result.problems ? { problems: result.problems } : {}),
     });
     for (const line of describeOutcome(result, false, false).slice(1)) io.err(line);
     return EXIT.usage;
@@ -55,6 +49,7 @@ export function runInspect(pattern: string, opts: InspectOptions, io: CheckIo): 
   const summary = quiz && hash ? summarise(quiz, hash) : null;
   const errors = result.issues.filter((i) => i.level === "error");
   const warnings = result.issues.filter((i) => i.level === "warning");
+  const counts = result.loaded.quiz && result.review ? reviewCounts(result.loaded.quiz, result.review) : null;
   const failed = result.status === "failed";
   if (opts.json) {
     io.out(
@@ -68,7 +63,7 @@ export function runInspect(pattern: string, opts: InspectOptions, io: CheckIo): 
         sections: summary?.sections ?? [],
         tags: summary?.tags ?? [],
         positions: summary?.positions ?? {},
-        review: null,
+        review: counts,
         errors: errors.map(issueJson),
         warnings: warnings.map(issueJson),
       }),
@@ -77,6 +72,7 @@ export function runInspect(pattern: string, opts: InspectOptions, io: CheckIo): 
   }
   const color = !opts.plain && io.tty && !("NO_COLOR" in (io.machine?.env ?? process.env));
   if (summary) for (const line of summaryLines(summary)) io.out(line);
+  if (summary && counts) io.out(reviewRow(counts));
   for (const i of result.issues) for (const line of humanIssue(i, color)) io.out(line);
   const count = `${file}: ${errors.length} error${errors.length === 1 ? "" : "s"}, ${warnings.length} warning${warnings.length === 1 ? "" : "s"}`;
   io.out(failed ? (color ? pc.red(count) : count) : color ? pc.green(count) : count);

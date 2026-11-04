@@ -54,7 +54,7 @@ export function buildProgram(outcome: Outcome = { exit: EXIT.done }, io: Io = te
     .option("--strict", "warnings count as errors")
     .option(
       "--review <review.json>",
-      "also fail until every flagged question changed (not available yet: it arrives with quiz review)",
+      "also fail until every question marked fix has changed and every one marked drop is gone (one quiz only)",
     )
     .option("--json", "print one JSON object per file on stdout")
     .option("--plain", "no colours and no progress line, even in a terminal")
@@ -261,7 +261,10 @@ export function buildProgram(outcome: Outcome = { exit: EXIT.done }, io: Io = te
     .argument("<file>", "a quiz .md")
     .option("--profile <name>", "the check profile; overrides the quiz's profile")
     .option("--config <toml>", "use this config file instead of the nearest fullmark.toml")
-    .option("--review <review.json>", "also count the kept, to-fix and to-drop questions (not available yet)")
+    .option(
+      "--review <review.json>",
+      "also count the questions judged keep, fix and drop, and check them as check --review does",
+    )
     .option("--json", "print the summary as one JSON object on stdout")
     .option("--plain", "no colours, even in a terminal")
     .action(async (file: string, options: Record<string, unknown>) => {

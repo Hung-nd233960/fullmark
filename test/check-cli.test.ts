@@ -149,11 +149,14 @@ describe("--strict, fail-on and --review", () => {
     expect(runCheck(["w.md"], opts({ strict: true, profile: "draft" }), capture(dir).io)).toBe(0);
   });
 
-  it("--review exits 2 and says it is not available yet", () => {
-    const dir = tree({ "q.md": quiz() });
+  it("--review exits 2 when the review cannot be read, and with several quizzes", () => {
+    const dir = tree({ "q.md": quiz(), "r.md": quiz() });
     const c = capture(dir);
     expect(runCheck(["q.md"], opts({ review: "review.json" }), c.io)).toBe(2);
-    expect(c.err[0]).toContain("not available yet");
+    expect(c.err[0]).toBe("q.md: cannot read the review review.json: no such file");
+    const two = capture(dir);
+    expect(runCheck(["q.md", "r.md"], opts({ review: "review.json" }), two.io)).toBe(2);
+    expect(two.err).toEqual(["--review takes one quiz"]);
   });
 });
 
@@ -397,11 +400,13 @@ describe("the built bundle", () => {
     expect(lines.at(-1)).toEqual({ status: "done", ok: 2, failed: 1 });
   });
 
-  it("--help lists check and rules, and says --review is not available yet", () => {
+  it("--help lists check and rules, and describes --review", () => {
     const out = execFileSync("node", [cli, "--help"], { encoding: "utf8" });
     expect(out).toContain("check");
     expect(out).toContain("rules");
-    expect(execFileSync("node", [cli, "check", "--help"], { encoding: "utf8" })).toMatch(/not\s+available\s+yet/);
+    expect(execFileSync("node", [cli, "check", "--help"], { encoding: "utf8" })).toMatch(
+      /--review <review\.json>\s+also\s+fail\s+until/,
+    );
   });
 });
 

@@ -1,1 +1,0 @@
-quiz check --review is not available yet: it needs the review.json that `quiz review` writes, which arrives with that command

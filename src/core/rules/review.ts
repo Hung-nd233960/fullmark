@@ -1,16 +1,8 @@
 import { z } from "zod";
 import type { Question, Quiz } from "../ir";
+import { shortDate } from "../review/counts";
 import type { Review } from "../review/schema";
 import type { Finding, QualityRule } from "./types";
-
-const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-
-/** `28 Oct`, from the date part of an ISO time as it was written (no change of zone). */
-export function shortDate(iso: string): string {
-  const m = /^\d{4}-(\d\d)-(\d\d)/.exec(iso);
-  const month = m ? MONTHS[Number(m[1]) - 1] : undefined;
-  return m && month ? `${Number(m[2])} ${month}` : iso;
-}
 
 export type ReviewFindings = { fix: Finding[]; drop: Finding[]; unconfirmed: Finding[] };
 

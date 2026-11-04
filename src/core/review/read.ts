@@ -3,8 +3,7 @@ import { REVIEW_FORMAT, REVIEW_VERSION, type Review, ReviewSchema, RUBRIC_REASON
 
 export type ReadReview = { ok: true; review: Review } | { ok: false; problems: string[] };
 
-const OLD =
-  "a fullmark 0.x review: 1.0 does not read it; judge the quiz again with `quiz review` (0.x reviews judged 0.x quizzes)";
+const OLD = "a fullmark 0.x review: 1.0 does not read it; judge the quiz again with `quiz review`";
 
 /**
  * Reads the text of a review file: the review, or every problem found. A 0.x file (`"version": 1` and no `format`)

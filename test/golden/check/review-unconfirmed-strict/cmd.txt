@@ -1,0 +1,5 @@
+check
+quiz.md
+--review
+review.json
+--strict

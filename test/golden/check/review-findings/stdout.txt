@@ -1,0 +1,6 @@
+profile default (built-in) from the default; config: none
+quiz.md:13: error review.fix: q-chain was marked fix on 28 Oct (unclear): the question has not changed since
+    fix: change the question as the reasons say, or judge it again with `quiz review`
+quiz.md:18: error review.drop: q-product was marked drop on 28 Oct (duplicate): the question is still in the quiz
+    fix: remove the question from the quiz, or judge it again with `quiz review`
+quiz.md: 2 errors, 0 warnings

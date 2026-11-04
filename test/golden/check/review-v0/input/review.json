@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "quiz": "calc",
+  "items": [
+    {
+      "id": "q-chain",
+      "verdict": "fix"
+    }
+  ],
+  "problems": []
+}
