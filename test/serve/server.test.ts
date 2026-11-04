@@ -2,7 +2,13 @@ import { request } from "node:http";
 import { afterEach, describe, expect, it } from "vitest";
 import type { Attempt } from "../../src/core/attempt";
 import { emptyState } from "../../src/core/attempt";
-import { MAX_BODY_BYTES, type RunningServer, type ServerOptions, startServer } from "../../src/serve/server";
+import {
+  MAX_BODY_BYTES,
+  type RunningServer,
+  type ServerOptions,
+  type SubmitRead,
+  startServer,
+} from "../../src/serve/server";
 
 /**
  * The one-shot server (TECHNICAL_DESIGN.md, foundation 4 and "Seams for later features", item 6). It binds port 0 on
@@ -423,5 +429,81 @@ describe("the end", () => {
     await expect(
       startServer({ pages: {}, quizIds: {}, predicate: () => true, onSubmit: () => null, port: server.port }),
     ).rejects.toMatchObject({ code: "EADDRINUSE" });
+  });
+});
+
+describe("a second reader of the submit body (the review form's)", () => {
+  type Note = { text: string };
+  const reader = (body: unknown): SubmitRead<Note> => {
+    const b = body as { quizId?: unknown; note?: unknown };
+    if (b.quizId !== "quiz") return "unknown quiz";
+    if (typeof b.note !== "string") return "the note is missing";
+    return { quizId: "quiz", value: { text: b.note } };
+  };
+  const post = (server: RunningServer, body: string): Promise<Response> =>
+    fetch(`${server.url}submit`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Origin: `http://127.0.0.1:${server.port}` },
+      body,
+    });
+
+  it("hands the value its reader made to onSubmit, answers 200, and ends by the predicate", async () => {
+    const taken: Note[] = [];
+    const server = await startServer<Note>({
+      pages: { "": "<p>form</p>" },
+      quizIds: { quiz: HASH_A },
+      predicate: (accepted) => accepted.has("quiz"),
+      readSubmit: reader,
+      onSubmit: (_id, value) => {
+        taken.push(value);
+        return null;
+      },
+    });
+    running.push(server);
+    const answer = await post(server, JSON.stringify({ quizId: "quiz", note: "ok" }));
+    expect(answer.status).toBe(200);
+    expect(await server.done).toEqual({ status: "submitted" });
+    expect(taken).toEqual([{ text: "ok" }]);
+  });
+
+  it("answers the reader's own words with 400 and keeps waiting", async () => {
+    const taken: Note[] = [];
+    const server = await startServer<Note>({
+      pages: { "": "<p>form</p>" },
+      quizIds: { quiz: HASH_A },
+      predicate: () => true,
+      readSubmit: reader,
+      onSubmit: (_id, value) => {
+        taken.push(value);
+        return null;
+      },
+    });
+    running.push(server);
+    const bad = await post(server, JSON.stringify({ quizId: "quiz" }));
+    expect(bad.status).toBe(400);
+    expect(await bad.text()).toBe("the note is missing");
+    const other = await post(server, JSON.stringify({ quizId: "other", note: "x" }));
+    expect(other.status).toBe(400);
+    expect(await other.text()).toBe("unknown quiz");
+    const notJson = await post(server, "{nope");
+    expect(notJson.status).toBe(400);
+    expect(taken).toEqual([]);
+    expect((await post(server, JSON.stringify({ quizId: "quiz", note: "late" }))).status).toBe(200);
+    expect(taken).toEqual([{ text: "late" }]);
+    await server.done;
+  });
+
+  it("does not take an attempt body when a reader is given, and serve's default does not take the reader's", async () => {
+    const withReader = await startServer<Note>({
+      pages: {},
+      quizIds: { quiz: HASH_A },
+      predicate: () => true,
+      readSubmit: reader,
+      onSubmit: () => null,
+    });
+    running.push(withReader);
+    expect((await post(withReader, submitBody("quiz", attempt(HASH_A)))).status).toBe(400);
+    const { server } = await start();
+    expect((await post(server, JSON.stringify({ quizId: "quiz", note: "x" }))).status).toBe(400);
   });
 });
