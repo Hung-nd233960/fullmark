@@ -20,7 +20,7 @@ As in step 2 ([archive/STEP2.md](archive/STEP2.md), Handoff): Opus writes a slic
 | 3g 3d's fixes, `brief` through flags | done, reviewed, gaps decided | `27a61a4`..`2e6b449` |
 | 3i 3g's fixes, `brief --tui` | done, reviewed, gaps decided | `fb5ed78`..`546ccc0` |
 | 3j 3i's fixes, `build --watch` and `--serve` | done, reviewed, gaps decided (G35 built in review) | `4a0835f`..`45fe811` |
-| 3v the form boards (on the Design canvas) | `review` boards drafted by Opus and reviewed by the owner (2026-11-04); G38 to G45 decided; **waits for the owner**: G46 (`vi` words). `grade --web` and `brief --web` boards after that | |
+| 3v the form boards (on the Design canvas) | `review` boards drafted by Opus and reviewed by the owner (2026-11-04); G38 to G45 decided; **waits for the owner**: G46 (`vi` words) and G47 (the page's font names). `grade --web` and `brief --web` boards after that | |
 | 3e `review`, 3f `grade --web`, 3h `brief --web` | wait for 3v; briefs not written yet | |
 | 3z acceptance | last | |
 
@@ -149,7 +149,9 @@ The design docs left these open, or a slice's review found them. Each needs the 
 
 **G41. Changing a verdict** (3e). **Decided by the owner on 2026-11-04, as recommended**, and written into COMMANDS.md.
 
-**G42. The form's top bar** (3e). **Decided by the owner on 2026-11-04, changed from the recommendation**, and written into COMMANDS.md: the look controls stay, with A− / A+ merged into **Appearance** so the bar is not cluttered: theme and font under `look: free`, the text size alone under `look: locked` (with a line saying the quiz's look is locked). No Focus mode. The owner asked whether the review can change a quiz's theme or lock: it cannot, since `review-v1` has entries per question only. The look is the quiz's front matter (`theme:`, `look:`), so editing it makes a new version of the same quiz (the quiz hash covers the whole file), not a new quiz; a later `review --since` then asks about no question, since no question's hash changed.
+**G42. The form's top bar** (3e). **Decided by the owner on 2026-11-04, changed from the recommendation**, and written into COMMANDS.md: the look controls stay, as on the page. A first redraw merged A− / A+ into Appearance; the owner asked for the page's own controls instead: the joined A− · 1× · A+ text size in the bar (under `free` and `locked`), and the Appearance menu with Theme (with Auto) and Font, named by category (System, Sans, Serif, Readable), only under `look: free`. No Focus mode. The owner asked whether the review can change a quiz's theme or lock: it cannot, since `review-v1` has entries per question only. The look is the quiz's front matter (`theme:`, `look:`), so editing it makes a new version of the same quiz (the quiz hash covers the whole file), not a new quiz; a later `review --since` then asks about no question, since no question's hash changed.
+
+**G47. The page's font names** (page, found while drawing 3v). The owner names the fonts by category, System, Sans, Serif, Readable, as the review board now does; the page's catalog (`fontName` in `src/core/i18n/en.ts` and `vi.ts`) shows the families, "Be Vietnam Pro", "Source Serif 4", "Lexend". **Recommend:** the page's Font row uses the categories too (`vi`: Hệ thống, Sans, Serif, Dễ đọc), with the family as each pill's tooltip, so the form and the page say the same; the Information tab keeps the family names, since it is for debugging. A small change, done as 3e's first task.
 
 **G43. Finish and after** (3e). **Decided by the owner on 2026-11-04, as recommended**, and written into COMMANDS.md.
 
