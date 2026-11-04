@@ -104,7 +104,7 @@ export async function runCase(c: Case): Promise<Run> {
     // the user's own config is never read: the places it would be found point into the case, where nothing is
     const home = join(tmp, "no-home");
     for (const k of ["HOME", "USERPROFILE", "XDG_CONFIG_HOME"]) env[k] = home;
-    // Windows keeps the user config in %APPDATA%ullmark; the cases hold it at no-home/.config/fullmark, as Linux does
+    // Windows keeps the user config in %APPDATA%\fullmark; the cases hold it at no-home/.config/fullmark, as Linux does
     env.APPDATA = join(home, ".config");
     if (existsSync(join(tmp, "user-config.toml"))) env.FULLMARK_CONFIG = join(tmp, "user-config.toml");
     for (const l of lines(join(c.dir, "env.txt"))) {

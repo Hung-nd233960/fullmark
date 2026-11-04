@@ -22,12 +22,12 @@ As in step 2 ([archive/STEP2.md](archive/STEP2.md), Handoff): Opus writes a slic
 | 3j 3i's fixes, `build --watch` and `--serve` | done, reviewed, gaps decided (G35 built in review) | `4a0835f`..`45fe811` |
 | 3v the form boards (on the Design canvas) | `review` boards drafted by Opus and reviewed by the owner (2026-11-04); G38 to G47 decided (2026-11-04); boards and images in `docs/mockup/` `grade --web` and `brief --web` boards after that | |
 | 3e G47, the review file, `check --review`, `inspect --review` | done, reviewed, gaps decided (2026-11-04) | `5e9b45c`..`dbcd43e` |
-| 3k G51, `quiz review` and its form | built on `1.0` (91a8821, 659a4de, 8ad2ad3, aa186c4 and the docs commit); awaiting the planner's review | |
-| 3l `--since`, the stacked sidebar with the materials and the phone | outline; after 3k's review (G52) | |
+| 3k G51, `quiz review` and its form | done, reviewed (2026-11-04); G56 and G57 wait for the owner | `91a8821`..`c326d9f` |
+| 3l `--since`, the stacked sidebar with the materials and the phone | outline; after G56 and G57 are decided | |
 | 3f `grade --web`, 3h `brief --web` | wait for their boards (3v) | |
 | 3z acceptance | last | |
 
-Each slice's review, and the owner's decisions on its gaps, are under its own section below (**Review**); every gap, G1 to G55, is in "Gaps", in number order.
+Each slice's review, and the owner's decisions on its gaps, are under its own section below (**Review**); every gap, G1 to G57, is in "Gaps", in number order.
 
 Step 2 is closed ([archive/STEP2.md](archive/STEP2.md), item 75): every "Done when" criterion passes in Chromium and Firefox; Vitest 2059 of 2059, the 2 startup tests, Playwright and axe. What step 3 inherits:
 
@@ -40,7 +40,7 @@ Step 2 is closed ([archive/STEP2.md](archive/STEP2.md), item 75): every "Done wh
 
 ### Next steps, in order
 
-1. **The form boards on the Design canvas** (3v, G7), as 2v did for the page: every slice left (3e, 3f, 3h) waits for them. The `review` boards are done: reviewed, G38 to G47 decided and in COMMANDS.md, the sources copied into `docs/mockup/boards/`. Their images are in `docs/mockup/images/Review*.png` (the owner's export, scaled to board size). 3e is cut in three (3e the file and the checks, 3k the form, 3l `--since` and the phone), and **3e is built and reviewed** ("Slice 3e", its Review): G50 and G51 decided (3l's and 3k's first tasks). **3k's brief is written** ("Slice 3k", at the end): approved by the owner with G52 to G55, and with Sonnet. The `grade --web` and `brief --web` boards follow in the same way.
+1. **The form boards on the Design canvas** (3v, G7), as 2v did for the page: every slice left (3e, 3f, 3h) waits for them. The `review` boards are done: reviewed, G38 to G47 decided and in COMMANDS.md, the sources copied into `docs/mockup/boards/`. Their images are in `docs/mockup/images/Review*.png` (the owner's export, scaled to board size). 3e is cut in three (3e the file and the checks, 3k the form, 3l `--since` and the phone), and **3e is built and reviewed** ("Slice 3e", its Review): G50 and G51 decided (3l's and 3k's first tasks). **3k is built and reviewed** ("Slice 3k", its Review, at the end): G56 and G57 wait for the owner; once decided they open 3l's brief, after G50. The `grade --web` and `brief --web` boards follow in the same way.
 
 ### Open proposals carried over from step 2
 
@@ -179,6 +179,10 @@ The design docs left these open, or a slice's review found them. Each needs the 
 **G54. Surveys** (raised writing 3k's brief). **Decided by the owner on 2026-11-04, as recommended**; 3k writes it into the design docs (its task 5). A `kind: survey` quiz has no key, so most reasons ("Answer key wrong", "Too easy") mean nothing there, and the design never says what reviewing a survey is for. **Recommend:** `quiz review` on a survey exits 2 before serving, "a survey has no answer key to review". A `scale` question in a graded quiz is judged like any other.
 
 **G55. How a question shows its key** (raised writing 3k's brief). **Decided by the owner on 2026-11-04, as recommended**; 3k writes it into the design docs (its task 5). The boards draw single, multi, numeric, short and essay questions; the page shows every type's key after Submit, but always beside the learner's answer. **Recommend:** the form uses the page's own question components in their after-Submit state, from the same page data and key blob, with no answer: the key's marks only (Correct answer, Accepted answers with the tolerance, the right order, the right pairs, each blank's and field's accepted values), never "your answer" or a right or wrong colour; `short` adds its patterns as written (G40). Questions come in source order, every question of a bank's pool, choices unshuffled: the learner judges the source, not an attempt.
+
+**G56. A matching question's distractors in the form** (raised in 3k's review). The form shows a matching question's right pairs, but not its distractors: the right-hand items that match nothing. They are part of the key the learner judges (a distractor that is in fact a right answer is a `key-wrong`), and the source has them. **Recommend:** the form lists them under the pairs, each marked "Matches nothing" (vi: "Không ghép với mục nào"), in source order; 3l builds it with its other fixes.
+
+**G57. The form's words that are not on the boards** (raised in 3k's review). 3k needed six strings the boards do not draw, written by the implementing agent in `src/core/i18n/review.ts`: `patterns` "Accepted patterns" / "Mẫu chấp nhận" (a `short` question's patterns, G40); `unscored` "Not scored" / "Không tính điểm" (a `scale` question in a graded quiz); `partCount` "6 of 12 judged" / "đã xét 6 / 12"; `keysLabel` "Keys" / "Phím tắt" (the sidebar's key list); `held` "N questions need a reason or a note before the review can be saved:" / "N câu cần có lý do hoặc ghi chú trước khi lưu được bản rà soát:" (Finish with an incomplete verdict); `saveFailed` "The review was not saved: WHY" / "Chưa lưu được bản rà soát: WHY". **Recommend:** keep them as written (each follows the boards' wording where one is near), and the owner reads them in the form through `npm run samples` and says which to change; a change is one line in that file, done in 3l.
 
 ## Slices
 
@@ -569,3 +573,30 @@ The order (owner, 2026-11-03) puts the server first, since four commands stand o
 ### Done when
 
 `npm run check` passes on win32 here with no Vitest failure (G51) and in Chromium (Firefox only if the environment has it; say which ran). `quiz review examples/rust/quiz.md --open` opens the form in the quiz's look; judging every question by keys and pressing Finish writes `review.json`, and `quiz check examples/rust/quiz.md --review review.json` then exits 1 with `review.fix` and `review.drop` for what was marked. A second `quiz review` opens with those verdicts in place. A survey exits 2; a quiz with a question without an id exits 1. `check` still does not load `src/serve/`. The screens are committed. Report as the rules say, every golden that changed counted and explained.
+
+### Review
+
+**3k's review (2026-11-04).** Seven commits, `91a8821`..`c326d9f`. Typecheck, Biome and knip clean. Vitest, run twice in review after a fresh build: **2668 passed**, 3 skipped, and in each run only the 2 startup tests failed, because the run was parallel; alone (as `npm test` runs them) they pass, 2 of 2. So **G51 holds: no other failure on win32**, where 3e's review had 49. Playwright in Chromium: 205 passed, 140 skipped, 1 failed, `budget.spec.ts` under the full run's load (1134 ms against 1000); alone it passes at 592 ms. `dist/page.js`, `serve.js`, `reload.js` and `page.css` are byte-identical to before 3k, so the shared page is unchanged. Firefox was not run, and the Ctrl+C e2e test is skipped on win32: both need a Linux run, in 3z at the latest.
+
+**Goldens**, all explained: **2 changed** (`top/help` stdout and `top/no-command` stderr, each the three lines of the new `review` entry); **19 added** under `test/golden/review/` (every refusal and its `--json` form) and 3 e2e goldens (`review-written`, `review-types`, `review-keep-rest`); none removed, no `build` golden moved.
+
+**Tried by hand** on a copy of `examples/rust`. `quiz review quiz.md --json`: the `listening` line, the form in the quiz's look. `1` gave Keep, `N` moved and scrolled to the next, `2` gave Fix. Finish with that Fix having no reason wrote nothing and listed it ("1 question needs a reason or a note…: 2"). After picking Unclear, Keep the rest opened its dialog, and Mark them Keep and finish wrote `{"status":"written","review":"review.json","keep":9,"fix":1,"drop":0}`, exit 0, with `assumed` on the 8 not looked at. `check --review` then exited 1 with `review.fix` on `which-compile` (reason "unclear"), and `inspect --review` printed `keep 9 (8 not looked at) · fix 1 · drop 0 · not judged 0`. After editing the `largest` question, a second `quiz review` opened at "Judged 9 of 10" with only `largest` not judged (G53). Killing that run left `review.json` byte for byte. `quiz review examples/survey/quiz.md` exits 2 with G54's message; `--since` exits 2, "not available yet".
+
+**Done differently, accepted in review unless the owner says otherwise:**
+
+- The form's words are in their own catalog file, `src/core/i18n/review.ts`, not a group in `en.ts` and `vi.ts`: adding them there changed `dist/page.js` and every build golden.
+- G51 was met by finding the causes, not by moving every wait onto the injected clock. The watcher watched folders whose drive letter had been case-folded (a real Windows bug, fixed in `src/cli/watcher.ts`). The server answered 413 while the client was still writing, and Windows dropped the answer; it now reads up to twice the cap before answering. The example-building tests got timeouts sized and explained in the test, and the golden test's went from 60 to 180 s. No test was named as still waiting on real time; the two clean runs are the evidence.
+- In the server the 409 "already submitted" now comes after the body is read and checked, not before.
+- "Ask for `quiz ids`" applies only when every check error is `question.id-missing`; with other errors too, the errors are printed as `check` prints them.
+- The human output leaves out "(0 not looked at)"; the two progress lines go to stderr; the form's `lang` is the quiz's `ui_lang`; `test/serve/module.test.ts`'s guard skips `src/cli/review.ts`, which uses the server as `serve.ts` does.
+
+**Small things for 3l's fixes** (no decision needed):
+
+- In both dialogs `quiz review --since` breaks at its hyphen; it should be a code span that does not wrap.
+- COMMANDS.md says "until slice 3l" twice (the stacked sidebar and `--since`); 3l removes both when it builds them.
+- A one-question part shows its heading row as the cell, as on the page (`singleRow`), so "3 · Write some code" has no count: as designed.
+- Fixed in review: a form-feed byte in a comment of `test/golden/runner.ts` (the `\f` of `%APPDATA%\fullmark`, written by a shell).
+
+**Gaps for the owner:** G56 (a matching question's distractors in the form) and G57 (the six strings not on the boards), in "Gaps" with recommendations.
+
+**Left on the disk:** nothing in the repo; the review's copies are in the session scratchpad.
