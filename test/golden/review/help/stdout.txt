@@ -1,0 +1,22 @@
+Usage: quiz review [options] <file>
+
+a form to judge every question (keep, fix or drop) and write review.json when
+you press Finish
+
+Arguments:
+  file                 the quiz .md (a built page is refused)
+
+Options:
+  --out <review>       the review file (default: review.json next to the quiz);
+                       an existing one is merged into
+  --since <review>     ask only about questions new or changed since this review
+                       (not available yet)
+  --timeout <seconds>  how long to wait for Finish; 0 waits forever (default
+                       1800)
+  --open               open the form in the default browser
+  --port <n>           the port on 127.0.0.1 (default: a free one)
+  --profile <name>     the check profile; overrides the quiz's profile
+  --config <toml>      use this config file instead of the nearest fullmark.toml
+  --json               print a listening line, then the outcome, as JSON on
+                       stdout
+  -h, --help           help for the command

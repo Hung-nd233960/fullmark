@@ -377,10 +377,10 @@ function gradesOf(applied: AppliedGrades, quiz: Quiz, md: Md): PageGrades {
 const sha256Source = (text: string): string => `'sha256-${toBase64(sha256(utf8ToBytes(text)))}'`;
 
 /** JSON that is safe inside a `<script>`: no `<`, and no line separators that old parsers mind. */
-const scriptJson = (value: unknown): string =>
+export const scriptJson = (value: unknown): string =>
   canonicalJson(value).replaceAll("<", "\\u003c").replaceAll("\u2028", "\\u2028").replaceAll("\u2029", "\\u2029");
 
-const escapeAttr = (text: string): string =>
+export const escapeAttr = (text: string): string =>
   text.replaceAll("&", "&amp;").replaceAll('"', "&quot;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
 
 /**

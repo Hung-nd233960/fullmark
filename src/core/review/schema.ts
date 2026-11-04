@@ -1,29 +1,9 @@
 import { z } from "zod";
+import { REASONS, REASONS_OF, VERDICTS } from "./reasons";
 
 /** `review-v2` (TECHNICAL_DESIGN.md, section 4): the learner's verdict on each question, written by `quiz review`. */
 export const REVIEW_FORMAT = "fullmark-review";
 export const REVIEW_VERSION = 2;
-
-export const VERDICTS = ["keep", "fix", "drop"] as const;
-export type Verdict = (typeof VERDICTS)[number];
-
-/** The reasons for a `fix` that fit every question, then those for essays and code. */
-export const FIX_REASONS = ["key-wrong", "unclear", "other"] as const;
-export const RUBRIC_REASONS = ["rubric-loose", "points-misallocated", "criterion-unclear"] as const;
-export const DROP_REASONS = ["duplicate", "off-scope", "too-easy", "other"] as const;
-
-export const REASONS = [...FIX_REASONS, ...RUBRIC_REASONS, "duplicate", "off-scope", "too-easy"] as const;
-export type ReasonId = (typeof REASONS)[number];
-
-/** The reasons a verdict takes; none for `keep`. */
-export const REASONS_OF: Record<Verdict, readonly ReasonId[]> = {
-  keep: [],
-  fix: [...FIX_REASONS, ...RUBRIC_REASONS],
-  drop: DROP_REASONS,
-};
-
-/** The question types the rubric reasons are for. */
-export const RUBRIC_TYPES: readonly string[] = ["essay", "code"];
 
 const iso = z.string().regex(/^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(?:\.\d+)?(?:Z|[+-]\d\d:\d\d)?$/, "an ISO date and time");
 const sha = z.string().regex(/^[0-9a-f]{64}$/, "a SHA-256 in lower-case hex");

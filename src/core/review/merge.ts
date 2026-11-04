@@ -1,7 +1,5 @@
-import { REVIEW_FORMAT, REVIEW_VERSION, type ReasonId, type Review, type ReviewEntry, type Verdict } from "./schema";
-
-/** What the form decided about one question: the entry without the hash and the source, which the quiz gives. */
-export type Judged = { verdict: Verdict; reasons: readonly ReasonId[]; note: string; assumed?: true };
+import type { Judged } from "./reasons";
+import { REVIEW_FORMAT, REVIEW_VERSION, type Review, type ReviewEntry } from "./schema";
 
 /** The quiz as `merge` needs it: its identity and, per question id, the hash and the block as hashed. */
 export type ReviewTarget = {

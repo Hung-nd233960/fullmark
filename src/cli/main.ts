@@ -8,6 +8,7 @@ import type { IdsOptions, Io } from "./ids";
 import type { InspectOptions } from "./inspect";
 import type { NewOptions } from "./new";
 import type { ReplayCommandOptions } from "./replay-command";
+import type { ReviewOptions } from "./review";
 import type { RulesOptions } from "./rules";
 import { seededIds } from "./seed";
 import type { ServeOptions } from "./serve";
@@ -439,6 +440,33 @@ export function buildProgram(outcome: Outcome = { exit: EXIT.done }, io: Io = te
         version: VERSION,
       };
       outcome.exit = await (await import("./serve")).runServe(file, opts, io);
+    });
+
+  program
+    .command("review")
+    .description("a form to judge every question (keep, fix or drop) and write review.json when you press Finish")
+    .argument("<file>", "the quiz .md (a built page is refused)")
+    .option("--out <review>", "the review file (default: review.json next to the quiz); an existing one is merged into")
+    .option("--since <review>", "ask only about questions new or changed since this review (not available yet)")
+    .option("--timeout <seconds>", "how long to wait for Finish; 0 waits forever (default 1800)")
+    .option("--open", "open the form in the default browser")
+    .option("--port <n>", "the port on 127.0.0.1 (default: a free one)")
+    .option("--profile <name>", "the check profile; overrides the quiz's profile")
+    .option("--config <toml>", "use this config file instead of the nearest fullmark.toml")
+    .option("--json", "print a listening line, then the outcome, as JSON on stdout")
+    .action(async (file: string, options: Record<string, unknown>) => {
+      const opts: ReviewOptions = {
+        out: (options.out as string | undefined) ?? null,
+        since: (options.since as string | undefined) ?? null,
+        timeout: (options.timeout as string | undefined) ?? null,
+        open: Boolean(options.open),
+        port: (options.port as string | undefined) ?? null,
+        json: Boolean(options.json),
+        profile: (options.profile as string | undefined) ?? null,
+        config: (options.config as string | undefined) ?? null,
+        version: VERSION,
+      };
+      outcome.exit = await (await import("./review")).runReview(file, opts, io);
     });
   return program;
 }

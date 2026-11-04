@@ -1,5 +1,6 @@
 import type { Quiz } from "../ir";
-import { REVIEW_FORMAT, REVIEW_VERSION, type Review, ReviewSchema, RUBRIC_REASONS, RUBRIC_TYPES } from "./schema";
+import { RUBRIC_REASONS, RUBRIC_TYPES } from "./reasons";
+import { REVIEW_FORMAT, REVIEW_VERSION, type Review, ReviewSchema } from "./schema";
 
 export type ReadReview = { ok: true; review: Review } | { ok: false; problems: string[] };
 

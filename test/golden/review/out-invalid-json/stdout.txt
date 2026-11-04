@@ -1,0 +1,1 @@
+{"status":"error","message":"review.json is not a usable review","problems":["quizHash: a SHA-256 in lower-case hex","reviewedAt: an ISO date and time","questions.pick-one.hash: a SHA-256 in lower-case hex","questions.pick-one.reasons: a fix needs at least one reason"]}

@@ -79,6 +79,22 @@ describe("what each command loads", () => {
     for (const marker of [...BUILD_ONLY, ...SERVE_ONLY]) expect(text, marker).toContain(marker);
   });
 
+  it("the review command holds the page builder and the server, and the form is not in its chunks (dist/review.js is a bundle of its own)", () => {
+    const review = chunkWith("// src/cli/review.ts");
+    const text = textOf(closure(review));
+    for (const marker of [...BUILD_ONLY, ...SERVE_ONLY]) {
+      expect(text, marker).toContain(marker);
+    }
+    // the form's code and its words belong to the browser bundle, never to the CLI
+    expect(text).not.toContain("// src/review/");
+    expect(text).not.toContain("// src/core/i18n/review.ts");
+    // a command of its own: `main` and `check` reach it by no static import
+    expect(closure(entry("main"))).not.toContain(review);
+    expect(closure(entry("check"))).not.toContain(review);
+    expect(readFileSync(join(dist, entry("main")), "utf8")).toContain(`import("./${review}")`);
+    for (const marker of CLACK) expect(text, marker).not.toContain(marker);
+  });
+
   it("the build and replay commands never load the server", () => {
     for (const name of ["build", "replay-command"]) {
       const text = textOf(closure(entry(name)));
