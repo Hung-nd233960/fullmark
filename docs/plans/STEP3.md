@@ -20,11 +20,13 @@ As in step 2 ([archive/STEP2.md](archive/STEP2.md), Handoff): Opus writes a slic
 | 3g 3d's fixes, `brief` through flags | done, reviewed, gaps decided | `27a61a4`..`2e6b449` |
 | 3i 3g's fixes, `brief --tui` | done, reviewed, gaps decided | `fb5ed78`..`546ccc0` |
 | 3j 3i's fixes, `build --watch` and `--serve` | done, reviewed, gaps decided (G35 built in review) | `4a0835f`..`45fe811` |
-| 3v the form boards (on the Design canvas) | `review` boards drafted by Opus and reviewed by the owner (2026-11-04); G38 to G47 decided (2026-11-04); boards and images in `docs/mockup/`. **Next:** 3e's brief `grade --web` and `brief --web` boards after that | |
-| 3e `review`, 3f `grade --web`, 3h `brief --web` | wait for 3v; briefs not written yet | |
+| 3v the form boards (on the Design canvas) | `review` boards drafted by Opus and reviewed by the owner (2026-11-04); G38 to G47 decided (2026-11-04); boards and images in `docs/mockup/` `grade --web` and `brief --web` boards after that | |
+| 3e the review file, `check --review`, `inspect --review` | brief written (2026-11-04); **waits for the owner's approval**, with G48 and G49 | |
+| 3k `quiz review` and its form, 3l `--since` and the phone | outlines; after 3e | |
+| 3f `grade --web`, 3h `brief --web` | wait for their boards (3v) | |
 | 3z acceptance | last | |
 
-Each slice's review, and the owner's decisions on its gaps, are under its own section below (**Review**); every gap, G1 to G37, is in "Gaps", in number order.
+Each slice's review, and the owner's decisions on its gaps, are under its own section below (**Review**); every gap, G1 to G49, is in "Gaps", in number order.
 
 Step 2 is closed ([archive/STEP2.md](archive/STEP2.md), item 75): every "Done when" criterion passes in Chromium and Firefox; Vitest 2059 of 2059, the 2 startup tests, Playwright and axe. What step 3 inherits:
 
@@ -37,7 +39,7 @@ Step 2 is closed ([archive/STEP2.md](archive/STEP2.md), item 75): every "Done wh
 
 ### Next steps, in order
 
-1. **The form boards on the Design canvas** (3v, G7), as 2v did for the page: every slice left (3e, 3f, 3h) waits for them. The `review` boards are done: reviewed, G38 to G47 decided and in COMMANDS.md, the sources copied into `docs/mockup/boards/`. Their images are in `docs/mockup/images/Review*.png` (the owner's export, scaled to board size). Next, 3e's brief, with G47 (the page's Font row by category) and the `vi` words of G46 as its first tasks. The `grade --web` and `brief --web` boards follow in the same way.
+1. **The form boards on the Design canvas** (3v, G7), as 2v did for the page: every slice left (3e, 3f, 3h) waits for them. The `review` boards are done: reviewed, G38 to G47 decided and in COMMANDS.md, the sources copied into `docs/mockup/boards/`. Their images are in `docs/mockup/images/Review*.png` (the owner's export, scaled to board size). 3e is cut in three (3e the file and the checks, 3k the form, 3l `--since` and the phone), and **3e's brief is written** ("Slice 3e", at the end): the owner approves it with G48 and G49, then it goes to Sonnet. The `grade --web` and `brief --web` boards follow in the same way.
 
 ### Open proposals carried over from step 2
 
@@ -161,6 +163,10 @@ The design docs left these open, or a slice's review found them. Each needs the 
 
 **G46. The form's words in `vi`** (3e). **Decided by the owner on 2026-11-04, as recommended**: the ReviewVi board's words, which 3e copies into the catalogs. The prompts "What needs fixing?" and "Why drop it?" are in COMMANDS.md. **Recommend:** the `vi` strings drawn on the ReviewVi board, reusing the page's catalog where a word exists (Giao diện, Nền, Phông, Cỡ chữ, Tài liệu, Đáp án đúng, Đáp án chấp nhận, Tiêu chí chấm, Bài mẫu, đang xem, Đóng thanh bên): Rà soát, Giữ / Sửa / Bỏ, Giữ các câu còn lại, Hoàn tất, Đã xét 14 / 32, Đánh giá của bạn, Cần sửa gì?, Vì sao bỏ?, Chọn ít nhất một lý do., Ghi chú (không bắt buộc) / (bắt buộc khi chọn Khác), Chưa xét; the reasons Đáp án sai, Chưa rõ ràng, Tiêu chí chấm quá lỏng, Chia điểm chưa hợp lý, Tiêu chí chưa rõ, Khác, Trùng lặp, Ngoài phạm vi, Quá dễ; the dialog "N câu chưa xét", Quay lại câu K, Huỷ, Đánh dấu Giữ và hoàn tất; after writing, Đã lưu bản rà soát. The owner reads them on the board; 3e copies the approved ones into the catalogs.
 
+**G48. The review file's format and version** (3e). Section 4 names it `review-v1`, with `format: "review"; version: 1`. But 0.x already wrote a `review.json` with `"version": 1` (`src/fullmark/review.py` on `main`: `quiz`, `items`, `problems`), and foundation 6 starts every 1.0 format at version 2 so that a 0.x file is never mistaken for a 1.0 one; the other formats are also named `fullmark-results`, `fullmark-report`, `fullmark-grades`. **Recommend:** `{"format": "fullmark-review", "version": 2}`, called `review-v2` in the docs; a 0.x file (`"version": 1` and no `format`) is refused with "a fullmark 0.x review: 1.0 does not read it; judge the quiz again with `quiz review`". 0.x reviews are not moved in by the move-in script: they judge 0.x quizzes, which 1.0 does not read either.
+
+**G49. `inspect --review`'s output, and the JSON Schemas** (3e). COMMANDS.md says only "counts of kept, to fix and to drop". **Recommend:** counted over the quiz's current questions (entries for removed questions left out), one human row after Positions: `Review     keep 26 (14 not looked at) · fix 3 (2 changed since) · drop 1 · not judged 2 · 28 Oct`, and one JSON key, `"review": {"reviewedAt", "keep", "assumed", "fix", "fixChanged", "drop", "unjudged"}`. Also: section 3 says the JSON Schemas of `results`, `report`, `grades` and `review` are generated from zod, but none is yet; 3e writes the zod schema only, and exporting all of them stays one task for 3z, so the four arrive together.
+
 ## Slices
 
 | Slice | Content | Needs |
@@ -173,7 +179,9 @@ The design docs left these open, or a slice's review found them. Each needs the 
 | **3i** | 3g's fixes; `brief --tui` with `@clack/prompts`; flags and `--tui` write byte-identical `brief.yaml` | G11, G12, G23 to G25 |
 | **3j** | `build --watch` and `--serve`: watching, the last good page, `--json` per rebuild, the reload server | G6 |
 | **3v** | The owner's form boards (G7), whenever the owner is ready; no code. Only 3e, 3f and 3h wait for it | G7 |
-| **3e** | `review`: `review-v1` in `ir.ts` and its JSON Schema, the form (verdict, then reasons; The rest is fine; the Finish dialog), merge, `--since` with the diff; `check --review` with `review.fix`, `review.drop` and `review.unconfirmed`; `inspect --review` | G1, G2, G3, boards |
+| **3e** | G47; the review file (`src/core/review/`: schema, reader, merge, the block text), `check --review` with `review.fix`, `review.drop` and `review.unconfirmed`, `inspect --review`. No browser | G1, G2, G47 to G49 |
+| **3k** | `quiz review` on the one-shot server and its form (`dist/review.js`): the Review boards at 1280 px (the verdict, then reasons; the stacked sidebar with the materials; the text size and Appearance; Keep the rest; the Finish dialog; the saved card; the keys), the `vi` words of ReviewVi, the refusal of questions without ids, `--out` merged, axe in both themes, screens, the samples line | G3, G38 to G46, 3e |
+| **3l** | `review --since`: only the new and changed questions, the earlier verdict and the line diff, the map's "not asked again"; the form on a phone (ReviewPhone) | G44, G45, 3k |
 | **3f** | `grade --web` and `--name`: the grading form on the rubric modes, pre-filled from `--grades`, `kind: human` and `reviewed`, then the report | boards |
 | **3h** | `brief --web`: the form from the question file, the detail rules, the summary screen, `--language` for the form; the three-way byte-identity test (flags, `--web`, `--tui`) that closes step 3's criterion | G11, boards |
 | **3z** | Acceptance: every "Done when" item checked in Chromium and Firefox, samples tried by the owner | |
@@ -465,3 +473,37 @@ The order (owner, 2026-11-03) puts the server first, since four commands stand o
 **3j's review (2026-11-03).** Typecheck, Biome and Vitest clean: 101 files, **2525 of 2525**, the 2 startup tests. Playwright in Chromium: **197 passed** (4 new in `e2e/watch.spec.ts`), 128 skipped, none failed (run in review). No existing golden changed; 13 new (`brief/tui-bad-flag` for G26; 7 `build/*` usage errors and a missing file; `top/help-build`; the index in `en` and `vi`; 2 e2e `jsonl` goldens). `dist/reload.js` is 178 B (170 gzipped); `dist/serve.js` unchanged; the watch code is its own CLI chunk, which `build` and `check` never load. The reload server is a sibling, `src/serve/reload-server.ts`, with no POST path at all, sharing the one-shot server's token, `Host` and refusal code; the served copy is made by `withReload` on the finished page or paper, so a paper is served the same way. Tried by hand on a copy of `examples/rust`: `--watch --serve --json` gives `listening`, `built`, a `built` line and one `reload` event for a saved edit, a `failed` line with the errors and "kept the last good page" (no event) for a saved error; the page 200, a path outside the token 403; SIGINT printed `{"status":"stopped"}`, exit 0, no process left. Done differently, accepted in review unless the owner says otherwise: each watched file's folder gets a non-recursive watch (TECHNICAL_DESIGN.md section 3 says `recursive`); the 100 ms window starts at the first event and does not slide; a reload event names its page, so with several files an edit reloads only that page and the index; an unusable input at start exits 2 before anything is watched; the human line goes to stderr with and without `--json`. **Written in review:** [proposals/print-pdf.md](../design/proposals/print-pdf.md), as "Open proposals" planned.
 
 **3j's gaps decided by the owner on 2026-11-03**, all as recommended, and written into COMMANDS.md (`quiz build`: the index's note on the next load; `--open` with `--watch --serve` opens the index; the config needs a restart) and TECHNICAL_DESIGN.md section 3 (the Watching row). G35's line was made in review, with a test in `test/build/watch.test.ts`.
+
+## Slice 3e: G47, then the review file, `check --review` and `inspect --review`
+
+**Waiting for the owner's approval**, with G48 and G49. 3e as first listed (the format, the checks, the form, `--since`) is three Sonnet sessions, not one, so it is cut in three (the slice table): **3e** the file and the two commands that read it, with no browser; **3k** `quiz review` and its form; **3l** `--since` and the phone. This brief is 3e's; 3k and 3l stay outlines until 3e is reviewed.
+
+### Read first
+
+- COMMANDS.md: `quiz check` (the `--review` row and the exit list), `quiz inspect` (all of it), `quiz review` (the form's rules, for what the file must hold), `quiz ids`, "Exit codes", "Files".
+- TECHNICAL_DESIGN.md: section 4, "`review-v1`" (the type, the rules on keys, reasons, merging and `assumed`, and the table of `review.fix`, `review.drop`, `review.unconfirmed`); section 5 (the rule catalogue: where these three go); foundation 1 (what the question hash covers); foundation 6 (versioned files; 0.x files refused).
+- This plan: "Rules for every slice", G1, G2, G3, G47, G48, G49.
+- Code: `src/core/ir.ts` (`QuestionBase`: `id`, `hash`), `src/core/parse/question.ts` (lines 300 to 325: the block the hash is taken over), `src/core/rules/types.ts` (`RuleContext`), `src/core/rules/fixed.ts` (the `fixed(...)` helper, `raisedBy: "check"`), `src/core/rules/quality.ts`, `src/core/rules/registry.ts`, `src/core/rules/check.ts` (`runChecks`), `src/cli/check.ts` (the `--review` stub, line 263), `src/cli/inspect.ts` (its stub), `src/core/inspect.ts` (`summarise`, `summaryLines`), `src/cli/main.ts` (the two `--review` options and their "not available yet"), `src/core/attempt/schema.ts` (how a versioned file is read and refused); for G47, `src/core/i18n/en.ts` and `vi.ts` (`fontName`), `src/page/Appearance.tsx` (line 150), `src/core/fonts.ts` (`FONT_REGISTRY[id].family`).
+- Goldens: `test/golden/rules/`, `test/golden/check/`, `test/golden/inspect/`, `test/golden/top/` (help).
+
+### Decided for this slice
+
+- **G47 first:** the page's Font row names each font by category, from the catalogs: `en` System, Sans, Serif, Readable; `vi` Hệ thống, Sans, Serif, Dễ đọc. Each pill's `title` is the family from `FONT_REGISTRY` (none for System). The Information tab keeps the family names. TECHNICAL_DESIGN.md section 8 (the Appearance row) says so. Goldens of built pages that hold the font row's strings change: count them.
+- **The file** (G48 if approved): `{"format": "fullmark-review", "version": 2}` and the fields of section 4's type. A zod schema in `src/core/review/schema.ts` is the source of the TS type; a reader in `src/core/review/read.ts` returns the review or every problem found: not JSON, wrong `format` or `version` (a file with `"version": 1` and no `format`, as 0.x wrote, is refused with "a fullmark 0.x review: 1.0 does not read it; judge the quiz again with `quiz review`"), a missing or wrongly typed field, an unknown verdict, an unknown reason id, a reason given with the wrong verdict, `reasons` not empty for `keep` or empty for `fix` and `drop`, an `other` reason with an empty `note`, `assumed` on a `fix` or `drop`, `source` on a `keep`. A reason for essays and code (`rubric-loose`, `points-misallocated`, `criterion-unclear`) on a question that is in the quiz and is not `essay` or `code` is a problem too; on a question no longer in the quiz it is not judged.
+- **Writing and merging** (`src/core/review/merge.ts`), for 3k to call, tested here: `merge(old, judged, quiz)` replaces the entries judged, keeps every other entry (also those of questions no longer in the quiz), sets `quizHash` and `reviewedAt`, and writes keys sorted, so the same inputs give the same bytes. `source` is the question's block as hashed (foundation 1): export it from the parser beside the hash (for example a `blockText(lines, region, parts)` used by both), without adding it to the IR, so no IR golden changes.
+- **The three rules.** `review.fix` and `review.drop` are fixed rules (`raisedBy: "check"`, level error); `review.unconfirmed` is a quality rule (warning by default) that runs only when a review is given. `RuleContext` gains `review: Review | null` (null everywhere except `check --review`). Each finding is on the question's heading line and names the verdict's date and reasons ("marked fix on 28 Oct (unclear): the question has not changed since"); the fix hints are section 4's. Entries for questions no longer in the quiz are ignored; a `keep` is never a finding. The `rules/*` goldens change once for the three new rules: count them.
+- **`check --review REVIEW`**: one quiz only (several files exit 2, "--review takes one quiz"); an unreadable or invalid review exits 2 listing every problem; a review whose `quizId` is another quiz's exits 2 naming both ids. A review of another *version* of the same quiz is the normal case and is fine. `--json` is as without `--review`, the findings among `issues`.
+- **`inspect --review REVIEW`** (G49 if approved): the same reading and the same exits as `check --review`; the summary gains one row and the JSON one key.
+- **Not in this slice:** `quiz review` and its form (3k); `--since` (3l); the reason labels in the catalogs (3k, from the ReviewVi board): the CLI's messages are English only.
+
+### Tasks
+
+1. G47 (one commit): the catalogs, the tooltip, TECHNICAL_DESIGN.md section 8, the goldens that change, counted; a unit test that the Font row shows the categories and the families as tooltips.
+2. `src/core/review/` (one commit): the schema, the reader with every problem above (one fixture each), the block text from the parser (a test that the `source` of a question hashes to its `hash`), `merge` with its determinism test.
+3. The three rules and `RuleContext.review` (one commit): unit tests for each finding and each non-finding (changed fix, removed fix, changed drop, removed drop, keep, an entry for a removed question, a changed fix that was judged again in a later run); the `rules/*` goldens, counted.
+4. `check --review` and `inspect --review` (one commit): the stubs and the "not available yet" help text removed; goldens for a clean review, each finding, `--json`, every exit 2 (several files, unreadable, invalid, 0.x file, another quiz); `inspect --review` in human and `--json`.
+5. The docs (with the code that makes them true): G48 and G49 into TECHNICAL_DESIGN.md section 4 and COMMANDS.md, `review-v1` renamed `review-v2` where it names the format (this plan's history keeps the old name).
+
+### Done when
+
+`npm run check` passes in Chromium (Firefox only if the environment has it; say which ran); a review fixture with one fix, one drop and one keep makes `quiz check examples/<quiz> --review review.json` exit 1 with `review.fix` and `review.drop`, exit 0 with `review.unconfirmed` once both questions are changed and the drop removed, and exit 2 on a 0.x review; `quiz inspect --review` prints the counts; `check` still does not load `src/serve/`. Report as the rules say, with every golden that changed counted and explained.
