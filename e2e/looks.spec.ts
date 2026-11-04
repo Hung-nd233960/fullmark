@@ -187,9 +187,9 @@ test("the Font row picks each font, keeps it across a reload, and Default look r
   await button(page).click();
   await expect(page.locator("[data-font-row] .fm-pill")).toHaveText([
     "System",
-    "Be Vietnam Pro",
-    "Source Serif 4",
-    "Lexend",
+    "Sans",
+    "Serif",
+    "Readable",
   ]);
   await expect(fontPick(page, "system")).toHaveAttribute("aria-pressed", "true");
   expect(await family(page)).toContain("Segoe UI");

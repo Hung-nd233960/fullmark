@@ -1,5 +1,5 @@
 import { useEffect } from "preact/hooks";
-import type { FontId } from "../core/fonts";
+import { FONT_REGISTRY, type FontId } from "../core/fonts";
 import { type Choice, THEME_NAMES } from "../core/themes";
 import { Icon } from "./icons";
 import { DEFAULT_SIZE, SIZES, sizeFactor } from "./look";
@@ -144,6 +144,7 @@ export function AppearanceMenu({ t, store }: { t: PageMessages; store: Store }) 
               type="button"
               class={`fm-pill fm-font-${id}`}
               data-font-pick={id}
+              title={FONT_REGISTRY[id].family ?? undefined}
               aria-pressed={id === look.font.value}
               onClick={() => look.pickFont(id)}
             >

@@ -311,7 +311,7 @@ export const vi = {
     themeLabel: "Nền",
     themeName: { auto: "Tự động", light: "Sáng", dark: "Tối", oled: "OLED", white: "Trắng", paper: "Giấy" },
     fontLabel: "Phông",
-    fontName: { system: "Hệ thống", sans: "Be Vietnam Pro", serif: "Source Serif 4", readable: "Lexend" },
+    fontName: { system: "Hệ thống", sans: "Sans", serif: "Serif", readable: "Dễ đọc" },
     themeMarked: (name: string) => `${name} ·`,
     themeQuizLook: (name: string) => `${name}, giao diện của bài`,
     resetLook: "Giao diện mặc định",

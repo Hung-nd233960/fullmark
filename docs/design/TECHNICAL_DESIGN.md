@@ -693,7 +693,7 @@ font: serif
 look: free      # free (default) | locked
 ```
 
-- **`free`**: the page has an **Appearance** menu with every theme and every embedded font (see below). The learner's choice is kept in their browser's storage, per quiz, with **Default look** ("Giao diện mặc định"). If storage is unavailable, the page simply opens with the recommended look each time.
+- **`free`**: the page has an **Appearance** menu with every theme and every embedded font (see below). The Font row names each font by category, not by family: System, Sans, Serif, Readable (`vi`: Hệ thống, Sans, Serif, Dễ đọc), with the family as each pill's tooltip (none for System), so the page and the review form say the same; the Information tab keeps the family names. The learner's choice is kept in their browser's storage, per quiz, with **Default look** ("Giao diện mặc định"). If storage is unavailable, the page simply opens with the recommended look each time.
 - **`locked`**: no menu and no light/dark toggle; everyone sees exactly what the author chose. For mock exams and exam simulations. The `exam` and `ielts` templates set it, and `brief --mode timed-exam` writes it.
 
 The font-size control stays in both, since it is an accessibility need, not a taste.

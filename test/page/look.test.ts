@@ -393,6 +393,20 @@ describe("the font", () => {
     return { store, key: lookKey(page) };
   };
 
+  it("names the fonts by category in the Font row, with the family as each pill's tooltip", () => {
+    const { store } = openFont(new Memory());
+    store.look.menu.value = true;
+    const id = [...store.quizzes.keys()][0] as string;
+    store.start(id);
+    const html = renderToString(h(App, { store }));
+    expect(html).toContain('data-font-pick="sans" title="Be Vietnam Pro"');
+    expect(html).toContain('data-font-pick="serif" title="Source Serif 4"');
+    expect(html).toContain('data-font-pick="readable" title="Lexend"');
+    expect(html).not.toMatch(/data-font-pick="system" title=/);
+    for (const name of ["System", "Sans", "Serif", "Readable"]) expect(html).toContain(`>${name}</button>`);
+    expect(vi.page.fontName).toEqual({ system: "Hệ thống", sans: "Sans", serif: "Serif", readable: "Dễ đọc" });
+  });
+
   it("stores a pick in the look object beside the theme and the size, and reads it back", () => {
     const memory = new Memory();
     const a = openFont(memory);
