@@ -1,0 +1,81 @@
+{
+  "format": "fullmark-review",
+  "questions": {
+    "borrowing-rule": {
+      "assumed": true,
+      "hash": "5e00a8eff3d94d95b69a802da1757e14c594e6972fc91bd7b3c9f1cd2e86e10a",
+      "note": "",
+      "reasons": [],
+      "verdict": "keep"
+    },
+    "integer-division": {
+      "assumed": true,
+      "hash": "d39e669770d461f4970e89f0e4bb0a65847481dd1d77b57203ae978ba702896b",
+      "note": "",
+      "reasons": [],
+      "verdict": "keep"
+    },
+    "largest": {
+      "assumed": true,
+      "hash": "5f96bcd3e21db071c2b47f7ee8c7b340159c6ed5f13a30af9391d1a29407fbbe",
+      "note": "",
+      "reasons": [],
+      "verdict": "keep"
+    },
+    "make-it-compile": {
+      "assumed": true,
+      "hash": "d5eb261fff0d83389a6f6203e98a52c60a2c0ea31a42db42131bf5ebbc18f098",
+      "note": "",
+      "reasons": [],
+      "verdict": "keep"
+    },
+    "match-guard": {
+      "assumed": true,
+      "hash": "a22dabaad4b99bd215605324388c69ebaf07687b66947ba07689ed25f36da247",
+      "note": "",
+      "reasons": [],
+      "verdict": "keep"
+    },
+    "move-then-use": {
+      "hash": "6a31a72b980d0edc8ead14b624f9c2c71e64bede61bebaa6139c25454f6f4922",
+      "note": "",
+      "reasons": [
+        "unclear"
+      ],
+      "source": "## What happens when you compile this program? {type=single tags=ownership}\n\n```rust\nfn main() {\n    let s1 = String::from(\"hi\");\n    let s2 = s1;\n    println!(\"{}\", s1);\n}\n```\n\n- [ ] It prints `hi`\n- [x] A compile error: `s1` was moved to `s2`\n- [ ] A compile error: `s2` is never used\n- [ ] It prints `hi` twice\n\n::: explanation\n`String` owns heap data and does not implement `Copy`, so `let s2 = s1;` moves ownership. Using `s1` afterwards is error E0382 (borrow of moved value). Unused variables only produce warnings.\n:::\n",
+      "verdict": "fix"
+    },
+    "reject-second-borrow": {
+      "assumed": true,
+      "hash": "c9469d55ae281e8353fa8aea43bcde3bac8dd08647e55ecdf31640ac67d2f188",
+      "note": "",
+      "reasons": [],
+      "verdict": "keep"
+    },
+    "shadowing": {
+      "assumed": true,
+      "hash": "6ee6e3c4d8931701229cc82cd60bff57d87648386abe8f22fd30a9ccd5f2d8ce",
+      "note": "",
+      "reasons": [],
+      "verdict": "keep"
+    },
+    "vec-pop": {
+      "assumed": true,
+      "hash": "c833bd3fab0de3574a06ee85616d7ac4715e742b698c67693ee1e9ce13f9b1eb",
+      "note": "",
+      "reasons": [],
+      "verdict": "keep"
+    },
+    "which-compile": {
+      "assumed": true,
+      "hash": "50f4b0a3a0821e624b67a1b70b71c62cd534e585193e59bc4cb0088563204948",
+      "note": "",
+      "reasons": [],
+      "verdict": "keep"
+    }
+  },
+  "quizHash": "2e3b201606c523dabafc4d9a66cb7900b3eff1d82a6426e09eeeac8ae057280a",
+  "quizId": "rust-basics",
+  "reviewedAt": "<time>",
+  "version": 2
+}

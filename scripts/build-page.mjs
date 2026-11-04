@@ -3,7 +3,7 @@
 import { readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { build } from "esbuild";
-import { PAGE_BUNDLE, RELOAD_BUNDLE, SERVE_BUNDLE } from "./bundles.mjs";
+import { PAGE_BUNDLE, RELOAD_BUNDLE, REVIEW_BUNDLE, SERVE_BUNDLE } from "./bundles.mjs";
 import { minifyCss } from "./minify-css.mjs";
 
 const root = resolve(import.meta.dirname, "..");
@@ -30,6 +30,19 @@ await build({
   outfile: join(root, "dist/reload.js"),
   logLevel: "warning",
 });
+
+// The review form of `quiz review`: its code and the styles it adds to the page's own (dist/page.css comes first).
+await build({
+  ...REVIEW_BUNDLE,
+  entryPoints: [join(root, "src/review/main.tsx")],
+  outfile: join(root, "dist/review.js"),
+  logLevel: "warning",
+});
+writeFileSync(
+  join(root, "dist/review.css"),
+  `${minifyCss(readFileSync(join(root, "src/review/review.css"), "utf8"))}
+`,
+);
 
 const styles = join(root, "src/page/styles");
 const css = readdirSync(styles)

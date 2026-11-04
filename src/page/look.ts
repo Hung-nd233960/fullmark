@@ -10,7 +10,7 @@ const MORE = "(prefers-contrast: more)";
  * device under `auto`, high contrast) and removed again when it is not. `auto` and high contrast follow the device
  * while the page is open. Returns what stops it.
  */
-export function applyLook(store: Store, root: HTMLElement = document.documentElement): () => void {
+export function applyLook(store: Pick<Store, "look">, root: HTMLElement = document.documentElement): () => void {
   const { look } = store;
   const queries = typeof window.matchMedia === "function" ? [window.matchMedia(DARK), window.matchMedia(MORE)] : [];
   const read = (): void => {

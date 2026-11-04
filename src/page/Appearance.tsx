@@ -6,6 +6,9 @@ import { DEFAULT_SIZE, SIZES, sizeFactor } from "./look";
 import type { PageMessages } from "./questions/shared";
 import type { Store } from "./store";
 
+/** What the look controls need of a store: the look, and whether the window is a phone's. The review form has no store. */
+export type LookStore = Pick<Store, "look"> & { screen: { phone: { value: boolean } } };
+
 /** Back to the ◐ button, after Esc closes the menu. */
 export const focusLookButton = (): void => {
   if (typeof document === "undefined") return;
@@ -13,7 +16,7 @@ export const focusLookButton = (): void => {
 };
 
 /** The top bar's Appearance button (the board's ◐, `hdrBtnIcon`): after Focus mode, before Submit, in both phases. */
-export function AppearanceButton({ t, store }: { t: PageMessages; store: Store }) {
+export function AppearanceButton({ t, store }: { t: PageMessages; store: LookStore }) {
   const open = store.look.menu.value;
   return (
     <button
@@ -33,7 +36,7 @@ export function AppearanceButton({ t, store }: { t: PageMessages; store: Store }
 }
 
 /** A− / A+ (the board's joined pair): five sizes, each button disabled at its end. Under both `free` and `locked`. */
-export function TextSize({ t, store }: { t: PageMessages; store: Store }) {
+export function TextSize({ t, store }: { t: PageMessages; store: LookStore }) {
   const size = store.look.size.value;
   const smallest = size <= (SIZES[0] as number);
   const largest = size >= (SIZES.at(-1) as number);
@@ -85,7 +88,7 @@ export function TextSize({ t, store }: { t: PageMessages; store: Store }) {
 const CHOICES: readonly Choice[] = ["auto", ...THEME_NAMES];
 
 /** The menu strip under the docked block: the Theme row and Reset. A click outside closes it; Esc is in `keys.ts`. */
-export function AppearanceMenu({ t, store }: { t: PageMessages; store: Store }) {
+export function AppearanceMenu({ t, store }: { t: PageMessages; store: LookStore }) {
   const { look } = store;
   const open = look.menu.value;
   useEffect(() => {

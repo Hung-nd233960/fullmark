@@ -49,3 +49,9 @@ export const SERVE_BUNDLE = { ...PAGE_BUNDLE };
  * carries (G31). It shares nothing with `dist/serve.js`: a reloading page has no submit or autosave code.
  */
 export const RELOAD_BUNDLE = { ...PAGE_BUNDLE };
+
+/**
+ * The review form (`dist/review.js`): its own IIFE beside `dist/serve.js`, which only the page `quiz review` builds in
+ * memory carries. It is the whole form, so it has no page runtime and no server module with it.
+ */
+export const REVIEW_BUNDLE = { ...PAGE_BUNDLE };

@@ -4,7 +4,7 @@ import { readdirSync, readFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { build } from "esbuild";
 import { describe, expect, it } from "vitest";
-import { PAGE_BUNDLE, RELOAD_BUNDLE, SERVE_BUNDLE } from "../scripts/bundles.mjs";
+import { PAGE_BUNDLE, RELOAD_BUNDLE, REVIEW_BUNDLE, SERVE_BUNDLE } from "../scripts/bundles.mjs";
 import { ALLOWED, generate, problems } from "../scripts/notices.mjs";
 import { ACKNOWLEDGEMENTS, NOTICE_PACKAGES } from "../src/build/notices-data";
 
@@ -117,11 +117,21 @@ describe("the page runtime", () => {
       outdir: join(root, "dist-notices"),
       logLevel: "error",
     });
+    // and the review form (dist/review.js) of `quiz review`, a page of its own
+    const review = await build({
+      ...REVIEW_BUNDLE,
+      entryPoints: [join(root, "src/review/main.tsx")],
+      write: false,
+      metafile: true,
+      outdir: join(root, "dist-notices"),
+      logLevel: "error",
+    });
     const named = new Set<string>();
     for (const input of [
       ...Object.keys(built.metafile.inputs),
       ...Object.keys(served.metafile.inputs),
       ...Object.keys(reload.metafile.inputs),
+      ...Object.keys(review.metafile.inputs),
     ]) {
       const at = input.lastIndexOf("node_modules/");
       if (at < 0) continue;

@@ -1,0 +1,112 @@
+{
+  "format": "fullmark-review",
+  "questions": {
+    "b1": {
+      "hash": "ece2839c4575fa6da89694f98d9932364c4e39f25637766dc5027e5d8315d56d",
+      "note": "",
+      "reasons": [],
+      "verdict": "keep"
+    },
+    "c1": {
+      "hash": "7d8f8ac3d009cef502ce1975fb4c5625f8c268d216a488b806aa7b27e9e17929",
+      "note": "",
+      "reasons": [],
+      "verdict": "keep"
+    },
+    "e1": {
+      "hash": "c73216f7a17ac2a478b0b0cde2dc5b3f2555180ab50d1ae743ca02e70f003af6",
+      "note": "",
+      "reasons": [],
+      "verdict": "keep"
+    },
+    "f1": {
+      "hash": "580024d15c2567fc5ed52318d7a422e47dcc3ae82bd519191d6b7a89556648a0",
+      "note": "",
+      "reasons": [],
+      "verdict": "keep"
+    },
+    "g1": {
+      "hash": "25e7a9a4ca3de17ef0d6754898489209fcbce7771f93991460b9f46ec8d5cc19",
+      "note": "",
+      "reasons": [],
+      "verdict": "keep"
+    },
+    "h1": {
+      "hash": "58cb160813572febd747171af44025a6f312362878dfcb983175e295ce8aac7b",
+      "note": "",
+      "reasons": [],
+      "verdict": "keep"
+    },
+    "h2": {
+      "hash": "57d613b2f936902f9c2ea5765f94cc230751811842afcc14bfad0b3352a6ab41",
+      "note": "",
+      "reasons": [],
+      "verdict": "keep"
+    },
+    "k1": {
+      "hash": "c4b9f42db499654068372b786cd497e7973efe9e9f3c908bd6a5e08806b553d0",
+      "note": "",
+      "reasons": [],
+      "verdict": "keep"
+    },
+    "m1": {
+      "hash": "3a00b912b9e6fe355a782033833bdb1a7c4aa7d6efac6df11a8cc072bf421def",
+      "note": "",
+      "reasons": [
+        "too-easy"
+      ],
+      "source": "## Which of these are prime? {type=multi points=2}\n\n- [x] Two\n- [ ] Four\n- [x] Three\n- [ ] Six\n",
+      "verdict": "drop"
+    },
+    "n1": {
+      "hash": "03e0ee672ca23a1a87dac418b1cd6bd51d6479318889c603fee9c3c6b26cd034",
+      "note": "",
+      "reasons": [],
+      "verdict": "keep"
+    },
+    "n2": {
+      "hash": "ad5ff6b35c5ae5f892e1661444558335c35a5b939356bd114019a95148cde13a",
+      "note": "",
+      "reasons": [],
+      "verdict": "keep"
+    },
+    "n3": {
+      "hash": "82f9acd7753fdc5df6255932615562d62fc0c645fa08c3229d9f4c8e33051e0c",
+      "note": "",
+      "reasons": [],
+      "verdict": "keep"
+    },
+    "o1": {
+      "hash": "9b9c00dc86e53a809b2aff174314604cb1a3d9544b98d17fe6b00d02a0590219",
+      "note": "",
+      "reasons": [],
+      "verdict": "keep"
+    },
+    "o2": {
+      "hash": "309e34ea2d15a684dffb9e5097b37a4da4163ba67111fb23b57a7d6be1cdfa60",
+      "note": "",
+      "reasons": [],
+      "verdict": "keep"
+    },
+    "s1": {
+      "hash": "014facc8a86710abe7ff8ac860b66ff300792e848ad6df56018f59e023d250b8",
+      "note": "the key says blue but the picture is grey",
+      "reasons": [
+        "key-wrong",
+        "other"
+      ],
+      "source": "## Pick the colour of the sky. {type=single}\n\n- [ ] Green\n- [x] Blue skyvalue\n- [ ] Red\n",
+      "verdict": "fix"
+    },
+    "t1": {
+      "hash": "fdcb09204209bae80fadea2bacc4ca2b63f7944e024165768b905d1f26ae0d0d",
+      "note": "",
+      "reasons": [],
+      "verdict": "keep"
+    }
+  },
+  "quizHash": "c58186fd5651a40c9bfe7b4aa9c4f179dda5c207d2f33d7cfd920708f9a47889",
+  "quizId": "types",
+  "reviewedAt": "<time>",
+  "version": 2
+}
