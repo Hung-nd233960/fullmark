@@ -39,4 +39,7 @@ Commands:
   serve [options] <file>         serve a quiz on 127.0.0.1 and write the results
                                  when the learner presses Submit (one submit
                                  only)
+  review [options] <file>        a form to judge every question (keep, fix or
+                                 drop) and write review.json when you press
+                                 Finish
   help [command]                 help for a command
