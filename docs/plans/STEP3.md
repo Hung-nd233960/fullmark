@@ -23,11 +23,11 @@ As in step 2 ([archive/STEP2.md](archive/STEP2.md), Handoff): Opus writes a slic
 | 3v the form boards (on the Design canvas) | `review` boards drafted by Opus and reviewed by the owner (2026-11-04); G38 to G47 decided (2026-11-04); boards and images in `docs/mockup/` `grade --web` and `brief --web` boards after that | |
 | 3e G47, the review file, `check --review`, `inspect --review` | done, reviewed, gaps decided (2026-11-04) | `5e9b45c`..`dbcd43e` |
 | 3k G51, `quiz review` and its form | done, reviewed, gaps decided (2026-11-04) | `91a8821`..`c326d9f` |
-| 3l `--since`, the stacked sidebar with the materials and the phone | outline; next: its brief opens with G50 and G56 | |
+| 3l `--since`, the stacked sidebar with the materials and the phone | brief written (2026-11-04), waits for the owner with G58 to G62 | |
 | 3f `grade --web`, 3h `brief --web` | wait for their boards (3v) | |
 | 3z acceptance | last | |
 
-Each slice's review, and the owner's decisions on its gaps, are under its own section below (**Review**); every gap, G1 to G57, is in "Gaps", in number order.
+Each slice's review, and the owner's decisions on its gaps, are under its own section below (**Review**); every gap, G1 to G62, is in "Gaps", in number order.
 
 Step 2 is closed ([archive/STEP2.md](archive/STEP2.md), item 75): every "Done when" criterion passes in Chromium and Firefox; Vitest 2059 of 2059, the 2 startup tests, Playwright and axe. What step 3 inherits:
 
@@ -40,7 +40,7 @@ Step 2 is closed ([archive/STEP2.md](archive/STEP2.md), item 75): every "Done wh
 
 ### Next steps, in order
 
-1. **The form boards on the Design canvas** (3v, G7), as 2v did for the page: every slice left (3e, 3f, 3h) waits for them. The `review` boards are done: reviewed, G38 to G47 decided and in COMMANDS.md, the sources copied into `docs/mockup/boards/`. Their images are in `docs/mockup/images/Review*.png` (the owner's export, scaled to board size). 3e is cut in three (3e the file and the checks, 3k the form, 3l `--since` and the phone), and **3e is built and reviewed** ("Slice 3e", its Review): G50 and G51 decided (3l's and 3k's first tasks). **3k is built and reviewed** ("Slice 3k", its Review, at the end): G56 and G57 decided as recommended; 3l's brief is next, opening with G50 and G56. The `grade --web` and `brief --web` boards follow in the same way.
+1. **The form boards on the Design canvas** (3v, G7), as 2v did for the page: every slice left (3e, 3f, 3h) waits for them. The `review` boards are done: reviewed, G38 to G47 decided and in COMMANDS.md, the sources copied into `docs/mockup/boards/`. Their images are in `docs/mockup/images/Review*.png` (the owner's export, scaled to board size). 3e is cut in three (3e the file and the checks, 3k the form, 3l `--since` and the phone), and **3e is built and reviewed** ("Slice 3e", its Review): G50 and G51 decided (3l's and 3k's first tasks). **3k is built and reviewed** ("Slice 3k", its Review, at the end): G56 and G57 decided as recommended. **3l's brief is written** ("Slice 3l", at the end) and waits for the owner with G58 to G62; G58 recommends moving the stacked sidebar and the phone to a new 3m. The `grade --web` and `brief --web` boards follow in the same way.
 
 ### Open proposals carried over from step 2
 
@@ -183,6 +183,16 @@ The design docs left these open, or a slice's review found them. Each needs the 
 **G56. A matching question's distractors in the form** (raised in 3k's review). **Decided by the owner on 2026-11-04, as recommended**; 3l writes it into COMMANDS.md and builds it. The form shows a matching question's right pairs, but not its distractors: the right-hand items that match nothing. They are part of the key the learner judges (a distractor that is in fact a right answer is a `key-wrong`), and the source has them. **Recommend:** the form lists them under the pairs, each marked "Matches nothing" (vi: "Không ghép với mục nào"), in source order; 3l builds it with its other fixes.
 
 **G57. The form's words that are not on the boards** (raised in 3k's review). **Decided by the owner on 2026-11-04, as recommended**: the six strings stay as written until the owner names a change. 3k needed six strings the boards do not draw, written by the implementing agent in `src/core/i18n/review.ts`: `patterns` "Accepted patterns" / "Mẫu chấp nhận" (a `short` question's patterns, G40); `unscored` "Not scored" / "Không tính điểm" (a `scale` question in a graded quiz); `partCount` "6 of 12 judged" / "đã xét 6 / 12"; `keysLabel` "Keys" / "Phím tắt" (the sidebar's key list); `held` "N questions need a reason or a note before the review can be saved:" / "N câu cần có lý do hoặc ghi chú trước khi lưu được bản rà soát:" (Finish with an incomplete verdict); `saveFailed` "The review was not saved: WHY" / "Chưa lưu được bản rà soát: WHY". **Recommend:** keep them as written (each follows the boards' wording where one is near), and the owner reads them in the form through `npm run samples` and says which to change; a change is one line in that file, done in 3l.
+
+**G58. 3l's size** (raised writing 3l's brief). The 3l row holds G50, G56, 3k's small fixes, `--since` (the command, the earlier verdict, the line diff, the muted map), the stacked **Questions & materials** sidebar and the phone. 3k, with less form work, took one long Sonnet session. **Recommend:** cut it in two, as G52 cut 3k. **3l** is G50, G56, 3k's small fixes and `--since`, all at 1280 px with the plain sidebar. **3m** is the stacked sidebar with the materials (the page's own, as on the Review and ReviewSince boards) and the phone (ReviewPhone), which change the same layout. The slice table gains the 3m row.
+
+**G59. `--since` beside `--out`** (raised writing 3l's brief). COMMANDS.md says `--since REVIEW` merges "into it", and `--out REVIEW` names the file written, so `--since a.json --out b.json` is not said. **Recommend:** `--since REVIEW` is read and written, so with it `--out` may be left out; an `--out` naming another file exits 2, "--since merges into its own review: leave out --out". The `--since` file is refused as `--out` is (missing, unreadable, invalid, 0.x, another quiz: exit 2), and a missing one says "--since needs an existing review; run quiz review FILE first".
+
+**G60. `--since` with nothing to ask** (raised writing 3l's brief). When no question is new or changed since the review, the form would open with nothing in it. **Recommend:** nothing is served; it prints "nothing new or changed since your review of 28 Oct" and exits 0, with `{"status": "unchanged", "review": PATH}` under `--json`, and the file is not touched.
+
+**G61. A changed question that was kept** (raised writing 3l's brief). The line diff needs the version judged, and the review keeps a question's `source` only for `fix` and `drop` (TECHNICAL_DESIGN.md section 4: a keep has no source). So a question kept and since changed has no "What changed since". **Recommend:** it shows the earlier verdict box with "Keep" (and "not looked at" when it was assumed) and, in place of the diff, "Changed since; a Keep does not store the earlier text". The format does not change.
+
+**G62. What the dialogs promise about `--since`** (raised writing 3l's brief). Both dialogs say a question marked Keep by them "a later `quiz review --since` can still judge" (G43). But `--since` asks only questions new or changed (G44), and `assumed` "changes nothing in `check` or `--since`" (TECHNICAL_DESIGN.md section 4), so an assumed keep is never asked again by `--since`. **Recommend:** keep `--since` as decided and change the promise: "a later `quiz review` can still judge them" (vi: "lần `quiz review` sau vẫn có thể xét lại"). A plain `quiz review` opens with them and lets the learner change them (G53). COMMANDS.md's two dialog sentences change with it.
 
 ## Slices
 
@@ -600,3 +610,37 @@ The order (owner, 2026-11-03) puts the server first, since four commands stand o
 **3k's gaps decided by the owner on 2026-11-04**, both as recommended: G56 (a matching question's distractors, listed as "Matches nothing") is built in 3l; G57 (the six strings not on the boards) keeps them as written.
 
 **Left on the disk:** nothing in the repo; the review's copies are in the session scratchpad.
+
+## Slice 3l: G50, G56 and 3k's fixes, then `quiz review --since`
+
+**Draft, waiting for the owner's approval** with G58 to G62. Written as G58 recommends: the stacked Questions & materials sidebar and the phone are 3m's. Built from the ReviewSince board (`docs/mockup/boards/ReviewSince.dc.html`, image in `docs/mockup/images/ReviewSince.png`) at 1280 px, with the plain Questions sidebar that 3k built in place of the stacked one drawn there.
+
+### Read first
+
+- COMMANDS.md: `quiz review` (all of it, "With `--since`" above all), `quiz check` (`--review`), `quiz inspect` (`--review`: how the date is written).
+- TECHNICAL_DESIGN.md: section 4, "`review-v2`" ("What the form opens with", `source`, `assumed`).
+- This plan: "Rules for every slice", G43, G44, G50, G53, G56, G58 to G62, and 3k's Review (its "done differently" and "small things").
+- Code: `src/cli/review.ts` (the refusals, `readOld`, the submit reader), `src/build/review-form.ts` (`earlierVerdicts`, `ReviewData`), `src/review/` (all), `src/core/i18n/review.ts`, `src/core/review/` (all), `src/core/rules/review.ts` and `src/core/rules/types.ts` (`RuleContext`), `src/cli/check.ts` (where `RuleContext` is built), `test/golden/review/`, `e2e/review.spec.ts`, `e2e/screens-3k.spec.ts`.
+
+### Decided for this slice
+
+- **G50 first:** `RuleContext` carries the quiz's path and the review file's path as `check` shows them, so `review.unconfirmed`'s hint reads "run `quiz review quiz.md --since review.json` and judge the change" with the real names. `quiz rules` keeps `FILE` and `REVIEW`. Every golden that changes is counted in the report.
+- **G56:** a matching question in the form lists its distractors under the pairs, in source order, each marked "Matches nothing" (vi: "Không ghép với mục nào").
+- **3k's small fixes:** in both dialogs the command is a code span that does not wrap; with G62 the sentence becomes "a later `quiz review` can still judge them" (vi: "lần `quiz review` sau vẫn có thể xét lại"). COMMANDS.md loses "until slice 3l" for `--since` (the stacked sidebar's stays until 3m).
+- **The command** (G59, G60): `quiz review FILE --since REVIEW [--open] [--timeout SECONDS] [--port N] [--json]`. The refusals keep 3k's order, with `--since` in place of `--out`: a built page; `--out` naming a file other than REVIEW ("--since merges into its own review: leave out --out"), exit 2; a survey, exit 2; check errors and questions without ids, exit 1; REVIEW missing ("--since needs an existing review; run quiz review FILE first"), or refused as `check --review` refuses one, exit 2. With nothing new or changed: "nothing new or changed since your review of 28 Oct", exit 0, `{"status":"unchanged","review":PATH}`, the file untouched, nothing served. The date is written as `inspect --review` writes it.
+- **What is asked:** the questions with no entry for their current hash: new ones (no entry) and changed ones (an entry whose hash is another). Every other question keeps its earlier verdict and is not shown. The submit is 3k's, one verdict for every question, the ones not asked coming back unchanged (G53), so the server's reader, `merge` and the output do not change.
+- **The form with `--since`** (the ReviewSince board): only the asked questions are cards, in source order. The status line starts "Asked again: N questions new or changed since your review of 28 Oct", and "Judged", the progress bar and the counts cover those N; "Question K of M" keeps the quiz's numbering. A changed question shows, above its text, the box "Your verdict on 28 Oct" with the verdict in its colour, the reason chips and the note in quotes, then "What changed since" and a line diff of its `source` against its current block: unchanged lines plain, removed lines with `−` on `--bad-wash`, added with `+` on `--ok-wash`, monospaced. A changed question that was kept has the box with "Keep" (and "not looked at" when assumed) and "Changed since; a Keep does not store the earlier text" in place of the diff (G61). A new question has no box. In the map the questions not asked are muted, with a dashed border, not focusable by `N`, and the legend adds "not asked again". Keep the rest and the Finish dialog count and touch the asked questions only. The saved card and the output are 3k's.
+- **The diff** is a line diff (longest common subsequence) written in `src/core/review/` with no package added, pure and unit tested; the form gets the old and new text in its data, both as hashed, and renders the diff itself. Words are added to `src/core/i18n/review.ts`, en and vi.
+- **Not in this slice:** the stacked Questions & materials sidebar and the phone (3m, G58).
+
+### Tasks
+
+1. G50 (one commit): `RuleContext`, the hint, the goldens that change counted.
+2. G56 and 3k's small fixes (one commit): the distractors, the dialog code span and sentence, COMMANDS.md; the e2e golden that changes counted.
+3. The command (one commit): `--since` read and refused, `--out` beside it, nothing to ask; a golden per refusal and for `unchanged` (`test/golden/review/since-*`, replacing 3k's two "not available yet" cases, counted); a unit test that a `--since` run writes back every question not asked byte for byte.
+4. The form (one or more commits): the diff with unit tests (equal texts, a line changed, lines added and removed, a whole block replaced, trailing newlines); the asked cards, the earlier verdict box, G61's line, the muted map and legend, the counts; Playwright through `serveProcess` on a copy of `examples/calculus` with a review from a first run, then one fix question changed, one kept question changed and one added: only those three are cards, the diff shows on the first, G61's line on the second, nothing on the third; Keep the rest marks only them; the file then has the other entries unchanged; a `vi` run; axe in light and dark; screens of the ReviewSince state to `docs/screens/3l/`, committed.
+5. The rest (one commit): the samples line for `--since`; G58 to G62 into COMMANDS.md (`quiz review`) and TECHNICAL_DESIGN.md (section 4: what `--since` asks, G61); the slice table's 3l and new 3m rows.
+
+### Done when
+
+`npm run check` passes in Chromium (startup tests alone, as `npm test` runs them; Firefox only if the environment has it; say which ran). On a copy of `examples/rust`: `quiz review` with a Fix on one question, then that question edited, then `quiz check --review` warns `review.unconfirmed` naming `quiz review quiz.md --since review.json`; that command opens the form with only that question, its earlier verdict and the diff; Keep on it and Finish write the file with every other entry as it was, and `check --review` no longer warns. Run again with no change, it prints "nothing new or changed" and exits 0. The screens are committed. Report as the rules say, every golden that changed counted and explained.
