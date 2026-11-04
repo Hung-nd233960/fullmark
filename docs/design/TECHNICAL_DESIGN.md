@@ -28,7 +28,7 @@ These ideas are the product, and the rewrite keeps them unchanged.
 | Builds are not reproducible (`built_at` is the current time) | **Deterministic from day one:** `built_at` can be pinned, keys are sorted, and nothing reads the clock or a random seed without an input. Byte-level golden tests become possible |
 | Most of the ~600 tests call internals | **Contract tests run the CLI as a program**: exit codes, messages, JSON checked against the schemas, the bytes of built files |
 | `check` thresholds are hard-coded in `brief.py`, `lint.py` and `build.py`, and most findings have no rule id (only `brief.*` and `review.*` do) | **Every finding has a rule id.** A **rule registry**, `fullmark.toml` and **profiles** (named rule sets, such as `exam` or `draft`) exist from v1. A quiz picks its profile, and custom declarative checks can be added per profile (section 5) |
-| JSON Schemas are written by hand | zod schemas are the source. The TS types and the JSON Schemas (`results`, `report`, `grades`, `review`, `fullmark-shelf`) are generated from them |
+| JSON Schemas are written by hand | zod schemas are the source. The TS types and the JSON Schemas (`results`, `report`, `grades`, `review`, `fullmark-shelf`; none is exported yet, and the first four arrive together in one task of the last slice of step 3) are generated from them |
 | Essay and code rubrics are plain strings; grades have an untyped `criteria` map and no grader identity | **Declared rubric modes** (`holistic`, `additive`, `banded`) with criterion ids, `grades-v2` with a required grader, and totals computed by the tool, not the grader (section 6) |
 | Questions match across versions only through an explicit `{id}` | **Every question has a stable id** (required; `quiz ids` writes one where missing) plus a per-question content hash, so stats, `--missed` and replay work across versions |
 
@@ -133,13 +133,13 @@ An essay's word count is not stored: the grader counts it.
 
 **The exported file** is named `<quiz id>-results-YYYYMMDD-HHMMSS.json`, the stamp in the learner's local time.
 
-### `review-v1`
+### `review-v2`
 
-The learner's verdict on each question, written only by `quiz review` (an agent never writes it; USER_DESIGN.md).
+The learner's verdict on each question, written only by `quiz review` (an agent never writes it; USER_DESIGN.md). Version 2, like the other 1.0 formats (foundation 6): 0.x already wrote a `review.json` with `"version": 1`, and a file with that version and no `format` is refused with "a fullmark 0.x review: 1.0 does not read it; judge the quiz again with `quiz review`". 0.x reviews are not moved in: they judged 0.x quizzes, which 1.0 does not read either. The zod schema (`src/core/review/schema.ts`) is the source of the type; its JSON Schema is exported with the other three, together, in one task of the last slice of step 3.
 
 ```ts
 type Review = {
-  format: "review"; version: 1;
+  format: "fullmark-review"; version: 2;
   quizId: string;
   quizHash: string;                 // the version last reviewed; another version is expected and fine
   reviewedAt: string;               // ISO, local offset, of the last Finish
@@ -155,9 +155,11 @@ type Review = {
 ```
 
 - **Keyed by question id**, so a verdict follows a question when it moves or others are added. The question hash leaves the id out, so adding an id or moving a question is not a change; any edit to the block is.
-- **Reasons** are fixed ids with catalog labels in `en` and `vi`. For `fix`: `key-wrong`, `unclear`, `other`; on essays and code also `rubric-loose`, `points-misallocated`, `criterion-unclear`. For `drop`: `duplicate`, `off-scope`, `too-easy`, `other`. A reason given with the wrong verdict or type is invalid.
+- **Reasons** are fixed ids with catalog labels in `en` and `vi`. For `fix`: `key-wrong`, `unclear`, `other`; on essays and code also `rubric-loose`, `points-misallocated`, `criterion-unclear`. For `drop`: `duplicate`, `off-scope`, `too-easy`, `other`. A reason given with the wrong verdict is invalid, and so is a rubric reason (`rubric-loose`, `points-misallocated`, `criterion-unclear`) on a question that is in the quiz and is not an essay or code question; on a question no longer in the quiz it is not judged.
 - **Merging.** A question judged in a run replaces its entry; every other entry stays. Entries for questions no longer in the quiz stay too, as history; `check` ignores them.
 - **`assumed`** is set only by **Keep the rest** and by the Finish dialog's **Mark them Keep and finish**. It changes nothing in `check` or `--since` today; it records that the learner did not look. Judging that question later replaces the entry and drops the marker.
+- **The reader** returns the review or every problem found, not the first: not JSON, a wrong `format` or `version`, a missing or wrongly typed field, an unknown verdict or reason id, a reason given with the wrong verdict, `reasons` not empty for `keep` or empty for `fix` and `drop`, an `other` reason with an empty `note`, `assumed` on a `fix` or `drop`, `source` on a `keep`.
+- **Writing.** The file is written with its keys sorted at every level, two-space indent and a final newline, so the same verdicts give the same bytes.
 - **`source`** is the question's normalised block, as hashed, so `review --since` can show the learner's earlier reason and note beside a diff of what changed.
 
 **What `check --review` can prove.** That every flagged question was changed or removed, never that it was fixed: whether the new key is right is the learner's call. So a changed `fix` question passes, with the warning `review.unconfirmed` until a later `review --since` judges it again, and the loop closes in the learner's hands.
@@ -168,7 +170,7 @@ type Review = {
 | `review.drop` | fixed (error) | a question marked `drop` is still in the quiz, changed or not. Only removing it passes |
 | `review.unconfirmed` | quality (warning) | a question marked `fix` has changed since the verdict and has not been judged again |
 
-A `keep` is never a finding. A review whose `quizId` is another quiz's exits 2 before checking.
+A `keep` is never a finding, and an entry for a question no longer in the quiz is ignored. Each finding is on the question's heading line and names the verdict's date and reasons: "q-chain was marked fix on 28 Oct (unclear): the question has not changed since". A review whose `quizId` is another quiz's exits 2 before checking (a review of another *version* of the same quiz is the normal case). `review.fix` and `review.drop` are raised by `check` itself and cannot be ignored or configured; `review.unconfirmed` is a quality rule that runs only when a review is given, so a profile sets its level.
 
 ### Rules
 
@@ -216,7 +218,7 @@ Quality rules carried over from 0.x, now with ids and options. Their defaults st
 | `questions.type-order` | warning | Silent unless the quiz declares `type_order`: the first question out of the declared order, one finding per section for `by-section` and one for the quiz for `by-quiz`; an ignored question lets the next break show. Option `require` (`by-section` or `by-quiz`, no default): a quiz that declares less gets one finding at its `type_order` line, or its front matter; `by-quiz` satisfies `by-section`. A profile cannot set the order itself: the page and the paper follow the quiz |
 | `build.answer-sheet-empty` | warning | Checked by `build --print --answer-sheet`: the paper has no `single` or `truefalse` question, so no grid is printed (section 8, "Printable paper"). Registered in 2k2 |
 | `materials.empty` | warning | (a `materials` sheet with nothing after its heading; the fixed rules `materials.missing`, `materials.heading` and `materials.question` are in QUIZ_SYNTAX.md) |
-| `review.unconfirmed` | warning | Only with `check --review`: a `fix` question that changed and waits for the learner's `review --since`. The fixed rules `review.fix` and `review.drop` are in section 4, "`review-v1`" |
+| `review.unconfirmed` | warning | Only with `check --review`: a `fix` question that changed and waits for the learner's `review --since`. The fixed rules `review.fix` and `review.drop` are in section 4, "`review-v2`" |
 
 New quality rules, off in `default` so behaviour does not change, and used by the stricter built-in profiles:
 

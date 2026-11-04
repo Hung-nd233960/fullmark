@@ -78,7 +78,7 @@ A path is printed relative to the working directory when it lies under it, else 
 | `*-results-*.json` | `results-v2` (serialised Attempt); the page names it `<quiz id>-results-YYYYMMDD-HHMMSS.json`, local time | the page (**Download results**), `serve`, `library take` |
 | `*-report.md`, `*-report.json` | `report-v2` (the JSON; TECHNICAL_DESIGN.md, section 6) | `grade`, `library grade` |
 | `*-grades.json` | `grades-v2`: the grader's identity, and per question the rubric mode with scores or bands per criterion and notes | template from `grade --json`, filled in by an agent or through `grade --web` |
-| `review.json` | `review-v1`: keep, fix or drop per question | `review` |
+| `review.json` | `review-v2` (`format: "fullmark-review"`): keep, fix or drop per question | `review` |
 | `brief.yaml` plus `content/` | brief | `brief` |
 | build file (`build.toml`) | what `build --build-file` builds: files, and per entry the `build` options | the user |
 | `fullmark.toml` | check config: default profile, custom profiles, rule levels and options, custom checks | the user (agents never edit it to make `check` pass) |
@@ -107,10 +107,10 @@ Validates a quiz under one profile. Reports every issue with a level, a rule id,
 | `--profile P` | Check under this profile. Default: the quiz's `profile:` (`survey` for a `kind: survey` quiz that names none), then the brief's, then `[check] profile`, then `default` |
 | `--config TOML` | This config file instead of the nearest `fullmark.toml` |
 | `--strict` | Warnings count as errors (sets `fail-on = "warning"` for this run) |
-| `--review REVIEW` | Also fail until every question flagged *fix* has changed or gone and every question flagged *drop* is gone (`review.fix`, `review.drop`); a changed *fix* warns `review.unconfirmed` until the learner judges it again with `review --since`. A review of another quiz exits 2. One quiz only. See [TECHNICAL_DESIGN.md](TECHNICAL_DESIGN.md), section 4, "`review-v1`" |
+| `--review REVIEW` | Also fail until every question flagged *fix* has changed or gone and every question flagged *drop* is gone (`review.fix`, `review.drop`); a changed *fix* warns `review.unconfirmed` until the learner judges it again with `review --since`. One quiz only (several files exit 2, "--review takes one quiz"). A review that cannot be read, that is not valid (every problem is listed, in `problems` with `--json`), that is a 0.x file, or that is the review of another quiz exits 2. A review of another *version* of the same quiz is the normal case. Findings are among `issues`. See [TECHNICAL_DESIGN.md](TECHNICAL_DESIGN.md), section 4, "`review-v2`" |
 | `--json` | `{"status", "profile", "config": [paths], "errors", "warnings", "issues": [{"rule", "level", "file", "line", "message", "fix"}], "ignored": [{"rule", "line", "because"}]}` |
 
-Exit: `0` no errors, `1` errors (or warnings with `--strict` or `fail-on = "warning"`), or an unknown profile named in the quiz (`profile.unknown`); `2` file not found, malformed config (with `file:line`), or unknown `--profile` (a plain message naming the known profiles).
+Exit: `0` no errors, `1` errors (or warnings with `--strict` or `fail-on = "warning"`), or an unknown profile named in the quiz (`profile.unknown`); `2` file not found, malformed config (with `file:line`), or unknown `--profile` (a plain message naming the known profiles), or a `--review` that cannot be used (above).
 
 ### quiz rules
 
@@ -248,7 +248,7 @@ quiz review FILE [--out REVIEW] [--since REVIEW] [--open]
                  [--timeout SECONDS] [--port N] [--json]
 ```
 
-A form where the learner judges every question: keep, fix or drop, with a reason (such as "the answer key is wrong"; for essays and code also "rubric too loose", "points misallocated" or "criterion unclear"). Rubrics are shown with their points. **Finish** writes `review.json` ([TECHNICAL_DESIGN.md](TECHNICAL_DESIGN.md), section 4, "`review-v1`"). Then `quiz check FILE --review review.json` fails until every *fix* question has changed and every *drop* question is gone.
+A form where the learner judges every question: keep, fix or drop, with a reason (such as "the answer key is wrong"; for essays and code also "rubric too loose", "points misallocated" or "criterion unclear"). Rubrics are shown with their points. **Finish** writes `review.json` ([TECHNICAL_DESIGN.md](TECHNICAL_DESIGN.md), section 4, "`review-v2`"). Then `quiz check FILE --review review.json` fails until every *fix* question has changed and every *drop* question is gone.
 
 **The form** (the Review boards on the Design canvas: Review, ReviewSince, ReviewFinish, ReviewPhone, ReviewVi):
 
@@ -439,7 +439,7 @@ Exit: `0` done, `1` a results file of another version than `--quiz`'s, a report 
 quiz inspect FILE [--review REVIEW] [--json]
 ```
 
-Summarises a quiz: question types, points, sections, tags, banks and the spread of answer positions. With `--review`, counts of kept, to fix and to drop.
+Summarises a quiz: question types, points, sections, tags, banks and the spread of answer positions. With `--review`, counts of the questions judged keep, fix and drop.
 
 **Output**. The quiz is checked first; whenever it parses, the summary is printed, then the issues as `check` prints them.
 
@@ -450,11 +450,14 @@ Types      single 8 (10 points) · multi 3 (5) · code 2 (6) · essay 1 (4)
 Sections   ownership 6 questions, 8 points · collections 6, 10, pick 4 · traits 6, 7
 Tags       rust 18 · borrowing 5 · no tag 2
 Positions  A 5 · B 6 · C 3 · D 2
+Review     keep 14 (6 not looked at) · fix 2 (1 changed since) · drop 1 · not judged 1 · 28 Oct
 ```
 
-Points count a bank's `pick`, not its pool: each question in a bank carries `pick` over the pool's size of its points, so types, tags and sections add up to the total (a share may show as a decimal). Question counts are the pool's. Untagged questions are the last row of Tags, "no tag" (`{"tag": null}` in JSON). The Positions row is left out when no question has a right answer (a survey); the JSON keeps the zeros. A quiz that does not parse prints only its issues, with `"quiz": null`. `errors` and `warnings` are the issue objects of `check --json`. **Positions** counts the correct choices of `single` and `multi` questions by letter, in source order, as `answers.position-skew` does. `--json`: `{"status": "done" | "failed", "quiz": {"id", "title", "hash", "short"}, "questions", "points", "timeLimit", "types": [{"type", "count", "points"}], "sections": [{"id", "title", "questions", "points", "pick", "time"}], "tags": [{"tag", "count", "points"}], "positions": {"A": 5, …}, "review", "errors", "warnings"}`; `review` is `{"keep", "fix", "drop", "notJudged"}` with `--review`, else null.
+Points count a bank's `pick`, not its pool: each question in a bank carries `pick` over the pool's size of its points, so types, tags and sections add up to the total (a share may show as a decimal). Question counts are the pool's. Untagged questions are the last row of Tags, "no tag" (`{"tag": null}` in JSON). The Positions row is left out when no question has a right answer (a survey); the JSON keeps the zeros. A quiz that does not parse prints only its issues, with `"quiz": null`. `errors` and `warnings` are the issue objects of `check --json`. **Positions** counts the correct choices of `single` and `multi` questions by letter, in source order, as `answers.position-skew` does. `--json`: `{"status": "done" | "failed", "quiz": {"id", "title", "hash", "short"}, "questions", "points", "timeLimit", "types": [{"type", "count", "points"}], "sections": [{"id", "title", "questions", "points", "pick", "time"}], "tags": [{"tag", "count", "points"}], "positions": {"A": 5, …}, "review", "errors", "warnings"}`; `review` is, with `--review`, `{"reviewedAt", "keep", "assumed", "fix", "fixChanged", "drop", "unjudged"}`, else null.
 
-Exit: `0` done, `1` check errors, `2` I/O error.
+**`--review`** is read as `check --review` reads it, with the same exits for a review that cannot be used, and its findings (`review.fix`, `review.drop`, `review.unconfirmed`) are among the issues. The counts are over the quiz's current questions; entries for questions no longer in the quiz are left out. The Review row comes after Positions: `keep` counts every Keep, `(N not looked at)` those kept by Keep the rest or the Finish dialog (`assumed`), `fix N (M changed since)` the fix verdicts and those whose question changed (waiting for `review --since`), `not judged` the questions with no verdict, and the date is that of the last Finish. The parentheses are left out when they count nothing.
+
+Exit: `0` done, `1` check errors, `2` I/O error, or a `--review` that cannot be used.
 
 ### quiz new
 
