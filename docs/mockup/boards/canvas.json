@@ -159,6 +159,43 @@
       "w": 1280,
       "x": 1360,
       "y": 2820
+    },
+    "Review.dc.html": {
+      "h": 940,
+      "is_interactive": true,
+      "title": "quiz review, interactive: Keep, Fix or Drop on each question, reasons after Fix or Drop; the sidebar as on the Quiz board, the verdict map over the materials",
+      "w": 1280,
+      "x": 0,
+      "y": 12000
+    },
+    "ReviewSince.dc.html": {
+      "h": 940,
+      "title": "quiz review --since: only new or changed questions, the earlier verdict and a diff",
+      "w": 1280,
+      "x": 1360,
+      "y": 12000
+    },
+    "ReviewFinish.dc.html": {
+      "h": 940,
+      "title": "Finish with questions not judged: Go back, or Mark them Keep and finish",
+      "w": 1280,
+      "x": 2720,
+      "y": 12000
+    },
+    "ReviewPhone.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "title": "quiz review on a phone: one card, the bar at the foot",
+      "w": 390,
+      "x": 4080,
+      "y": 12000
+    },
+    "ReviewVi.dc.html": {
+      "h": 940,
+      "title": "quiz review with ui_lang vi: the form's words in Vietnamese, the questions in the quiz's language",
+      "w": 1280,
+      "x": 0,
+      "y": 13060
     }
   },
   "createdOnFiles": {
@@ -169,7 +206,15 @@
   "launch": {
     "view": "canvas"
   },
-  "notes": {},
+  "notes": {
+    "formsReview": {
+      "x": 0,
+      "y": 11700,
+      "text": "Forms: quiz review",
+      "kind": "title1",
+      "maxW": 4470
+    }
+  },
   "order": [
     "Main.dc.html",
     "Quiz.dc.html",
@@ -192,7 +237,12 @@
     "MaterialsFocus.dc.html",
     "MaterialsPhone.dc.html",
     "PrintMaterials.dc.html",
-    "MaterialsStacked.dc.html"
+    "MaterialsStacked.dc.html",
+    "Review.dc.html",
+    "ReviewSince.dc.html",
+    "ReviewFinish.dc.html",
+    "ReviewPhone.dc.html",
+    "ReviewVi.dc.html"
   ],
   "pages": [],
   "title": "fullmark themes"

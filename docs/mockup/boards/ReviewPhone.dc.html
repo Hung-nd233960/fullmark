@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>quiz review on a phone</title>
+    <script src="./support.js"></script>
+  </head>
+  <body>
+    <x-dc>
+      <helmet>
+        <style>
+          body {
+            margin: 0;
+          }
+        </style>
+      </helmet>
+      <div style="{{rootStyle}}">
+        <header
+          style="display: flex; align-items: center; gap: 10px; padding: 10px 16px; background: {{t.card}}; border-bottom: 1px solid {{t.line}}"
+        >
+          <div style="flex: 1; min-width: 0; display: flex; flex-direction: column">
+            <span
+              style="
+                font-weight: 700;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+              "
+              >Review: Signals and Systems</span
+            >
+            <span style="font-size: 0.8em; color: {{t.muted}}; font-variant-numeric: tabular-nums"
+              >{{line}}</span
+            >
+          </div>
+          <button aria-label="Questions" title="Questions" style="{{iconBtn}}">
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <rect x="3" y="4" width="18" height="16" rx="2"></rect>
+              <path d="M15 4v16"></path>
+            </svg>
+          </button>
+        </header>
+
+        <main
+          style="
+            flex: 1;
+            min-height: 0;
+            overflow-y: auto;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+          "
+        >
+          <section
+            aria-labelledby="ph20"
+            style="background: {{t.card}}; border: 2px solid {{t.accent}}; border-radius: 12px; padding: 16px"
+          >
+            <div
+              style="display: flex; justify-content: space-between; gap: 8px; font-size: 0.8em; color: {{t.muted}}"
+            >
+              <span id="ph20">Question 20 · 2 points</span>
+              <span style="{{statusStyle}}">{{status}}</span>
+            </div>
+            <p style="margin: 6px 0 10px; font-weight: 600">
+              What is the fundamental period, in seconds, of x(t) = sin(5πt)?
+            </p>
+            <div
+              style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; border: 2px solid {{t.ok}}; background: {{t.okWash}}; border-radius: 8px; padding: 6px 12px"
+            >
+              <span style="font-size: 0.85em; font-weight: 700; color: {{t.ok}}"
+                >Accepted answer</span
+              >
+              <span style="font-weight: 700; font-variant-numeric: tabular-nums">0.4</span>
+              <span style="font-size: 0.85em; color: {{t.muted}}">± 0.01</span>
+            </div>
+            <div
+              role="group"
+              aria-label="Verdict on question 20"
+              style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-top: 14px; padding-top: 12px; border-top: 1px solid {{t.line}}"
+            >
+              <sc-for list="{{verdicts}}" as="b" hint-placeholder-count="3">
+                <button onClick="{{b.pick}}" aria-pressed="{{b.pressed}}" style="{{b.style}}">
+                  {{b.label}}
+                </button>
+              </sc-for>
+            </div>
+            <sc-if value="{{reasons}}" hint-placeholder-val="{{ true }}">
+              <div style="margin-top: 12px; display: flex; flex-direction: column; gap: 8px">
+                <span style="font-size: 0.8em; font-weight: 700; color: {{t.muted}}">{{why}}</span>
+                <div
+                  role="group"
+                  aria-label="{{why}}"
+                  style="display: flex; flex-wrap: wrap; gap: 8px"
+                >
+                  <sc-for list="{{chips}}" as="ch" hint-placeholder-count="3">
+                    <button
+                      onClick="{{ch.pick}}"
+                      aria-pressed="{{ch.pressed}}"
+                      style="{{ch.style}}"
+                    >
+                      {{ch.label}}
+                    </button>
+                  </sc-for>
+                </div>
+                <label for="note20" style="font-size: 0.85em; font-weight: 600; margin-top: 4px"
+                  >Note (optional)</label
+                >
+                <textarea
+                  id="note20"
+                  rows="3"
+                  style="font: inherit; font-size: 0.95em; width: 100%; box-sizing: border-box; resize: vertical; padding: 8px 12px; border-radius: 8px; background: {{t.sunken}}; color: {{t.text}}; border: 1px solid {{t.lineStrong}}"
+                >
+The tolerance of ± 0.01 lets 0.39 pass: it should be ± 0.001.</textarea>
+              </div>
+            </sc-if>
+          </section>
+          <section
+            aria-labelledby="ph21"
+            style="background: {{t.card}}; border: 1px solid {{t.line}}; border-radius: 12px; padding: 16px"
+          >
+            <div
+              style="display: flex; justify-content: space-between; gap: 8px; font-size: 0.8em; color: {{t.muted}}"
+            >
+              <span id="ph21">Question 21 · Essay · 4 points</span>
+              <span style="font-weight: 700">Not judged</span>
+            </div>
+            <p style="margin: 6px 0 0; font-weight: 600">
+              Explain why a signal must be sampled faster than twice its highest frequency.
+            </p>
+          </section>
+        </main>
+
+        <footer
+          style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; padding: 10px 16px 14px; background: {{t.card}}; border-top: 1px solid {{t.line}}"
+        >
+          <button
+            style="font: inherit; font-weight: 700; height: 44px; border-radius: 8px; cursor: pointer; border: 2px solid {{t.lineStrong}}; background: {{t.card}}; color: {{t.text}}"
+          >
+            Keep the rest
+          </button>
+          <button
+            style="font: inherit; font-weight: 700; height: 44px; border-radius: 8px; cursor: pointer; border: 2px solid {{t.accent}}; background: {{t.accent}}; color: {{t.onAccent}}"
+          >
+            Finish
+          </button>
+        </footer>
+      </div>
+    </x-dc>
+    <script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+      class Component extends DCLogic {
+        renderVals() {
+          var self = this;
+          var s = this.state || {};
+          var t = { bg: "#eceae5", surface: "#f4f3ef", card: "#fcfcfa", sunken: "#e4e2dc", line: "#d6d4cd", lineStrong: "#8c8b83", text: "#2a2b31", muted: "#55554f", accent: "#46608a", onAccent: "#fcfcfa", ok: "#3d6946", bad: "#963f3e", warn: "#725b1c", okWash: "#e3ebe2", badWash: "#f2e3e1" };
+          var COL = { keep: t.ok, fix: t.warn, drop: t.bad };
+          var WASH = { keep: t.okWash, fix: t.surface, drop: t.badWash };
+          // On a phone the verdict buttons share the card's width, the reasons wrap, and the bar sits at the foot.
+          var v = s.v !== undefined ? s.v : "fix";
+          var r = s.r || ["key-wrong"];
+          var list = v === "drop"
+            ? [["duplicate", "Duplicate"], ["off-scope", "Off scope"], ["too-easy", "Too easy"], ["other", "Other"]]
+            : [["key-wrong", "Answer key wrong"], ["unclear", "Unclear"], ["other", "Other"]];
+          var judged = 14 + (v ? 1 : 0);
+          return {
+            t: t,
+            line: "Judged " + judged + " of 32 · Question 20",
+            status: v === "keep" ? "✓ Keep" : v === "fix" ? "✎ Fix" : v === "drop" ? "✕ Drop" : "Not judged",
+            statusStyle: "font-weight: 700; color: " + (v ? COL[v] : t.muted),
+            reasons: v === "fix" || v === "drop",
+            why: v === "drop" ? "Why drop it?" : "What needs fixing?",
+            verdicts: [["keep", "Keep"], ["fix", "Fix"], ["drop", "Drop"]].map(function (b) {
+              var on = v === b[0];
+              return {
+                label: b[1],
+                pressed: on ? "true" : "false",
+                pick: function () { self.setState({ v: on ? null : b[0], r: [] }); },
+                style: "font: inherit; font-weight: " + (on ? 700 : 600) + "; height: 44px; border-radius: 8px; cursor: pointer; border: " + (on ? "2px solid " + COL[b[0]] : "1px solid " + t.lineStrong) + "; background: " + (on ? WASH[b[0]] : t.card) + "; color: " + (on ? COL[b[0]] : t.text)
+              };
+            }),
+            chips: list.map(function (c) {
+              var on = r.indexOf(c[0]) >= 0;
+              var k = v || "fix";
+              return {
+                label: c[1],
+                pressed: on ? "true" : "false",
+                pick: function () { self.setState({ r: on ? r.filter(function (x) { return x !== c[0]; }) : r.concat([c[0]]) }); },
+                style: "font: inherit; font-size: 0.9em; min-height: 40px; padding: 0 14px; border-radius: 999px; cursor: pointer; font-weight: " + (on ? 700 : 500) + "; border: " + (on ? "2px solid " + COL[k] : "1px solid " + t.line) + "; background: " + (on ? WASH[k] : t.card) + "; color: " + (on ? COL[k] : t.text)
+              };
+            }),
+            iconBtn: "font: inherit; display: flex; align-items: center; justify-content: center; flex-shrink: 0; width: 44px; height: 44px; border-radius: 8px; cursor: pointer; border: 2px solid " + t.lineStrong + "; background: " + t.card + "; color: " + t.text,
+            rootStyle: "width: 390px; height: 844px; box-sizing: border-box; display: flex; flex-direction: column; overflow: hidden; background: " + t.bg + "; color: " + t.text + "; font-family: 'Segoe UI', system-ui, -apple-system, Roboto, sans-serif; font-size: 16px; line-height: 1.55"
+          };
+        }
+      }
+    </script>
+  </body>
+</html>

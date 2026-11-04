@@ -20,7 +20,7 @@ As in step 2 ([archive/STEP2.md](archive/STEP2.md), Handoff): Opus writes a slic
 | 3g 3d's fixes, `brief` through flags | done, reviewed, gaps decided | `27a61a4`..`2e6b449` |
 | 3i 3g's fixes, `brief --tui` | done, reviewed, gaps decided | `fb5ed78`..`546ccc0` |
 | 3j 3i's fixes, `build --watch` and `--serve` | done, reviewed, gaps decided (G35 built in review) | `4a0835f`..`45fe811` |
-| 3v the form boards (on the Design canvas) | `review` boards drafted by Opus and reviewed by the owner (2026-11-04); G38 to G45 decided; **waits for the owner**: G46 (`vi` words); G47 decided (3e's first task). `grade --web` and `brief --web` boards after that | |
+| 3v the form boards (on the Design canvas) | `review` boards drafted by Opus and reviewed by the owner (2026-11-04); G38 to G47 decided (2026-11-04); boards copied into `docs/mockup/`. **Next:** 3e's brief `grade --web` and `brief --web` boards after that | |
 | 3e `review`, 3f `grade --web`, 3h `brief --web` | wait for 3v; briefs not written yet | |
 | 3z acceptance | last | |
 
@@ -37,7 +37,7 @@ Step 2 is closed ([archive/STEP2.md](archive/STEP2.md), item 75): every "Done wh
 
 ### Next steps, in order
 
-1. **The form boards on the Design canvas** (3v, G7), as 2v did for the page: every slice left (3e, 3f, 3h) waits for them. The `review` boards are drafted and reviewed (Gaps, "The review boards"); the owner decides G46 on the ReviewVi board; then they are copied into `docs/mockup/` (sources and images), the decisions go into COMMANDS.md, and 3e's brief is written. The `grade --web` and `brief --web` boards follow in the same way.
+1. **The form boards on the Design canvas** (3v, G7), as 2v did for the page: every slice left (3e, 3f, 3h) waits for them. The `review` boards are done: reviewed, G38 to G47 decided and in COMMANDS.md, the sources copied into `docs/mockup/boards/`. Their images (`docs/mockup/images/Review*.png`) wait for the owner's export from the canvas, as for the page boards. Next, 3e's brief, with G47 (the page's Font row by category) and the `vi` words of G46 as its first tasks. The `grade --web` and `brief --web` boards follow in the same way.
 
 ### Open proposals carried over from step 2
 
@@ -139,7 +139,7 @@ The design docs left these open, or a slice's review found them. Each needs the 
 
 **G37. The watcher is per folder, not `recursive`** (docs only). **Decided by the owner on 2026-11-03, as recommended.** **Recommend:** accept, and change TECHNICAL_DESIGN.md section 3's Watching row to "`node:fs.watch` on each watched file's folder, not recursive: only the files the quiz hash covers matter, and a rename save is seen in its folder".
 
-**The review boards (3v).** Opus drafted them on the Design canvas on 2026-11-04, in a new row titled "Forms: quiz review": **Review** (1280 px, interactive; Tweaks for theme, `locked`, `lang`, `--since`, the dialogs, materials and the sidebar), **ReviewSince** (`--since`), **ReviewFinish** (the dialog), **ReviewPhone** (390 px, interactive) and **ReviewVi** (`ui_lang` vi). They use the page's tokens, the Quiz board's top bar, status line, card and 320 px sidebar. **The owner reviewed them on 2026-11-04**: G38, G40, G41, G43, G44 and G45 as recommended, G42 changed (below), and **The rest is fine** renamed **Keep the rest** ("Giữ các câu còn lại" in `vi`, G46); all written into COMMANDS.md, `quiz review`, and TECHNICAL_DESIGN.md section 4 (`assumed`). G39 was decided after a redraw (below); G46's `vi` words wait for the owner, on the ReviewVi board.
+**The review boards (3v).** Opus drafted them on the Design canvas on 2026-11-04, in a new row titled "Forms: quiz review": **Review** (1280 px, interactive; Tweaks for theme, `locked`, `lang`, `--since`, the dialogs, materials and the sidebar), **ReviewSince** (`--since`), **ReviewFinish** (the dialog), **ReviewPhone** (390 px, interactive) and **ReviewVi** (`ui_lang` vi). They use the page's tokens, the Quiz board's top bar, status line, card and 320 px sidebar. **The owner reviewed them on 2026-11-04**: G38, G40, G41, G43, G44 and G45 as recommended, G42 changed (below), and **The rest is fine** renamed **Keep the rest** ("Giữ các câu còn lại" in `vi`, G46); all written into COMMANDS.md, `quiz review`, and TECHNICAL_DESIGN.md section 4 (`assumed`). G39 was decided after a redraw, G46 on the ReviewVi board (below).
 
 **G38. The review form's keys** (3e). **Decided by the owner on 2026-11-04, as recommended**, and written into COMMANDS.md. `1`, `2`, `3` give Keep, Fix, Drop to the current question; `N` moves to the next question not judged; `Q` and `Esc` as on the page.
 
@@ -159,7 +159,7 @@ The design docs left these open, or a slice's review found them. Each needs the 
 
 **G45. The review form on a phone** (3e). **Decided by the owner on 2026-11-04, as recommended**, and written into COMMANDS.md.
 
-**G46. The form's words in `vi`** (3e). The prompts "What needs fixing?" and "Why drop it?" are in COMMANDS.md. **Recommend:** the `vi` strings drawn on the ReviewVi board, reusing the page's catalog where a word exists (Giao diện, Nền, Phông, Cỡ chữ, Tài liệu, Đáp án đúng, Đáp án chấp nhận, Tiêu chí chấm, Bài mẫu, đang xem, Đóng thanh bên): Rà soát, Giữ / Sửa / Bỏ, Giữ các câu còn lại, Hoàn tất, Đã xét 14 / 32, Đánh giá của bạn, Cần sửa gì?, Vì sao bỏ?, Chọn ít nhất một lý do., Ghi chú (không bắt buộc) / (bắt buộc khi chọn Khác), Chưa xét; the reasons Đáp án sai, Chưa rõ ràng, Tiêu chí chấm quá lỏng, Chia điểm chưa hợp lý, Tiêu chí chưa rõ, Khác, Trùng lặp, Ngoài phạm vi, Quá dễ; the dialog "N câu chưa xét", Quay lại câu K, Huỷ, Đánh dấu Giữ và hoàn tất; after writing, Đã lưu bản rà soát. The owner reads them on the board; 3e copies the approved ones into the catalogs.
+**G46. The form's words in `vi`** (3e). **Decided by the owner on 2026-11-04, as recommended**: the ReviewVi board's words, which 3e copies into the catalogs. The prompts "What needs fixing?" and "Why drop it?" are in COMMANDS.md. **Recommend:** the `vi` strings drawn on the ReviewVi board, reusing the page's catalog where a word exists (Giao diện, Nền, Phông, Cỡ chữ, Tài liệu, Đáp án đúng, Đáp án chấp nhận, Tiêu chí chấm, Bài mẫu, đang xem, Đóng thanh bên): Rà soát, Giữ / Sửa / Bỏ, Giữ các câu còn lại, Hoàn tất, Đã xét 14 / 32, Đánh giá của bạn, Cần sửa gì?, Vì sao bỏ?, Chọn ít nhất một lý do., Ghi chú (không bắt buộc) / (bắt buộc khi chọn Khác), Chưa xét; the reasons Đáp án sai, Chưa rõ ràng, Tiêu chí chấm quá lỏng, Chia điểm chưa hợp lý, Tiêu chí chưa rõ, Khác, Trùng lặp, Ngoài phạm vi, Quá dễ; the dialog "N câu chưa xét", Quay lại câu K, Huỷ, Đánh dấu Giữ và hoàn tất; after writing, Đã lưu bản rà soát. The owner reads them on the board; 3e copies the approved ones into the catalogs.
 
 ## Slices
 
