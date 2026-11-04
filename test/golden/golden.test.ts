@@ -30,7 +30,8 @@ describe("golden files", () => {
         }
         expect(view(first)).toEqual(view(readExpected(c)));
       },
-      60_000,
+      // two CLI starts per case: about 3 s idle, but 70 s was seen when 500 cases and the other test files share 8 cores
+      180_000,
     );
   }
 });

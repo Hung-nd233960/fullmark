@@ -242,7 +242,7 @@ describe("stats: a report whose question has an empty id (G21)", () => {
       expect(code).toBe(1);
       expect(c.err.join("\n")).toContain("run `quiz ids FILE`, then make it again with `quiz grade --json`");
     } finally {
-      rmSync(dir, { recursive: true, force: true });
+      rmSync(dir, { recursive: true, force: true, maxRetries: 10, retryDelay: 100 });
     }
   });
 });

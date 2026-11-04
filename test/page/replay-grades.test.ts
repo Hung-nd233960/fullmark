@@ -18,7 +18,7 @@ import { capture } from "../helpers/cli";
  */
 const fixtures = resolve(import.meta.dirname, "..", "fixtures", "replay");
 const work = mkdtempSync(join(tmpdir(), "fullmark-replay-grades-"));
-afterAll(() => rmSync(work, { recursive: true, force: true }));
+afterAll(() => rmSync(work, { recursive: true, force: true, maxRetries: 10, retryDelay: 100 }));
 
 type Grades = { grader: { at?: string }; grades: Record<string, unknown> };
 type Edit = (grades: Grades) => void;

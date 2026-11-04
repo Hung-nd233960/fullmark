@@ -15,7 +15,7 @@ import { catalogStrings, leaksIn, own, visibleText } from "../helpers/vi-scan";
  */
 const root = resolve(import.meta.dirname, "..", "..");
 const work = mkdtempSync(join(tmpdir(), "fullmark-vi-scan-"));
-afterAll(() => rmSync(work, { recursive: true, force: true }));
+afterAll(() => rmSync(work, { recursive: true, force: true, maxRetries: 10, retryDelay: 100 }));
 
 const sources: { name: string; dir: string; file: string }[] = [
   ...readdirSync(join(root, "examples"))
@@ -43,7 +43,8 @@ describe("the vi scan", () => {
     expect(leaksIn(visibleText(readFileSync(join(dir, "page.html"), "utf8")), "").length).toBeGreaterThan(3);
   });
   for (const [i, s] of sources.entries()) {
-    it(s.name, async () => {
+    // one example built as a vi page, which loads KaTeX and Shiki for the largest ones: 5 s was crossed on a loaded run
+    it(s.name, { timeout: 30_000 }, async () => {
       // copy so that assets and sheets resolve and nothing is written into the repository
       const dir = join(work, String(i));
       mkdirSync(dir, { recursive: true });

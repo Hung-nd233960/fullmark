@@ -19,7 +19,7 @@ const served: Served[] = [];
 const dirs: string[] = [];
 test.afterEach(() => {
   for (const s of served.splice(0)) s.child.kill("SIGKILL");
-  for (const d of dirs.splice(0)) rmSync(d, { recursive: true, force: true });
+  for (const d of dirs.splice(0)) rmSync(d, { recursive: true, force: true, maxRetries: 10, retryDelay: 100 });
 });
 
 function folder(files: Record<string, string>): string {

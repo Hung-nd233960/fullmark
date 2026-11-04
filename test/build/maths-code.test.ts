@@ -52,7 +52,10 @@ describe("a quiz with no maths and no code pays nothing", () => {
 describe("maths in the page", () => {
   const tools = katexTools();
 
-  it("is KaTeX's HTML with MathML, with the styles and fonts once, and no style attribute or font file", async () => {
+  // loads KaTeX and Shiki and builds the page with every font: 3 s idle, over 6 s when the machine is loaded
+  it("is KaTeX's HTML with MathML, with the styles and fonts once, and no style attribute or font file", {
+    timeout: 30_000,
+  }, async () => {
     const highlight = await loadHighlighter(languagesUsed(mathsAndCode.quiz, mathsAndCode.sheets));
     const html = buildPage([mathsAndCode], { ...plainOptions, math: tools, highlight });
     const page = withoutRuntime(html);

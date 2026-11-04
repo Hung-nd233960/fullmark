@@ -144,9 +144,10 @@ describe("build with several files", () => {
 });
 
 describe("a folder of quizzes builds in one command", () => {
-  it("every example: the batch page is byte-identical to the page built alone", async () => {
+  // builds every example twice (about 8 s idle on this laptop); 30 s covers a loaded run
+  it("every example: the batch page is byte-identical to the page built alone", { timeout: 30_000 }, async () => {
     const dir = mkdtempSync(join(tmpdir(), "fullmark-batch-"));
-    trees.push({ done: () => rmSync(dir, { recursive: true, force: true }) });
+    trees.push({ done: () => rmSync(dir, { recursive: true, force: true, maxRetries: 10, retryDelay: 100 }) });
     const names = readdirSync(join(root, "examples")).filter((n) => existsSync(join(root, "examples", n, "quiz.md")));
     for (const n of names) cpSync(join(root, "examples", n), join(dir, n), { recursive: true });
     mkdirSync(join(dir, ".git"));
@@ -398,7 +399,8 @@ describe("build.size", () => {
     expect(e.errors.map((i: { rule: string }) => i.rule)).toEqual(["build.size"]);
   });
 
-  it("a page made big by an inline asset crosses the default 20 MB", async () => {
+  // an 8 MB asset is read, encoded and hashed three times; a loaded run took 6.6 s
+  it("a page made big by an inline asset crosses the default 20 MB", { timeout: 30_000 }, async () => {
     const png = Buffer.concat([Buffer.from("89504e470d0a1a0a", "hex"), Buffer.alloc(8_000_000, 7)]);
     const dir = tree({ "a.md": quiz("![big](assets/big.png)\n\n- [x] a\n- [ ] b") });
     mkdirSync(join(dir, "assets"));

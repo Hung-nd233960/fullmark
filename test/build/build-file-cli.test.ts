@@ -302,9 +302,12 @@ describe("build --build-file --json", () => {
 });
 
 describe("a build file rebuilds a course byte-identically, and each page equals the command line's", () => {
-  it("every example: two runs are identical, and each page equals `build FILE` with the same flags", async () => {
+  // builds every example three times (about 9 s idle on this laptop); 60 s covers a loaded run
+  it("every example: two runs are identical, and each page equals `build FILE` with the same flags", {
+    timeout: 60_000,
+  }, async () => {
     const dir = mkdtempSync(join(tmpdir(), "fullmark-buildfile-"));
-    trees.push({ done: () => rmSync(dir, { recursive: true, force: true }) });
+    trees.push({ done: () => rmSync(dir, { recursive: true, force: true, maxRetries: 10, retryDelay: 100 }) });
     const names = readdirSync(join(root, "examples"), { withFileTypes: true })
       .filter((e) => e.isDirectory() && e.name !== "site")
       .map((e) => e.name);
@@ -347,9 +350,12 @@ ui-lang = "vi"
 });
 
 describe("examples/build.toml", () => {
-  it("builds every example, each page byte-identical to `quiz build FILE` with the same flags", async () => {
+  // builds every example twice (about 8 s idle on this laptop); 30 s covers a loaded run
+  it("builds every example, each page byte-identical to `quiz build FILE` with the same flags", {
+    timeout: 30_000,
+  }, async () => {
     const out = join(root, "examples", "site");
-    rmSync(out, { recursive: true, force: true });
+    rmSync(out, { recursive: true, force: true, maxRetries: 10, retryDelay: 100 });
     try {
       const c = capture(root);
       const code = await runBuild([], { ...base, builtAt: null, buildFile: "examples/build.toml" }, c.io);
@@ -370,7 +376,7 @@ describe("examples/build.toml", () => {
         expect(read(out, name, "quiz.html"), name).toBe(readFileSync(target, "utf8"));
       }
     } finally {
-      rmSync(out, { recursive: true, force: true });
+      rmSync(out, { recursive: true, force: true, maxRetries: 10, retryDelay: 100 });
     }
   });
 });

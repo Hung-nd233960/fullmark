@@ -103,7 +103,9 @@ export async function runCase(c: Case): Promise<Run> {
     env.NO_COLOR = "1";
     // the user's own config is never read: the places it would be found point into the case, where nothing is
     const home = join(tmp, "no-home");
-    for (const k of ["HOME", "USERPROFILE", "APPDATA", "XDG_CONFIG_HOME"]) env[k] = home;
+    for (const k of ["HOME", "USERPROFILE", "XDG_CONFIG_HOME"]) env[k] = home;
+    // Windows keeps the user config in %APPDATA%ullmark; the cases hold it at no-home/.config/fullmark, as Linux does
+    env.APPDATA = join(home, ".config");
     if (existsSync(join(tmp, "user-config.toml"))) env.FULLMARK_CONFIG = join(tmp, "user-config.toml");
     for (const l of lines(join(c.dir, "env.txt"))) {
       const i = l.indexOf("=");
@@ -140,7 +142,7 @@ export async function runCase(c: Case): Promise<Run> {
       files,
     };
   } finally {
-    rmSync(tmp, { recursive: true, force: true });
+    rmSync(tmp, { recursive: true, force: true, maxRetries: 10, retryDelay: 100 });
   }
 }
 
@@ -161,7 +163,7 @@ export function writeExpected(c: Case, run: Run): void {
   writeFileSync(join(c.dir, "stdout.txt"), run.stdout);
   writeFileSync(join(c.dir, "stderr.txt"), run.stderr);
   writeFileSync(join(c.dir, "exit.txt"), `${run.exit}\n`);
-  rmSync(join(c.dir, "files"), { recursive: true, force: true });
+  rmSync(join(c.dir, "files"), { recursive: true, force: true, maxRetries: 10, retryDelay: 100 });
   for (const [rel, bytes] of run.files) {
     mkdirSync(dirname(join(c.dir, "files", rel)), { recursive: true });
     writeFileSync(join(c.dir, "files", rel), bytes);

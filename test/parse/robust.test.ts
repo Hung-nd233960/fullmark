@@ -34,7 +34,7 @@ describe("the parser never throws", () => {
       }
     }
     expect(runs).toBeGreaterThan(500);
-  }, 30_000);
+  }, 120_000); // some 600 cuts of every example and fixture: about 10 s idle, 35 s when the machine is loaded
 
   it("on odd input", () => {
     for (const text of [

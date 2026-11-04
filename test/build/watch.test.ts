@@ -130,7 +130,10 @@ async function watching(
 const text = (dir: string, file: string): string => readFileSync(join(dir, file), "utf8");
 
 describe("build --watch", () => {
-  it("builds first, then rebuilds when the quiz is saved, and the page is the page `build` writes", async () => {
+  // builds the page three times in process (about 1 s each on this laptop when idle); a loaded 8-core run took over 5 s
+  it("builds first, then rebuilds when the quiz is saved, and the page is the page `build` writes", {
+    timeout: 30_000,
+  }, async () => {
     const r = await watching({ "q.md": quiz() }, ["q.md"]);
     expect(r.out).toEqual(["q.md: wrote q.html"]);
     const first = text(r.dir, "q.html");

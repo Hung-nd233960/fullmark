@@ -125,7 +125,7 @@ describe("the quiz hash covers the assets' bytes", () => {
       expect(statSync(asset).size).toBe(bytes.length);
       expect(loadQuiz(file).hash).not.toBe(before.hash);
     } finally {
-      rmSync(dir, { recursive: true, force: true });
+      rmSync(dir, { recursive: true, force: true, maxRetries: 10, retryDelay: 100 });
     }
   });
 });

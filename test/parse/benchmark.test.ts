@@ -6,7 +6,8 @@ import { parse } from "../../src/core/parse";
 const examples = resolve(import.meta.dirname, "..", "..", "examples");
 
 describe("parse speed", () => {
-  it("parses the largest example in well under 50 ms (a generous limit, to catch accidents)", () => {
+  // a wall-clock measure, not a wait: when the other test files starve this process (1.4 s was seen) the test runs again
+  it("parses the largest example in well under 50 ms (a generous limit, to catch accidents)", { retry: 2 }, () => {
     const files = readdirSync(examples)
       .filter((n) => existsSync(join(examples, n, "quiz.md")))
       .map((n) => join(examples, n, "quiz.md"));

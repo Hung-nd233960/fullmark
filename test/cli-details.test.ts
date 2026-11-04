@@ -36,7 +36,7 @@ describe("plain words for a file that cannot be read or written", () => {
       const folder = await writeFileAtomic(dir, new Uint8Array()).catch((e) => e);
       expect((folder as WriteError).message).toBe("is a folder, not a file");
     } finally {
-      rmSync(dir, { recursive: true, force: true });
+      rmSync(dir, { recursive: true, force: true, maxRetries: 10, retryDelay: 100 });
     }
   });
 });

@@ -27,7 +27,7 @@ export function tempTree(files: Record<string, string>): { dir: string; done(): 
     mkdirSync(dirname(join(dir, path)), { recursive: true });
     writeFileSync(join(dir, path), text);
   }
-  return { dir, done: () => rmSync(dir, { recursive: true, force: true }) };
+  return { dir, done: () => rmSync(dir, { recursive: true, force: true, maxRetries: 10, retryDelay: 100 }) };
 }
 
 export const quiz = (body = "- [x] a\n- [ ] b", front = "title: T", head = "Q {type=single id=q}") =>

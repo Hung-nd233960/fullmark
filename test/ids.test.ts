@@ -124,7 +124,7 @@ describe("seededIds (FULLMARK_TEST_SEED, test-only)", () => {
       const env = { ...process.env, ...(seed ? { FULLMARK_TEST_SEED: seed } : {}) };
       if (!seed) delete env.FULLMARK_TEST_SEED;
       const r = spawnSync(process.execPath, [cli, "ids", "q.md", "--json"], { cwd: d, env, encoding: "utf8" });
-      rmSync(d, { recursive: true, force: true });
+      rmSync(d, { recursive: true, force: true, maxRetries: 10, retryDelay: 100 });
       return r.stdout;
     };
     expect(ids("s")).toBe(ids("s"));
@@ -140,7 +140,7 @@ beforeEach(() => {
   dir = mkdtempSync(join(tmpdir(), "fullmark-ids-"));
 });
 afterEach(() => {
-  rmSync(dir, { recursive: true, force: true });
+  rmSync(dir, { recursive: true, force: true, maxRetries: 10, retryDelay: 100 });
 });
 
 function run(args: string[], newId?: Io["newId"]) {

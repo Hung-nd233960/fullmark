@@ -59,7 +59,8 @@ const same = (path: string): string => (process.platform === "win32" ? path.toLo
 
 export function createWatcher(options: WatcherOptions): Watcher {
   const debounce = options.debounceMs ?? DEBOUNCE_MS;
-  const filesOf = new Map<string, Set<string>>();
+  // per key: the files that matter, case-folded on Windows (to compare) -> as given (the folder to watch)
+  const filesOf = new Map<string, Map<string, string>>();
   const open = new Map<string, { close(): void }>();
   const pending = new Set<string>();
   let cancel: (() => void) | null = null;
@@ -78,7 +79,9 @@ export function createWatcher(options: WatcherOptions): Watcher {
     // no name: anything in the folder may have changed
     const keys =
       name === null
-        ? [...filesOf].filter(([, files]) => [...files].some((f) => same(dirname(f)) === same(dir))).map(([k]) => k)
+        ? [...filesOf]
+            .filter(([, files]) => [...files.keys()].some((f) => same(dirname(f)) === same(dir)))
+            .map(([k]) => k)
         : keysFor(resolve(dir, name));
     if (keys.length === 0) return;
     for (const key of keys) pending.add(key);
@@ -115,7 +118,7 @@ export function createWatcher(options: WatcherOptions): Watcher {
 
   const refresh = (): void => {
     const wanted = new Set<string>();
-    for (const files of filesOf.values()) for (const f of files) wanted.add(dirname(f));
+    for (const files of filesOf.values()) for (const f of files.values()) wanted.add(dirname(f));
     for (const [dir, handle] of open) {
       if (!wanted.has(dir)) {
         handle.close();
@@ -134,8 +137,8 @@ export function createWatcher(options: WatcherOptions): Watcher {
   return {
     set(key, files) {
       if (closed) return;
-      // the set holds the case-folded form on Windows; the folder to watch comes from the path as given
-      const folded = new Set(files.map((f) => same(resolve(f))));
+      // compared case-folded on Windows; the folder to watch comes from the path as given
+      const folded = new Map(files.map((f) => [same(resolve(f)), resolve(f)] as const));
       filesOf.set(key, folded);
       refresh();
     },
