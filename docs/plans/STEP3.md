@@ -22,8 +22,8 @@ As in step 2 ([archive/STEP2.md](archive/STEP2.md), Handoff): Opus writes a slic
 | 3j 3i's fixes, `build --watch` and `--serve` | done, reviewed, gaps decided (G35 built in review) | `4a0835f`..`45fe811` |
 | 3v the form boards (on the Design canvas) | `review` boards drafted by Opus and reviewed by the owner (2026-11-04); G38 to G47 decided (2026-11-04); boards and images in `docs/mockup/` `grade --web` and `brief --web` boards after that | |
 | 3e G47, the review file, `check --review`, `inspect --review` | done, reviewed, gaps decided (2026-11-04) | `5e9b45c`..`dbcd43e` |
-| 3k G51, `quiz review` and its form | done, reviewed (2026-11-04); G56 and G57 wait for the owner | `91a8821`..`c326d9f` |
-| 3l `--since`, the stacked sidebar with the materials and the phone | outline; after G56 and G57 are decided | |
+| 3k G51, `quiz review` and its form | done, reviewed, gaps decided (2026-11-04) | `91a8821`..`c326d9f` |
+| 3l `--since`, the stacked sidebar with the materials and the phone | outline; next: its brief opens with G50 and G56 | |
 | 3f `grade --web`, 3h `brief --web` | wait for their boards (3v) | |
 | 3z acceptance | last | |
 
@@ -40,7 +40,7 @@ Step 2 is closed ([archive/STEP2.md](archive/STEP2.md), item 75): every "Done wh
 
 ### Next steps, in order
 
-1. **The form boards on the Design canvas** (3v, G7), as 2v did for the page: every slice left (3e, 3f, 3h) waits for them. The `review` boards are done: reviewed, G38 to G47 decided and in COMMANDS.md, the sources copied into `docs/mockup/boards/`. Their images are in `docs/mockup/images/Review*.png` (the owner's export, scaled to board size). 3e is cut in three (3e the file and the checks, 3k the form, 3l `--since` and the phone), and **3e is built and reviewed** ("Slice 3e", its Review): G50 and G51 decided (3l's and 3k's first tasks). **3k is built and reviewed** ("Slice 3k", its Review, at the end): G56 and G57 wait for the owner; once decided they open 3l's brief, after G50. The `grade --web` and `brief --web` boards follow in the same way.
+1. **The form boards on the Design canvas** (3v, G7), as 2v did for the page: every slice left (3e, 3f, 3h) waits for them. The `review` boards are done: reviewed, G38 to G47 decided and in COMMANDS.md, the sources copied into `docs/mockup/boards/`. Their images are in `docs/mockup/images/Review*.png` (the owner's export, scaled to board size). 3e is cut in three (3e the file and the checks, 3k the form, 3l `--since` and the phone), and **3e is built and reviewed** ("Slice 3e", its Review): G50 and G51 decided (3l's and 3k's first tasks). **3k is built and reviewed** ("Slice 3k", its Review, at the end): G56 and G57 decided as recommended; 3l's brief is next, opening with G50 and G56. The `grade --web` and `brief --web` boards follow in the same way.
 
 ### Open proposals carried over from step 2
 
@@ -180,9 +180,9 @@ The design docs left these open, or a slice's review found them. Each needs the 
 
 **G55. How a question shows its key** (raised writing 3k's brief). **Decided by the owner on 2026-11-04, as recommended**; 3k writes it into the design docs (its task 5). The boards draw single, multi, numeric, short and essay questions; the page shows every type's key after Submit, but always beside the learner's answer. **Recommend:** the form uses the page's own question components in their after-Submit state, from the same page data and key blob, with no answer: the key's marks only (Correct answer, Accepted answers with the tolerance, the right order, the right pairs, each blank's and field's accepted values), never "your answer" or a right or wrong colour; `short` adds its patterns as written (G40). Questions come in source order, every question of a bank's pool, choices unshuffled: the learner judges the source, not an attempt.
 
-**G56. A matching question's distractors in the form** (raised in 3k's review). The form shows a matching question's right pairs, but not its distractors: the right-hand items that match nothing. They are part of the key the learner judges (a distractor that is in fact a right answer is a `key-wrong`), and the source has them. **Recommend:** the form lists them under the pairs, each marked "Matches nothing" (vi: "Không ghép với mục nào"), in source order; 3l builds it with its other fixes.
+**G56. A matching question's distractors in the form** (raised in 3k's review). **Decided by the owner on 2026-11-04, as recommended**; 3l writes it into COMMANDS.md and builds it. The form shows a matching question's right pairs, but not its distractors: the right-hand items that match nothing. They are part of the key the learner judges (a distractor that is in fact a right answer is a `key-wrong`), and the source has them. **Recommend:** the form lists them under the pairs, each marked "Matches nothing" (vi: "Không ghép với mục nào"), in source order; 3l builds it with its other fixes.
 
-**G57. The form's words that are not on the boards** (raised in 3k's review). 3k needed six strings the boards do not draw, written by the implementing agent in `src/core/i18n/review.ts`: `patterns` "Accepted patterns" / "Mẫu chấp nhận" (a `short` question's patterns, G40); `unscored` "Not scored" / "Không tính điểm" (a `scale` question in a graded quiz); `partCount` "6 of 12 judged" / "đã xét 6 / 12"; `keysLabel` "Keys" / "Phím tắt" (the sidebar's key list); `held` "N questions need a reason or a note before the review can be saved:" / "N câu cần có lý do hoặc ghi chú trước khi lưu được bản rà soát:" (Finish with an incomplete verdict); `saveFailed` "The review was not saved: WHY" / "Chưa lưu được bản rà soát: WHY". **Recommend:** keep them as written (each follows the boards' wording where one is near), and the owner reads them in the form through `npm run samples` and says which to change; a change is one line in that file, done in 3l.
+**G57. The form's words that are not on the boards** (raised in 3k's review). **Decided by the owner on 2026-11-04, as recommended**: the six strings stay as written until the owner names a change. 3k needed six strings the boards do not draw, written by the implementing agent in `src/core/i18n/review.ts`: `patterns` "Accepted patterns" / "Mẫu chấp nhận" (a `short` question's patterns, G40); `unscored` "Not scored" / "Không tính điểm" (a `scale` question in a graded quiz); `partCount` "6 of 12 judged" / "đã xét 6 / 12"; `keysLabel` "Keys" / "Phím tắt" (the sidebar's key list); `held` "N questions need a reason or a note before the review can be saved:" / "N câu cần có lý do hoặc ghi chú trước khi lưu được bản rà soát:" (Finish with an incomplete verdict); `saveFailed` "The review was not saved: WHY" / "Chưa lưu được bản rà soát: WHY". **Recommend:** keep them as written (each follows the boards' wording where one is near), and the owner reads them in the form through `npm run samples` and says which to change; a change is one line in that file, done in 3l.
 
 ## Slices
 
@@ -597,6 +597,6 @@ The order (owner, 2026-11-03) puts the server first, since four commands stand o
 - A one-question part shows its heading row as the cell, as on the page (`singleRow`), so "3 · Write some code" has no count: as designed.
 - Fixed in review: a form-feed byte in a comment of `test/golden/runner.ts` (the `\f` of `%APPDATA%\fullmark`, written by a shell).
 
-**Gaps for the owner:** G56 (a matching question's distractors in the form) and G57 (the six strings not on the boards), in "Gaps" with recommendations.
+**3k's gaps decided by the owner on 2026-11-04**, both as recommended: G56 (a matching question's distractors, listed as "Matches nothing") is built in 3l; G57 (the six strings not on the boards) keeps them as written.
 
 **Left on the disk:** nothing in the repo; the review's copies are in the session scratchpad.
