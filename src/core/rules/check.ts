@@ -2,8 +2,10 @@ import type { ResolvedProfile } from "../config/resolve";
 import type { Brief, Question, Quiz } from "../ir";
 import type { Issue, Level } from "../issue";
 import { suggest } from "../parse/report";
+import type { Review } from "../review/schema";
 import { runCustom } from "./custom";
 import { findRule, RULES } from "./registry";
+import { reviewFindings } from "./review";
 import type { Finding } from "./types";
 
 export type CheckInput = {
@@ -18,6 +20,8 @@ export type CheckInput = {
   briefIssues: readonly Issue[];
   /** the files under the brief's `content/`, or null when it was not looked at */
   contentFiles: readonly string[] | null;
+  /** the review given to `check --review`: its fixed rules run, and `review.unconfirmed` with them; absent otherwise */
+  review?: Review | null;
 };
 
 export type Ignored = { rule: string; line: number; because: string };
@@ -44,7 +48,7 @@ export function runChecks(input: CheckInput): CheckOutput {
   }
 
   if (quiz) {
-    const ctx = { brief: input.brief, contentFiles: input.contentFiles };
+    const ctx = { brief: input.brief, contentFiles: input.contentFiles, review: input.review ?? null };
     const add = (rule: string, level: Level, findings: Finding[]) => {
       for (const f of findings) {
         out.push({ rule, level, file, line: f.line, message: f.message, ...(f.fix ? { fix: f.fix } : {}) });
@@ -55,6 +59,11 @@ export function runChecks(input: CheckInput): CheckOutput {
       const resolved = profile.rules.get(rule.id);
       if (!resolved || resolved.level === "off") continue;
       add(rule.id, resolved.level, rule.run(quiz, ctx, resolved.options));
+    }
+    if (ctx.review) {
+      const found = reviewFindings(quiz, ctx.review);
+      add("review.fix", "error", found.fix);
+      add("review.drop", "error", found.drop);
     }
     for (const check of profile.checks) {
       const level = levelOf(check.id);

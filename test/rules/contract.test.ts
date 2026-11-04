@@ -35,6 +35,10 @@ describe("every rule has a fixture", () => {
     "build.font-not-embedded",
     "build.answer-sheet-empty",
     "materials.empty",
+    // `check --review` only: judged by test/rules/review.test.ts
+    "review.fix",
+    "review.drop",
+    "review.unconfirmed",
   ]);
   const briefRules = new Set([
     "brief.count",

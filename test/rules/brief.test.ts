@@ -20,7 +20,7 @@ function run(rule: string, name: string, options: Record<string, unknown> = {}) 
   const contentFiles = existsSync(content) ? readdirSync(content) : [];
   const r = BRIEF_RULES.find((b) => b.id === rule);
   if (!r) throw new Error(rule);
-  return r.run(quiz, { brief: read.brief, contentFiles }, { ...defaultOptions(r), ...options });
+  return r.run(quiz, { brief: read.brief, contentFiles, review: null }, { ...defaultOptions(r), ...options });
 }
 
 describe("brief rules", () => {
@@ -57,7 +57,7 @@ describe("brief rules", () => {
     const rule = BRIEF_RULES.find((r) => r.id === "brief.mode");
     if (!rule) throw new Error("brief.mode");
     const lines = (front: string, mode: string) =>
-      rule.run(quizOf(front), { brief: brief(mode), contentFiles: null }, {}).map((f) => f.line);
+      rule.run(quizOf(front), { brief: brief(mode), contentFiles: null, review: null }, {}).map((f) => f.line);
     // the key is written but wrong: the finding is on its line
     expect(lines("title: T\nfeedback: end", "each-question")).toEqual([3]);
     expect(lines("title: T\nfeedback: instant", "each-question")).toEqual([]);
@@ -70,20 +70,20 @@ describe("brief rules", () => {
   it("every brief rule does nothing without a brief", () => {
     const quiz = parse(readFileSync(join(base, "count", "quiz.md"), "utf8"), "quiz.md").quiz as Quiz;
     for (const r of BRIEF_RULES)
-      expect(r.run(quiz, { brief: null, contentFiles: [] }, defaultOptions(r)), r.id).toEqual([]);
+      expect(r.run(quiz, { brief: null, contentFiles: [], review: null }, defaultOptions(r)), r.id).toEqual([]);
   });
 
   it("brief.content-kinds is silent when the material is said to be elsewhere, and when content/ is unread", () => {
     const quiz = parse(readFileSync(join(base, "past-exams", "quiz.md"), "utf8"), "quiz.md").quiz as Quiz;
     const brief = readBrief(readFileSync(join(base, "past-exams", "brief.yaml"), "utf8"), "brief.yaml").brief;
     const rule = BRIEF_RULES.find((r) => r.id === "brief.content-kinds");
-    expect(rule?.run(quiz, { brief, contentFiles: [] }, {})).toEqual([]);
+    expect(rule?.run(quiz, { brief, contentFiles: [], review: null }, {})).toEqual([]);
     const textbook = readBrief(
       briefYaml({ content: { kinds: ["textbook"], kinds_other: "", elsewhere: "" } }),
       "brief.yaml",
     ).brief;
-    expect(rule?.run(quiz, { brief: textbook, contentFiles: null }, {})).toEqual([]);
-    expect(rule?.run(quiz, { brief: textbook, contentFiles: [] }, {})).toHaveLength(1);
+    expect(rule?.run(quiz, { brief: textbook, contentFiles: null, review: null }, {})).toEqual([]);
+    expect(rule?.run(quiz, { brief: textbook, contentFiles: [], review: null }, {})).toHaveLength(1);
   });
 });
 

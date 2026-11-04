@@ -1,6 +1,7 @@
 import type { z } from "zod";
 import type { Brief, Quiz } from "../ir";
 import type { Level } from "../issue";
+import type { Review } from "../review/schema";
 
 /** A problem a rule found, before the runner adds the rule id, the level and the file. */
 export type Finding = { line: number; message: string; fix?: string };
@@ -14,6 +15,8 @@ export type RuleContext = {
    * folder could not be looked at (no brief, or a caller that does not read the disk).
    */
   contentFiles: readonly string[] | null;
+  /** the review given to `check --review`; null everywhere else */
+  review: Review | null;
 };
 
 type Common = {

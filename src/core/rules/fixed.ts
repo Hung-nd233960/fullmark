@@ -458,6 +458,23 @@ export const FIXED_RULES: FixedRule[] = [
     ),
     "give each criterion its own id",
   ),
+  // -- the review (`check --review`)
+  fixed(
+    "review.fix",
+    "check",
+    "with `check --review`: a question the learner marked fix is unchanged since",
+    "(checked by `quiz check --review review.json`: a question marked fix whose block is the one judged)",
+    "change the question as the verdict's reasons say, or judge it again with `quiz review`",
+    "The learner flagged the question as wrong or unclear; leaving it as it was means the problem is still there. Changing it passes, and `review.unconfirmed` waits for the learner's next verdict.",
+  ),
+  fixed(
+    "review.drop",
+    "check",
+    "with `check --review`: a question the learner marked drop is still in the quiz",
+    "(checked by `quiz check --review review.json`: a question marked drop that is still in the quiz)",
+    "remove the question from the quiz, or judge it again with `quiz review`",
+    "The learner decided the question should go; only removing it settles that, changed or not.",
+  ),
   // -- surveys and ignores
   fixed(
     "survey.forbidden",

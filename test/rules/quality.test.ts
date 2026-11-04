@@ -7,7 +7,7 @@ import { QUALITY_RULES } from "../../src/core/rules/quality";
 import { defaultOptions } from "../../src/core/rules/registry";
 
 const dir = resolve(import.meta.dirname, "..", "fixtures", "quality");
-const noBrief = { brief: null, contentFiles: null };
+const noBrief = { brief: null, contentFiles: null, review: null };
 
 function load(name: string): Quiz {
   const result = parse(readFileSync(join(dir, name), "utf8"), name);

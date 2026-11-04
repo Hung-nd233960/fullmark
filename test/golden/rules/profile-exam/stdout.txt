@@ -59,6 +59,8 @@ rubric.step               fixed    error    a maximum that is not a multiple of 
 rubric.scale              fixed    error    a banded scale whose step does not divide max - min
 rubric.weights            fixed    error    a criterion weight that is not a positive number
 rubric.duplicate-id       fixed    error    two criteria with the same id
+review.fix                fixed    error    with `check --review`: a question the learner marked fix is unchanged since
+review.drop               fixed    error    with `check --review`: a question the learner marked drop is still in the quiz
 survey.forbidden          fixed    error    in a survey: pass_mark, pick, feedback: instant, partial or graded=
 ignore.invalid            fixed    error    check-ignore without because, or naming a rule that cannot be ignored
 config.ignored            fixed    info     a finding was hidden by check-ignore (shown so that nothing is silently hidden)
@@ -97,3 +99,4 @@ build.font-not-embedded   quality  error    a locked look names a font the page 
 build.size                quality  error    the built page is large (checked by `build`, from step 2 of the order of work)
                           options: warn-mb=20, max-mb=100
 build.answer-sheet-empty  quality  error    the printed paper has no question for its answer sheet (checked by `build --print --answer-sheet`)
+review.unconfirmed        quality  warning  a question marked fix has changed since the verdict and has not been judged again (`check --review`)
