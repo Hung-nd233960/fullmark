@@ -20,7 +20,7 @@ As in step 2 ([archive/STEP2.md](archive/STEP2.md), Handoff): Opus writes a slic
 | 3g 3d's fixes, `brief` through flags | done, reviewed, gaps decided | `27a61a4`..`2e6b449` |
 | 3i 3g's fixes, `brief --tui` | done, reviewed, gaps decided | `fb5ed78`..`546ccc0` |
 | 3j 3i's fixes, `build --watch` and `--serve` | done, reviewed, gaps decided (G35 built in review) | `4a0835f`..`45fe811` |
-| 3v the form boards (the owner, on the Design canvas) | **waits for the owner** | |
+| 3v the form boards (on the Design canvas) | `review` boards drafted by Opus (2026-11-04); **waits for the owner**: their review and G38 to G46. `grade --web` and `brief --web` boards after that | |
 | 3e `review`, 3f `grade --web`, 3h `brief --web` | wait for 3v; briefs not written yet | |
 | 3z acceptance | last | |
 
@@ -37,7 +37,7 @@ Step 2 is closed ([archive/STEP2.md](archive/STEP2.md), item 75): every "Done wh
 
 ### Next steps, in order
 
-1. **The form boards on the Design canvas** (3v, G7), as 2v did for the page: every slice left (3e, 3f, 3h) waits for them. Then 3e's brief.
+1. **The form boards on the Design canvas** (3v, G7), as 2v did for the page: every slice left (3e, 3f, 3h) waits for them. The `review` boards are drafted (Gaps, "The review boards"): the owner reviews them on the canvas and decides G38 to G46; then they are copied into `docs/mockup/` (sources and images), the decisions go into COMMANDS.md, and 3e's brief is written. The `grade --web` and `brief --web` boards follow in the same way.
 
 ### Open proposals carried over from step 2
 
@@ -138,6 +138,26 @@ The design docs left these open, or a slice's review found them. Each needs the 
 **G36. The config is not watched** (later). **Decided by the owner on 2026-11-03, as recommended.** `fullmark.toml` and the machine config are read once, so a profile change needs a restart. **Recommend:** leave it, and say so in COMMANDS.md's `--watch` row ("a change to the config needs a restart").
 
 **G37. The watcher is per folder, not `recursive`** (docs only). **Decided by the owner on 2026-11-03, as recommended.** **Recommend:** accept, and change TECHNICAL_DESIGN.md section 3's Watching row to "`node:fs.watch` on each watched file's folder, not recursive: only the files the quiz hash covers matter, and a rename save is seen in its folder".
+
+**The review boards (3v).** Opus drafted them on the Design canvas on 2026-11-04, in a new row titled "Forms: quiz review": **Review** (1280 px, interactive), **ReviewSince** (`--since`), **ReviewFinish** (the dialog) and **ReviewPhone** (390 px, interactive). They use the page's tokens, the Quiz board's top bar, status line, card and 320 px sidebar, and the system font. G38 to G46 are what the drawing decided that the docs do not yet say; each waits for the owner, who may change the boards instead.
+
+**G38. The review form's keys** (3e). COMMANDS.md leaves them for the board. **Recommend:** `1`, `2`, `3` give Keep, Fix, Drop to the current question (the one last focused or scrolled to, outlined in the accent, as Question 20 on the board); `N` moves to the next question not judged; `Q` opens and closes the sidebar and `Esc` closes it, as on the page. No key while typing in a note. The sidebar's foot lists the four, and each verdict button carries `aria-keyshortcuts`.
+
+**G39. The verdict map** (3e). **Recommend:** the Questions sidebar of a quiz without materials (Quiz board): 320 px, open on a wide screen, a heading row per part with "judged/total", cells of 40 × 40 px. A cell shows its verdict by colour and glyph: ✓ Keep (`--ok` on `--ok-wash`), ✎ Fix (`--warn` on `--surface`), ✕ Drop (`--bad` on `--bad-wash`), a plain cell for not judged, a 2 px `--text` border for the current one. There is no warn wash token, so Fix keeps `--surface`. The form shows no materials: it judges questions, not sheets.
+
+**G40. What a question shows in review** (3e). It is the page's question rendering in its key state, with no answer inputs: the correct choices marked **Correct answer**, a typed question's **Accepted answer** box with its tolerance, the explanation open, and for essays and code the rubric table with each criterion's points and the sample answer. **Recommend:** also show a `short` question's patterns, as written in the source, since the learner judges the key and the page never shows a pattern otherwise.
+
+**G41. Changing a verdict** (3e). **Recommend:** a click on the chosen verdict clears it (back to not judged); choosing another verdict clears the reasons, since Fix and Drop have different ones; the note is kept. "Pick at least one reason." shows under the chips while none is chosen, and "a note is required with Other" under the note box, which takes a 2 px `--bad` border; Finish lists these questions first and does not write until they are fixed.
+
+**G42. The form's top bar** (3e). **Recommend:** a small "REVIEW" label before the quiz title, then **Questions**, **The rest is fine** and **Finish** (the accent button, where the page has Submit). No Focus mode, A− / A+ or Appearance: the form uses the quiz's theme and font as built. The status line: "Judged 14 of 32" with the page's thin progress bar and percentage, the counts "10 keep · 3 fix · 1 drop" in the verdict colours, and the current question.
+
+**G43. Finish and after** (3e). **Recommend:** with every question judged, Finish writes at once, with no dialog. Otherwise one dialog, titled "N questions not judged", with **Go back to question K** (the first one) and **Mark them Keep and finish**, and a line saying they are written as Keep, marked as not looked at. **The rest is fine** opens the same dialog, with **Cancel** in place of Go back. After writing, the page shows a "Review saved" card: the counts written ("26 keep (14 not looked at), 3 fix, 1 drop"), that fullmark has closed the form and the tab can be closed, and the next command, `quiz check FILE --review review.json`.
+
+**G44. `--since`** (3e). **Recommend:** only the questions new or changed since the review are shown as cards; the status line starts "Asked again: N questions new or changed since your review of 28 Oct", and every count covers those N. A changed question shows, above its text, a box with the earlier verdict, its reasons as chips, its note in quotes, and "What changed since", a line diff of the question's source with − and + at the line start (removed on `--bad-wash`, added on `--ok-wash`, so not colour alone). A new question has no box. In the map the questions not asked are muted, with a dashed border, and the legend adds "not asked again".
+
+**G45. The review form on a phone** (3e). **Recommend:** the page's compact bar ("Review: TITLE" over "Judged 15 of 32 · Question 20", and the Questions button as a 44 px icon); Keep, Fix and Drop share the card's width in three columns; the reasons wrap; **The rest is fine** and **Finish** sit side by side in a bar at the foot of the screen, so they are always in reach and never cut the title.
+
+**G46. The reason chips' wording** (3e). The board uses COMMANDS.md's labels as they are, and asks "What needs fixing?" over Fix's chips and "Why drop it?" over Drop's. **Recommend:** keep these, and add the two prompts and the `vi` labels to the catalogs in 3e for the owner to read.
 
 ## Slices
 
