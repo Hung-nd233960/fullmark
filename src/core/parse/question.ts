@@ -10,7 +10,7 @@ import { parseScale } from "./answer/scale";
 import { parseShort } from "./answer/short";
 import { parseTrueFalse } from "./answer/truefalse";
 import { type Blank, blanksInLinkText, scanBlanks } from "./blanks";
-import { analyseHeading, withoutId } from "./heading";
+import { analyseHeading, type HeadingBlock, withoutId } from "./heading";
 import { QUESTION_ATTRS, readPairs, readQuestionAttrs } from "./heading-attrs";
 import { trimBlankLines, unclaimedLines } from "./lines";
 import { parseChoices } from "./lists";
@@ -25,7 +25,30 @@ import type { ParseTex } from "./tex";
 /** A question's lines: its heading, and everything up to the next `#` or `##` heading. 0-based, `end` exclusive. */
 export type Region = { start: number; end: number; units: Unit[] };
 
-export type QuestionCtx = { o: Outline; fm: FrontMatter; r: Reporter; ids: Map<string, number>; parseTex?: ParseTex };
+export type QuestionCtx = {
+  o: Outline;
+  fm: FrontMatter;
+  r: Reporter;
+  ids: Map<string, number>;
+  parseTex?: ParseTex;
+  /** receives each question's block as hashed, by the question's hash (see `blockText`) */
+  blocks?: Map<string, string>;
+};
+
+/**
+ * A question's block as the question hash takes it (TECHNICAL_DESIGN.md, foundation 1): the lines of its region with
+ * the `id` left out of the heading, normalised. `sha256Hex` of this text is the question's `hash`; `quiz review`
+ * keeps it as the `source` of a fix or a drop, so a later run can show what changed.
+ */
+export function blockText(
+  lines: readonly string[],
+  region: { start: number; end: number },
+  block: HeadingBlock | null,
+): string {
+  const hashLines = lines.slice(region.start, region.end);
+  hashLines[0] = withoutId(hashLines[0] ?? "", block);
+  return normaliseText(hashLines.join("\n"));
+}
 
 /** Whether a question of this type takes an answer block, and when. */
 type BlockPolicy = "required" | "optional" | "forbidden";
@@ -302,9 +325,9 @@ export function parseQuestion(region: Region, ctx: QuestionCtx): Question {
       : { root: { node: null, errors: [], lineOf: () => line }, entries: [], get: () => undefined });
 
   // -- hash
-  const hashLines = lines.slice(region.start, region.end);
-  hashLines[0] = withoutId(hashLines[0] ?? "", parts.block);
-  const hash = sha256Hex(normaliseText(hashLines.join("\n")));
+  const blockSource = blockText(lines, region, parts.block);
+  const hash = sha256Hex(blockSource);
+  ctx.blocks?.set(hash, blockSource);
 
   const base = {
     line,

@@ -19,7 +19,14 @@ export type ParseResult = {
 };
 
 /** `parseTex` is KaTeX's parser, injected by the CLI: without it, `math.syntax` is not raised. */
-export type ParseOptions = { parseTex?: ParseTex };
+export type ParseOptions = {
+  parseTex?: ParseTex;
+  /**
+   * Filled with each question's block as hashed, by the question's hash (`blockText`), when given. A side channel, so
+   * that the IR does not carry the text: `quiz review` keeps it as the `source` of a fix or a drop.
+   */
+  blocks?: Map<string, string>;
+};
 
 type SectionDraft = SectionRegion & { questions: Region[] };
 
@@ -131,7 +138,14 @@ export function parse(text: string, file: string, options: ParseOptions = {}): P
       } else sectionIds.set(head.id, head.line);
     }
     const questions: Question[] = d.questions.map((region) =>
-      parseQuestion(region, { o, fm, r, ids, ...(options.parseTex ? { parseTex: options.parseTex } : {}) }),
+      parseQuestion(region, {
+        o,
+        fm,
+        r,
+        ids,
+        ...(options.parseTex ? { parseTex: options.parseTex } : {}),
+        ...(options.blocks ? { blocks: options.blocks } : {}),
+      }),
     );
     if (d.heading === null && d.questions[0] && drafts.some((other) => other.heading !== null)) {
       r.error(
