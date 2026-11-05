@@ -23,8 +23,8 @@ As in step 2 ([archive/STEP2.md](archive/STEP2.md), Handoff): Opus writes a slic
 | 3v the form boards (on the Design canvas) | `review` boards drafted by Opus and reviewed by the owner (2026-11-04); G38 to G47 decided (2026-11-04); boards and images in `docs/mockup/` `grade --web` and `brief --web` boards after that | |
 | 3e G47, the review file, `check --review`, `inspect --review` | done, reviewed, gaps decided (2026-11-04) | `5e9b45c`..`dbcd43e` |
 | 3k G51, `quiz review` and its form | done, reviewed, gaps decided (2026-11-04) | `91a8821`..`c326d9f` |
-| 3l G50, G56, 3k's fixes, `quiz review --since` | brief approved with G58 to G62 (2026-11-05); being built | |
-| 3m the stacked sidebar with the materials, and the phone | after 3l (G58) | |
+| 3l G50, G56, 3k's fixes, `quiz review --since` | built, awaiting review (2026-11-05) | `54214a5`..`335a53a` |
+| 3m the stacked sidebar with the materials, and the phone | after 3l's review (G58); its brief follows | |
 | 3f `grade --web`, 3h `brief --web` | wait for their boards (3v) | |
 | 3z acceptance | last | |
 
