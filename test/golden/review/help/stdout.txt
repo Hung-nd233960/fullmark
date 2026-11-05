@@ -9,8 +9,8 @@ Arguments:
 Options:
   --out <review>       the review file (default: review.json next to the quiz);
                        an existing one is merged into
-  --since <review>     ask only about questions new or changed since this review
-                       (not available yet)
+  --since <review>     ask only about questions new or changed since this
+                       review, and merge into it (--out may be left out)
   --timeout <seconds>  how long to wait for Finish; 0 waits forever (default
                        1800)
   --open               open the form in the default browser

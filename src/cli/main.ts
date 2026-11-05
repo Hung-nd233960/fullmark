@@ -447,7 +447,10 @@ export function buildProgram(outcome: Outcome = { exit: EXIT.done }, io: Io = te
     .description("a form to judge every question (keep, fix or drop) and write review.json when you press Finish")
     .argument("<file>", "the quiz .md (a built page is refused)")
     .option("--out <review>", "the review file (default: review.json next to the quiz); an existing one is merged into")
-    .option("--since <review>", "ask only about questions new or changed since this review (not available yet)")
+    .option(
+      "--since <review>",
+      "ask only about questions new or changed since this review, and merge into it (--out may be left out)",
+    )
     .option("--timeout <seconds>", "how long to wait for Finish; 0 waits forever (default 1800)")
     .option("--open", "open the form in the default browser")
     .option("--port <n>", "the port on 127.0.0.1 (default: a free one)")

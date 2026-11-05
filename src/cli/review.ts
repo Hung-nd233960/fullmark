@@ -5,7 +5,7 @@ import { buildReviewForm } from "../build/review-form";
 import { katexTools, lazyParseTex } from "../build/tex";
 import { FONT_CHOICES, type FontsChoice } from "../core/fonts";
 import type { Quiz } from "../core/ir";
-import { reviewCounts } from "../core/review/counts";
+import { reviewCounts, shortDate } from "../core/review/counts";
 import { merge, serialiseReview } from "../core/review/merge";
 import { type Judged, judgedProblems, REASONS, VERDICTS } from "../core/review/reasons";
 import type { Review } from "../core/review/schema";
@@ -115,6 +115,14 @@ export function submitReader(
   };
 }
 
+/** The questions a `--since` run asks: new ones (no entry) and changed ones (an entry for another hash), in source order. */
+export function askedIds(quiz: Quiz, review: Review): string[] {
+  const out: string[] = [];
+  for (const s of quiz.sections)
+    for (const q of s.questions) if (review.questions[q.id]?.hash !== q.hash) out.push(q.id);
+  return out;
+}
+
 /**
  * `quiz review FILE` (COMMANDS.md): checks the quiz as `serve` does, serves the review form on 127.0.0.1 and waits for
  * one Finish, which is merged into `--out` and written atomically. With `--json` the first line is `listening` and the
@@ -125,8 +133,9 @@ export async function runReview(file: string, opts: ReviewOptions, io: ServeIo):
     fail(io, opts.json, "review takes the quiz source, not a built page");
     return EXIT.usage;
   }
-  if (opts.since !== null) {
-    fail(io, opts.json, "quiz review --since is not available yet");
+  // --since merges into its own review, so another --out cannot be meant (G59)
+  if (opts.since !== null && opts.out !== null && resolve(io.cwd, opts.out) !== resolve(io.cwd, opts.since)) {
+    fail(io, opts.json, "--since merges into its own review: leave out --out");
     return EXIT.usage;
   }
   const timeout = opts.timeout === null ? 1800 : wholeNumber(opts.timeout, 0);
@@ -199,12 +208,18 @@ export async function runReview(file: string, opts: ReviewOptions, io: ServeIo):
   }
 
   const source = resolve(io.cwd, file);
-  const target = opts.out === null ? join(dirname(source), "review.json") : resolve(io.cwd, opts.out);
+  const given = opts.since ?? opts.out;
+  const target = given === null ? join(dirname(source), "review.json") : resolve(io.cwd, given);
   const shown = shownPath(target, io.cwd);
   // the review as it stands, read as `check --review` reads it: a file it would refuse is refused here, unchanged
   const readOld = (): { review: Review | null } | { message: string; problems: string[] } => {
-    if (!existsSync(target)) return { review: null };
-    const got = loadReview(opts.out ?? shown, loaded, io.cwd);
+    if (!existsSync(target)) {
+      if (opts.since !== null) {
+        return { message: "--since needs an existing review; run quiz review FILE first", problems: [] };
+      }
+      return { review: null };
+    }
+    const got = loadReview(given ?? shown, loaded, io.cwd);
     return "review" in got ? { review: got.review } : got;
   };
   const old = readOld();
@@ -221,6 +236,19 @@ export async function runReview(file: string, opts: ReviewOptions, io: ServeIo):
     const refusal = { status: "error" as const, file, message: old.message, problems: old.problems };
     for (const line of describeOutcome(refusal, false, false)) io.err(line);
     return EXIT.usage;
+  }
+
+  // with --since, only the questions with no entry for their current version are asked (G44); none: nothing to serve
+  if (opts.since !== null && old.review !== null) {
+    const asked = askedIds(quiz, old.review);
+    if (asked.length === 0) {
+      const line = `nothing new or changed since your review of ${shortDate(old.review.reviewedAt)}`;
+      if (opts.json) {
+        io.out(JSON.stringify({ status: "unchanged", review: shown }));
+        io.err(line);
+      } else io.out(line);
+      return EXIT.done;
+    }
   }
 
   const folder = io.runtimeDir ?? runtimeFolder();

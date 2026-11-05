@@ -1,0 +1,24 @@
+{
+  "format": "fullmark-review",
+  "questions": {
+    "pick-one": {
+      "hash": "099cc656d1db8204be4dce6a94f1f74d3889053c2fc6e64b9337fcc4789e1521",
+      "note": "",
+      "reasons": [
+        "unclear"
+      ],
+      "source": "## Which one? {type=single}\n\n- [x] one\n- [ ] two\n",
+      "verdict": "fix"
+    },
+    "pick-two": {
+      "hash": "94e77f0861680fad40ec1ef2d7f7c0e58fa3f7dce67d813c1d221a1ad7bc4cce",
+      "note": "",
+      "reasons": [],
+      "verdict": "keep"
+    }
+  },
+  "quizHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "quizId": "tiny",
+  "reviewedAt": "2026-10-28T09:00:00+07:00",
+  "version": 2
+}

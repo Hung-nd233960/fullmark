@@ -1,5 +1,7 @@
 review
 quiz.md
 --since
-old.json
+review.json
+--out
+other.json
 --json

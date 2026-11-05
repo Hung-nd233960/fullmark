@@ -268,19 +268,19 @@ A form where the learner judges every question: keep, fix or drop, with a reason
 |---|---|
 | `FILE` | The quiz `.md` only, as for `serve`: a built page is refused with exit 2 |
 | `--out REVIEW` | Default: `review.json` next to the quiz. An existing file is merged into |
-| `--since REVIEW` | Ask only about questions that are new or changed since this review, and merge into it |
+| `--since REVIEW` | Ask only about questions that are new or changed since this review, and merge into it. It is read and written, so `--out` may be left out; an `--out` naming another file exits 2, "--since merges into its own review: leave out --out" |
 | `--timeout`, `--open`, `--port` | As for `serve`, so the timeout is `1800` seconds. The server exits after the first **Finish** |
 | `--json` | `{"status", "review", "keep", "fix", "drop"}` |
 
-`--profile` and `--config` are as for `check`. A survey (`kind: survey`) has no key to judge: `quiz review` on one exits 2 before serving, "a survey has no answer key to review". A `scale` question in a graded quiz is judged like any other. `--since` is "not available yet" (exit 2) until slice 3l.
+`--profile` and `--config` are as for `check`. A survey (`kind: survey`) has no key to judge: `quiz review` on one exits 2 before serving, "a survey has no answer key to review". A `scale` question in a graded quiz is judged like any other. With `--since`, when no question is new or changed since the review, nothing is served: it prints "nothing new or changed since your review of 28 Oct" (the date as `inspect --review` writes it) and exits 0, with `{"status":"unchanged","review":PATH}` under `--json`, and the file is not touched.
 
-**Before it serves**, in this order: a built page, `--since` or a survey: exit 2. Check errors in `FILE`: exit 1, printed as `check` prints them; when the only errors are questions without an id, exit 1 with them all named and "run `quiz ids FILE` first: a verdict follows its question by id" (nothing is served). An `--out` file that `check --review` would refuse (unreadable, invalid, a 0.x review, the review of another quiz): exit 2, with the same messages.
+**Before it serves**, in this order: a built page, `--since` with an `--out` naming another file, or a survey: exit 2. Check errors in `FILE`: exit 1, printed as `check` prints them; when the only errors are questions without an id, exit 1 with them all named and "run `quiz ids FILE` first: a verdict follows its question by id" (nothing is served). An `--out` file (or, with `--since`, the `--since` file) that `check --review` would refuse (unreadable, invalid, a 0.x review, the review of another quiz): exit 2, with the same messages; a `--since` file that does not exist exits 2, "--since needs an existing review; run quiz review FILE first".
 
 **The submit** is `{quizId, quizHash, judged}` with one verdict for every question; the server answers 400, and keeps waiting, for another version of the quiz, a missing or unknown id or an incomplete verdict (a fix or drop with no reason, `other` with no note, a rubric reason on a question that is neither essay nor code). It then merges into the review file as it is at that moment and writes it atomically, and ends.
 
 **Output.** Human: `review.json written: 26 keep (14 not looked at), 3 fix, 1 drop` (the parenthesis only when some were kept without being looked at) and the next command, `next: quiz check FILE --review review.json`. `--json`: first the `listening` line (as `serve`), then `{"status":"written","review":PATH,"keep","fix","drop"}`, counted over the quiz's current questions as `inspect --review` counts them (`keep` includes the assumed ones); `{"status":"timeout"}` (exit 2) and `{"status":"interrupted"}` (Ctrl+C, exit 2) leave an existing `--out` file byte for byte.
 
-Exit: `0` written, `1` check errors in `FILE`, or a question without an id (nothing is served; the message says to run `quiz ids FILE` first, since a verdict follows its question by id), `2` timeout, Ctrl+C or usage error (a built page, `--since`, a survey, a refused `--out` file).
+Exit: `0` written, `1` check errors in `FILE`, or a question without an id (nothing is served; the message says to run `quiz ids FILE` first, since a verdict follows its question by id), `2` timeout, Ctrl+C or usage error (a built page, `--since` beside another `--out`, a survey, a refused or missing review file).
 
 ### quiz brief
 

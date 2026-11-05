@@ -243,6 +243,63 @@ describe("quiz review", () => {
     expect(after.quizHash).not.toBe(before.quizHash);
   });
 
+  it("--since writes back every question it did not ask byte for byte, into its own file (G59)", async () => {
+    const first = setup();
+    const done1 = runReview("quiz.md", first.options(), first.io);
+    const url1 = await listening(first.out);
+    await post(url1, await body(url1, { "pick-one": fix, "how-many": assumed, explain: keep }));
+    await done1;
+    const text = readFileSync(join(first.dir, "review.json"), "utf8");
+    const before = JSON.parse(text);
+    // the essay changes and a question is added: only those two are asked
+    const next = `${QUIZ.replace("Gives an example (1)", "Gives two examples (1)")}
+## Is it? {type=single id=is-it}
+
+- [x] yes
+- [ ] no
+`;
+    const t = setup(next);
+    writeFileSync(join(t.dir, "elsewhere.json"), text);
+    // --out beside --since is allowed when it names the same file
+    const done = runReview("quiz.md", t.options({ since: "elsewhere.json", out: "./elsewhere.json" }), t.io);
+    const url = await listening(t.out).catch((e) => {
+      throw new Error(`${e} ${t.out} ${t.err}`);
+    });
+    const data = await dataOf(url);
+    expect(Object.keys(data.earlier).sort()).toEqual(["how-many", "pick-one"]);
+    const sent = { "pick-one": data.earlier["pick-one"] as Judged, "how-many": data.earlier["how-many"] as Judged };
+    await post(url, await body(url, { ...sent, explain: keep, "is-it": keep }));
+    expect(await done).toBe(0);
+    expect(existsSync(join(t.dir, "review.json"))).toBe(false);
+    const after = JSON.parse(readFileSync(join(t.dir, "elsewhere.json"), "utf8"));
+    expect(JSON.stringify(after.questions["pick-one"])).toBe(JSON.stringify(before.questions["pick-one"]));
+    expect(JSON.stringify(after.questions["how-many"])).toBe(JSON.stringify(before.questions["how-many"]));
+    expect(after.questions.explain).toMatchObject({ verdict: "keep" });
+    expect(after.questions.explain.hash).not.toBe(before.questions.explain.hash);
+    expect(after.questions["is-it"]).toMatchObject({ verdict: "keep" });
+    expect(JSON.parse(t.out[1] ?? "")).toEqual({
+      status: "written",
+      review: "elsewhere.json",
+      keep: 3,
+      fix: 1,
+      drop: 0,
+    });
+  });
+
+  it("--since with nothing new or changed serves nothing and leaves the file alone (G60)", async () => {
+    const first = setup();
+    const done1 = runReview("quiz.md", first.options(), first.io);
+    const url1 = await listening(first.out);
+    await post(url1, await body(url1, { "pick-one": fix, "how-many": keep, explain: keep }));
+    await done1;
+    const t = setup();
+    const original = readFileSync(join(first.dir, "review.json"));
+    writeFileSync(join(t.dir, "review.json"), original);
+    expect(await runReview("quiz.md", t.options({ since: "review.json", json: false }), t.io)).toBe(0);
+    expect(t.out).toEqual(["nothing new or changed since your review of 3 Nov"]);
+    expect(readFileSync(join(t.dir, "review.json")).equals(original)).toBe(true);
+  });
+
   it("counts what it wrote as inspect --review counts it", async () => {
     const t = setup();
     const done = runReview("quiz.md", t.options(), t.io);
