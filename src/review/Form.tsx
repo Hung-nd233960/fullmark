@@ -471,7 +471,11 @@ function Dialog({ state, r }: { state: FormState; r: ReviewMessages }) {
     >
       <h2 id="fm-review-dialog-title">{r.dlgTitle(left.length)}</h2>
       <p>{kind === "rest" ? r.dlgRest : r.dlgFinish}</p>
-      <p class="fm-review-dialog-note">{r.dlgNote}</p>
+      <p class="fm-review-dialog-note">
+        {r.dlgNote[0]}
+        <code class="fm-nowrap">{r.dlgNote[1]}</code>
+        {r.dlgNote[2]}
+      </p>
       <div class="fm-dialog-actions">
         <button
           type="button"

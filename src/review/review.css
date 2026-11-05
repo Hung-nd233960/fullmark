@@ -99,6 +99,12 @@
     color: var(--muted);
   }
 
+  .fm-key-nothing {
+    font-size: 0.85em;
+    font-style: italic;
+    color: var(--muted);
+  }
+
   .fm-key-open {
     margin-top: 12px;
   }
@@ -373,6 +379,10 @@
   .fm-review-dialog-note {
     font-size: 0.9em;
     color: var(--muted);
+  }
+
+  .fm-nowrap {
+    white-space: nowrap;
   }
 
   .fm-dialog-actions {

@@ -207,6 +207,10 @@ test("Finish with questions not judged asks first: Go back to question K, or Mar
   const dialog = page.locator("dialog[data-review-dialog=finish]");
   await expect(dialog.getByRole("heading")).toHaveText("7 questions not judged");
   await expect(dialog).toContainText("written as Keep, marked as not looked at");
+  // G62: the command is one code span that does not wrap, and it is plain `quiz review`
+  await expect(dialog.locator("code")).toHaveText("quiz review");
+  await expect(dialog.locator("code")).toHaveCSS("white-space", "nowrap");
+  await expect(dialog).toContainText("a later quiz review can still judge them");
   await expect(dialog.locator("[data-action=dialog-back]")).toHaveText("Go back to question 4");
   await dialog.locator("[data-action=dialog-back]").click();
   await expect(dialog).toHaveCount(0);
@@ -343,6 +347,12 @@ for (const scheme of ["light", "dark"] as const) {
     await expect(card(page, "f1").locator(".fm-field")).not.toHaveCount(0);
     await expect(card(page, "o1").locator(".fm-key-order li")).not.toHaveCount(0);
     await expect(card(page, "g1").locator(".fm-key-pairs li").first()).toContainText("→");
+    // G56: the distractor is listed under the three pairs, marked as matching nothing
+    const spare = card(page, "g1").locator(".fm-key-pairs li[data-distractor]");
+    await expect(spare).toHaveCount(1);
+    await expect(spare).toContainText("zq-unused distractor");
+    await expect(spare).toContainText("Matches nothing");
+    await expect(card(page, "g1").locator(".fm-key-pairs li")).toHaveCount(4);
     await expect(card(page, "e1").locator(".fm-key-rubric")).toBeVisible();
     await expect(card(page, "k1").locator(".fm-sample, .fm-key-rubric").first()).toBeVisible();
     expect(seen.problems).toEqual([]);

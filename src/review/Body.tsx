@@ -194,6 +194,14 @@ export function KeyBody({ k, q, r }: { k: Keyed; q: PageQuestion; r: R }) {
               </div>
             </li>
           ))}
+          {q.rights.slice(q.lefts.length).map((right, i) => (
+            <li key={"d" + i} class="fm-choice fm-key-distractor" data-distractor="true">
+              <div class="fm-key-row">
+                <Html html={right.html} tag="span" class="fm-choice-text" />
+                <span class="fm-key-nothing">{r.matchesNothing}</span>
+              </div>
+            </li>
+          ))}
         </ul>
       );
     case "essay":
