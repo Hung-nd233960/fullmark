@@ -865,3 +865,270 @@ for (const scheme of ["light", "dark"] as const) {
     await noViolations(page, MATHML_NAMES);
   });
 }
+// -- slice 3m: the phone (ReviewPhone board) ---------------------------------------------------------------------------
+
+const PHONE = { width: 390, height: 844 };
+
+/** Nothing is wider than the screen: the page does not scroll sideways. */
+const fits = (page: Page) =>
+  page.evaluate(() => ({
+    scroll: document.documentElement.scrollWidth,
+    client: document.documentElement.clientWidth,
+  }));
+
+const box = async (page: Page, selector: string) => {
+  const b = await page.locator(selector).first().boundingBox();
+  if (b === null) throw new Error(`${selector} is not on screen`);
+  return b;
+};
+
+test("at 390 px: the compact bar, three verdict columns, the foot bar, and nothing wider than the screen", async ({
+  page,
+}) => {
+  const dir = materialsFolder();
+  const server = await review(dir);
+  const seen = watch(page);
+  await open(page, server, PHONE);
+  // the compact bar: "Review: TITLE" over "Judged 0 of 12 · Question 1"; no status line; the sidebar starts closed
+  await expect(page.locator("header .fm-title")).toHaveText("Review: Signals and Systems, with materials");
+  await expect(page.locator("[data-compact]")).toHaveText("Judged 0 of 12 · Question 1");
+  await expect(page.locator(".fm-status")).toHaveCount(0);
+  await expect(side(page)).toHaveCount(0);
+  // the sidebar button and the Appearance button are 44 px icons, the text size is not in the bar
+  const sidebar = page.locator("[data-action=sidebar]");
+  await expect(sidebar).toHaveAccessibleName("Questions & materials");
+  await expect(sidebar).toHaveText("");
+  for (const selector of ["[data-action=sidebar]", "[data-action=appearance]"]) {
+    const b = await box(page, selector);
+    expect(b.width).toBeGreaterThanOrEqual(44);
+    expect(b.height).toBeGreaterThanOrEqual(44);
+  }
+  await expect(page.locator("[data-textsize]")).toHaveCount(0);
+  // Keep, Fix and Drop share the card's width in three columns, 44 px tall at least
+  const first = card(page, "m1");
+  const cardBox = (await first.boundingBox()) as { x: number; width: number };
+  const picks = await first.locator("[data-pick]").evaluateAll((els) =>
+    els.map((el) => {
+      const r = el.getBoundingClientRect();
+      return { x: r.x, y: r.y, w: r.width, h: r.height };
+    }),
+  );
+  expect(picks).toHaveLength(3);
+  expect(new Set(picks.map((p) => Math.round(p.y))).size).toBe(1);
+  for (const p of picks) {
+    expect(p.h).toBeGreaterThanOrEqual(44);
+    expect(p.w).toBeGreaterThan((cardBox.width - 80) / 3);
+  }
+  expect(picks[0]?.x).toBeLessThan(picks[1]?.x ?? 0);
+  expect(picks[2]?.x ?? 0).toBeGreaterThan(picks[1]?.x ?? 0);
+  // the reasons wrap, the note takes the width
+  await first.locator("[data-pick=fix]").click();
+  await first.locator("[data-reason=unclear]").click();
+  await expect(page.locator("[data-compact]")).toHaveText("Judged 1 of 12 · Question 1");
+  const note = (await first.locator("textarea").boundingBox()) as { x: number; width: number };
+  expect(note.width).toBeGreaterThan(cardBox.width - 60);
+  const chips = await first.locator("[data-reason]").evaluateAll((els) =>
+    els.map((el) => {
+      const r = el.getBoundingClientRect();
+      return { right: r.right, h: r.height };
+    }),
+  );
+  for (const c of chips) {
+    expect(c.right).toBeLessThanOrEqual(PHONE.width);
+    expect(c.h).toBeGreaterThanOrEqual(44);
+  }
+  // Keep the rest and Finish: only in the foot bar, side by side, half the width each, 44 px tall at least
+  await expect(page.locator("[data-action=keep-rest]")).toHaveCount(1);
+  await expect(page.locator("[data-action=finish]")).toHaveCount(1);
+  await expect(page.locator(".fm-footbar [data-action=keep-rest]")).toHaveCount(1);
+  await expect(page.locator("header [data-action=finish]")).toHaveCount(0);
+  const rest = await box(page, "[data-action=keep-rest]");
+  const fin = await box(page, "[data-action=finish]");
+  expect(rest.y).toBeCloseTo(fin.y, 0);
+  expect(rest.width).toBeCloseTo(fin.width, 0);
+  expect(rest.width).toBeGreaterThan(PHONE.width / 2 - 24);
+  expect(rest.height).toBeGreaterThanOrEqual(44);
+  expect(rest.y + rest.height).toBeGreaterThan(PHONE.height - 30);
+  // the cards' column keeps room for the bar: the last card can be scrolled clear of it
+  await card(page, "m12").scrollIntoViewIfNeeded();
+  await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+  const last = (await card(page, "m12").boundingBox()) as { y: number; height: number };
+  expect(last.y + last.height).toBeLessThanOrEqual(rest.y);
+  // nothing is wider than the screen
+  const w = await fits(page);
+  expect(w.scroll).toBe(w.client);
+  // the foot bar works: Keep the rest asks, then writes the review as at 1280 px
+  await page.locator("[data-action=keep-rest]").click();
+  await expect(page.locator("dialog[open]")).toBeVisible();
+  const dialog = (await page.locator("dialog[open]").boundingBox()) as { x: number; width: number };
+  expect(dialog.x).toBeGreaterThanOrEqual(0);
+  expect(dialog.x + dialog.width).toBeLessThanOrEqual(PHONE.width);
+  await page.locator("[data-action=mark-keep]").click();
+  await expect(page.locator("[data-review-saved]")).toBeVisible();
+  expect(seen.problems).toEqual([]);
+  expect((await server.end()).code).toBe(0);
+  expect(readJson(dir).questions.m1).toMatchObject({ verdict: "fix", reasons: ["unclear"] });
+});
+
+test("at 390 px: Finish in the foot bar writes the review, the saved card and the dialogs fit the width", async ({
+  page,
+}) => {
+  const dir = materialsFolder();
+  const server = await review(dir);
+  await open(page, server, PHONE);
+  await card(page, "m1").locator("[data-pick=fix]").click();
+  await card(page, "m1").locator("[data-reason=unclear]").click();
+  await card(page, "m1").locator("textarea").fill("The tolerance is too loose");
+  await page.locator("[data-action=finish]").click();
+  const dialog = page.locator("dialog[open]");
+  await expect(dialog).toBeVisible();
+  const d = (await dialog.boundingBox()) as { x: number; width: number };
+  expect(d.x).toBeGreaterThanOrEqual(0);
+  expect(d.x + d.width).toBeLessThanOrEqual(PHONE.width);
+  await page.locator("[data-action=mark-keep]").click();
+  await expect(page.locator("[data-review-saved]")).toBeVisible();
+  const saved = (await page.locator("[data-review-saved]").boundingBox()) as {
+    x: number;
+    width: number;
+  };
+  expect(saved.x + saved.width).toBeLessThanOrEqual(PHONE.width);
+  const w = await fits(page);
+  expect(w.scroll).toBe(w.client);
+  expect((await server.end()).code).toBe(0);
+  const written = readJson(dir);
+  expect(Object.keys(written.questions)).toHaveLength(12);
+  expect(written.questions.m1).toMatchObject({
+    verdict: "fix",
+    reasons: ["unclear"],
+    note: "The tolerance is too loose",
+  });
+  expect(written.questions.m2).toMatchObject({ verdict: "keep", assumed: true });
+});
+
+test("at 390 px: the sidebar takes the whole screen with a back link and the Questions and Materials tabs (G65)", async ({
+  page,
+}) => {
+  const dir = materialsFolder();
+  const server = await review(dir);
+  await open(page, server, PHONE);
+  const dock = (await box(page, "header")).height;
+  await page.locator("[data-action=sidebar]").click();
+  await expect(side(page)).toHaveAttribute("data-phone", "true");
+  const s = (await side(page).boundingBox()) as {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  };
+  expect(s.x).toBe(0);
+  expect(s.width).toBe(PHONE.width);
+  expect(s.y).toBeCloseTo(dock, 0);
+  expect(s.y + s.height).toBeCloseTo(PHONE.height, 0);
+  // the questions are not there while it is open, and neither is the foot bar
+  await expect(page.locator(".fm-main")).toBeHidden();
+  await expect(page.locator(".fm-footbar")).toBeHidden();
+  // a back link, then the two tabs, Questions first, with the map of cells of 44 x 44
+  await expect(side(page).locator(".fm-back")).toHaveText("Back to question 1");
+  const tabs = side(page).getByRole("tab");
+  await expect(tabs).toHaveText(["Questions", "Materials"]);
+  await expect(tabs.first()).toHaveAttribute("aria-selected", "true");
+  const cell = await side(page).locator("[data-cell]").first().boundingBox();
+  expect(cell?.width).toBeGreaterThanOrEqual(44);
+  expect(cell?.height).toBeGreaterThanOrEqual(44);
+  const back = await side(page).locator(".fm-back").boundingBox();
+  expect(back?.height).toBeGreaterThanOrEqual(44);
+  expect(await page.locator("[data-action=close-sidebar]").count()).toBe(1);
+  // the Materials tab shows the sheets; the chips are 44 px tall and a chip opens its sheet
+  await tabs.nth(1).click();
+  const chips = side(page).locator("[data-sheet-tab]");
+  await expect(chips).toHaveCount(3);
+  expect((await chips.first().boundingBox())?.height).toBeGreaterThanOrEqual(44);
+  await chips.nth(2).click();
+  await expect(side(page).locator(".fm-sheet").first()).toContainText("Units and constants");
+  const w = await fits(page);
+  expect(w.scroll).toBe(w.client);
+  // the back link closes it and the questions are back
+  await side(page).locator(".fm-back").click();
+  await expect(side(page)).toHaveCount(0);
+  await expect(page.locator(".fm-main")).toBeVisible();
+  await expect(page.locator("[data-action=sidebar]")).toBeFocused();
+  // a tapped cell closes the sidebar and goes to its card
+  await page.locator("[data-action=sidebar]").click();
+  await side(page).getByRole("tab", { name: "Questions" }).click();
+  await side(page).locator("[data-part=fourier] [data-part-head]").click();
+  await side(page).locator("[data-cell=m9]").click();
+  await expect(side(page)).toHaveCount(0);
+  await expect(current(page)).toHaveAttribute("data-qid", "m9");
+  // Q and M by key: M opens the Materials tab, Q goes back to Questions, Q again closes
+  await page.keyboard.press("m");
+  await expect(tabs.nth(1)).toHaveAttribute("aria-selected", "true");
+  await page.keyboard.press("q");
+  await expect(side(page).getByRole("tab", { name: "Questions" })).toHaveAttribute("aria-selected", "true");
+  await page.keyboard.press("q");
+  await expect(side(page)).toHaveCount(0);
+  server.child.kill("SIGKILL");
+});
+
+test("at 390 px: a quiz without materials has the Questions map alone in the sidebar", async ({ page }) => {
+  const server = await review(folder(RUST));
+  await open(page, server, PHONE);
+  await expect(side(page)).toHaveCount(0);
+  await page.locator("[data-action=sidebar]").click();
+  await expect(side(page).getByRole("tab")).toHaveCount(0);
+  await expect(side(page).locator(".fm-side-title")).toHaveText("Questions");
+  await expect(side(page).locator(".fm-back")).toBeVisible();
+  await page.locator("[data-action=sidebar]").evaluate((el) => (el as HTMLElement).blur());
+  await side(page).locator(".fm-back").click();
+  await expect(side(page)).toHaveCount(0);
+  server.child.kill("SIGKILL");
+});
+
+test("at 390 px: the Appearance button holds the text size, and stays under look: locked (G65)", async ({ page }) => {
+  const dir = materialsFolder();
+  edit(dir, ["id: materials\n", "id: materials\nlook: locked\n"]);
+  const server = await review(dir);
+  await open(page, server, PHONE);
+  await expect(page.locator("[data-action=appearance]")).toBeVisible();
+  await page.locator("[data-action=appearance]").click();
+  const menu = page.locator("[data-look-menu]");
+  await expect(menu).toBeVisible();
+  await expect(menu.locator("[data-textsize]")).toBeVisible();
+  await expect(menu.locator("[data-theme-pick]")).toHaveCount(0);
+  await menu.locator("[data-action=larger]").click();
+  await expect(menu.locator("[data-action=reset-size]")).not.toHaveText("1×");
+  const w = await fits(page);
+  expect(w.scroll).toBe(w.client);
+  server.child.kill("SIGKILL");
+});
+
+test("at 390 px in Vietnamese: the compact bar, the sidebar and the foot bar use the form's words", async ({
+  page,
+}) => {
+  const server = await review(folder(TYPES_VI));
+  await open(page, server, PHONE);
+  await expect(page.locator("header .fm-title")).toHaveText(/^Rà soát: /);
+  await expect(page.locator("[data-compact]")).toHaveText(/^Đã xét 0 \/ \d+ · Câu 1$/);
+  await expect(page.locator("[data-action=keep-rest]")).toHaveText("Giữ các câu còn lại");
+  await expect(page.locator("[data-action=finish]")).toHaveText("Hoàn tất");
+  await page.locator("[data-action=sidebar]").click();
+  await expect(side(page).locator(".fm-back")).toHaveText("Quay lại câu 1");
+  await noViolations(page);
+  server.child.kill("SIGKILL");
+});
+
+for (const scheme of ["light", "dark"] as const) {
+  test(`at 390 px: no axe violations, ${scheme}, with the sidebar closed and open`, async ({ page }) => {
+    const server = await review(materialsFolder());
+    await page.emulateMedia({ colorScheme: scheme, reducedMotion: "reduce" });
+    await page.setViewportSize(PHONE);
+    await page.goto(server.url);
+    await page.locator("[data-quiz]").waitFor();
+    await card(page, "m1").locator("[data-pick=fix]").click();
+    await noViolations(page, MATHML_NAMES);
+    await page.locator("[data-action=sidebar]").click();
+    await noViolations(page, MATHML_NAMES);
+    await side(page).getByRole("tab", { name: "Materials" }).click();
+    await noViolations(page, MATHML_NAMES);
+    server.child.kill("SIGKILL");
+  });
+}
