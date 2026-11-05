@@ -23,12 +23,12 @@ As in step 2 ([archive/STEP2.md](archive/STEP2.md), Handoff): Opus writes a slic
 | 3v the form boards (on the Design canvas) | `review` boards drafted by Opus and reviewed by the owner (2026-11-04); G38 to G47 decided (2026-11-04); boards and images in `docs/mockup/` `grade --web` and `brief --web` boards after that | |
 | 3e G47, the review file, `check --review`, `inspect --review` | done, reviewed, gaps decided (2026-11-04) | `5e9b45c`..`dbcd43e` |
 | 3k G51, `quiz review` and its form | done, reviewed, gaps decided (2026-11-04) | `91a8821`..`c326d9f` |
-| 3l G50, G56, 3k's fixes, `quiz review --since` | built, awaiting review (2026-11-05) | `54214a5`..`335a53a` |
+| 3l G50, G56, 3k's fixes, `quiz review --since` | done, reviewed (2026-11-05); G63 and G64 wait for the owner | `54214a5`..`4140cf6`, review |
 | 3m the stacked sidebar with the materials, and the phone | after 3l's review (G58); its brief follows | |
 | 3f `grade --web`, 3h `brief --web` | wait for their boards (3v) | |
 | 3z acceptance | last | |
 
-Each slice's review, and the owner's decisions on its gaps, are under its own section below (**Review**); every gap, G1 to G62, is in "Gaps", in number order.
+Each slice's review, and the owner's decisions on its gaps, are under its own section below (**Review**); every gap, G1 to G64, is in "Gaps", in number order.
 
 Step 2 is closed ([archive/STEP2.md](archive/STEP2.md), item 75): every "Done when" criterion passes in Chromium and Firefox; Vitest 2059 of 2059, the 2 startup tests, Playwright and axe. What step 3 inherits:
 
@@ -41,7 +41,7 @@ Step 2 is closed ([archive/STEP2.md](archive/STEP2.md), item 75): every "Done wh
 
 ### Next steps, in order
 
-1. **The form boards on the Design canvas** (3v, G7), as 2v did for the page: every slice left (3e, 3f, 3h) waits for them. The `review` boards are done: reviewed, G38 to G47 decided and in COMMANDS.md, the sources copied into `docs/mockup/boards/`. Their images are in `docs/mockup/images/Review*.png` (the owner's export, scaled to board size). 3e is cut in three (3e the file and the checks, 3k the form, 3l `--since` and the phone), and **3e is built and reviewed** ("Slice 3e", its Review): G50 and G51 decided (3l's and 3k's first tasks). **3k is built and reviewed** ("Slice 3k", its Review, at the end): G56 and G57 decided as recommended. **3l's brief is approved** ("Slice 3l", at the end), with G58 to G62 decided as recommended, and handed to Sonnet; the stacked sidebar and the phone moved to a new 3m (G58), whose brief follows 3l's review. The `grade --web` and `brief --web` boards follow in the same way.
+1. **The form boards on the Design canvas** (3v, G7), as 2v did for the page: every slice left (3e, 3f, 3h) waits for them. The `review` boards are done: reviewed, G38 to G47 decided and in COMMANDS.md, the sources copied into `docs/mockup/boards/`. Their images are in `docs/mockup/images/Review*.png` (the owner's export, scaled to board size). 3e is cut in three (3e the file and the checks, 3k the form, 3l `--since` and the phone), and **3e is built and reviewed** ("Slice 3e", its Review): G50 and G51 decided (3l's and 3k's first tasks). **3k is built and reviewed** ("Slice 3k", its Review, at the end): G56 and G57 decided as recommended. **3l's brief is approved** ("Slice 3l", at the end), with G58 to G62 decided as recommended, and handed to Sonnet; the stacked sidebar and the phone moved to a new 3m (G58), whose brief follows 3l's review. **3l is built and reviewed** ("Slice 3l", its Review): G63 and G64 wait for the owner; once decided they open 3m's brief. The `grade --web` and `brief --web` boards follow in the same way.
 
 ### Open proposals carried over from step 2
 
@@ -194,6 +194,10 @@ The design docs left these open, or a slice's review found them. Each needs the 
 **G61. A changed question that was kept** (raised writing 3l's brief). **Decided by the owner on 2026-11-05, as recommended**; 3l writes it into the design docs (its task 5) and builds it. The line diff needs the version judged, and the review keeps a question's `source` only for `fix` and `drop` (TECHNICAL_DESIGN.md section 4: a keep has no source). So a question kept and since changed has no "What changed since". **Recommend:** it shows the earlier verdict box with "Keep" (and "not looked at" when it was assumed) and, in place of the diff, "Changed since; a Keep does not store the earlier text". The format does not change.
 
 **G62. What the dialogs promise about `--since`** (raised writing 3l's brief). **Decided by the owner on 2026-11-05, as recommended**; 3l writes it into the design docs (its task 5) and builds it. Both dialogs say a question marked Keep by them "a later `quiz review --since` can still judge" (G43). But `--since` asks only questions new or changed (G44), and `assumed` "changes nothing in `check` or `--since`" (TECHNICAL_DESIGN.md section 4), so an assumed keep is never asked again by `--since`. **Recommend:** keep `--since` as decided and change the promise: "a later `quiz review` can still judge them" (vi: "lần `quiz review` sau vẫn có thể xét lại"). A plain `quiz review` opens with them and lets the learner change them (G53). COMMANDS.md's two dialog sentences change with it.
+
+**G63. Long lines in the `--since` diff** (raised in 3l's review). The diff is a `<pre>` that scrolls sideways, so a line wider than the card is cut at its edge: on the calculus copy the changed heading ends in "{type=numeric ta" and the change itself is out of sight. The ReviewSince board draws only short lines, so it does not say. **Recommend:** the diff's lines wrap (`white-space: pre-wrap`, breaking inside a long word when needed), a wrapped line keeping its `−` or `+` column and its wash; the region then never scrolls sideways. 3m builds it with its other fixes.
+
+**G64. A `fix` or `drop` with no `source`** (raised in 3l's review). The schema makes `source` optional, and the form writes it for every `fix` and `drop` (TECHNICAL_DESIGN.md section 4), but a hand-edited file may leave it out; `--since` then shows the earlier verdict with neither a diff nor G61's line. **Recommend:** the reader requires `source` on a `fix` or `drop` entry, as it requires the other fields, so such a file is refused by `check --review`, `inspect --review` and `quiz review` with the reader's usual message naming the entry; no file written by 3e to 3l lacks it. 3m builds it, with a golden for the refusal.
 
 ## Slices
 
@@ -645,3 +649,38 @@ The order (owner, 2026-11-03) puts the server first, since four commands stand o
 ### Done when
 
 `npm run check` passes in Chromium (startup tests alone, as `npm test` runs them; Firefox only if the environment has it; say which ran). On a copy of `examples/rust`: `quiz review` with a Fix on one question, then that question edited, then `quiz check --review` warns `review.unconfirmed` naming `quiz review quiz.md --since review.json`; that command opens the form with only that question, its earlier verdict and the diff; Keep on it and Finish write the file with every other entry as it was, and `check --review` no longer warns. Run again with no change, it prints "nothing new or changed" and exits 0. The screens are committed. Report as the rules say, every golden that changed counted and explained.
+
+### Review
+
+Built by Sonnet in six commits, `54214a5`..`4140cf6`, from the brief alone; reviewed by Opus on 2026-11-05. Every "Done when" holds.
+
+**Tests, run by the reviewer.** Typecheck, Biome and knip clean. Vitest: the startup tests alone 2 of 2, the rest 2691 passed, 3 skipped. Playwright, Chromium and Firefox both: 412 passed, 295 skipped, 1 failed, `budget.spec.ts:53` in Firefox (3418 ms against 1000). **Cause shown:** 3l does not touch the page (`git diff 630df71..HEAD` is empty for `src/page`, `src/build/page.ts`, `en.ts`, `vi.ts`), and `630df71`, built in a separate worktree on the same laptop, fails the same test alone in Firefox (1407 to 3231 ms); 3l's tree alone gives 1449 to 1775 ms, and Chromium passes alone. The laptop was loaded by other sessions; the budget is a machine measurement, as in 3k's review. The implementing agent saw the same test fail in both browsers under the full run and pass alone.
+
+**Fixed in review** (one commit): the first full run failed on two `test/notices.test.ts` tests at Vitest's 5 s default. They wait for `generate()`, which bundles the CLI and the page runtimes with esbuild: 1.9 s with the file alone, past 5 s beside 108 other files on 4 cores. They now take a named 60 s timeout with that reason in a comment; the second run passed them. Not caused by 3l, which adds no bundle.
+
+**Goldens**, as the report says and checked in the diff: **6 changed** (the G50 hint, one line each, in `check/review-unconfirmed`, `-json`, `-strict`, `inspect/review-counts`, `-json`; the `--since` line of `review/help`), **2 removed** (3k's `review/since` and `review/since-json`, "not available yet"), **7 added** (`review/since-out-other`, `-json`, `since-missing`, `-json`, `since-invalid`, `since-unchanged`, `-json`), 1 e2e golden added (`review-since-written.jsonl`). No `build` golden moved.
+
+**Read in the code.** `askedIds` asks every question whose entry is missing or has another hash, in source order; the refusals keep 3k's order with `--since` in place of `--out`, and an `--out` naming the same file is accepted. The unasked questions start from `earlier` (hash equal), so each has a verdict, and the state's `N`, Keep the rest and Finish, which still walk all `items`, touch the asked ones only; the bar, the dialog and the sidebar counts use the asked `scope`. `lineDiff` is a plain LCS with a changed stretch's deletions first. The distractors are the `rights` past the pairs, which holds because the form's plan keeps source order.
+
+**Tried by hand** on a copy of `examples/rust`, the form driven by POSTing its submission as the e2e helpers do (the agent's script, extended to compare entries). `quiz review --json` with a Fix on `which-compile` (unclear, "Which edition?") and Keep the rest wrote `keep 9 · fix 1`; `check --review` exited 1 with `review.fix`. After editing that question's heading it exited 0 with `review.unconfirmed` and "fix: run `quiz review quiz.md --since review.json` and judge the change". `--since review.json` served a form asking `which-compile` alone of 10, with the earlier verdict and both blocks; Keep on it wrote `keep 10 · fix 0`, the nine other entries identical to the first file's, and `check --review` then gave 0 errors, 0 warnings. Again with no change: "nothing new or changed since your review of 5 Nov", exit 0, and `{"status":"unchanged","review":"review.json"}` under `--json`. `--out other.json` and a missing `nope.json` both exit 2 with G59's messages. The screens in `docs/screens/3l/` match the ReviewSince board but for the plain sidebar (3m) and G63.
+
+**Done differently, accepted in review unless the owner says otherwise:**
+
+- The diff shows the stored `source` and the current block, both as hashed, so a heading's `id=` is in neither.
+- In `vi` the date is written `28/10`, as the ReviewSince board writes it; `en` keeps `inspect --review`'s `28 Oct`.
+- Two `vi` strings not on the boards, in `src/core/i18n/review.ts`: `keptChanged` "Đã đổi kể từ đó; Giữ không lưu bản trước" and `notLookedAt` "chưa xem"; the English "Asked again" line also has a singular form. Like G57, the owner reads them in the form and names a change.
+- The diff is a `figure` with an `aria-label`, its `pre` focusable (axe's `scrollable-region-focusable`), with Biome's `noNoninteractiveTabindex` suppressed there and the reason in a comment.
+- A part with nothing asked shows no count; a part's count covers the asked ones ("0/1"). A cell not asked is a disabled button.
+- The saved card and the `--json` counts cover the whole review, as 3k's do; the status line covers the asked.
+- The refusal order is 3k's (built page, `--since` with another `--out`, `--timeout`, `--port`, check, survey, ids, review): it differs from the brief only for a survey given with a conflicting `--out`, both exit 2.
+- The e2e helper copies the quiz's `assets` folder, which the calculus copy needs.
+
+**Not a gap:** the agent's first proposed gap (axe's `label` on a choice whose label is only maths, in the form on `examples/calculus`). Step 2 settled it: axe reads no text from MathML, browsers name the choice from it, and the page's own axe tests skip `label` and `select-name` on maths pages (`e2e/maths-code.spec.ts`, `MATHML_NAMES`). The form follows the page. The second (a large block carries both texts in the form's data) needs nothing: blocks are a few dozen lines. The third is G64.
+
+**Small things for 3m's fixes** (no decision needed):
+
+- An axe run of the form on a copy of `examples/calculus`, skipping `MATHML_NAMES` as the page's test does (3l's axe runs on rust only).
+
+**Gaps for the owner:** G63 (long lines in the diff) and G64 (a `fix` or `drop` with no `source`), in "Gaps" with recommendations.
+
+**Left on the disk:** nothing in the repo; the by-hand copies and scripts are in the session scratchpad.
