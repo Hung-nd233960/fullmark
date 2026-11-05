@@ -23,7 +23,7 @@ As in step 2 ([archive/STEP2.md](archive/STEP2.md), Handoff): Opus writes a slic
 | 3v the form boards (on the Design canvas) | `review` boards drafted by Opus and reviewed by the owner (2026-11-04); G38 to G47 decided (2026-11-04); boards and images in `docs/mockup/` `grade --web` and `brief --web` boards after that | |
 | 3e G47, the review file, `check --review`, `inspect --review` | done, reviewed, gaps decided (2026-11-04) | `5e9b45c`..`dbcd43e` |
 | 3k G51, `quiz review` and its form | done, reviewed, gaps decided (2026-11-04) | `91a8821`..`c326d9f` |
-| 3l G50, G56, 3k's fixes, `quiz review --since` | done, reviewed (2026-11-05); G63 and G64 wait for the owner | `54214a5`..`4140cf6`, review |
+| 3l G50, G56, 3k's fixes, `quiz review --since` | done, reviewed, gaps decided (2026-11-05) | `54214a5`..`4140cf6`, review |
 | 3m the stacked sidebar with the materials, and the phone | after 3l's review (G58); its brief follows | |
 | 3f `grade --web`, 3h `brief --web` | wait for their boards (3v) | |
 | 3z acceptance | last | |
@@ -41,7 +41,7 @@ Step 2 is closed ([archive/STEP2.md](archive/STEP2.md), item 75): every "Done wh
 
 ### Next steps, in order
 
-1. **The form boards on the Design canvas** (3v, G7), as 2v did for the page: every slice left (3e, 3f, 3h) waits for them. The `review` boards are done: reviewed, G38 to G47 decided and in COMMANDS.md, the sources copied into `docs/mockup/boards/`. Their images are in `docs/mockup/images/Review*.png` (the owner's export, scaled to board size). 3e is cut in three (3e the file and the checks, 3k the form, 3l `--since` and the phone), and **3e is built and reviewed** ("Slice 3e", its Review): G50 and G51 decided (3l's and 3k's first tasks). **3k is built and reviewed** ("Slice 3k", its Review, at the end): G56 and G57 decided as recommended. **3l's brief is approved** ("Slice 3l", at the end), with G58 to G62 decided as recommended, and handed to Sonnet; the stacked sidebar and the phone moved to a new 3m (G58), whose brief follows 3l's review. **3l is built and reviewed** ("Slice 3l", its Review): G63 and G64 wait for the owner; once decided they open 3m's brief. The `grade --web` and `brief --web` boards follow in the same way.
+1. **The form boards on the Design canvas** (3v, G7), as 2v did for the page: every slice left (3e, 3f, 3h) waits for them. The `review` boards are done: reviewed, G38 to G47 decided and in COMMANDS.md, the sources copied into `docs/mockup/boards/`. Their images are in `docs/mockup/images/Review*.png` (the owner's export, scaled to board size). 3e is cut in three (3e the file and the checks, 3k the form, 3l `--since` and the phone), and **3e is built and reviewed** ("Slice 3e", its Review): G50 and G51 decided (3l's and 3k's first tasks). **3k is built and reviewed** ("Slice 3k", its Review, at the end): G56 and G57 decided as recommended. **3l's brief is approved** ("Slice 3l", at the end), with G58 to G62 decided as recommended, and handed to Sonnet; the stacked sidebar and the phone moved to a new 3m (G58), whose brief follows 3l's review. **3l is built and reviewed** ("Slice 3l", its Review): G63 and G64 decided as recommended; 3m's brief is next, opening with them. The `grade --web` and `brief --web` boards follow in the same way.
 
 ### Open proposals carried over from step 2
 
@@ -195,9 +195,9 @@ The design docs left these open, or a slice's review found them. Each needs the 
 
 **G62. What the dialogs promise about `--since`** (raised writing 3l's brief). **Decided by the owner on 2026-11-05, as recommended**; 3l writes it into the design docs (its task 5) and builds it. Both dialogs say a question marked Keep by them "a later `quiz review --since` can still judge" (G43). But `--since` asks only questions new or changed (G44), and `assumed` "changes nothing in `check` or `--since`" (TECHNICAL_DESIGN.md section 4), so an assumed keep is never asked again by `--since`. **Recommend:** keep `--since` as decided and change the promise: "a later `quiz review` can still judge them" (vi: "lần `quiz review` sau vẫn có thể xét lại"). A plain `quiz review` opens with them and lets the learner change them (G53). COMMANDS.md's two dialog sentences change with it.
 
-**G63. Long lines in the `--since` diff** (raised in 3l's review). The diff is a `<pre>` that scrolls sideways, so a line wider than the card is cut at its edge: on the calculus copy the changed heading ends in "{type=numeric ta" and the change itself is out of sight. The ReviewSince board draws only short lines, so it does not say. **Recommend:** the diff's lines wrap (`white-space: pre-wrap`, breaking inside a long word when needed), a wrapped line keeping its `−` or `+` column and its wash; the region then never scrolls sideways. 3m builds it with its other fixes.
+**G63. Long lines in the `--since` diff** (raised in 3l's review). **Decided by the owner on 2026-11-05, as recommended**; 3m builds it and writes it into the design docs. The diff is a `<pre>` that scrolls sideways, so a line wider than the card is cut at its edge: on the calculus copy the changed heading ends in "{type=numeric ta" and the change itself is out of sight. The ReviewSince board draws only short lines, so it does not say. **Recommend:** the diff's lines wrap (`white-space: pre-wrap`, breaking inside a long word when needed), a wrapped line keeping its `−` or `+` column and its wash; the region then never scrolls sideways. 3m builds it with its other fixes.
 
-**G64. A `fix` or `drop` with no `source`** (raised in 3l's review). The schema makes `source` optional, and the form writes it for every `fix` and `drop` (TECHNICAL_DESIGN.md section 4), but a hand-edited file may leave it out; `--since` then shows the earlier verdict with neither a diff nor G61's line. **Recommend:** the reader requires `source` on a `fix` or `drop` entry, as it requires the other fields, so such a file is refused by `check --review`, `inspect --review` and `quiz review` with the reader's usual message naming the entry; no file written by 3e to 3l lacks it. 3m builds it, with a golden for the refusal.
+**G64. A `fix` or `drop` with no `source`** (raised in 3l's review). **Decided by the owner on 2026-11-05, as recommended**; 3m builds it and writes it into the design docs. The schema makes `source` optional, and the form writes it for every `fix` and `drop` (TECHNICAL_DESIGN.md section 4), but a hand-edited file may leave it out; `--since` then shows the earlier verdict with neither a diff nor G61's line. **Recommend:** the reader requires `source` on a `fix` or `drop` entry, as it requires the other fields, so such a file is refused by `check --review`, `inspect --review` and `quiz review` with the reader's usual message naming the entry; no file written by 3e to 3l lacks it. 3m builds it, with a golden for the refusal.
 
 ## Slices
 
@@ -681,6 +681,6 @@ Built by Sonnet in six commits, `54214a5`..`4140cf6`, from the brief alone; revi
 
 - An axe run of the form on a copy of `examples/calculus`, skipping `MATHML_NAMES` as the page's test does (3l's axe runs on rust only).
 
-**Gaps for the owner:** G63 (long lines in the diff) and G64 (a `fix` or `drop` with no `source`), in "Gaps" with recommendations.
+**3l's gaps decided by the owner on 2026-11-05**, both as recommended: G63 (the diff's lines wrap) and G64 (a `fix` or `drop` entry needs its `source`) open 3m's brief.
 
 **Left on the disk:** nothing in the repo; the by-hand copies and scripts are in the session scratchpad.
