@@ -24,11 +24,11 @@ As in step 2 ([archive/STEP2.md](archive/STEP2.md), Handoff): Opus writes a slic
 | 3e G47, the review file, `check --review`, `inspect --review` | done, reviewed, gaps decided (2026-11-04) | `5e9b45c`..`dbcd43e` |
 | 3k G51, `quiz review` and its form | done, reviewed, gaps decided (2026-11-04) | `91a8821`..`c326d9f` |
 | 3l G50, G56, 3k's fixes, `quiz review --since` | done, reviewed, gaps decided (2026-11-05) | `54214a5`..`4140cf6`, review |
-| 3m G63, G64, the stacked sidebar with the materials, and the phone | brief approved with G65 to G67 (2026-11-05); built by Sonnet, waiting for review | `182beb3`..`f64c008`, docs |
+| 3m G63, G64, the stacked sidebar with the materials, and the phone | done, reviewed (2026-11-05); G68 and G69 wait for the owner | `182beb3`..`0a68e2d`, review |
 | 3f `grade --web`, 3h `brief --web` | wait for their boards (3v) | |
 | 3z acceptance | last | |
 
-Each slice's review, and the owner's decisions on its gaps, are under its own section below (**Review**); every gap, G1 to G67, is in "Gaps", in number order.
+Each slice's review, and the owner's decisions on its gaps, are under its own section below (**Review**); every gap, G1 to G69, is in "Gaps", in number order.
 
 Step 2 is closed ([archive/STEP2.md](archive/STEP2.md), item 75): every "Done when" criterion passes in Chromium and Firefox; Vitest 2059 of 2059, the 2 startup tests, Playwright and axe. What step 3 inherits:
 
@@ -41,7 +41,7 @@ Step 2 is closed ([archive/STEP2.md](archive/STEP2.md), item 75): every "Done wh
 
 ### Next steps, in order
 
-1. **The form boards on the Design canvas** (3v, G7), as 2v did for the page: every slice left (3e, 3f, 3h) waits for them. The `review` boards are done: reviewed, G38 to G47 decided and in COMMANDS.md, the sources copied into `docs/mockup/boards/`. Their images are in `docs/mockup/images/Review*.png` (the owner's export, scaled to board size). 3e is cut in three (3e the file and the checks, 3k the form, 3l `--since` and the phone), and **3e is built and reviewed** ("Slice 3e", its Review): G50 and G51 decided (3l's and 3k's first tasks). **3k is built and reviewed** ("Slice 3k", its Review, at the end): G56 and G57 decided as recommended. **3l's brief is approved** ("Slice 3l", at the end), with G58 to G62 decided as recommended, and handed to Sonnet; the stacked sidebar and the phone moved to a new 3m (G58), whose brief follows 3l's review. **3l is built and reviewed** ("Slice 3l", its Review): G63 and G64 decided as recommended; **3m's brief is approved** ("Slice 3m", at the end), with G65 to G67 decided as recommended, and handed to Sonnet; it closes the `review` boards. The `grade --web` and `brief --web` boards follow in the same way.
+1. **The form boards on the Design canvas** (3v, G7), as 2v did for the page: every slice left (3e, 3f, 3h) waits for them. The `review` boards are done: reviewed, G38 to G47 decided and in COMMANDS.md, the sources copied into `docs/mockup/boards/`. Their images are in `docs/mockup/images/Review*.png` (the owner's export, scaled to board size). 3e is cut in three (3e the file and the checks, 3k the form, 3l `--since` and the phone), and **3e is built and reviewed** ("Slice 3e", its Review): G50 and G51 decided (3l's and 3k's first tasks). **3k is built and reviewed** ("Slice 3k", its Review, at the end): G56 and G57 decided as recommended. **3l's brief is approved** ("Slice 3l", at the end), with G58 to G62 decided as recommended, and handed to Sonnet; the stacked sidebar and the phone moved to a new 3m (G58), whose brief follows 3l's review. **3l is built and reviewed** ("Slice 3l", its Review): G63 and G64 decided as recommended; **3m's brief is approved** ("Slice 3m", at the end), with G65 to G67 decided as recommended; **3m is built and reviewed** ("Slice 3m", its Review), which closes the `review` boards; G68 and G69 wait for the owner and open the next slice. Next: the `grade --web` and `brief --web` boards, drafted on the Design canvas as the `review` ones were. The `grade --web` and `brief --web` boards follow in the same way.
 
 ### Open proposals carried over from step 2
 
@@ -204,6 +204,10 @@ The design docs left these open, or a slice's review found them. Each needs the 
 **G66. `M` in the form** (raised writing 3m's brief). **Decided by the owner on 2026-11-05, as recommended**; 3m builds it and writes it into COMMANDS.md (its task 5). On the page `M` opens the sidebar and moves the focus to the materials' chips (`src/page/keys.ts`), and the button's title names both keys ("Questions & materials (Q, M)"). COMMANDS.md lists `Q` and `Esc` for the form, not `M`. **Recommend:** with materials, `M` does in the form what it does on the page (on a phone, opens the Materials tab), the button's title names `Q, M`, and the keys list in the sidebar adds "M materials" ("M tài liệu"); without materials `M` does nothing. Not while typing in a note, as for every key.
 
 **G67. A part with nothing asked again, in the stacked map** (raised writing 3m's brief). **Decided by the owner on 2026-11-05, as recommended**; 3m builds it and writes it into COMMANDS.md (its task 5). With `--since`, a part none of whose questions is asked has nothing for its ring and counts to cover; the ReviewSince board shows such parts with empty rings and no count. **Recommend:** the board as drawn: its ring is the empty track, its entry has no count, its accessible name says "Part 1, Signals: nothing asked again" ("Phần 1, Signals: không hỏi lại câu nào"), and choosing it shows its grid, all muted, with the heading's count line "nothing asked again". It stays choosable, so the learner can see where the asked questions are not.
+
+**G68. Vitest's default timeout** (raised in 3m's review). Three CPU-bound unit tests have now failed at Vitest's 5 s default on the owner's 4-core laptop, each well under it alone (the notices bundling 1.9 s, `fonts-cli` 0.3 s) and past it beside 108 other test files; each was given a named timeout once found (3l's and 3m's reviews). G51 asked that no test wait on real time unexplained, and these do not wait: they compute, and the machine's load sets their time. Found one at a time, the next one fails a run that has nothing wrong. **Recommend:** `vitest.config.ts` sets `testTimeout: 30_000` with a comment saying why (CPU-bound tests under the full parallel run), the named timeouts stay where they are longer, and a test that waits on a real timer is still a bug, as G51 says. The next slice does it first.
+
+**G69. A temp file left by a killed `--autosave`** (raised in 3m's review). The progress file is written atomically, through `.progress.json.<8 hex>.tmp` renamed over it (`src/cli/atomic.ts`). A server killed during that write leaves the temp file, and its random name means no later run removes it: litter beside the learner's quiz, and the reason `serve.spec.ts:318` failed once in Firefox. **Recommend:** `quiz serve --autosave FILE`, before it serves, removes the temp files of that one file (names matching `.<basename>.<8 lower-case hex>.tmp` in its folder, nothing else), and so does `finish`; a unit test with a planted temp file, and the e2e test unchanged. `atomic.ts` keeps its random names. The next slice does it with G68.
 
 ## Slices
 
@@ -726,3 +730,41 @@ Built by Sonnet in six commits, `54214a5`..`4140cf6`, from the brief alone; revi
 ### Done when
 
 `npm run check` passes in Chromium (startup tests alone, as `npm test` runs them; Firefox when the environment has it; say which ran; a budget failure is reported with its cause shown, as 3l's review did). On a copy of a quiz with materials: `quiz review` opens with the **Questions & materials** sidebar as on the Review board; a verdict moves the part's ring and counts; a chip opens its sheet. At 390 px the form is the ReviewPhone board: the compact bar, three verdict buttons across the card, Keep the rest and Finish at the foot, the sidebar on the whole screen; Finish writes the review as at 1280 px. A review file with a `fix` lacking `source` is refused by `check --review`. Nothing under `src/page/` changed and no `build` golden moved. The screens are committed. Report as the rules say, every golden that changed counted and explained.
+
+### Review
+
+Built by Sonnet in five commits, `182beb3`..`0a68e2d`, from the brief alone; reviewed by Opus on 2026-11-05. Every "Done when" holds. Nothing under `src/page/` changed and no `build` golden moved (`git diff ca9ee9b..HEAD` is empty there).
+
+**Tests, run by the reviewer.** Typecheck, Biome and knip clean. Vitest: the startup tests alone 2 of 2, the rest 2706 passed, 3 skipped (second run). Playwright, Chromium and Firefox both: 442 passed, 309 skipped, 3 failed.
+
+- `budget.spec.ts:53`, both browsers (1408 and 3412 ms against 1000): the loaded laptop, as 3l's review showed on the commit before 3l; 3m loads nothing the test measures.
+- `serve.spec.ts:318`, Firefox: after the `--autosave` run, a `.progress.json.202fecd5.tmp` was left in the folder. **Cause read in the code, not caused by 3m** (the server and `atomic.ts` are untouched): the autosaver chains its writes and `finish` waits for them before removing the file, so the temp file is not the second run's; the test `SIGKILL`s the first server, and a kill during a progress write leaves its temp file, whose random name nothing cleans. That is G69.
+- The agent's `headings.spec.ts:95` Firefox failure did not come back in either of the reviewer's two runs.
+
+**Fixed in review** (one commit):
+
+- The first Vitest run failed `test/build/fonts-cli.test.ts`'s "same bytes" test at the 5 s default: 0.3 s alone, 5.5 s beside 108 other files. It now has a named 60 s timeout with the reason, as 3l's review did for the notices tests. Three such fixes in two slices is G68.
+- On a phone the card's status read "✎ Fix · 1 reason" on two cramped lines beside the question number; the ReviewPhone board has "✎ Fix" alone. On a phone the status is now the verdict alone (the reasons are in view under the buttons). The three phone screens it shows in are retaken (`phone-fix`, `phone-fix-reason`, `phone-vi`); the review e2e passes in Chromium after it.
+- TECHNICAL_DESIGN.md section 4 had `source: string` in the `Review` type, as if a keep had one; it is `source?: string` again, the comment saying it is required on `fix` and `drop` and never on `keep`.
+
+**Goldens**, as the report says and checked in the diff: **1 added** (`check/review-no-source`, exit 2 naming both entries), **4 changed in 3 cases** (`review/out-invalid` stderr, `review/out-invalid-json` stderr and stdout, `review/since-invalid` stderr: each hand-made invalid review has a `fix` without `source`, so the reader now lists that line too), none removed, no `build` golden moved.
+
+**Read in the code and the screens.** The stacked map, its rings (`ringOf`), the counts "3 of 5 judged · 1 fix · 1 drop" and the tabs' names match the Review board; under `--since` the asked counts and G67's part ("nothing asked again", an empty ring, its grid all muted) match the ReviewSince board. G64 is one rule in the schema's refinement. `M` and the phone's Questions and Materials tabs follow `src/page/keys.ts`. On a phone a wide sheet table scrolls in its own box, as the page's does. The by-hand run was the agent's (`dist/cli.js review` driven through Playwright on a copy of `test/fixtures/page/materials.md`, at 1280 px then `--since` at 390 px), and the reviewer's e2e run covers the same steps.
+
+**Done differently, accepted in review unless the owner says otherwise:**
+
+- `Ring` and `Sheets` are copied into `src/review/Side.tsx`, each with a comment naming the original (the page's `Ring` is not exported and its `Sheets` takes `QuizState`); `tabKeys`, `ringOf`, `Icon`, `Html` and the look controls are imported.
+- `src/review/main.tsx` writes its own `(max-width: 759px)` query rather than import `PHONE_QUERY`, to keep `src/page/store.ts` out of the form's bundle.
+- The reason chips' CSS is scoped to `.fm-reason-box`, since unscoped it restyled the sheet chips, which share the class.
+- On a phone Keep the rest and Finish are rendered in the foot bar only; the foot bar is hidden while the sidebar covers the screen; the sidebar closes when the window narrows to a phone.
+- The plain map's one-question row is now muted under `--since` too (3l missed it), its accessible name holding the "Part N" text.
+- The page's double-click jump from a part tab is not copied; the phone's Questions tab is the plain collapsible map, as on the page; the phone's compact bar has no "Asked again" line.
+- The diff is a `pre` of lines, each a grid of the sign and the text; it no longer scrolls, so its `tabIndex` and Biome suppression are gone.
+
+**Words not on the boards**, in `src/core/i18n/review.ts`, for the owner to read in the form as G57's were: `partStats` ("6 of 12 judged · 3 fix · 1 drop" / "đã xét 6 / 12 · 3 sửa · 1 bỏ"), G67's "nothing asked again" / "không hỏi lại câu nào" and its tab name, `materialsKey` ("materials" / "tài liệu"), `phoneTitle` ("Review: TITLE" / "Rà soát: TITLE").
+
+**Gaps for the owner:** G68 (Vitest's default timeout) and G69 (a temp file left by a killed autosave), in "Gaps" with recommendations.
+
+**Left on the disk:** nothing in the repo; the agent's by-hand copies and scripts are in the session scratchpad.
+
+**The `review` boards are done**: `quiz review` is as COMMANDS.md says. What is left of step 3 waits for the `grade --web` and `brief --web` boards (3v), then 3f, 3h and 3z.
