@@ -35,6 +35,16 @@ export type FormState = {
   /** the question the keys act on: the last one focused or scrolled to */
   current: Signal<string>;
   sidebar: Signal<boolean>;
+  /** the quiz has materials sheets: the sidebar is the stacked Questions & materials (G39) */
+  materials: boolean;
+  /** the window is below 760 px wide: the compact bar, the foot bar and the full-screen sidebar (G65) */
+  phone: Signal<boolean>;
+  /** on a phone with materials, the sidebar's tab */
+  side: Signal<"questions" | "materials">;
+  /** the part the stacked map shows; null: the one holding the current question */
+  miniPart: Signal<string | null>;
+  /** the open sheet, an index into the page's materials; kept for the form's life only */
+  sheet: Signal<number>;
   /** the parts the learner opened or closed in the plain sidebar, by section id */
   mapOpen: Signal<Record<string, boolean>>;
   dialog: Signal<"none" | "rest" | "finish">;
@@ -100,6 +110,11 @@ export function createFormState(data: ReviewData, deps: Deps = {}): FormState {
     entries,
     current,
     sidebar: signal(true),
+    materials: (page.materials?.length ?? 0) > 0,
+    phone: signal(false),
+    side: signal("questions"),
+    miniPart: signal(null),
+    sheet: signal(0),
     mapOpen: signal({}),
     dialog: signal("none"),
     held: signal([]),

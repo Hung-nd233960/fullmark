@@ -279,6 +279,7 @@ export async function runReview(file: string, opts: ReviewOptions, io: ServeIo):
     quiz,
     hash,
     assets: loaded.assets,
+    sheets: loaded.sheets,
     review: old.review,
     ...(opts.since !== null && old.review !== null ? { since: { asked: askedIds(quiz, old.review), blocks } } : {}),
     out: shown,

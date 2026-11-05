@@ -340,3 +340,86 @@ describe("the form's state with --since", () => {
     expect(state.saved.value).toMatchObject({ keep: 1, fix: 2 });
   });
 });
+
+describe("the keys with materials (G66)", () => {
+  const key = (k: string, extra: Record<string, unknown> = {}) => ({
+    key: k,
+    ctrlKey: false,
+    metaKey: false,
+    altKey: false,
+    target: null,
+    preventDefault: () => undefined,
+    ...extra,
+  });
+  const store = { look: { menu: { value: false } }, screen: { phone: { value: false } } } as never;
+  const withSheets = (): ReturnType<typeof setup> => {
+    const { quiz } = parse(SOURCE, "quiz.md");
+    if (quiz === null) throw new Error("the fixture does not parse");
+    const html = buildReviewForm({
+      quiz,
+      hash: quizHash(SOURCE, []),
+      assets: [],
+      sheets: [
+        { path: "a.md", name: "First sheet", source: ["# First", "", "Hello.", ""].join("\n") },
+        { path: "b.md", name: "Second sheet", source: ["# Second", "", "World.", ""].join("\n") },
+      ],
+      review: null,
+      out: "review.json",
+      check: "quiz check quiz.md --review review.json",
+      script: "void 0",
+      css: "",
+      reviewCss: "",
+      builtAt: "2026-11-03T00:00:00.000Z",
+      version: "test",
+    });
+    const data = JSON.parse(/id="fm-data">([\s\S]*?)<\/script>/.exec(html)?.[1] ?? "") as ReviewData;
+    return setup(data);
+  };
+
+  it("hold the sheets in the form's data, and the state knows the quiz has materials", () => {
+    const { state } = withSheets();
+    expect(state.materials).toBe(true);
+    expect(state.page.materials?.map((s) => s.name)).toEqual(["First sheet", "Second sheet"]);
+    expect(state.sheet.value).toBe(0);
+    expect(setup().state.materials).toBe(false);
+  });
+
+  it("M opens the sidebar, and does nothing without materials", () => {
+    const { state } = withSheets();
+    const handle = keyHandler(state, store);
+    state.sidebar.value = false;
+    handle(key("m"));
+    expect(state.sidebar.value).toBe(true);
+    handle(key("M"));
+    expect(state.sidebar.value).toBe(true);
+    const plain = setup().state;
+    plain.sidebar.value = false;
+    keyHandler(plain, store)(key("m"));
+    expect(plain.sidebar.value).toBe(false);
+  });
+
+  it("M on a phone opens the Materials tab, and again closes the sidebar; Q goes back to Questions, then closes", () => {
+    const { state } = withSheets();
+    const handle = keyHandler(state, store);
+    state.phone.value = true;
+    state.sidebar.value = false;
+    handle(key("m"));
+    expect(state.sidebar.value).toBe(true);
+    expect(state.side.value).toBe("materials");
+    handle(key("q"));
+    expect(state.sidebar.value).toBe(true);
+    expect(state.side.value).toBe("questions");
+    handle(key("q"));
+    expect(state.sidebar.value).toBe(false);
+    handle(key("m"));
+    handle(key("m"));
+    expect(state.sidebar.value).toBe(false);
+  });
+
+  it("M does not act while typing in a note", () => {
+    const { state } = withSheets();
+    state.sidebar.value = false;
+    keyHandler(state, store)(key("m", { target: { tagName: "TEXTAREA" } }));
+    expect(state.sidebar.value).toBe(false);
+  });
+});

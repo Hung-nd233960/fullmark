@@ -9,7 +9,7 @@ import { themeCss } from "../core/themes";
 import type { ReviewData, SinceData } from "../review/data";
 import { fontDataUri } from "./fonts";
 import type { Highlight } from "./highlight";
-import { escapeAttr, pageQuizOf, scriptJson } from "./page";
+import { type BuildQuiz, escapeAttr, pageQuizOf, scriptJson } from "./page";
 import type { Asset } from "./render";
 import type { MathTools } from "./tex";
 
@@ -17,6 +17,8 @@ export type ReviewFormOptions = {
   quiz: Quiz;
   hash: string;
   assets: readonly Asset[];
+  /** the materials sheets in the order listed, rendered as the page renders them for the stacked sidebar (G39) */
+  sheets?: BuildQuiz["sheets"];
   /** the review file as it stands (`--out`, read and checked by the command); null: none yet */
   review: Review | null;
   /** `--since`: the ids asked, and the blocks as hashed (what the diff of a changed question reads); absent otherwise */
@@ -112,7 +114,7 @@ export function buildReviewForm(o: ReviewFormOptions): string {
   const quiz = asShown(o.quiz);
   const maths = o.math?.start();
   const page = pageQuizOf(
-    { quiz, hash: o.hash, assets: o.assets },
+    { quiz, hash: o.hash, assets: o.assets, ...(o.sheets ? { sheets: o.sheets } : {}) },
     { source: "full", questions: [], optionOrder: sourceOrder(quiz) },
     { math: maths?.render, highlight: o.highlight },
   );

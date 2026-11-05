@@ -1,9 +1,9 @@
 import { useEffect, useLayoutEffect, useRef } from "preact/hooks";
 import { type ReviewMessages, reviewEn, reviewVi } from "../core/i18n/review";
 import { lineDiff } from "../core/review/diff";
-import type { ReasonId, Verdict } from "../core/review/reasons";
+import type { ReasonId } from "../core/review/reasons";
 import { AppearanceButton, AppearanceMenu, type LookStore, TextSize } from "../page/Appearance";
-import type { PageQuestion, PageQuiz, PageSection } from "../page/data";
+import type { PageQuestion, PageSection } from "../page/data";
 import { Icon } from "../page/icons";
 import { Html, messagesFor } from "../page/questions/shared";
 import { num } from "../page/results";
@@ -11,18 +11,38 @@ import { KeyBody, type Keyed, keyedOf } from "./Body";
 import type { ReviewData } from "./data";
 import { reasonsFor } from "./logic";
 import { jump, scrolling } from "./nav";
+import { GLYPH, VERDICTS } from "./parts";
+import { Side } from "./Side";
 import type { FormState } from "./state";
 
-const GLYPH: Record<Verdict, string> = { keep: "✓", fix: "✎", drop: "✕" };
-const VERDICTS: readonly Verdict[] = ["keep", "fix", "drop"];
-
-/** The part a question belongs to, in source order; a quiz of one untitled section has one part with no heading. */
-type Part = { id: string; title: string | null; number: number; ids: string[] };
-function partsOf(page: PageQuiz): Part[] {
-  return page.sections.map((s, i) => ({ id: s.id, title: s.title, number: i + 1, ids: s.questions.map((q) => q.id) }));
-}
-
 // -- the bar -------------------------------------------------------------------------------------------------------
+
+/** Keep the rest and Finish: in the top bar, and on a phone in the bar at the foot of the screen (ReviewPhone board). */
+function Actions({ state, r, done }: { state: FormState; r: ReviewMessages; done: boolean }) {
+  return (
+    <>
+      <button
+        type="button"
+        class="fm-button"
+        data-action="keep-rest"
+        title={r.keepRestTitle}
+        disabled={done}
+        onClick={() => state.keepRest()}
+      >
+        {r.keepRest}
+      </button>
+      <button
+        type="button"
+        class="fm-button fm-primary"
+        data-action="finish"
+        disabled={done}
+        onClick={() => state.finish()}
+      >
+        {r.finish}
+      </button>
+    </>
+  );
+}
 
 function Bar({ state, store, r }: { state: FormState; store: LookStore; r: ReviewMessages }) {
   const { page } = state;
@@ -45,78 +65,74 @@ function Bar({ state, store, r }: { state: FormState; store: LookStore; r: Revie
   const here = state.number(state.current.value);
   const since = state.since;
   const done = state.saved.value !== null;
+  const phone = state.phone.value;
+  const sideName = state.materials ? t.sidebarLabelMaterials : t.sidebarLabel;
   return (
-    <header class="fm-dock" data-dock ref={dock}>
+    <header class="fm-dock" data-dock data-phone={phone ? "true" : undefined} ref={dock}>
       <div class="fm-topbar">
-        <h1 class="fm-title">
-          <span class="fm-review-label">{r.label}</span> {page.title}
-        </h1>
+        {phone ? (
+          <div class="fm-phone-head">
+            <h1 class="fm-title">{r.phoneTitle(page.title)}</h1>
+            <span class="fm-phone-line" data-compact>
+              {r.judged(counts.judged, counts.total)} · {t.questionLabel(here)}
+            </span>
+          </div>
+        ) : (
+          <h1 class="fm-title">
+            <span class="fm-review-label">{r.label}</span> {page.title}
+          </h1>
+        )}
         <div class="fm-topbar-actions">
           <button
             type="button"
-            class="fm-button fm-side-button"
+            class={phone ? "fm-button fm-icon-button fm-side-button" : "fm-button fm-side-button"}
             data-action="sidebar"
             aria-expanded={state.sidebar.value}
-            aria-keyshortcuts="Q"
-            title={t.sidebarTitle}
+            aria-keyshortcuts={state.materials ? "Q M" : "Q"}
+            aria-label={phone ? sideName : undefined}
+            title={state.materials ? t.sidebarTitleMaterials : t.sidebarTitle}
             onClick={() => {
               state.sidebar.value = !state.sidebar.value;
             }}
           >
-            <Icon name="panel" size={18} />
-            {t.sidebarLabel}
+            <Icon name={phone && state.materials ? "book" : "panel"} size={18} />
+            {phone ? null : sideName}
           </button>
-          <TextSize t={t} store={store} />
-          {store.look.locked ? null : <AppearanceButton t={t} store={store} />}
-          <button
-            type="button"
-            class="fm-button"
-            data-action="keep-rest"
-            title={r.keepRestTitle}
-            disabled={done}
-            onClick={() => state.keepRest()}
-          >
-            {r.keepRest}
-          </button>
-          <button
-            type="button"
-            class="fm-button fm-primary"
-            data-action="finish"
-            disabled={done}
-            onClick={() => state.finish()}
-          >
-            {r.finish}
-          </button>
+          {phone ? null : <TextSize t={t} store={store} />}
+          {store.look.locked && !phone ? null : <AppearanceButton t={t} store={store} />}
+          {phone ? null : <Actions state={state} r={r} done={done} />}
         </div>
       </div>
-      <ul class="fm-status" aria-label={t.statusLabel}>
-        {since !== null ? (
-          <li class="fm-status-seg" data-seg="asked">
-            {r.askedAgain(state.scope.length, r.date(since.reviewedAt))}
+      {phone ? null : (
+        <ul class="fm-status" aria-label={t.statusLabel}>
+          {since !== null ? (
+            <li class="fm-status-seg" data-seg="asked">
+              {r.askedAgain(state.scope.length, r.date(since.reviewedAt))}
+            </li>
+          ) : null}
+          <li class="fm-status-seg" data-seg="judged">
+            <span>{r.judged(counts.judged, counts.total)}</span>
+            <progress
+              class="fm-progress"
+              max={counts.total}
+              value={counts.judged}
+              aria-label={r.judgedAria}
+              data-progress
+            />
+            <b>{pct}%</b>
           </li>
-        ) : null}
-        <li class="fm-status-seg" data-seg="judged">
-          <span>{r.judged(counts.judged, counts.total)}</span>
-          <progress
-            class="fm-progress"
-            max={counts.total}
-            value={counts.judged}
-            aria-label={r.judgedAria}
-            data-progress
-          />
-          <b>{pct}%</b>
-        </li>
-        <li class="fm-status-seg" data-seg="counts">
-          <span>
-            <b data-verdict="keep">{counts.keep}</b> {r.verdictWord.keep} · <b data-verdict="fix">{counts.fix}</b>{" "}
-            {r.verdictWord.fix} · <b data-verdict="drop">{counts.drop}</b> {r.verdictWord.drop}
-          </span>
-        </li>
-        <li class="fm-status-seg" data-seg="question">
-          {r.position(here, state.items.length)}
-        </li>
-      </ul>
-      {store.look.locked ? null : <AppearanceMenu t={t} store={store} />}
+          <li class="fm-status-seg" data-seg="counts">
+            <span>
+              <b data-verdict="keep">{counts.keep}</b> {r.verdictWord.keep} · <b data-verdict="fix">{counts.fix}</b>{" "}
+              {r.verdictWord.fix} · <b data-verdict="drop">{counts.drop}</b> {r.verdictWord.drop}
+            </span>
+          </li>
+          <li class="fm-status-seg" data-seg="question">
+            {r.position(here, state.items.length)}
+          </li>
+        </ul>
+      )}
+      {store.look.locked && !phone ? null : <AppearanceMenu t={t} store={store} />}
     </header>
   );
 }
@@ -328,195 +344,6 @@ function Card({
   );
 }
 
-// -- the sidebar ----------------------------------------------------------------------------------------------------
-
-/** The plain Questions sidebar (G52): the parts as collapsible headings over their grids, then the legend and the keys. */
-function Sidebar({ state, r }: { state: FormState; r: ReviewMessages }) {
-  const { page } = state;
-  const t = messagesFor(page);
-  const parts = partsOf(page);
-  const entries = state.entries.value;
-  const headless = parts.length === 1 && parts[0]?.title === null;
-  const cell = (id: string, row = false) => {
-    const v = entries[id]?.verdict ?? null;
-    const n = state.number(id);
-    const current = state.current.value === id;
-    if (state.asked !== null && !state.asked.has(id)) return old(id, row);
-    return (
-      <button
-        key={id}
-        type="button"
-        class={row ? "fm-cell fm-cell-row" : "fm-cell"}
-        data-cell={id}
-        data-verdict={v ?? undefined}
-        data-current={current ? "true" : undefined}
-        aria-current={current ? "true" : undefined}
-        aria-label={r.cellLabel(n, v === null ? r.notJudgedWord : r.verdictWord[v], current)}
-        onClick={() => jump(page, state, id, true)}
-      >
-        {row ? null : n}
-        {v === null || row ? null : (
-          <span class="fm-cell-glyph" aria-hidden="true">
-            {GLYPH[v]}
-          </span>
-        )}
-        {row ? (
-          <span class="fm-map-head-title">{t.mapPart(parts.find((p) => p.ids.includes(id))?.number ?? 1, null)}</span>
-        ) : null}
-      </button>
-    );
-  };
-  // a question `--since` does not ask again: muted, dashed, with no card to go to
-  const old = (id: string, row: boolean) => (
-    <button
-      key={id}
-      type="button"
-      class={row ? "fm-cell fm-cell-row" : "fm-cell"}
-      data-cell={id}
-      data-old="true"
-      disabled
-      aria-label={r.cellLabel(state.number(id), r.notAsked, false)}
-    >
-      {row ? (
-        <span class="fm-map-head-title">{t.mapPart(parts.find((p) => p.ids.includes(id))?.number ?? 1, null)}</span>
-      ) : (
-        state.number(id)
-      )}
-    </button>
-  );
-  const grid = (ids: string[]) => <div class="fm-grid">{ids.map((id) => cell(id))}</div>;
-  return (
-    <aside class="fm-side" aria-label={t.sidebarAria} data-review-side>
-      <div class="fm-side-head">
-        <h2 class="fm-side-title">{t.sidebarLabel}</h2>
-        <button
-          type="button"
-          class="fm-side-close"
-          data-action="close-sidebar"
-          aria-label={t.closeSidebar}
-          title={t.closeSidebarTitle}
-          onClick={() => {
-            state.sidebar.value = false;
-            document.querySelector<HTMLElement>("[data-action=sidebar]")?.focus();
-          }}
-        >
-          <Icon name="cross" size={18} />
-        </button>
-      </div>
-      <div class="fm-side-body">
-        {headless
-          ? grid(parts.flatMap((p) => p.ids))
-          : parts.map((part) => {
-              const inScope = part.ids.filter((id) => state.asked === null || state.asked.has(id));
-              const judged = inScope.filter((id) => entries[id]?.verdict != null).length;
-              const open = state.mapOpen.value[part.id] ?? part.ids.some((id) => id === state.current.value);
-              if (part.ids.length === 1 && part.ids[0] !== undefined) {
-                return (
-                  <div class="fm-map-part" key={part.id} data-part={part.id}>
-                    {cellRow(part, part.ids[0])}
-                  </div>
-                );
-              }
-              return (
-                <div class="fm-map-part" key={part.id} data-part={part.id}>
-                  <button
-                    type="button"
-                    class="fm-map-head"
-                    data-part-head
-                    data-open={open ? "true" : undefined}
-                    aria-expanded={open}
-                    onClick={() => {
-                      state.mapOpen.value = { ...state.mapOpen.value, [part.id]: !open };
-                    }}
-                  >
-                    <span class="fm-map-head-title">{t.mapPart(part.number, part.title)}</span>
-                    <span class="fm-map-head-count" aria-hidden="true">
-                      {inScope.length === 0 ? "" : `${judged}/${inScope.length}`}
-                    </span>
-                    <span class="fm-sr">{r.partCount(judged, inScope.length)}</span>
-                    <span class="fm-map-head-chevron" aria-hidden="true">
-                      {open ? "▾" : "▸"}
-                    </span>
-                  </button>
-                  {open ? grid(part.ids) : null}
-                </div>
-              );
-            })}
-        <Legend r={r} since={state.since !== null} />
-      </div>
-    </aside>
-  );
-
-  function cellRow(part: Part, id: string) {
-    const v = entries[id]?.verdict ?? null;
-    const current = state.current.value === id;
-    return (
-      <button
-        type="button"
-        class="fm-cell fm-cell-row"
-        data-cell={id}
-        data-verdict={v ?? undefined}
-        data-current={current ? "true" : undefined}
-        aria-current={current ? "true" : undefined}
-        aria-label={`${r.cellLabel(state.number(id), v === null ? r.notJudgedWord : r.verdictWord[v], current)}, ${t.mapPart(part.number, part.title)}`}
-        onClick={() => jump(page, state, id, true)}
-      >
-        <span class="fm-map-head-title">{t.mapPart(part.number, part.title)}</span>
-        {v === null ? null : (
-          <span class="fm-cell-glyph" aria-hidden="true">
-            {GLYPH[v]}
-          </span>
-        )}
-      </button>
-    );
-  }
-}
-
-function Legend({ r, since }: { r: ReviewMessages; since: boolean }) {
-  return (
-    <>
-      <ul class="fm-legend fm-legend-review">
-        {VERDICTS.map((v) => (
-          <li key={v}>
-            <span class="fm-swatch fm-swatch-verdict" data-verdict={v} aria-hidden="true">
-              {GLYPH[v]}
-            </span>
-            {r.verdictWord[v]}
-          </li>
-        ))}
-        <li>
-          <span class="fm-swatch fm-swatch-verdict" aria-hidden="true" />
-          {r.notJudgedWord}
-        </li>
-        <li>
-          <span class="fm-swatch fm-swatch-current" aria-hidden="true" />
-          {r.currentWord}
-        </li>
-        {since ? (
-          <li>
-            <span class="fm-swatch fm-swatch-old" aria-hidden="true" />
-            {r.notAsked}
-          </li>
-        ) : null}
-      </ul>
-      <ul class="fm-keys" aria-label={r.keysLabel}>
-        <li>
-          <kbd>1</kbd> {r.keep}
-        </li>
-        <li>
-          <kbd>2</kbd> {r.fix}
-        </li>
-        <li>
-          <kbd>3</kbd> {r.drop}
-        </li>
-        <li>
-          <kbd>N</kbd> {r.nextKey}
-        </li>
-      </ul>
-    </>
-  );
-}
-
 // -- the dialogs and the saved card ------------------------------------------------------------------------------------
 
 /** Keep the rest and Finish, when questions are not judged (G43). Both end in the same button. */
@@ -633,6 +460,9 @@ export function Form({ state, store, data }: { state: FormState; store: LookStor
     .map((s) => (asked === null ? s : { ...s, questions: s.questions.filter((q) => asked.has(q.id)) }))
     .filter((s) => asked === null || s.questions.length > 0);
   const done = state.saved.value !== null;
+  const phone = state.phone.value;
+  // on a phone an open sidebar takes the screen: what is under it is not there (as the page's)
+  const covered = phone && state.sidebar.value;
   const held = new Set(state.held.value);
   // the current question follows the scroll: the first card whose bottom is below the docked block
   useEffect(() => {
@@ -664,8 +494,12 @@ export function Form({ state, store, data }: { state: FormState; store: LookStor
       data-since={asked === null ? undefined : "true"}
     >
       <Bar state={state} store={store} r={r} />
-      <div class="fm-body" data-side={state.sidebar.value ? "open" : "closed"}>
-        <main class="fm-main" lang={page.lang}>
+      <div
+        class="fm-body"
+        data-side={state.sidebar.value ? "open" : "closed"}
+        data-wide={state.materials && !phone ? "" : undefined}
+      >
+        <main class="fm-main" lang={page.lang} data-covered={covered ? "true" : undefined}>
           <Notices state={state} r={r} />
           {done ? (
             <Saved state={state} data={data} r={r} />
@@ -687,8 +521,13 @@ export function Form({ state, store, data }: { state: FormState; store: LookStor
             </div>
           )}
         </main>
-        {state.sidebar.value ? <Sidebar state={state} r={r} /> : null}
+        {state.sidebar.value ? <Side state={state} r={r} /> : null}
       </div>
+      {phone ? (
+        <div class="fm-footbar" data-footbar data-covered={covered ? "true" : undefined}>
+          <Actions state={state} r={r} done={done} />
+        </div>
+      ) : null}
       <Dialog state={state} r={r} />
     </div>
   );

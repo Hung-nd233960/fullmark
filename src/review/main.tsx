@@ -16,9 +16,19 @@ const dataElement = document.getElementById("fm-data");
 const root = document.getElementById("fm-root");
 if (dataElement && root) {
   const data = JSON.parse(dataElement.textContent ?? "") as ReviewData;
-  const store = { look: createFormLook(data.page), screen: { phone: { value: false } } };
-  applyLook(store);
   const state = createFormState(data);
+  const store = { look: createFormLook(data.page), screen: { phone: state.phone } };
+  applyLook(store);
+  // below 760 px the form is a phone's (the page's `PHONE_QUERY`): the sidebar starts closed, and closes when the window
+  // narrows to a phone, since there it takes the whole screen
+  const narrow = typeof window.matchMedia === "function" ? window.matchMedia("(max-width: 759px)") : null;
+  const onNarrow = (): void => {
+    const was = state.phone.value;
+    state.phone.value = narrow?.matches === true;
+    if (state.phone.value && !was) state.sidebar.value = false;
+  };
+  onNarrow();
+  narrow?.addEventListener("change", onNarrow);
   render(<Form state={state} store={store} data={data} />, root);
   installKeys(state, store);
   // the saved card replaces the questions: the page goes back to the top so the card is seen

@@ -711,3 +711,157 @@ for (const scheme of ["light", "dark"] as const) {
     await noViolations(page, MATHML_NAMES);
   });
 }
+// -- slice 3m: the stacked Questions & materials sidebar -------------------------------------------------------------
+
+const MATERIALS = "test/fixtures/page/materials.md";
+
+/** A copy of the materials fixture with its `materials/` folder (three sheets, three parts, twelve questions with ids). */
+function materialsFolder(): string {
+  const dir = folder(MATERIALS);
+  cpSync(join(root, "test/fixtures/page/materials"), join(dir, "materials"), { recursive: true });
+  return dir;
+}
+
+const side = (page: Page) => page.locator("aside[data-review-side]");
+
+test("a quiz with materials: the stacked Questions & materials sidebar, its tabs, rings, counts and sheets", async ({
+  page,
+}) => {
+  const dir = materialsFolder();
+  const server = await review(dir);
+  const seen = watch(page);
+  await open(page, server);
+  // one block, named for both, with the button's title naming both keys
+  const button = page.locator("[data-action=sidebar]");
+  await expect(button).toHaveText("Questions & materials");
+  await expect(button).toHaveAttribute("title", "The question map and the materials (Q, M)");
+  await expect(side(page)).toHaveAttribute("data-form", "stacked");
+  await expect(page.locator(".fm-body")).toHaveAttribute("data-wide", "");
+  const width = await side(page).evaluate((el) => el.getBoundingClientRect().width);
+  expect(width).toBeGreaterThan(1280 * 0.38);
+  expect(width).toBeLessThan(1280 * 0.42);
+  // the parts are a vertical tab list; the part holding the current question is chosen, its grid beside it
+  const tabs = side(page).getByRole("tab", { name: /^Part \d/ });
+  await expect(tabs).toHaveCount(3);
+  await expect(tabs.first()).toHaveAttribute("aria-selected", "true");
+  await expect(side(page).locator(".fm-part-panel-title")).toHaveText("Part 1 · Signals");
+  await expect(side(page).locator("[data-part-stats]")).toHaveText("0 of 4 judged");
+  await expect(side(page).locator(".fm-grid [data-cell]")).toHaveCount(4);
+  // the tab list moves the grid
+  await side(page).locator("[data-part-tab=fourier]").click();
+  await expect(side(page).locator(".fm-part-panel-title")).toHaveText("Part 2 · Fourier transform");
+  await expect(side(page).locator(".fm-grid [data-cell]")).toHaveCount(5);
+  await expect(side(page).locator(".fm-grid [data-cell]").first()).toHaveText("5");
+  // a verdict moves the ring and the counts, in the tab's name and the heading line
+  await card(page, "m5").locator("[data-pick=keep]").click();
+  await card(page, "m6").locator("[data-pick=fix]").click();
+  await card(page, "m6").locator("[data-reason=unclear]").click();
+  await card(page, "m7").locator("[data-pick=drop]").click();
+  await card(page, "m7").locator("[data-reason=duplicate]").click();
+  await expect(side(page).locator("[data-part-stats]")).toHaveText("3 of 5 judged · 1 fix · 1 drop");
+  const second = side(page).locator("[data-part-tab=fourier]");
+  await expect(second).toHaveAttribute("aria-label", "Part 2, Fourier transform: 3 of 5 judged, 1 fix, 1 drop");
+  const arc = (id: string) =>
+    side(page)
+      .locator(`[data-part-tab=${id}] .fm-ring-arc`)
+      .getAttribute("stroke-dasharray")
+      .then((v) => Number.parseFloat(v ?? "0"));
+  const circumference = 2 * Math.PI * 10;
+  expect(await arc("fourier")).toBeCloseTo((circumference * 3) / 5, 1);
+  expect(await arc("sig")).toBe(0);
+  // every question judged: the full disc with the tick
+  for (const id of ["m8", "m9"]) await card(page, id).locator("[data-pick=keep]").click();
+  await expect(second.locator(".fm-ring")).toHaveAttribute("data-done", "true");
+  await expect(side(page).locator("[data-cell=m6]")).toHaveAttribute("data-verdict", "fix");
+  // the legend and the keys, with M
+  await expect(side(page).locator(".fm-keys")).toContainText("M materials");
+  // the sheets: the first open, a chip opens another, read-only
+  const chips = side(page).locator("[data-sheet-tab]");
+  await expect(chips).toHaveCount(3);
+  await expect(chips.first()).toHaveAttribute("aria-selected", "true");
+  await expect(side(page).locator(".fm-sheet").first()).toContainText("Fourier transform properties");
+  await chips.nth(1).click();
+  await expect(chips.nth(1)).toHaveAttribute("aria-selected", "true");
+  await expect(side(page).locator(".fm-sheet").first()).toContainText("Trigonometric identities");
+  await expect(side(page).locator(".fm-sheet-panel input, .fm-sheet-panel button")).toHaveCount(0);
+  // Q closes and opens the sidebar; M opens it and puts the focus on the chosen chip
+  await page.keyboard.press("q");
+  await expect(side(page)).toHaveCount(0);
+  await page.keyboard.press("m");
+  await expect(side(page)).toHaveCount(1);
+  await expect(chips.nth(1)).toBeFocused();
+  await page.keyboard.press("Escape");
+  await expect(side(page)).toHaveCount(0);
+  expect(seen.problems).toEqual([]);
+  // nothing left the server: the page itself is the one request (the sheets are in it)
+  expect(seen.requests).toEqual([server.url]);
+  // Finish still writes the review as for any quiz
+  await finish(page).click();
+  await page.locator("[data-action=mark-keep]").click();
+  await expect(page.locator("[data-review-saved]")).toBeVisible();
+  expect((await server.end()).code).toBe(0);
+  expect(Object.keys(readJson(dir).questions)).toHaveLength(12);
+});
+
+test("M does nothing on a quiz without materials, and the button is the plain Questions one", async ({ page }) => {
+  const server = await review(folder(RUST));
+  await open(page, server);
+  await expect(page.locator("[data-action=sidebar]")).toHaveText("Questions");
+  await expect(side(page)).not.toHaveAttribute("data-form", "stacked");
+  await page.keyboard.press("q");
+  await expect(side(page)).toHaveCount(0);
+  await page.keyboard.press("m");
+  await expect(side(page)).toHaveCount(0);
+});
+
+test("--since in the stacked map: not-asked cells muted, rings and counts over the asked, and a part with none (G67)", async ({
+  page,
+}) => {
+  const dir = materialsFolder();
+  const first = await review(dir);
+  await open(page, first);
+  await card(page, "m6").locator("[data-pick=fix]").click();
+  await card(page, "m6").locator("[data-reason=unclear]").click();
+  await page.locator("[data-action=keep-rest]").click();
+  await page.locator("[data-action=mark-keep]").click();
+  await expect(page.locator("[data-review-saved]")).toBeVisible();
+  expect((await first.end()).code).toBe(0);
+  edit(dir, ["Question m6?", "Question m6, said again?"]);
+  const server = await review(dir, "--since", "review.json");
+  await open(page, server);
+  expect(await page.locator("article[data-qid]").count()).toBe(1);
+  // part 1 has nothing asked again: an empty ring, its name says so, and its grid is muted
+  const sig = side(page).locator("[data-part-tab=sig]");
+  await expect(sig).toHaveAttribute("aria-label", "Part 1, Signals: nothing asked again");
+  await expect(sig.locator(".fm-ring")).not.toHaveAttribute("data-done", "true");
+  expect(Number.parseFloat((await sig.locator(".fm-ring-arc").getAttribute("stroke-dasharray")) ?? "")).toBe(0);
+  await sig.click();
+  await expect(side(page).locator("[data-part-stats]")).toHaveText("nothing asked again");
+  await expect(side(page).locator("[data-cell][data-old]")).toHaveCount(4);
+  await expect(side(page).locator("[data-cell][data-old]").first()).toBeDisabled();
+  // part 2 counts the asked one only
+  const fourier = side(page).locator("[data-part-tab=fourier]");
+  await expect(fourier).toHaveAttribute("aria-label", "Part 2, Fourier transform: 0 of 1 judged");
+  await fourier.click();
+  await expect(side(page).locator("[data-part-stats]")).toHaveText("0 of 1 judged");
+  await expect(side(page).locator("[data-cell][data-old]")).toHaveCount(4);
+  await expect(side(page).locator(".fm-legend-review")).toContainText("not asked again");
+  await card(page, "m6").locator("[data-pick=keep]").click();
+  await expect(side(page).locator("[data-part-stats]")).toHaveText("1 of 1 judged");
+  await expect(fourier.locator(".fm-ring")).toHaveAttribute("data-done", "true");
+  await finish(page).click();
+  await expect(page.locator("[data-review-saved]")).toBeVisible();
+  expect((await server.end()).code).toBe(0);
+});
+
+for (const scheme of ["light", "dark"] as const) {
+  test(`the stacked sidebar: no axe violations, ${scheme}`, async ({ page }) => {
+    const server = await review(materialsFolder());
+    await page.emulateMedia({ colorScheme: scheme, reducedMotion: "reduce" });
+    await page.setViewportSize({ width: 1280, height: 940 });
+    await page.goto(server.url);
+    await page.locator("[data-quiz]").waitFor();
+    await card(page, "m6").locator("[data-pick=fix]").click();
+    await noViolations(page, MATHML_NAMES);
+  });
+}

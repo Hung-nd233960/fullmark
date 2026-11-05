@@ -23,8 +23,9 @@ const VERDICT_OF: Record<string, Verdict> = { "1": "keep", "2": "fix", "3": "dro
 
 /**
  * The form's keys (COMMANDS.md, `quiz review`, "Keys"): `1`, `2`, `3` give Keep, Fix, Drop to the current question, `N`
- * moves to the next one not judged, `Q` opens and closes the sidebar and `Esc` closes it (or the Appearance menu). No
- * key acts while typing in a note, with a modifier held, or while a dialog is open.
+ * moves to the next one not judged, `Q` opens and closes the sidebar, `M` (with materials) opens it and moves the focus
+ * to the sheets' chips, and `Esc` closes it (or the Appearance menu). No key acts while typing in a note, with a
+ * modifier held, or while a dialog is open.
  */
 export function keyHandler(state: FormState, store: LookStore): (event: KeyLike) => void {
   return (event) => {
@@ -47,7 +48,30 @@ export function keyHandler(state: FormState, store: LookStore): (event: KeyLike)
     }
     if (event.key === "q" || event.key === "Q") {
       event.preventDefault();
+      // on a phone the two parts are tabs: Q from the Materials tab goes back to Questions, as on the page
+      if (state.phone.value && state.materials && state.sidebar.value && state.side.value === "materials") {
+        state.side.value = "questions";
+        setTimeout(() => focusOn(".fm-side [data-cell]"), 0);
+        return;
+      }
+      state.side.value = "questions";
       state.sidebar.value = !state.sidebar.value;
+      return;
+    }
+    if (event.key === "m" || event.key === "M") {
+      // G66: as on the page, with materials: open the sidebar and move the focus to the chips; none without
+      if (!state.materials) return;
+      event.preventDefault();
+      if (state.phone.value) {
+        if (state.sidebar.value && state.side.value === "materials") {
+          state.sidebar.value = false;
+          focusOn("[data-action=sidebar]");
+          return;
+        }
+        state.side.value = "materials";
+      }
+      state.sidebar.value = true;
+      setTimeout(() => focusOn(".fm-side [data-sheet-tab][aria-selected=true]"), 0);
       return;
     }
     if (event.key === "Escape" && !event.defaultPrevented) {

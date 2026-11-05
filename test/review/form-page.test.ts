@@ -112,6 +112,15 @@ describe("the review form's page", () => {
     expect(html).toContain("<title>Everything</title>");
   });
 
+  it("carries the materials sheets, rendered as the page renders them, only when the quiz has some (G39)", () => {
+    expect(dataOf(html).page.quizzes[0].materials).toBeUndefined();
+    const source = ["# Rules", "", "Some **bold** words.", ""].join("\n");
+    const sheets = [{ path: "a.md", name: "Rules", source }];
+    const quiz = dataOf(buildReviewForm(options(SOURCE, { sheets }))).page.quizzes[0];
+    expect(quiz.materials?.map((m) => m.name)).toEqual(["Rules"]);
+    expect(quiz.materials?.[0]?.html).toContain("<strong>bold</strong>");
+  });
+
   it("refuses a script that would end the page's script", () => {
     expect(() => buildReviewForm(options(SOURCE, { script: "x</script><script>y" }))).toThrow(/closing script tag/);
   });

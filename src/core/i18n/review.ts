@@ -53,6 +53,20 @@ export const reviewEn = {
   rubricTotal: (points: string) => `Rubric · ${points} ${points === "1" ? "point" : "points"}`,
   cellLabel: (n: number, word: string, current: boolean) => `Question ${n}, ${word}${current ? ", current" : ""}`,
   partCount: (judged: number, total: number) => `${judged} of ${total} judged`,
+  /** the stacked map (Review and ReviewSince boards): a part's heading line, and its tab's accessible name (G67) */
+  partStats: (judged: number, total: number, fix: number, drop: number) =>
+    total === 0
+      ? "nothing asked again"
+      : `${judged} of ${total} judged${fix > 0 ? ` · ${fix} fix` : ""}${drop > 0 ? ` · ${drop} drop` : ""}`,
+  partTab: (n: number, title: string | null, judged: number, total: number, fix: number, drop: number) =>
+    `Part ${n}${title === null ? "" : `, ${title}`}: ${
+      total === 0
+        ? "nothing asked again"
+        : `${judged} of ${total} judged${fix > 0 ? `, ${fix} fix` : ""}${drop > 0 ? `, ${drop} drop` : ""}`
+    }`,
+  materialsKey: "materials",
+  /** the compact top bar on a phone: "Review: TITLE" over "Judged 15 of 32 · Question 20" */
+  phoneTitle: (title: string) => `Review: ${title}`,
   keysLabel: "Keys",
   nextKey: "next not judged",
   dlgTitle: (n: number) => `${n} ${n === 1 ? "question" : "questions"} not judged`,
@@ -131,6 +145,18 @@ export const reviewVi = {
   rubricTotal: (points: string) => `Tiêu chí chấm · ${points} điểm`,
   cellLabel: (n: number, word: string, current: boolean) => `Câu ${n}, ${word}${current ? ", đang xem" : ""}`,
   partCount: (judged: number, total: number) => `đã xét ${judged} / ${total}`,
+  partStats: (judged: number, total: number, fix: number, drop: number) =>
+    total === 0
+      ? "không hỏi lại câu nào"
+      : `đã xét ${judged} / ${total}${fix > 0 ? ` · ${fix} sửa` : ""}${drop > 0 ? ` · ${drop} bỏ` : ""}`,
+  partTab: (n: number, title: string | null, judged: number, total: number, fix: number, drop: number) =>
+    `Phần ${n}${title === null ? "" : `, ${title}`}: ${
+      total === 0
+        ? "không hỏi lại câu nào"
+        : `đã xét ${judged} / ${total}${fix > 0 ? `, ${fix} sửa` : ""}${drop > 0 ? `, ${drop} bỏ` : ""}`
+    }`,
+  materialsKey: "tài liệu",
+  phoneTitle: (title: string) => `Rà soát: ${title}`,
   keysLabel: "Phím tắt",
   nextKey: "câu chưa xét tiếp theo",
   dlgTitle: (n: number) => `${n} câu chưa xét`,

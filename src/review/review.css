@@ -141,7 +141,7 @@
 
   /* the verdict, then the reasons */
   .fm-verdict-row,
-  .fm-chips {
+  .fm-reason-box .fm-chips {
     display: flex;
     flex-wrap: wrap;
     gap: 8px 10px;
@@ -207,7 +207,8 @@
     margin-top: 14px;
   }
 
-  .fm-chip {
+  /* the reason chips; the sheets' chips keep the page's own look (`25-sidebar.css`) */
+  .fm-reason-box .fm-chip {
     min-height: 36px;
     padding: 0 14px;
     font: inherit;
@@ -219,18 +220,18 @@
     border-radius: 999px;
   }
 
-  .fm-chip[aria-pressed="true"] {
+  .fm-reason-box .fm-chip[aria-pressed="true"] {
     font-weight: 700;
     border-width: 2px;
   }
 
-  .fm-chip[data-verdict="fix"][aria-pressed="true"] {
+  .fm-reason-box .fm-chip[data-verdict="fix"][aria-pressed="true"] {
     color: var(--warn);
     background: var(--surface);
     border-color: var(--warn);
   }
 
-  .fm-chip[data-verdict="drop"][aria-pressed="true"] {
+  .fm-reason-box .fm-chip[data-verdict="drop"][aria-pressed="true"] {
     color: var(--bad);
     background: var(--bad-wash);
     border-color: var(--bad);
@@ -540,5 +541,97 @@
     font-family: var(--mono);
     background: var(--sunken);
     border-radius: 4px;
+  }
+
+  /* the stacked map's rings: a part with every question judged is a disc, as on the page */
+  .fm-part-tab[data-done] .fm-part-tab-label {
+    color: var(--text);
+  }
+
+  /* the phone, below 760px (ReviewPhone board): the sidebar is the page's (`25-sidebar.css`), these are the form's own */
+  .fm-footbar {
+    display: none;
+  }
+
+  .fm-phone-head {
+    display: flex;
+    flex: 1 1 5em;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  @media (max-width: 759px) {
+    .fm-phone-head .fm-title {
+      flex: none;
+      margin: 0;
+      font-size: 1.05em;
+      line-height: 1.4;
+      overflow-wrap: anywhere;
+      white-space: normal;
+    }
+
+    .fm-phone-head .fm-phone-line {
+      flex: none;
+    }
+
+    /* Keep, Fix and Drop share the card's width in three columns, with no label before them */
+    .fm-verdict-row {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .fm-verdict-row .fm-verdict-label {
+      display: none;
+    }
+
+    .fm-verdict {
+      min-width: 0;
+      padding: 0 6px;
+    }
+
+    .fm-reason-box .fm-chip {
+      min-height: 44px;
+    }
+
+    /* the prompt takes a row of its own, the chips wrap under it */
+    .fm-reason-box .fm-verdict-label {
+      flex: 1 0 100%;
+    }
+
+    /* Keep the rest and Finish leave the top bar for a bar docked at the foot of the screen, half the width each */
+    .fm-footbar {
+      position: fixed;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 5;
+      display: flex;
+      gap: 12px;
+      padding: 12px 16px;
+      background: var(--card);
+      border-top: 1px solid var(--card-line);
+    }
+
+    .fm-footbar[data-covered] {
+      display: none;
+    }
+
+    .fm-footbar .fm-button {
+      flex: 1 1 0;
+      justify-content: center;
+      min-width: 0;
+      height: 44px;
+      padding: 0 8px;
+    }
+
+    /* the last card is never hidden behind the bar */
+    .fm-review .fm-main {
+      padding-bottom: 96px;
+    }
+
+    .fm-review-dialog {
+      padding: 20px 18px;
+    }
   }
 }
