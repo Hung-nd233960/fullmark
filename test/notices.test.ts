@@ -14,14 +14,23 @@ import { ACKNOWLEDGEMENTS, NOTICE_PACKAGES } from "../src/build/notices-data";
  */
 const root = resolve(import.meta.dirname, "..");
 const fresh = generate();
+/**
+ * `generate` bundles the CLI and the page runtimes with esbuild: under 2 s alone, but past Vitest's 5 s default while
+ * the other test files run beside it on a 4-core laptop (3l's review). The tests that wait for it get a minute.
+ */
+const BUNDLING = 60_000;
 
 describe("THIRD_PARTY_NOTICES.md", () => {
-  it("equals a fresh run: a dependency change without `npm run notices` fails here", async () => {
-    const run = await fresh;
-    expect(readFileSync(join(root, "THIRD_PARTY_NOTICES.md"), "utf8")).toBe(run.text);
-    expect(readFileSync(join(root, "src/build/notices-data.ts"), "utf8")).toBe(run.module);
-    expect(ACKNOWLEDGEMENTS).toBe(run.text);
-  });
+  it(
+    "equals a fresh run: a dependency change without `npm run notices` fails here",
+    async () => {
+      const run = await fresh;
+      expect(readFileSync(join(root, "THIRD_PARTY_NOTICES.md"), "utf8")).toBe(run.text);
+      expect(readFileSync(join(root, "src/build/notices-data.ts"), "utf8")).toBe(run.module);
+      expect(ACKNOWLEDGEMENTS).toBe(run.text);
+    },
+    BUNDLING,
+  );
 
   it("starts with fullmark's own licence, then the components sorted by name", () => {
     const text = readFileSync(join(root, "THIRD_PARTY_NOTICES.md"), "utf8");
@@ -40,9 +49,13 @@ describe("THIRD_PARTY_NOTICES.md", () => {
 });
 
 describe("every component has a licence file and a licence on the allow-list", () => {
-  it("is true of everything shipped now", async () => {
-    expect(problems((await fresh).data)).toEqual([]);
-  });
+  it(
+    "is true of everything shipped now",
+    async () => {
+      expect(problems((await fresh).data)).toEqual([]);
+    },
+    BUNDLING,
+  );
 
   it("names a package whose licence is outside the list or whose licence file is missing", () => {
     const data = {
