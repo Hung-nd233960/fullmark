@@ -1,0 +1,100 @@
+{
+  "format": "fullmark-review",
+  "questions": {
+    "brand-new": {
+      "assumed": true,
+      "hash": "97f7917dee5c434c89c1ac681ebaaaf7cb159f08ee3689d63527c34a7ba4a0a3",
+      "note": "",
+      "reasons": [],
+      "verdict": "keep"
+    },
+    "chain-rule": {
+      "assumed": true,
+      "hash": "2bea8263a4be4f7eb812b6e6186019d3278995a5f2fe48289a324cd96f570e33",
+      "note": "",
+      "reasons": [],
+      "verdict": "keep"
+    },
+    "chain-rule-value": {
+      "assumed": true,
+      "hash": "796d6e51deffafe2ed575d70786e4813c5b50172ccebe00048078cfad392dd15",
+      "note": "",
+      "reasons": [],
+      "verdict": "keep"
+    },
+    "continuous-at-zero": {
+      "assumed": true,
+      "hash": "4b0ed1ef6e09bcde140c78e72f62e9fe4de7a806ee22e0e0d53824c0dd068d49",
+      "note": "",
+      "reasons": [],
+      "verdict": "keep"
+    },
+    "cubic-graph": {
+      "assumed": true,
+      "hash": "0927f88e0513601a3ff84d117f7df46c209e75c9e316c35d0ac39d9aefa8c624",
+      "note": "",
+      "reasons": [],
+      "verdict": "keep"
+    },
+    "derivative-blanks": {
+      "assumed": true,
+      "hash": "fef12784dd2705add5f91004806fade6759274d04a6c7459e61253104f8b338c",
+      "note": "",
+      "reasons": [],
+      "verdict": "keep"
+    },
+    "differentiable-implies-continuous": {
+      "assumed": true,
+      "hash": "050b249793849b1d6e1256ebd208e947ce1fbedf6b5a1972dc010df7968793d0",
+      "note": "",
+      "reasons": [],
+      "verdict": "keep"
+    },
+    "ftc-derivative": {
+      "assumed": true,
+      "hash": "9972824983b0bb81d0920abf1c969ed2607d5b9e946f9da72bf6ad2db38a1bab",
+      "note": "",
+      "reasons": [],
+      "verdict": "keep"
+    },
+    "integral-x-squared": {
+      "assumed": true,
+      "hash": "10ea350c9e2e456f6049f7b5f54de95d47bac9f1e7ba2ed1305a34a580f2334b",
+      "note": "",
+      "reasons": [],
+      "verdict": "keep"
+    },
+    "limit-sinx-over-x": {
+      "assumed": true,
+      "hash": "c46e0786188ddc47e80124033713f6ca11e82fbcd549bb5561b764a8173c86ab",
+      "note": "",
+      "reasons": [],
+      "verdict": "keep"
+    },
+    "mean-value-theorem": {
+      "assumed": true,
+      "hash": "71db2b9f5910066dd402f38f0e4b08a6cee8da1268cf748dba36997317020f49",
+      "note": "",
+      "reasons": [],
+      "verdict": "keep"
+    },
+    "product-rule": {
+      "assumed": true,
+      "hash": "09a200a880b85fce6dc61ad419a0ba6cdb11abb3e38b57331872e25d86c36bc1",
+      "note": "",
+      "reasons": [],
+      "verdict": "keep"
+    },
+    "related-rates": {
+      "assumed": true,
+      "hash": "bf3d600bc9c799a0b840e91522a07929baac97fbb81c16280b9188cbd6565846",
+      "note": "",
+      "reasons": [],
+      "verdict": "keep"
+    }
+  },
+  "quizHash": "429ea7963201305a4bf9b9d17ac8d3b0b7d36aa6f0ebe98b875e5610986c333e",
+  "quizId": "calculus-1",
+  "reviewedAt": "<time>",
+  "version": 2
+}

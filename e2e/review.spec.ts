@@ -1,6 +1,7 @@
 import { spawnSync } from "node:child_process";
 import {
   copyFileSync,
+  cpSync,
   existsSync,
   mkdirSync,
   mkdtempSync,
@@ -10,7 +11,7 @@ import {
   writeFileSync,
 } from "node:fs";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
 import { expect, type Page, test } from "@playwright/test";
 import { expectGolden, noViolations, root, type Served, serveProcess, watch } from "./helpers";
 
@@ -431,4 +432,206 @@ test("Ctrl+C prints {status: interrupted}, exits 2 and leaves an existing review
   expect(end.code).toBe(2);
   expect(end.lines[1]).toEqual({ status: "interrupted" });
   expect(readFileSync(join(dir, "review.json")).equals(bytes)).toBe(true);
+});
+// -- --since (slice 3l) ----------------------------------------------------------------------------------------------
+
+const CALCULUS = "examples/calculus/quiz.md";
+
+/**
+ * A first review: `fixId` is a Fix (with a note), `keepId` (when given) a Keep judged by hand, and Keep the rest
+ * assumes every other question. Returns the folder with `review.json` written.
+ */
+async function firstReview(page: Page, source: string, fixId: string, keepId: string | null): Promise<string> {
+  const dir = folder(source);
+  // the quiz's assets, when it has some
+  const assets = join(root, dirname(source), "assets");
+  if (existsSync(assets)) cpSync(assets, join(dir, "assets"), { recursive: true });
+  const first = await review(dir);
+  await open(page, first);
+  const fix = card(page, fixId);
+  await fix.locator("[data-pick=fix]").click();
+  await fix.locator("[data-reason=unclear]").click();
+  await fix.locator("textarea").fill("Does not say whether to simplify");
+  if (keepId !== null) await card(page, keepId).locator("[data-pick=keep]").click();
+  await page.locator("[data-action=keep-rest]").click();
+  await page.locator("[data-action=mark-keep]").click();
+  await expect(page.locator("[data-review-saved]")).toBeVisible();
+  expect((await first.end()).code).toBe(0);
+  return dir;
+}
+
+/** Replaces text in the quiz source; each `from` must be there. */
+function edit(dir: string, ...changes: [string, string][]): void {
+  let text = readFileSync(join(dir, "quiz.md"), "utf8");
+  for (const [from, to] of changes) {
+    expect(text).toContain(from);
+    text = text.replace(from, to);
+  }
+  writeFileSync(join(dir, "quiz.md"), text);
+}
+
+const NEW_QUESTION = "\n## Is this question new? {type=single tags=added id=brand-new}\n\n- [x] Yes\n- [ ] No\n";
+
+test("--since asks only the new and changed questions, shows the earlier verdict and the diff, and merges into the review", async ({
+  page,
+}) => {
+  const dir = await firstReview(page, CALCULUS, "chain-rule-value", "ftc-derivative");
+  const before = readJson(dir);
+  edit(
+    dir,
+    ["Evaluate $f'(1)$.", "Evaluate $f'(1)$ exactly."],
+    ["- [x] $x^2$\n- [ ] $\\dfrac{x^3}{3}$", "- [x] $x^2$\n- [ ] $\\dfrac{x^3}{4}$"],
+  );
+  writeFileSync(join(dir, "quiz.md"), `${readFileSync(join(dir, "quiz.md"), "utf8")}${NEW_QUESTION}`);
+
+  const server = await review(dir, "--since", "review.json");
+  const seen = watch(page);
+  await open(page, server);
+  // only the three are cards, in source order, with the quiz's own numbers
+  const ids = await page
+    .locator("article[data-qid]")
+    .evaluateAll((els) => els.map((e) => (e as HTMLElement).dataset.qid));
+  expect(ids).toEqual(["chain-rule-value", "ftc-derivative", "brand-new"]);
+  await expect(page.locator("[data-seg=asked]")).toContainText(
+    "Asked again: 3 questions new or changed since your review of",
+  );
+  await expect(page.locator("[data-seg=judged]")).toContainText("Judged 0 of 3");
+  await expect(page.locator("[data-seg=question]")).toContainText("Question 5 of 13");
+  // the changed fix: the earlier verdict, its reason and note, and the diff with its − and + lines
+  const fixCard = card(page, "chain-rule-value");
+  await expect(fixCard.locator("[data-since-box]")).toContainText("Your verdict on");
+  await expect(fixCard.locator(".fm-since-verdict")).toHaveText("Fix");
+  await expect(fixCard.locator(".fm-since-chip")).toHaveText("Unclear");
+  await expect(fixCard.locator(".fm-since-note")).toHaveText("“Does not say whether to simplify”");
+  await expect(fixCard.locator("[data-diff] [data-kind=del]")).toHaveCount(1);
+  await expect(fixCard.locator("[data-diff] [data-kind=del]")).toContainText("Evaluate $f'(1)$.");
+  await expect(fixCard.locator("[data-diff] [data-kind=add]")).toContainText("Evaluate $f'(1)$ exactly.");
+  await expect(fixCard.locator("[data-diff] [data-kind=same]").first()).toBeVisible();
+  // the changed keep: its verdict, and in place of the diff the line that a Keep stores no text (G61)
+  const keepCard = card(page, "ftc-derivative");
+  await expect(keepCard.locator(".fm-since-verdict")).toHaveText("Keep");
+  await expect(keepCard.locator("[data-since-keep]")).toHaveText(
+    "Changed since; a Keep does not store the earlier text",
+  );
+  await expect(keepCard.locator("[data-diff]")).toHaveCount(0);
+  // the new question has neither
+  await expect(card(page, "brand-new").locator("[data-since-box]")).toHaveCount(0);
+  // the map: the ten not asked are muted and disabled, and the legend says so; N never goes to them
+  // (the part that holds the current question is open; the others open with a click on their heading)
+  await expect(page.locator("[data-cell][data-old]")).toHaveCount(4);
+  const closed = page.locator("[data-part-head][aria-expanded=false]");
+  while ((await closed.count()) > 0) await closed.first().click();
+  await expect(page.locator("[data-cell][data-old]")).toHaveCount(10);
+  await expect(page.locator("[data-cell][data-old]").first()).toBeDisabled();
+  await expect(page.locator(".fm-legend-review")).toContainText("not asked again");
+  await page.keyboard.press("n");
+  await expect(current(page)).toHaveAttribute("data-qid", "ftc-derivative");
+  await page.keyboard.press("n");
+  await expect(current(page)).toHaveAttribute("data-qid", "brand-new");
+  await page.keyboard.press("n");
+  await expect(current(page)).toHaveAttribute("data-qid", "chain-rule-value");
+  // Keep the rest counts the three only
+  await page.locator("[data-action=keep-rest]").click();
+  await expect(page.locator("dialog[data-review-dialog=rest]").getByRole("heading")).toHaveText(
+    "3 questions not judged",
+  );
+  await page.locator("[data-action=mark-keep]").click();
+  await expect(page.locator("[data-review-saved]")).toContainText(
+    "review.json: 13 keep (13 not looked at), 0 fix, 0 drop.",
+  );
+  const end = await server.end();
+  expect(end.code).toBe(0);
+  expect(end.lines[1]).toEqual({
+    status: "written",
+    review: "review.json",
+    keep: 13,
+    fix: 0,
+    drop: 0,
+  });
+  expect(seen.problems).toEqual([]);
+  // the file: every entry of a question not asked is as it was, and the three asked are assumed keeps on their new hash
+  const after = readJson(dir);
+  const asked = new Set(["chain-rule-value", "ftc-derivative", "brand-new"]);
+  for (const [id, entry] of Object.entries(before.questions)) {
+    if (!asked.has(id)) expect(after.questions[id]).toEqual(entry);
+  }
+  expect(Object.keys(after.questions)).toHaveLength(13);
+  for (const id of asked) expect(after.questions[id]).toMatchObject({ verdict: "keep", assumed: true });
+  expect(after.questions["chain-rule-value"].hash).not.toBe(before.questions["chain-rule-value"].hash);
+  expect(after.questions["chain-rule-value"]).not.toHaveProperty("source");
+  expectGolden("review-since-written", masked(dir));
+  // check --review no longer warns, and a second --since has nothing to ask
+  const read = check(dir);
+  expect(read.status).toBe(0);
+  expect(read.stdout).not.toContain("review.unconfirmed");
+  const again = spawnSync(process.execPath, [cli, "review", "quiz.md", "--since", "review.json"], {
+    cwd: dir,
+    encoding: "utf8",
+  });
+  expect(again.status).toBe(0);
+  expect(again.stdout).toMatch(/^nothing new or changed since your review of \d+ \w+\n$/);
+});
+
+test("check --review warns review.unconfirmed with the command to run, until --since judges the change", async ({
+  page,
+}) => {
+  const dir = await firstReview(page, CALCULUS, "chain-rule-value", null);
+  edit(dir, ["Evaluate $f'(1)$.", "Evaluate $f'(1)$ exactly."]);
+  const read = check(dir);
+  expect(read.status).toBe(0);
+  expect(read.stdout).toContain("review.unconfirmed");
+  expect(read.stdout).toContain("run `quiz review quiz.md --since review.json` and judge the change");
+  // the one question is asked; Keep on it and Finish write the file, and the warning is gone
+  const server = await review(dir, "--since", "review.json");
+  await open(page, server);
+  expect(await page.locator("article[data-qid]").count()).toBe(1);
+  await card(page, "chain-rule-value").locator("[data-pick=keep]").click();
+  await finish(page).click();
+  await expect(page.locator("[data-review-saved]")).toBeVisible();
+  expect((await server.end()).code).toBe(0);
+  const after = check(dir);
+  expect(after.status).toBe(0);
+  expect(after.stdout).not.toContain("review.unconfirmed");
+  expect(readJson(dir).questions["chain-rule-value"]).toMatchObject({
+    verdict: "keep",
+    reasons: [],
+    note: "",
+  });
+});
+
+for (const scheme of ["light", "dark"] as const) {
+  test(`--since: no axe violations, ${scheme}`, async ({ page }) => {
+    const dir = await firstReview(page, RUST, "integer-division", "vec-pop");
+    edit(
+      dir,
+      ["## What does this program print? {type=short", "## What does this program print now? {type=short"],
+      ["## What does `v.pop()` return when", "## What does `v.pop()` return, exactly, when"],
+    );
+    const server = await review(dir, "--since", "review.json");
+    await page.emulateMedia({ colorScheme: scheme, reducedMotion: "reduce" });
+    await page.setViewportSize({ width: 1280, height: 940 });
+    await page.goto(server.url);
+    await page.locator("[data-quiz]").waitFor();
+    await expect(page.locator("[data-diff]")).toHaveCount(1);
+    await noViolations(page);
+  });
+}
+
+test("--since in Vietnamese (the ReviewSince words of the ReviewVi board), and no axe violations", async ({ page }) => {
+  const dir = await firstReview(page, TYPES_VI, "s1", null);
+  edit(dir, ["## Pick the colour of the sky.", "## Pick the colour of the clear sky."]);
+  const server = await review(dir, "--since", "review.json");
+  await open(page, server);
+  await expect(page.locator("[data-seg=asked]")).toHaveText(
+    /^Hỏi lại: 1 câu mới hoặc đã đổi kể từ lần rà soát ngày \d+\/\d+$/,
+  );
+  await expect(page.locator("[data-seg=judged]")).toContainText("Đã xét 0 / 1");
+  const box = card(page, "s1").locator("[data-since-box]");
+  await expect(box).toContainText("Đánh giá của bạn ngày");
+  await expect(box.locator(".fm-since-verdict")).toHaveText("Sửa");
+  await expect(box.locator(".fm-since-chip")).toHaveText("Chưa rõ ràng");
+  await expect(box).toContainText("Những gì đã đổi kể từ đó");
+  await expect(page.locator("[data-diff] [data-kind=add]")).toContainText("clear sky");
+  await expect(page.locator(".fm-legend-review")).toContainText("không hỏi lại");
+  await noViolations(page);
 });

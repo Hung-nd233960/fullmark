@@ -281,3 +281,62 @@ describe("the keys", () => {
     expect(state.entries.value.one?.verdict).toBe("keep");
   });
 });
+describe("the form's state with --since", () => {
+  /** question two is asked again (it changed since the review); one and three are not */
+  const sinceData = (): ReviewData => {
+    const data = dataOf(true);
+    data.earlier = {
+      one: { verdict: "fix", reasons: ["unclear"], note: "n" },
+      three: { verdict: "keep", reasons: [], note: "", assumed: true },
+    };
+    data.since = {
+      reviewedAt: "2026-10-28T09:00:00+07:00",
+      asked: ["two"],
+      changed: {
+        two: {
+          earlier: { verdict: "keep", reasons: [], note: "" },
+          before: null,
+          after: "## Two?\n",
+        },
+      },
+    };
+    return data;
+  };
+
+  it("counts, asks and goes by the questions asked only, and keeps the quiz's numbers", () => {
+    const { state } = setup(sinceData());
+    expect(state.scope.map((q) => q.id)).toEqual(["two"]);
+    expect(state.items.map((q) => q.id)).toEqual(["one", "two", "three"]);
+    expect(state.current.value).toBe("two");
+    expect(state.counts()).toEqual({ total: 1, judged: 0, keep: 0, fix: 0, drop: 0, assumed: 0 });
+    expect(state.number("two")).toBe(2);
+    expect(state.next()).toBe("two");
+  });
+
+  it("Keep the rest touches the question asked only, and the submit holds every question, the others as they were", async () => {
+    const { state, posted } = setup(sinceData());
+    state.keepRest();
+    expect(state.dialog.value).toBe("rest");
+    state.confirm();
+    await settle();
+    expect(posted[0]?.judged).toEqual({
+      one: { verdict: "fix", reasons: ["unclear"], note: "n" },
+      two: { verdict: "keep", reasons: [], note: "", assumed: true },
+      three: { verdict: "keep", reasons: [], note: "", assumed: true },
+    });
+    // the saved card counts the whole review, as the command's output does
+    expect(state.saved.value).toMatchObject({ total: 3, keep: 2, fix: 1, assumed: 2 });
+  });
+
+  it("a Fix with no reason holds Finish back; with one, Finish writes at once", async () => {
+    const { state, posted } = setup(sinceData());
+    state.pick("two", "fix");
+    state.finish();
+    expect(state.held.value).toEqual(["two"]);
+    state.reason("two", "key-wrong");
+    state.finish();
+    await settle();
+    expect(posted).toHaveLength(1);
+    expect(state.saved.value).toMatchObject({ keep: 1, fix: 2 });
+  });
+});

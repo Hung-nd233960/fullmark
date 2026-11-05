@@ -344,6 +344,117 @@
     border-color: var(--bad);
   }
 
+  /* --since: a question not asked again is muted and dashed, with no card behind it */
+  .fm-cell[data-old] {
+    color: var(--muted);
+    cursor: default;
+    background: var(--surface);
+    border: 1px dashed var(--line-strong);
+    opacity: 1;
+  }
+
+  .fm-swatch-old {
+    background: var(--surface);
+    border: 1px dashed var(--line-strong);
+    border-radius: 3px;
+  }
+
+  /* --since: the earlier verdict above a changed question, and what changed (ReviewSince board) */
+  .fm-since {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 14px 18px;
+    margin-top: 10px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+  }
+
+  .fm-since-head {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 10px;
+    align-items: baseline;
+  }
+
+  .fm-since-verdict {
+    font-weight: 700;
+  }
+
+  .fm-since-verdict[data-verdict="keep"] {
+    color: var(--ok);
+  }
+
+  .fm-since-verdict[data-verdict="fix"] {
+    color: var(--warn);
+  }
+
+  .fm-since-verdict[data-verdict="drop"] {
+    color: var(--bad);
+  }
+
+  .fm-since-chip {
+    padding: 1px 10px;
+    font-size: 0.85em;
+    font-weight: 600;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+  }
+
+  .fm-since-note,
+  .fm-since-keep {
+    margin: 0;
+  }
+
+  .fm-since-note {
+    font-style: italic;
+  }
+
+  .fm-since-keep {
+    font-size: 0.9em;
+    color: var(--muted);
+  }
+
+  .fm-since-changes {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin: 0;
+  }
+
+  .fm-diff {
+    display: flex;
+    flex-direction: column;
+    padding: 8px 0;
+    margin: 0;
+    overflow-x: auto;
+    font-family: var(--mono);
+    font-size: 0.82em;
+    line-height: 1.7;
+    white-space: pre;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+  }
+
+  .fm-diff-line {
+    display: block;
+    padding: 0 14px;
+    color: var(--muted);
+  }
+
+  .fm-diff-line[data-kind="del"] {
+    color: var(--bad);
+    background: var(--bad-wash);
+  }
+
+  .fm-diff-line[data-kind="add"] {
+    color: var(--ok);
+    background: var(--ok-wash);
+  }
+
   .fm-keys {
     display: flex;
     flex-wrap: wrap;

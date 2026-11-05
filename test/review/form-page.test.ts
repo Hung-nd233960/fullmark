@@ -233,3 +233,57 @@ describe("the form's bundle and its words", () => {
     expect(reviewEn.dlgTitle(14)).toBe("14 questions not judged");
   });
 });
+describe("the page with --since", () => {
+  it("holds what was asked, and for a changed question the earlier verdict and both blocks", () => {
+    const blocks = new Map<string, string>();
+    const parsed = parse(SOURCE, "quiz.md", { blocks }).quiz;
+    if (parsed === null) throw new Error("the fixture does not parse");
+    const questions = parsed.sections.flatMap((s) => s.questions);
+    const hash = (id: string) => questions.find((q) => q.id === id)?.hash ?? "";
+    const review: Review = {
+      format: "fullmark-review",
+      version: 2,
+      quizId: "every",
+      quizHash: "a".repeat(64),
+      reviewedAt: "2026-10-28T09:00:00+07:00",
+      questions: {
+        // judged on another version: asked again, with its block as judged
+        "order-it": {
+          verdict: "fix",
+          reasons: ["unclear"],
+          note: "",
+          hash: "b".repeat(64),
+          source: "## Order\n",
+        },
+        // kept on another version: asked again, with no block to show
+        "match-it": { verdict: "keep", reasons: [], note: "", hash: "c".repeat(64), assumed: true },
+        // unchanged: not asked
+        "explain-it": { verdict: "keep", reasons: [], note: "", hash: hash("explain-it") },
+      },
+    };
+    const asked = questions.map((q) => q.id).filter((id) => review.questions[id]?.hash !== hash(id));
+    const data = dataOf(buildReviewForm(options(SOURCE, { quiz: parsed, review, since: { asked, blocks } })));
+    expect(data.since?.asked).toEqual(asked);
+    expect(asked).not.toContain("explain-it");
+    expect(asked).toContain("bank-one");
+    expect(data.since?.reviewedAt).toBe("2026-10-28T09:00:00+07:00");
+    // a new question has no earlier verdict, so it is asked but is not among the changed
+    expect(Object.keys(data.since?.changed ?? {}).sort()).toEqual(["match-it", "order-it"]);
+    expect(data.since?.changed["order-it"]).toEqual({
+      earlier: { verdict: "fix", reasons: ["unclear"], note: "" },
+      before: "## Order\n",
+      after: blocks.get(hash("order-it")),
+    });
+    expect(data.since?.changed["match-it"]?.before).toBeNull();
+    expect(data.since?.changed["match-it"]?.earlier).toEqual({
+      verdict: "keep",
+      reasons: [],
+      note: "",
+      assumed: true,
+    });
+    // the unchanged question's verdict is the form's to hand back; a changed one's is not
+    expect(Object.keys(data.earlier)).toEqual(["explain-it"]);
+    // without --since there is no such key
+    expect(dataOf(buildReviewForm(options(SOURCE, { quiz: parsed }))).since).toBeUndefined();
+  });
+});

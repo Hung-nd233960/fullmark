@@ -3,6 +3,14 @@
  * `ui_lang`. They are a file of their own, not a group of the `en` and `vi` catalogs: the page runtime bundles those
  * whole, and these words belong to `dist/review.js` alone, so a shared page stays byte for byte what it was.
  */
+import { shortDate } from "../review/counts";
+
+/** `28/10`, from the date part of an ISO time as it was written (the `vi` form writes it so, as the ReviewSince board does). */
+const dayMonth = (iso: string): string => {
+  const m = /^\d{4}-(\d\d)-(\d\d)/.exec(iso);
+  return m ? `${Number(m[2])}/${Number(m[1])}` : iso;
+};
+
 export const reviewEn = {
   label: "Review",
   keepRest: "Keep the rest",
@@ -57,6 +65,16 @@ export const reviewEn = {
     string,
   ],
   matchesNothing: "Matches nothing",
+  /** `--since` (ReviewSince board): the date is the review's `reviewedAt`, written as `inspect --review` writes it */
+  date: shortDate,
+  askedAgain: (n: number, date: string) =>
+    `Asked again: ${n} ${n === 1 ? "question" : "questions"} new or changed since your review of ${date}`,
+  earlier: (date: string) => `Your verdict on ${date}`,
+  changedSince: "What changed since",
+  diffAria: (n: number, date: string) => `Changes to question ${n} since ${date}`,
+  keptChanged: "Changed since; a Keep does not store the earlier text",
+  notLookedAt: "not looked at",
+  notAsked: "not asked again",
   back: (n: number) => `Go back to question ${n}`,
   cancel: "Cancel",
   markKeep: "Mark them Keep and finish",
@@ -120,6 +138,14 @@ export const reviewVi = {
   dlgFinish: "Bạn có thể quay lại câu đầu tiên, hoặc giữ tất cả và hoàn tất ngay.",
   dlgNote: ["Các câu này được ghi là Giữ, kèm dấu chưa xem; lần ", "quiz review", " sau vẫn có thể xét lại."],
   matchesNothing: "Không ghép với mục nào",
+  date: dayMonth,
+  askedAgain: (n: number, date: string) => `Hỏi lại: ${n} câu mới hoặc đã đổi kể từ lần rà soát ngày ${date}`,
+  earlier: (date: string) => `Đánh giá của bạn ngày ${date}`,
+  changedSince: "Những gì đã đổi kể từ đó",
+  diffAria: (n: number, date: string) => `Thay đổi của câu ${n} kể từ ngày ${date}`,
+  keptChanged: "Đã đổi kể từ đó; Giữ không lưu bản trước",
+  notLookedAt: "chưa xem",
+  notAsked: "không hỏi lại",
   back: (n: number) => `Quay lại câu ${n}`,
   cancel: "Huỷ",
   markKeep: "Đánh dấu Giữ và hoàn tất",

@@ -1,5 +1,6 @@
 import { useEffect, useLayoutEffect, useRef } from "preact/hooks";
 import { type ReviewMessages, reviewEn, reviewVi } from "../core/i18n/review";
+import { lineDiff } from "../core/review/diff";
 import type { ReasonId, Verdict } from "../core/review/reasons";
 import { AppearanceButton, AppearanceMenu, type LookStore, TextSize } from "../page/Appearance";
 import type { PageQuestion, PageQuiz, PageSection } from "../page/data";
@@ -42,6 +43,7 @@ function Bar({ state, store, r }: { state: FormState; store: LookStore; r: Revie
   const counts = state.counts();
   const pct = counts.total === 0 ? 0 : Math.round((100 * counts.judged) / counts.total);
   const here = state.number(state.current.value);
+  const since = state.since;
   const done = state.saved.value !== null;
   return (
     <header class="fm-dock" data-dock ref={dock}>
@@ -88,6 +90,11 @@ function Bar({ state, store, r }: { state: FormState; store: LookStore; r: Revie
         </div>
       </div>
       <ul class="fm-status" aria-label={t.statusLabel}>
+        {since !== null ? (
+          <li class="fm-status-seg" data-seg="asked">
+            {r.askedAgain(state.scope.length, r.date(since.reviewedAt))}
+          </li>
+        ) : null}
         <li class="fm-status-seg" data-seg="judged">
           <span>{r.judged(counts.judged, counts.total)}</span>
           <progress
@@ -106,7 +113,7 @@ function Bar({ state, store, r }: { state: FormState; store: LookStore; r: Revie
           </span>
         </li>
         <li class="fm-status-seg" data-seg="question">
-          {r.position(here, counts.total)}
+          {r.position(here, state.items.length)}
         </li>
       </ul>
       {store.look.locked ? null : <AppearanceMenu t={t} store={store} />}
@@ -186,6 +193,53 @@ function Reasons({ state, q, r, held }: { state: FormState; q: PageQuestion; r: 
   );
 }
 
+/**
+ * `--since`, a changed question (ReviewSince board): the learner's earlier verdict with its reasons and note, then what
+ * changed as a line diff of the block judged against the block now. A Keep stores no block (G61), so a changed Keep
+ * says so in place of the diff; a new question has none of this.
+ */
+function Earlier({ state, id, r }: { state: FormState; id: string; r: ReviewMessages }) {
+  const was = state.since?.changed[id];
+  if (!state.since || !was) return null;
+  const on = r.date(state.since.reviewedAt);
+  const { earlier } = was;
+  const lines = was.before === null ? null : lineDiff(was.before, was.after);
+  return (
+    <div class="fm-since" data-since-box>
+      <div class="fm-since-head">
+        <span class="fm-verdict-label">{r.earlier(on)}</span>
+        <span class="fm-since-verdict" data-verdict={earlier.verdict}>
+          {r[earlier.verdict]}
+        </span>
+        {earlier.reasons.map((reason) => (
+          <span key={reason} class="fm-since-chip">
+            {r.reason[reason]}
+          </span>
+        ))}
+        {earlier.assumed ? <span class="fm-since-chip">{r.notLookedAt}</span> : null}
+      </div>
+      {earlier.note.trim() === "" ? null : <p class="fm-since-note">{`“${earlier.note.trim()}”`}</p>}
+      {lines !== null ? (
+        <figure class="fm-since-changes" aria-label={r.diffAria(state.number(id), on)}>
+          <figcaption class="fm-verdict-label">{r.changedSince}</figcaption>
+          {/* biome-ignore lint/a11y/noNoninteractiveTabindex: a scrollable region must take focus, or a keyboard cannot scroll it */}
+          <pre class="fm-diff" data-diff tabIndex={0}>
+            {lines.map((line, i) => (
+              <span key={i} class="fm-diff-line" data-kind={line.kind}>
+                {(line.kind === "del" ? "− " : line.kind === "add" ? "+ " : "  ") + line.text}
+              </span>
+            ))}
+          </pre>
+        </figure>
+      ) : earlier.verdict === "keep" ? (
+        <p class="fm-since-keep" data-since-keep>
+          {r.keptChanged}
+        </p>
+      ) : null}
+    </div>
+  );
+}
+
 function Card({
   state,
   keyed,
@@ -233,6 +287,7 @@ function Card({
           <Status state={state} id={q.id} r={r} />
         </span>
       </header>
+      <Earlier state={state} id={q.id} r={r} />
       {q.type === "blanks" ? null : <Html html={q.promptHtml} class="fm-prompt" id={`${id}/prompt`} />}
       {q.hintHtml !== null ? (
         <div class="fm-hint-box fm-review-hint">
@@ -284,6 +339,7 @@ function Sidebar({ state, r }: { state: FormState; r: ReviewMessages }) {
     const v = entries[id]?.verdict ?? null;
     const n = state.number(id);
     const current = state.current.value === id;
+    if (state.asked !== null && !state.asked.has(id)) return old(id, row);
     return (
       <button
         key={id}
@@ -308,6 +364,24 @@ function Sidebar({ state, r }: { state: FormState; r: ReviewMessages }) {
       </button>
     );
   };
+  // a question `--since` does not ask again: muted, dashed, with no card to go to
+  const old = (id: string, row: boolean) => (
+    <button
+      key={id}
+      type="button"
+      class={row ? "fm-cell fm-cell-row" : "fm-cell"}
+      data-cell={id}
+      data-old="true"
+      disabled
+      aria-label={r.cellLabel(state.number(id), r.notAsked, false)}
+    >
+      {row ? (
+        <span class="fm-map-head-title">{t.mapPart(parts.find((p) => p.ids.includes(id))?.number ?? 1, null)}</span>
+      ) : (
+        state.number(id)
+      )}
+    </button>
+  );
   const grid = (ids: string[]) => <div class="fm-grid">{ids.map((id) => cell(id))}</div>;
   return (
     <aside class="fm-side" aria-label={t.sidebarAria} data-review-side>
@@ -331,7 +405,8 @@ function Sidebar({ state, r }: { state: FormState; r: ReviewMessages }) {
         {headless
           ? grid(parts.flatMap((p) => p.ids))
           : parts.map((part) => {
-              const judged = part.ids.filter((id) => entries[id]?.verdict != null).length;
+              const inScope = part.ids.filter((id) => state.asked === null || state.asked.has(id));
+              const judged = inScope.filter((id) => entries[id]?.verdict != null).length;
               const open = state.mapOpen.value[part.id] ?? part.ids.some((id) => id === state.current.value);
               if (part.ids.length === 1 && part.ids[0] !== undefined) {
                 return (
@@ -354,9 +429,9 @@ function Sidebar({ state, r }: { state: FormState; r: ReviewMessages }) {
                   >
                     <span class="fm-map-head-title">{t.mapPart(part.number, part.title)}</span>
                     <span class="fm-map-head-count" aria-hidden="true">
-                      {judged}/{part.ids.length}
+                      {inScope.length === 0 ? "" : `${judged}/${inScope.length}`}
                     </span>
-                    <span class="fm-sr">{r.partCount(judged, part.ids.length)}</span>
+                    <span class="fm-sr">{r.partCount(judged, inScope.length)}</span>
                     <span class="fm-map-head-chevron" aria-hidden="true">
                       {open ? "▾" : "▸"}
                     </span>
@@ -365,7 +440,7 @@ function Sidebar({ state, r }: { state: FormState; r: ReviewMessages }) {
                 </div>
               );
             })}
-        <Legend r={r} />
+        <Legend r={r} since={state.since !== null} />
       </div>
     </aside>
   );
@@ -395,7 +470,7 @@ function Sidebar({ state, r }: { state: FormState; r: ReviewMessages }) {
   }
 }
 
-function Legend({ r }: { r: ReviewMessages }) {
+function Legend({ r, since }: { r: ReviewMessages; since: boolean }) {
   return (
     <>
       <ul class="fm-legend fm-legend-review">
@@ -415,6 +490,12 @@ function Legend({ r }: { r: ReviewMessages }) {
           <span class="fm-swatch fm-swatch-current" aria-hidden="true" />
           {r.currentWord}
         </li>
+        {since ? (
+          <li>
+            <span class="fm-swatch fm-swatch-old" aria-hidden="true" />
+            {r.notAsked}
+          </li>
+        ) : null}
       </ul>
       <ul class="fm-keys" aria-label={r.keysLabel}>
         <li>
@@ -441,7 +522,7 @@ function Dialog({ state, r }: { state: FormState; r: ReviewMessages }) {
   const dialog = useRef<HTMLDialogElement>(null);
   const back = useRef<HTMLButtonElement>(null);
   const kind = state.dialog.value;
-  const left = state.items.filter((q) => state.entries.value[q.id]?.verdict == null);
+  const left = state.scope.filter((q) => state.entries.value[q.id]?.verdict == null);
   const first = left[0]?.id ?? null;
   useLayoutEffect(() => {
     const el = dialog.current;
@@ -544,7 +625,11 @@ export function Form({ state, store, data }: { state: FormState; store: LookStor
   const r = page.uiLang === "vi" ? reviewVi : reviewEn;
   const keyed = useRef<Keyed | null>(null);
   if (keyed.current === null) keyed.current = keyedOf(page);
-  const sections: PageSection[] = page.sections;
+  // with `--since` only the questions asked are cards; a section with none is left out
+  const asked = state.asked;
+  const sections: PageSection[] = page.sections
+    .map((s) => (asked === null ? s : { ...s, questions: s.questions.filter((q) => asked.has(q.id)) }))
+    .filter((s) => asked === null || s.questions.length > 0);
   const done = state.saved.value !== null;
   const held = new Set(state.held.value);
   // the current question follows the scroll: the first card whose bottom is below the docked block
@@ -570,7 +655,12 @@ export function Form({ state, store, data }: { state: FormState; store: LookStor
     };
   }, [state]);
   return (
-    <div class="fm-quiz fm-review" data-quiz={page.id} data-phase={done ? "saved" : "reviewing"}>
+    <div
+      class="fm-quiz fm-review"
+      data-quiz={page.id}
+      data-phase={done ? "saved" : "reviewing"}
+      data-since={asked === null ? undefined : "true"}
+    >
       <Bar state={state} store={store} r={r} />
       <div class="fm-body" data-side={state.sidebar.value ? "open" : "closed"}>
         <main class="fm-main" lang={page.lang}>

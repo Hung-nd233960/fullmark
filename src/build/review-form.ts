@@ -6,7 +6,7 @@ import { toBase64 } from "../core/keyblob";
 import type { Judged } from "../core/review/reasons";
 import type { Review } from "../core/review/schema";
 import { themeCss } from "../core/themes";
-import type { ReviewData } from "../review/data";
+import type { ReviewData, SinceData } from "../review/data";
 import { fontDataUri } from "./fonts";
 import type { Highlight } from "./highlight";
 import { escapeAttr, pageQuizOf, scriptJson } from "./page";
@@ -19,6 +19,8 @@ export type ReviewFormOptions = {
   assets: readonly Asset[];
   /** the review file as it stands (`--out`, read and checked by the command); null: none yet */
   review: Review | null;
+  /** `--since`: the ids asked, and the blocks as hashed (what the diff of a changed question reads); absent otherwise */
+  since?: { asked: readonly string[]; blocks: ReadonlyMap<string, string> };
   /** the review file as the user names it, and the command that checks it (the saved card shows both) */
   out: string;
   check: string;
@@ -75,6 +77,29 @@ export function earlierVerdicts(quiz: Quiz, review: Review | null): Record<strin
   return out;
 }
 
+/** What `--since` asks and shows (G44, G61): the asked ids, and for each changed one the earlier verdict and both blocks. */
+function sinceOf(quiz: Quiz, review: Review, asked: readonly string[], blocks: ReadonlyMap<string, string>): SinceData {
+  const changed: SinceData["changed"] = {};
+  const wanted = new Set(asked);
+  for (const s of quiz.sections) {
+    for (const q of s.questions) {
+      const entry = review.questions[q.id];
+      if (!wanted.has(q.id) || !entry) continue;
+      changed[q.id] = {
+        earlier: {
+          verdict: entry.verdict,
+          reasons: entry.reasons,
+          note: entry.note,
+          ...(entry.verdict === "keep" && entry.assumed ? { assumed: true as const } : {}),
+        },
+        before: entry.source ?? null,
+        after: blocks.get(q.hash) ?? "",
+      };
+    }
+  }
+  return { reviewedAt: review.reviewedAt, asked: [...asked], changed };
+}
+
 const sha256Source = (text: string): string => `'sha256-${toBase64(sha256(utf8ToBytes(text)))}'`;
 
 /**
@@ -102,6 +127,7 @@ export function buildReviewForm(o: ReviewFormOptions): string {
       quizzes: [page],
     },
     earlier: earlierVerdicts(quiz, o.review),
+    ...(o.since && o.review ? { since: sinceOf(o.quiz, o.review, o.since.asked, o.since.blocks) } : {}),
     out: o.out,
     check: o.check,
   };

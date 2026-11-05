@@ -1,7 +1,7 @@
 import { type Signal, signal } from "@preact/signals";
 import type { Judged, ReasonId, Verdict } from "../core/review/reasons";
 import type { PageQuiz } from "../page/data";
-import type { ReviewData } from "./data";
+import type { ReviewData, SinceData } from "./data";
 import {
   blank,
   type Counts,
@@ -23,7 +23,13 @@ export type FormState = {
   page: PageQuiz;
   /** every question of the quiz in source order, a bank's whole pool included */
   items: readonly Item[];
-  /** a question's number as its card shows it */
+  /** the questions the form asks: every one, or with `--since` those new or changed since the review (a subset of `items`) */
+  scope: readonly Item[];
+  /** with `--since`, the ids asked; null otherwise */
+  asked: ReadonlySet<string> | null;
+  /** with `--since`, what it asked and the earlier verdicts of the changed questions; null otherwise */
+  since: SinceData | null;
+  /** a question's number as its card shows it (the quiz's numbering, also with `--since`) */
   number(id: string): number;
   entries: Signal<Entries>;
   /** the question the keys act on: the last one focused or scrolled to */
@@ -68,6 +74,8 @@ export function createFormState(data: ReviewData, deps: Deps = {}): FormState {
   const types = new Map<string, string>();
   for (const s of page.sections) for (const q of s.questions) items.push({ id: q.id, type: q.type });
   for (const i of items) types.set(i.id, i.type);
+  const asked = data.since ? new Set(data.since.asked) : null;
+  const scope = asked ? items.filter((q) => asked.has(q.id)) : items;
   const numbers = new Map(items.map((q, i) => [q.id, i + 1]));
   const start: Entries = {};
   for (const { id } of items) {
@@ -75,7 +83,7 @@ export function createFormState(data: ReviewData, deps: Deps = {}): FormState {
     start[id] = earlier ? entryOf(earlier) : blank();
   }
   const entries = signal<Entries>(start);
-  const current = signal(items[0]?.id ?? "");
+  const current = signal(scope[0]?.id ?? "");
   const post = deps.post ?? defaultPost;
   const change = (id: string, to: (e: Entries[string]) => Entries[string]): void => {
     entries.value = { ...entries.value, [id]: to(entries.value[id] ?? blank()) };
@@ -85,6 +93,9 @@ export function createFormState(data: ReviewData, deps: Deps = {}): FormState {
   const state: FormState = {
     page,
     items,
+    scope,
+    asked,
+    since: data.since ?? null,
     number: (id) => numbers.get(id) ?? 0,
     entries,
     current,
@@ -95,7 +106,8 @@ export function createFormState(data: ReviewData, deps: Deps = {}): FormState {
     saved: signal(null),
     problem: signal(null),
     sending: signal(false),
-    counts: () => countsOf(items, entries.value),
+    // the counts the bar shows cover what is asked; the saved card's cover the whole review (below)
+    counts: () => countsOf(scope, entries.value),
     pick: (id, verdict) => change(id, (e) => pickVerdict(e, verdict)),
     reason: (id, reason) => change(id, (e) => toggleReason(e, reason)),
     note: (id, text) => change(id, (e) => ({ ...e, note: text })),

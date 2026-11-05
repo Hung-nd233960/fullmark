@@ -272,11 +272,15 @@ export async function runReview(file: string, opts: ReviewOptions, io: ServeIo):
   const fonts: FontsChoice = machineFonts !== null && FONT_CHOICES.includes(machineFonts) ? machineFonts : "quiz";
   const clock = io.now ?? (() => new Date());
   const highlight = await loadHighlighter(languagesUsed(quiz, loaded.sheets));
+  // what the target needs of the quiz: the blocks as hashed, which parse hands over on request
+  const blocks = new Map<string, string>();
+  loadQuiz(source, { parseTex: io.parseTex ?? lazyParseTex(), blocks });
   const page = buildReviewForm({
     quiz,
     hash,
     assets: loaded.assets,
     review: old.review,
+    ...(opts.since !== null && old.review !== null ? { since: { asked: askedIds(quiz, old.review), blocks } } : {}),
     out: shown,
     check: `quiz check ${file} --review ${shown}`,
     script,
@@ -289,9 +293,6 @@ export async function runReview(file: string, opts: ReviewOptions, io: ServeIo):
     fonts,
   });
 
-  // what the target needs of the quiz: the blocks as hashed, which parse hands over on request
-  const blocks = new Map<string, string>();
-  loadQuiz(source, { parseTex: io.parseTex ?? lazyParseTex(), blocks });
   const types = new Map<string, string>();
   for (const s of quiz.sections) for (const q of s.questions) types.set(q.id, q.type);
   const quizId = quiz.frontMatter.id;
