@@ -1,0 +1,3 @@
+quiz.md: review.json is not a usable review
+    questions.q-chain.source: a fix needs its source: the question's block as judged
+    questions.q-product.source: a drop needs its source: the question's block as judged

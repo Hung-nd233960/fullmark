@@ -429,20 +429,28 @@
     flex-direction: column;
     padding: 8px 0;
     margin: 0;
-    overflow-x: auto;
     font-family: var(--mono);
     font-size: 0.82em;
     line-height: 1.7;
-    white-space: pre;
+    white-space: pre-wrap;
     background: var(--card);
     border: 1px solid var(--line);
     border-radius: 8px;
   }
 
+  /* a long line wraps (G63): the sign keeps its own column, so the continuation rows sit under the text, not the sign */
   .fm-diff-line {
-    display: block;
+    display: grid;
+    grid-template-columns: 1.5ch minmax(0, 1fr);
+    column-gap: 1ch;
     padding: 0 14px;
     color: var(--muted);
+  }
+
+  .fm-diff-text {
+    min-width: 0;
+    overflow-wrap: anywhere;
+    white-space: pre-wrap;
   }
 
   .fm-diff-line[data-kind="del"] {

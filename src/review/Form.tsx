@@ -222,11 +222,13 @@ function Earlier({ state, id, r }: { state: FormState; id: string; r: ReviewMess
       {lines !== null ? (
         <figure class="fm-since-changes" aria-label={r.diffAria(state.number(id), on)}>
           <figcaption class="fm-verdict-label">{r.changedSince}</figcaption>
-          {/* biome-ignore lint/a11y/noNoninteractiveTabindex: a scrollable region must take focus, or a keyboard cannot scroll it */}
-          <pre class="fm-diff" data-diff tabIndex={0}>
+          <pre class="fm-diff" data-diff>
             {lines.map((line, i) => (
               <span key={i} class="fm-diff-line" data-kind={line.kind}>
-                {(line.kind === "del" ? "− " : line.kind === "add" ? "+ " : "  ") + line.text}
+                <span class="fm-diff-sign" aria-hidden="true">
+                  {line.kind === "del" ? "−" : line.kind === "add" ? "+" : " "}
+                </span>
+                <span class="fm-diff-text">{line.text}</span>
               </span>
             ))}
           </pre>

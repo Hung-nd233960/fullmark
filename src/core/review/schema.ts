@@ -18,7 +18,7 @@ export const ReviewEntrySchema = z
     note: z.string(),
     /** the question hash when judged (foundation 1) */
     hash: sha,
-    /** `fix` and `drop` only: the question's block as judged, for the diff in `review --since` */
+    /** `fix` and `drop` only, and required there: the question's block as judged, for the diff in `review --since` */
     source: z.string().optional(),
     /** kept by Keep the rest or the Finish dialog, not judged one by one */
     assumed: z.literal(true).optional(),
@@ -38,6 +38,9 @@ export const ReviewEntrySchema = z
     }
     if (entry.assumed !== undefined && entry.verdict !== "keep") problem("assumed", "only a keep can be assumed");
     if (entry.source !== undefined && entry.verdict === "keep") problem("source", "a keep has no source");
+    if (entry.source === undefined && entry.verdict !== "keep") {
+      problem("source", `a ${entry.verdict} needs its source: the question's block as judged`);
+    }
   });
 export type ReviewEntry = z.infer<typeof ReviewEntrySchema>;
 

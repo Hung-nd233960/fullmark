@@ -635,3 +635,79 @@ test("--since in Vietnamese (the ReviewSince words of the ReviewVi board), and n
   await expect(page.locator(".fm-legend-review")).toContainText("không hỏi lại");
   await noViolations(page);
 });
+
+// -- slice 3m: G63 and the calculus axe run --------------------------------------------------------------------------
+
+/** axe reads no text from MathML, and browsers name a maths-only choice from it: the page's own test skips these two. */
+const MATHML_NAMES = ["label", "select-name"];
+
+/** The first review of a calculus copy with the chain-rule question's heading lengthened by one line far wider than the card. */
+async function longLineSince(page: Page): Promise<string> {
+  const dir = await firstReview(page, CALCULUS, "chain-rule-value", null);
+  const long = `${"a-very-long-unbroken-word-".repeat(14)} then more words that wrap at the spaces of the line`;
+  edit(dir, ["Evaluate $f'(1)$.", `Evaluate $f'(1)$. ${long}`]);
+  return dir;
+}
+
+test("--since: a long line of the diff wraps, keeping its sign and its wash, and the region never scrolls sideways (G63)", async ({
+  page,
+}) => {
+  const dir = await longLineSince(page);
+  const server = await review(dir, "--since", "review.json");
+  await open(page, server);
+  const diff = card(page, "chain-rule-value").locator("[data-diff]");
+  await expect(diff).toHaveCount(1);
+  const added = diff.locator("[data-kind=add]");
+  await expect(added).toContainText("a-very-long-unbroken-word-");
+  const m = await diff.evaluate((pre) => {
+    const box = pre.getBoundingClientRect();
+    const lines = [...pre.querySelectorAll<HTMLElement>(".fm-diff-line")].map((line) => {
+      const r = line.getBoundingClientRect();
+      const sign = line.querySelector<HTMLElement>(".fm-diff-sign")?.getBoundingClientRect();
+      const text = line.querySelector<HTMLElement>(".fm-diff-text")?.getBoundingClientRect();
+      return {
+        kind: line.dataset.kind,
+        right: r.right,
+        height: r.height,
+        signLeft: sign?.left ?? 0,
+        textLeft: text?.left ?? 0,
+        textRight: text?.right ?? 0,
+        scroll: line.scrollWidth - line.clientWidth,
+      };
+    });
+    const row = parseFloat(getComputedStyle(pre).lineHeight);
+    return { pre: pre.scrollWidth - pre.clientWidth, boxRight: box.right, row, lines };
+  });
+  expect(m.pre).toBeLessThanOrEqual(0);
+  const wrapped = m.lines.filter((l) => l.kind === "add");
+  expect(wrapped).toHaveLength(1);
+  // it took more than one row, and no line is wider than the region
+  expect(wrapped[0]?.height).toBeGreaterThan(m.row * 1.5);
+  for (const l of m.lines) {
+    expect(l.scroll).toBeLessThanOrEqual(0);
+    expect(l.right).toBeLessThanOrEqual(m.boxRight + 0.5);
+    expect(l.textRight).toBeLessThanOrEqual(m.boxRight + 0.5);
+    // the text starts after the sign column on every line, so continuation rows sit under the text
+    expect(l.textLeft).toBeGreaterThan(l.signLeft);
+  }
+  await expect(added.locator(".fm-diff-sign")).toHaveText("+");
+  const wash = await added.evaluate((el) => getComputedStyle(el).backgroundColor);
+  expect(wash).not.toBe("rgba(0, 0, 0, 0)");
+  expect(
+    await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth),
+  ).toBeLessThanOrEqual(0);
+});
+
+for (const scheme of ["light", "dark"] as const) {
+  test(`the form on a copy of examples/calculus: no axe violations, ${scheme}`, async ({ page }) => {
+    const dir = folder(CALCULUS);
+    cpSync(join(root, "examples/calculus/assets"), join(dir, "assets"), { recursive: true });
+    const server = await review(dir);
+    await page.emulateMedia({ colorScheme: scheme, reducedMotion: "reduce" });
+    await page.setViewportSize({ width: 1280, height: 940 });
+    await page.goto(server.url);
+    await page.locator("[data-quiz]").waitFor();
+    await card(page, "chain-rule-value").locator("[data-pick=fix]").click();
+    await noViolations(page, MATHML_NAMES);
+  });
+}

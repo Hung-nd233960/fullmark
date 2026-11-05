@@ -106,9 +106,22 @@ describe("readReview", () => {
       ...review(),
       quizHash: "x",
       reviewedAt: "y",
-      questions: { a: entry({ verdict: "drop" }), b: entry({ verdict: "fix", reasons: ["other"] }) },
+      questions: {
+        a: entry({ verdict: "drop", source: "s" }),
+        b: entry({ verdict: "fix", reasons: ["other"], source: "s" }),
+      },
     };
     expect(problems(bad)).toHaveLength(4);
+  });
+
+  it("requires the source of a fix and a drop, naming the entry (G64)", () => {
+    expect(problems(withEntry(entry({ verdict: "fix", reasons: ["unclear"] })))).toEqual([
+      "questions.one.source: a fix needs its source: the question's block as judged",
+    ]);
+    expect(problems(withEntry(entry({ verdict: "drop", reasons: ["duplicate"] })))).toEqual([
+      "questions.one.source: a drop needs its source: the question's block as judged",
+    ]);
+    expect(problems(withEntry(entry()))).toEqual([]);
   });
 
   it("refuses an unknown verdict and an unknown reason", () => {
