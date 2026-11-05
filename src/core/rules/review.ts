@@ -4,6 +4,12 @@ import { shortDate } from "../review/counts";
 import type { Review } from "../review/schema";
 import type { Finding, QualityRule } from "./types";
 
+const word = (path: string): string => (/\s/.test(path) ? `"${path}"` : path);
+
+/** The command that closes the loop, with the real paths when `check` knows them (G50); `quiz rules` keeps the placeholders. */
+const sinceHint = (shown: { quiz: string; review: string } | null): string =>
+  `run \`quiz review ${shown ? word(shown.quiz) : "FILE"} --since ${shown ? word(shown.review) : "REVIEW"}\` and judge the change`;
+
 export type ReviewFindings = { fix: Finding[]; drop: Finding[]; unconfirmed: Finding[] };
 
 /**
@@ -13,7 +19,11 @@ export type ReviewFindings = { fix: Finding[]; drop: Finding[]; unconfirmed: Fin
  * judgement (`review.unconfirmed`), and one judged again carries the new hash, so it is one of the first kind or a
  * `keep`. A `drop` is a finding as long as the question is in the quiz, changed or not (`review.drop`).
  */
-export function reviewFindings(quiz: Quiz, review: Review): ReviewFindings {
+export function reviewFindings(
+  quiz: Quiz,
+  review: Review,
+  shown: { quiz: string; review: string } | null = null,
+): ReviewFindings {
   const out: ReviewFindings = { fix: [], drop: [], unconfirmed: [] };
   const questions = new Map<string, Question>();
   for (const s of quiz.sections) for (const q of s.questions) if (q.id !== "") questions.set(q.id, q);
@@ -39,7 +49,7 @@ export function reviewFindings(quiz: Quiz, review: Review): ReviewFindings {
       out.unconfirmed.push({
         line: q.line,
         message: `${said}: the question has changed since, and has not been judged again`,
-        fix: "run `quiz review FILE --since REVIEW` to judge the change",
+        fix: sinceHint(shown),
       });
     }
   }
@@ -57,6 +67,6 @@ export const REVIEW_RULES: QualityRule[] = [
     example: "(checked by `quiz check --review review.json`: a `fix` question that has changed since the verdict)",
     fix: "run `quiz review FILE --since REVIEW` and judge the change",
     options: z.object({}).strict(),
-    run: (quiz, ctx) => (ctx.review ? reviewFindings(quiz, ctx.review).unconfirmed : []),
+    run: (quiz, ctx) => (ctx.review ? reviewFindings(quiz, ctx.review, ctx.shown ?? null).unconfirmed : []),
   },
 ];

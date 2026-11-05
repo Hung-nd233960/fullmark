@@ -22,6 +22,8 @@ export type CheckInput = {
   contentFiles: readonly string[] | null;
   /** the review given to `check --review`: its fixed rules run, and `review.unconfirmed` with them; absent otherwise */
   review?: Review | null;
+  /** the review's path as given to `check --review` (with `file`, the quiz's), so a hint can name the real files */
+  reviewShown?: string | null;
 };
 
 export type Ignored = { rule: string; line: number; because: string };
@@ -48,7 +50,8 @@ export function runChecks(input: CheckInput): CheckOutput {
   }
 
   if (quiz) {
-    const ctx = { brief: input.brief, contentFiles: input.contentFiles, review: input.review ?? null };
+    const shown = input.reviewShown == null ? null : { quiz: file, review: input.reviewShown };
+    const ctx = { brief: input.brief, contentFiles: input.contentFiles, review: input.review ?? null, shown };
     const add = (rule: string, level: Level, findings: Finding[]) => {
       for (const f of findings) {
         out.push({ rule, level, file, line: f.line, message: f.message, ...(f.fix ? { fix: f.fix } : {}) });
@@ -61,7 +64,7 @@ export function runChecks(input: CheckInput): CheckOutput {
       add(rule.id, resolved.level, rule.run(quiz, ctx, resolved.options));
     }
     if (ctx.review) {
-      const found = reviewFindings(quiz, ctx.review);
+      const found = reviewFindings(quiz, ctx.review, shown);
       add("review.fix", "error", found.fix);
       add("review.drop", "error", found.drop);
     }

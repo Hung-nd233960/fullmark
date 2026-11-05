@@ -17,6 +17,8 @@ export type RuleContext = {
   contentFiles: readonly string[] | null;
   /** the review given to `check --review`; null everywhere else */
   review: Review | null;
+  /** the quiz's and the review's paths as `check` shows them, for hints that name a command; null when not known */
+  shown?: { quiz: string; review: string } | null;
 };
 
 type Common = {

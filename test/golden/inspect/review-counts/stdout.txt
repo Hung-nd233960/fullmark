@@ -6,7 +6,7 @@ Tags      no tag 5
 Positions A 4 · B 0
 Review    keep 2 (1 not looked at) · fix 1 (1 changed since) · drop 1 · not judged 1 · 28 Oct
 quiz.md:13: warning review.unconfirmed: q-chain was marked fix on 28 Oct (unclear): the question has changed since, and has not been judged again
-    fix: run `quiz review FILE --since REVIEW` to judge the change
+    fix: run `quiz review quiz.md --since review.json` and judge the change
 quiz.md:18: error review.drop: q-product was marked drop on 28 Oct (duplicate): the question is still in the quiz
     fix: remove the question from the quiz, or judge it again with `quiz review`
 quiz.md: 1 error, 1 warning

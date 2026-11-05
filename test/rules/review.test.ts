@@ -135,3 +135,26 @@ describe("the review rules", () => {
     expect(shortDate("2026-01-05T00:00:00Z")).toBe("5 Jan");
   });
 });
+
+describe("review.unconfirmed's hint (G50)", () => {
+  const original = quizText();
+  const changed = quizText("- [ ] right\n- [x] wrong");
+  const review = judge(original, { one: FIX });
+  const hint = (shown: { quiz: string; review: string } | null): string | undefined => {
+    const found = reviewFindings(parse(changed, "q.md").quiz as Quiz, review, shown);
+    return found.unconfirmed[0]?.fix;
+  };
+
+  it("names the real files when check knows them, and the placeholders otherwise", () => {
+    expect(hint({ quiz: "quiz.md", review: "review.json" })).toBe(
+      "run `quiz review quiz.md --since review.json` and judge the change",
+    );
+    expect(hint(null)).toBe("run `quiz review FILE --since REVIEW` and judge the change");
+  });
+
+  it("quotes a path with a space, so the hint can be copied", () => {
+    expect(hint({ quiz: "my quiz.md", review: "r.json" })).toBe(
+      'run `quiz review "my quiz.md" --since r.json` and judge the change',
+    );
+  });
+});

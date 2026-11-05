@@ -196,6 +196,7 @@ export function checkFile(file: string, opts: CheckOptions, io: CheckIo): FileOu
     briefIssues,
     contentFiles,
     review,
+    reviewShown: opts.review,
   });
   const counts: Counts = {
     errors: result.issues.filter((i) => i.level === "error").length,
