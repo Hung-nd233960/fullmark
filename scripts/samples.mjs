@@ -76,6 +76,14 @@ const SERVED = [
     try: "quiz review: the review form opens in your browser, in the quiz's look. Judge by keys: 1 Keep, 2 Fix, 3 Drop, N for the next question not judged, Q for the sidebar. A Fix or a Drop asks for a reason (Other also for a note); Finish says which ones are missing and writes nothing until they are there. Press Finish with questions not judged (or Keep the rest) and the dialog asks first. Finish writes samples/rust-review.json, the page says Review saved with the counts and the next command, and the command prints them and exits 0. Then run quiz check examples/rust/quiz.md --review samples/rust-review.json: it exits 1 with review.fix and review.drop until the fixed questions change and the dropped ones are gone. Run the review command again: the form opens with your verdicts, counted as judged; edit a question in a copy of the quiz and only that one starts not judged. Ctrl+C instead of Finish prints interrupted, exits 2 and leaves an existing file as it was. quiz review examples/survey/quiz.md exits 2 (a survey has no key to judge), and a built page is refused too.",
   },
   {
+    command: "node dist/cli.js review samples/since/quiz.md --open",
+    try: "quiz review on samples/since/quiz.md (a copy of the Rust example, made when the samples are built): judge a few questions, mark one a Fix with a reason and a note, press Keep the rest. It writes samples/since/review.json. Then edit that Fix question in samples/since/quiz.md and change another question that you marked Keep, and add a question at the end; run quiz check samples/since/quiz.md --review samples/since/review.json: it exits 0 with review.unconfirmed, whose fix line names the next command.",
+  },
+  {
+    command: "node dist/cli.js review samples/since/quiz.md --since samples/since/review.json --open",
+    try: "quiz review --since: the form opens with only the questions that are new or changed since your review: the status line starts 'Asked again: 3 questions new or changed since your review of ...', and Judged, the bar and the counts cover those three. The changed Fix shows 'Your verdict on ...' with its reason and your note, and 'What changed since': a line diff with - lines in red and + lines in green. The changed Keep shows its verdict and 'Changed since; a Keep does not store the earlier text'. The new question has neither. In the sidebar the other questions are muted with a dashed border and cannot be selected, and N skips them. Keep the rest and the Finish dialog count the three only. Finish merges into the same file: every other entry stays as it was, and quiz check no longer warns. Run it again with no change: it prints 'nothing new or changed since your review of ...' and exits 0. A missing review file, or --out naming another file, exits 2.",
+  },
+  {
     command: "node dist/cli.js brief samples/brief-tui --tui",
     try: "quiz brief --tui: asks every question in the terminal, in two steps (Quiz 1/2 style progress), with each question's help and each choice's hint. Purpose and scope start empty; a scope under four words is asked again with the example. The summary lists every answer and marks the defaults; pick Change on any line to go back (change the purpose and the defaults that follow it are refilled), then Write brief.yaml: samples/brief-tui/brief.yaml and an empty content/ are written. Ctrl+C at any step writes nothing and exits 2. Run it again: it exits 2 because brief.yaml exists. Pre-fill with flags (--scope \"...\" --language vi) and the form opens with them, in Vietnamese; the same answers through flags (quiz brief samples/brief-flags --purpose ... --scope ...) write the same bytes. With stdin from /dev/null it exits 2: --tui needs a terminal.",
   },
@@ -105,6 +113,10 @@ const sources = [
 mkdirSync(join(OUT, "watch"), { recursive: true });
 copyFileSync(join("examples", "rust", "quiz.md"), join(OUT, "watch", "quiz.md"));
 copyFileSync(join("examples", "survey", "quiz.md"), join(OUT, "watch", "second.md"));
+
+// the folder the `review --since` samples are tried in: a copy, so editing it never touches examples/
+mkdirSync(join(OUT, "since"), { recursive: true });
+copyFileSync(join("examples", "rust", "quiz.md"), join(OUT, "since", "quiz.md"));
 
 const built = [];
 for (const s of sources) {
