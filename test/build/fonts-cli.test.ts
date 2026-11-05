@@ -75,11 +75,13 @@ describe("build --fonts", () => {
     expect(r.err.join("\n")).toContain("--fonts some");
     expect(r.html).toBeNull();
   });
+  // six whole builds, each embedding fonts: 0.3 s alone, past Vitest's 5 s default beside the other test files on a
+  // 4-core laptop (3m's review), so it gets a minute
   it("the same quiz and --fonts give the same bytes, for each value", async () => {
     for (const fonts of ["quiz", "all", "none"]) {
       expect((await run(front, { fonts })).html).toBe((await run(front, { fonts })).html);
     }
-  });
+  }, 60_000);
 });
 
 describe("the default from config.toml", () => {

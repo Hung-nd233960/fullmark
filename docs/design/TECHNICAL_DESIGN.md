@@ -148,7 +148,7 @@ type Review = {
     reasons: ReasonId[];            // empty for keep; at least one for fix and drop
     note: string;                   // required with "other", else may be empty
     hash: string;                   // the question hash when judged (foundation 1)
-    source: string;                 // fix and drop only, and required there: the question's block as judged, for the diff in --since
+    source?: string;                // required on fix and drop, never on keep: the question's block as judged, for the diff in --since
     assumed?: true;                 // kept by "Keep the rest" or the Finish dialog, not judged one by one
   }>;
 };

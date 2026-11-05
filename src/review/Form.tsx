@@ -146,8 +146,9 @@ function Status({ state, id, r }: { state: FormState; id: string; r: ReviewMessa
     <span class="fm-review-status" data-verdict={v ?? "none"}>
       {v === null
         ? r.notJudged
-        : v === "keep"
-          ? `${GLYPH.keep} ${r.keep}`
+        : v === "keep" || state.phone.value
+          ? // on a phone the verdict alone, as on the ReviewPhone board: the reasons are in view under the buttons
+            `${GLYPH[v]} ${r[v]}`
           : `${GLYPH[v]} ${r[v]} · ${r.reasonCount(e?.reasons.length ?? 0)}`}
     </span>
   );
