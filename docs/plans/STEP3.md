@@ -24,7 +24,7 @@ As in step 2 ([archive/STEP2.md](archive/STEP2.md), Handoff): Opus writes a slic
 | 3e G47, the review file, `check --review`, `inspect --review` | done, reviewed, gaps decided (2026-11-04) | `5e9b45c`..`dbcd43e` |
 | 3k G51, `quiz review` and its form | done, reviewed, gaps decided (2026-11-04) | `91a8821`..`c326d9f` |
 | 3l G50, G56, 3k's fixes, `quiz review --since` | done, reviewed, gaps decided (2026-11-05) | `54214a5`..`4140cf6`, review |
-| 3m G63, G64, the stacked sidebar with the materials, and the phone | brief approved with G65 to G67 (2026-11-05); being built | |
+| 3m G63, G64, the stacked sidebar with the materials, and the phone | brief approved with G65 to G67 (2026-11-05); built by Sonnet, waiting for review | `182beb3`..`f64c008`, docs |
 | 3f `grade --web`, 3h `brief --web` | wait for their boards (3v) | |
 | 3z acceptance | last | |
 
