@@ -44,7 +44,7 @@ describe("the vi scan", () => {
   });
   for (const [i, s] of sources.entries()) {
     // one example built as a vi page, which loads KaTeX and Shiki for the largest ones: 5 s was crossed on a loaded run
-    it(s.name, { timeout: 30_000 }, async () => {
+    it(s.name, async () => {
       // copy so that assets and sheets resolve and nothing is written into the repository
       const dir = join(work, String(i));
       mkdirSync(dir, { recursive: true });

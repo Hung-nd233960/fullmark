@@ -350,10 +350,8 @@ ui-lang = "vi"
 });
 
 describe("examples/build.toml", () => {
-  // builds every example twice (about 8 s idle on this laptop); 30 s covers a loaded run
-  it("builds every example, each page byte-identical to `quiz build FILE` with the same flags", {
-    timeout: 30_000,
-  }, async () => {
+  // builds every example twice (about 8 s idle on this laptop)
+  it("builds every example, each page byte-identical to `quiz build FILE` with the same flags", async () => {
     const out = join(root, "examples", "site");
     rmSync(out, { recursive: true, force: true, maxRetries: 10, retryDelay: 100 });
     try {
