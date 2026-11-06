@@ -29,7 +29,7 @@ As in step 2 ([archive/STEP2.md](archive/STEP2.md), Handoff): Opus writes a slic
 | 3f `grade --web`, 3h `brief --web` | wait for their boards (3v) | |
 | 3z acceptance | last | |
 
-Each slice's review, and the owner's decisions on its gaps, are under its own section below (**Review**); every gap, G1 to G81, is in "Gaps", in number order.
+Each slice's review, and the owner's decisions on its gaps, are under its own section below (**Review**); every gap, G1 to G85, is in "Gaps", in number order.
 
 Step 2 is closed ([archive/STEP2.md](archive/STEP2.md), item 75): every "Done when" criterion passes in Chromium and Firefox; Vitest 2059 of 2059, the 2 startup tests, Playwright and axe. What step 3 inherits:
 
@@ -235,6 +235,14 @@ The design docs left these open, or a slice's review found them. Each needs the 
 **G80. Keys** (raised drafting the boards). **Recommend:** `Q` opens and closes the sidebar and `Esc` closes it or a dialog, as in Review; nothing else, and no key while typing in a note. A step group and a verdict group are radio groups, so the arrow keys move within them.
 
 **G81. The words** (raised drafting the boards). Every word of the form goes in a new `grade` catalog, en and vi, the questions and answers staying in the quiz's language. The vi words are on the GradeVi board (for example **Chấm**, **Cần chấm**, **Hoàn tất**, **Lưu điểm**, "Ghi chú (bắt buộc: bị trừ điểm)", **Đã chấm**, **Chấm dở**). **Recommend:** the owner reads them on GradeVi and changes any in the board; what stands goes into the catalog.
+
+**G82. An unanswered essay or code question in the form** (raised by the owner on the canvas). The design settles the grading: the template holds an entry only per answered essay or code question (TECHNICAL_DESIGN.md section 6), and an unanswered one counts as 0 of its points (section 8), so there is nothing to grade and the grades file never holds it. It does not say whether the grader can open it. **Recommend:** the "Not answered" row opens the question read-only: the prompt, "No answer · 0 / 4", the rubric's criteria as text with no controls, and the sample answer when there is one, so a teacher can see what was asked and what a good answer looks like; `N` (next not graded) skips it, it never blocks Finish, and nothing about it is written. **Decided (owner, on the canvas): as recommended**; drawn on the Grade board (click "Question 31" under "Not answered").
+
+**G83. Seeing fullmark's own marking from the form** (raised by the owner on the canvas). Nothing decides it. `quiz review` reviews a quiz's key before it is shared, not an attempt; `quiz grade` (without `--web`) writes every wrong answer with its explanation into the report; `quiz replay` shows the submitted page with every result. The grades file has no place for an auto-marked question (TECHNICAL_DESIGN.md section 6), so the grader cannot change fullmark's marks, only see them. **Recommend:** the "Scored by fullmark" row opens a read-only view inside the form, drawn with the replay's question cards and its All · Missed filter (Missed first), so a teacher can check them without leaving; no overriding. A wrong key is fixed in the quiz (`quiz review`, then rebuild) and the attempt graded again, never by hand in a grades file.
+
+**G84. "chữ" or "từ" for a word count in vi** (raised by the owner on GradeVi, who changed the form's "71 từ" to "71 chữ"). The quiz page's vi catalog says "từ" (`src/core/i18n/vi.ts`: `words`, `wordsRange`), so the learner's page and the grader's form would count the same essay in different words. **Recommend:** "chữ" in both, changing the page's catalog in 3f's brief; the vi goldens that show a word count change with it, each counted and explained.
+
+**G85. The rubric's layout in the form** (raised by the owner on the canvas, who asked for a table option beside the tiles). Option A sets each criterion in a tile; option B sets the rubric as the replay's grade table (Criterion | Band or Points | Note, or Rubric point | Verdict for a holistic rubric), the controls flush in the cells. **Decided (owner, on the canvas): B only.** The form has one layout, with no switch and no rule by number of criteria. The rows the grader fills are the rows the learner reads in `quiz replay`, one line per criterion. Below the phone breakpoint each row stacks (criterion, then the score, then the note) in the same markup. Every board draws B; GradeBanded keeps A, marked legacy, for the record only.
 
 ## Slices
 
