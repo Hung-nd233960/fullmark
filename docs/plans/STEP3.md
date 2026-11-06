@@ -25,6 +25,7 @@ As in step 2 ([archive/STEP2.md](archive/STEP2.md), Handoff): Opus writes a slic
 | 3k G51, `quiz review` and its form | done, reviewed, gaps decided (2026-11-04) | `91a8821`..`c326d9f` |
 | 3l G50, G56, 3k's fixes, `quiz review --since` | done, reviewed, gaps decided (2026-11-05) | `54214a5`..`4140cf6`, review |
 | 3m G63, G64, the stacked sidebar with the materials, and the phone | done, reviewed, gaps decided (2026-11-05) | `182beb3`..`0a68e2d`, review |
+| 3n G68, G69 | brief approved (2026-11-06), with Sonnet | |
 | 3f `grade --web`, 3h `brief --web` | wait for their boards (3v) | |
 | 3z acceptance | last | |
 
@@ -41,7 +42,7 @@ Step 2 is closed ([archive/STEP2.md](archive/STEP2.md), item 75): every "Done wh
 
 ### Next steps, in order
 
-1. **The form boards on the Design canvas** (3v, G7), as 2v did for the page: every slice left (3e, 3f, 3h) waits for them. The `review` boards are done: reviewed, G38 to G47 decided and in COMMANDS.md, the sources copied into `docs/mockup/boards/`. Their images are in `docs/mockup/images/Review*.png` (the owner's export, scaled to board size). 3e is cut in three (3e the file and the checks, 3k the form, 3l `--since` and the phone), and **3e is built and reviewed** ("Slice 3e", its Review): G50 and G51 decided (3l's and 3k's first tasks). **3k is built and reviewed** ("Slice 3k", its Review, at the end): G56 and G57 decided as recommended. **3l's brief is approved** ("Slice 3l", at the end), with G58 to G62 decided as recommended, and handed to Sonnet; the stacked sidebar and the phone moved to a new 3m (G58), whose brief follows 3l's review. **3l is built and reviewed** ("Slice 3l", its Review): G63 and G64 decided as recommended; **3m's brief is approved** ("Slice 3m", at the end), with G65 to G67 decided as recommended; **3m is built and reviewed** ("Slice 3m", its Review), which closes the `review` boards; G68 and G69 decided as recommended, the next slice's first tasks. Next: the `grade --web` and `brief --web` boards, drafted on the Design canvas as the `review` ones were. The `grade --web` and `brief --web` boards follow in the same way.
+1. **The form boards on the Design canvas** (3v, G7), as 2v did for the page: every slice left (3e, 3f, 3h) waits for them. The `review` boards are done: reviewed, G38 to G47 decided and in COMMANDS.md, the sources copied into `docs/mockup/boards/`. Their images are in `docs/mockup/images/Review*.png` (the owner's export, scaled to board size). 3e is cut in three (3e the file and the checks, 3k the form, 3l `--since` and the phone), and **3e is built and reviewed** ("Slice 3e", its Review): G50 and G51 decided (3l's and 3k's first tasks). **3k is built and reviewed** ("Slice 3k", its Review, at the end): G56 and G57 decided as recommended. **3l's brief is approved** ("Slice 3l", at the end), with G58 to G62 decided as recommended, and handed to Sonnet; the stacked sidebar and the phone moved to a new 3m (G58), whose brief follows 3l's review. **3l is built and reviewed** ("Slice 3l", its Review): G63 and G64 decided as recommended; **3m's brief is approved** ("Slice 3m", at the end), with G65 to G67 decided as recommended; **3m is built and reviewed** ("Slice 3m", its Review), which closes the `review` boards; G68 and G69 decided as recommended, and made a slice of their own, **3n** ("Slice 3n", at the end), built before the boards since they wait on none. Next: the `grade --web` boards, then the `brief --web` ones, drafted on the Design canvas as the `review` ones were.
 
 ### Open proposals carried over from step 2
 
@@ -224,6 +225,8 @@ The design docs left these open, or a slice's review found them. Each needs the 
 | **3e** | G47; the review file (`src/core/review/`: schema, reader, merge, the block text), `check --review` with `review.fix`, `review.drop` and `review.unconfirmed`, `inspect --review`. No browser | G1, G2, G47 to G49 |
 | **3k** | `quiz review` on the one-shot server and its form (`dist/review.js`): the Review boards at 1280 px (the verdict, then reasons; the stacked sidebar with the materials; the text size and Appearance; Keep the rest; the Finish dialog; the saved card; the keys), the `vi` words of ReviewVi, the refusal of questions without ids, `--out` merged, axe in both themes, screens, the samples line | G3, G38 to G46, 3e |
 | **3l** | `review --since`: only the new and changed questions, the earlier verdict and the line diff, the map's "not asked again"; the form on a phone (ReviewPhone) | G44, G45, 3k |
+| **3m** | the stacked **Questions & materials** sidebar and the phone (ReviewPhone) | G58, G65 to G67, 3l |
+| **3n** | G68 (Vitest's default timeout) and G69 (`--autosave`'s leftover temp files) | G68, G69 |
 | **3f** | `grade --web` and `--name`: the grading form on the rubric modes, pre-filled from `--grades`, `kind: human` and `reviewed`, then the report | boards |
 | **3h** | `brief --web`: the form from the question file, the detail rules, the summary screen, `--language` for the form; the three-way byte-identity test (flags, `--web`, `--tui`) that closes step 3's criterion | G11, boards |
 | **3z** | Acceptance: every "Done when" item checked in Chromium and Firefox, samples tried by the owner | |
@@ -768,3 +771,29 @@ Built by Sonnet in five commits, `182beb3`..`0a68e2d`, from the brief alone; rev
 **Left on the disk:** nothing in the repo; the agent's by-hand copies and scripts are in the session scratchpad.
 
 **The `review` boards are done**: `quiz review` is as COMMANDS.md says. What is left of step 3 waits for the `grade --web` and `brief --web` boards (3v), then 3f, 3h and 3z.
+
+## Slice 3n: G68 and G69
+
+**Approved by the owner on 2026-11-06**: a slice of its own, ahead of the `grade --web` boards, since neither gap waits on a board. It holds G68 and G69 as decided, and nothing else.
+
+### Read first
+
+- This plan: "Rules for every slice", G51, G68, G69, and 3m's Review (the `fonts-cli` and `serve.spec.ts:318` items).
+- COMMANDS.md: `quiz serve`, the `--autosave` row. TECHNICAL_DESIGN.md: "Files, formats and safe writes".
+- Code: `vitest.config.ts`; `src/cli/atomic.ts` (the temp file's name); `src/cli/serve.ts` (where `progressFile` is resolved and checked, and the autosaver it builds); `src/serve/autosave.ts` (`finish`); tests `test/serve/autosave.test.ts`, `test/serve/serve-cli.test.ts`, `e2e/serve.spec.ts` (the test at line 318), and the named timeouts in `test/build/fonts-cli.test.ts`, `test/notices.test.ts`, `test/build/build-file-cli.test.ts`.
+
+### Decided for this slice
+
+- **G68:** `vitest.config.ts` sets `testTimeout: 30_000`, with a comment saying why: CPU-bound tests slow down under the full parallel run on a 4-core machine; a test that waits on a real timer is still a bug (G51). The named timeouts of 30 s are now the default and are removed; those longer than 30 s (60 s) stay, each with its reason.
+- **G69:** `quiz serve --autosave FILE` removes the temp files left beside FILE by an earlier run that was killed during a write: in FILE's folder, the names matching exactly `.<basename of FILE>.<8 lower-case hex>.tmp`, nothing else (not another file's temp files, not a name with other hex lengths or upper case). It does so once, before it serves (after the existing file's checks pass, so a run that exits 1 or 2 on the progress file touches nothing), and again in `finish`, after the progress file is removed. A temp file that cannot be removed is not an error: it is left. `atomic.ts` keeps its random names. One helper, pure of the clock, beside `writeFileAtomic` in `src/cli/atomic.ts` (for example `removeStaleTemps(file)`), so `review --out` and the rest can use it later; only `serve --autosave` calls it in this slice.
+- COMMANDS.md's `--autosave` row gains one sentence: temp files a killed run left beside the file are removed when the server starts and when the results are written. TECHNICAL_DESIGN.md's "Files, formats and safe writes" says how the temp file is named and that `--autosave` clears its own.
+
+### Tasks
+
+1. G68 (one commit): the config and its comment; the 30 s named timeouts removed; the count of each kept or removed in the report.
+2. G69 (one commit): the helper and its unit test (planted temp files: two of FILE's, one of another file, one with 7 hex, one with upper-case hex, a folder of FILE's name pattern; only FILE's two go; FILE itself untouched); `serve` calling it before serving and in `finish`, tested in `test/serve/serve-cli.test.ts` with a planted temp file (gone after start; one planted during the run gone after submit; left alone when the run exits 1 on a wrong progress file). `e2e/serve.spec.ts` unchanged.
+3. The docs (one commit): COMMANDS.md and TECHNICAL_DESIGN.md as above; the slice table's 3n row.
+
+### Done when
+
+`npm run check` passes (startup tests alone first, as `npm test` runs them; say which browsers ran; a budget failure is reported with its cause shown). Vitest runs with no 30 s named timeout left and the 60 s ones kept. A temp file planted beside a progress file is gone once `quiz serve --autosave` is listening. No golden changes; if one does, it is counted and explained.
