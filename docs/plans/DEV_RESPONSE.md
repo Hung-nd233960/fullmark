@@ -1,0 +1,18 @@
+# Response from Developer:
+- G70: Agree 
+- G71: Agree, but currently current implementation uses stepping points which is also fine
+- G72: Agree
+- G73: Agree
+- G74: Agree
+- Additional opinion from dev: It seems that the design language of quiz review is very fine, just that i see the integration with quiz replay, quiz grade is a bit weird when it mixes between modern UI boxes and classic table. I dont have a good design idea to cohesively connect them. Quiz replay should matches the language of quiz serve, and quiz grade should follow quiz replay
+- G75 needs a mockup example for further explanation
+- G76: Agree
+- G77: Agree
+- G78: Agree
+- G79: Agree
+- G80: Temporary let it that way until i can think of a more cohesive keyboard experience
+- G81: Agree
+- G82: Agree
+- G83: Agree
+- G84: Agree
+- G85 is decided already

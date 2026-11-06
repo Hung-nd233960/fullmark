@@ -29,7 +29,7 @@ As in step 2 ([archive/STEP2.md](archive/STEP2.md), Handoff): Opus writes a slic
 | 3f `grade --web`, 3h `brief --web` | wait for their boards (3v) | |
 | 3z acceptance | last | |
 
-Each slice's review, and the owner's decisions on its gaps, are under its own section below (**Review**); every gap, G1 to G85, is in "Gaps", in number order.
+Each slice's review, and the owner's decisions on its gaps, are under its own section below (**Review**); every gap, G1 to G86, is in "Gaps", in number order.
 
 Step 2 is closed ([archive/STEP2.md](archive/STEP2.md), item 75): every "Done when" criterion passes in Chromium and Firefox; Vitest 2059 of 2059, the 2 startup tests, Playwright and axe. What step 3 inherits:
 
@@ -243,6 +243,31 @@ The design docs left these open, or a slice's review found them. Each needs the 
 **G84. "chữ" or "từ" for a word count in vi** (raised by the owner on GradeVi, who changed the form's "71 từ" to "71 chữ"). The quiz page's vi catalog says "từ" (`src/core/i18n/vi.ts`: `words`, `wordsRange`), so the learner's page and the grader's form would count the same essay in different words. **Recommend:** "chữ" in both, changing the page's catalog in 3f's brief; the vi goldens that show a word count change with it, each counted and explained.
 
 **G85. The rubric's layout in the form** (raised by the owner on the canvas, who asked for a table option beside the tiles). Option A sets each criterion in a tile; option B sets the rubric as the replay's grade table (Criterion | Band or Points | Note, or Rubric point | Verdict for a holistic rubric), the controls flush in the cells. **Decided (owner, on the canvas): B only.** The form has one layout, with no switch and no rule by number of criteria. The rows the grader fills are the rows the learner reads in `quiz replay`, one line per criterion. Below the phone breakpoint each row stacks (criterion, then the score, then the note) in the same markup. Every board draws B; GradeBanded keeps A, marked legacy, for the record only.
+
+**G86. One rubric component for the replay and the form** (raised by the owner in DEV_RESPONSE.md). The replay matches `serve` well, apart from one clash: its rounded, sectioned boxes beside the rigid, right-angled grade table, and the form inherits the same clash. The rubric should look roughly the same in both, read in the replay and editable in grade. Option C, the rubric box, is drawn on the canvas, refined with the owner in its comment threads (**RubricC**, interactive; each rubric type side by side, the replay on the left and grade on the right; its "scale" Tweak keeps the rejected text, inline and meter variants for the record):
+
+- **The box.** There is no table. The rubric is a rounded box like the score card's stats (8 px radius, the surface fill, 1 px rules between sections). It holds a head, one section per criterion or rubric point, a total section, then "Why this score" and "To improve" as its last sections.
+- **The head.** There is no word "Rubric". The left side has two lines: the type in bold `hint` ("Points per criterion", "A band per criterion", "One score"), with the same size and weight as the total's label, and the step under it, muted ("step 0.25"; "bands 0 to 9, step 0.5"). The right side has two lines: who graded over when ("Graded by Claude (agent)" over "21 Oct 2026"; in grade, "Graded by you" over "saved at Finish"). The head has the card fill, is 52 px tall and has a 2 px `line-strong` rule under it, matching the rule over the total.
+- **A section.** The name is on the left and a slot is on the right, in a 262 px column (284 px for verdicts) of the same width in both forms. The note runs under both, across the section. There is no "up to" line, because the slot carries the maximum.
+- **The replay's slot.** It shows "1.25 / 1.5", centred as a whole, in the results map's colours: full ok, part warn, none bad. A band stays neutral. A verdict is one slot of the same size with only the given verdict in it ("Met", "Partly", "Missed", in the result colours), or "No verdict", muted and dashed.
+- **Grade's slot.** It is [erase | − | 1.25 | +] / [1.5]:
+  - **The group.** A rounded group drawn like the filter's segmented buttons, with its edge in `accent` once set and `bad` for a value off the steps.
+  - **The value.** It is centred with no "/ max". A value can be typed.
+  - **The empty start.** From empty, + gives the maximum and − the first step below it. A band starts at the scale's middle.
+  - **The full-mark box.** After a muted "/", a separate 56 px box shows the maximum. Pressing it gives full marks. It lights `ok` while the value is full marks.
+  - **The step.** It is not on the buttons, which have "−0.25" / "+0.25" tooltips; it is written in the head.
+  - **A verdict.** It is [erase | Met | Partly | Missed], with the chosen one in its colour's wash.
+- **The eraser.** It is the first segment of each grade control and clears only that score or verdict; the note is typed work and stays. With nothing to clear, it fades to the line colour and does nothing. A note left without a score counts as not given, so the question stays half graded.
+- **Clear this question.** One labelled button with the trash icon at the card's foot, under the box, where the replay's cards put their actions. It clears every score, verdict, note and text. Undo after it is for the build.
+- **The total section.** It has the card fill and a 2 px rule over it. The label is in `accent` ("Total", "Overall band", "Score") over a muted line saying how the total is made. In the replay the slot is "2.25 / 3". In grade a computed total is shown in the group's place with its maximum in a box beside it, display only. The one score is grade's control.
+- **The note.** In the replay it is muted text, and an empty one is left out. In grade it is a sunken, rounded field, with a red edge and "Required: a mark was lost, say why" while a lost mark has none.
+- **Code.** Code is drawn as points per criterion.
+- **The card's badge.** It is the replay's result badge, and in grade the state until then: Waiting for a grade, Half graded, Needs a note.
+
+**Recommend:** the box in both forms. The replay's grade table becomes the box, which changes `quiz replay`'s page and its goldens (counted in that slice), and the form's table (G85) becomes the editable box in the form's current frame. G85's "one layout, no switch" stands, with the box instead of the table. The owner's "Agree" on G70 to G84 goes into the design docs with this decision, and with these two changes:
+
+- G71: every mode uses this control.
+- G72: the note's required state is drawn as above.
 
 ## Slices
 
