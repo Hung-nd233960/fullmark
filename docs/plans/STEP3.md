@@ -25,7 +25,7 @@ As in step 2 ([archive/STEP2.md](archive/STEP2.md), Handoff): Opus writes a slic
 | 3k G51, `quiz review` and its form | done, reviewed, gaps decided (2026-11-04) | `91a8821`..`c326d9f` |
 | 3l G50, G56, 3k's fixes, `quiz review --since` | done, reviewed, gaps decided (2026-11-05) | `54214a5`..`4140cf6`, review |
 | 3m G63, G64, the stacked sidebar with the materials, and the phone | done, reviewed, gaps decided (2026-11-05) | `182beb3`..`0a68e2d`, review |
-| 3n G68, G69 | built by Sonnet (2026-11-06), awaiting review | `d0e44e4`, `50aca61`, docs |
+| 3n G68, G69 | done, reviewed (2026-11-06), no gaps | `d0e44e4`..`be1629f`, review |
 | 3f `grade --web`, 3h `brief --web` | wait for their boards (3v) | |
 | 3z acceptance | last | |
 
@@ -42,7 +42,7 @@ Step 2 is closed ([archive/STEP2.md](archive/STEP2.md), item 75): every "Done wh
 
 ### Next steps, in order
 
-1. **The form boards on the Design canvas** (3v, G7), as 2v did for the page: every slice left (3e, 3f, 3h) waits for them. The `review` boards are done: reviewed, G38 to G47 decided and in COMMANDS.md, the sources copied into `docs/mockup/boards/`. Their images are in `docs/mockup/images/Review*.png` (the owner's export, scaled to board size). 3e is cut in three (3e the file and the checks, 3k the form, 3l `--since` and the phone), and **3e is built and reviewed** ("Slice 3e", its Review): G50 and G51 decided (3l's and 3k's first tasks). **3k is built and reviewed** ("Slice 3k", its Review, at the end): G56 and G57 decided as recommended. **3l's brief is approved** ("Slice 3l", at the end), with G58 to G62 decided as recommended, and handed to Sonnet; the stacked sidebar and the phone moved to a new 3m (G58), whose brief follows 3l's review. **3l is built and reviewed** ("Slice 3l", its Review): G63 and G64 decided as recommended; **3m's brief is approved** ("Slice 3m", at the end), with G65 to G67 decided as recommended; **3m is built and reviewed** ("Slice 3m", its Review), which closes the `review` boards; G68 and G69 decided as recommended, and made a slice of their own, **3n** ("Slice 3n", at the end), built before the boards since they wait on none. Next: the `grade --web` boards, then the `brief --web` ones, drafted on the Design canvas as the `review` ones were.
+1. **The form boards on the Design canvas** (3v, G7), as 2v did for the page: every slice left (3e, 3f, 3h) waits for them. The `review` boards are done: reviewed, G38 to G47 decided and in COMMANDS.md, the sources copied into `docs/mockup/boards/`. Their images are in `docs/mockup/images/Review*.png` (the owner's export, scaled to board size). 3e is cut in three (3e the file and the checks, 3k the form, 3l `--since` and the phone), and **3e is built and reviewed** ("Slice 3e", its Review): G50 and G51 decided (3l's and 3k's first tasks). **3k is built and reviewed** ("Slice 3k", its Review, at the end): G56 and G57 decided as recommended. **3l's brief is approved** ("Slice 3l", at the end), with G58 to G62 decided as recommended, and handed to Sonnet; the stacked sidebar and the phone moved to a new 3m (G58), whose brief follows 3l's review. **3l is built and reviewed** ("Slice 3l", its Review): G63 and G64 decided as recommended; **3m's brief is approved** ("Slice 3m", at the end), with G65 to G67 decided as recommended; **3m is built and reviewed** ("Slice 3m", its Review), which closes the `review` boards; G68 and G69 decided as recommended, and made a slice of their own, **3n** ("Slice 3n", at the end), **built and reviewed**, with no new gap. Next: the `grade --web` boards, then the `brief --web` ones, drafted on the Design canvas as the `review` ones were.
 
 ### Open proposals carried over from step 2
 
@@ -797,3 +797,15 @@ Built by Sonnet in five commits, `182beb3`..`0a68e2d`, from the brief alone; rev
 ### Done when
 
 `npm run check` passes (startup tests alone first, as `npm test` runs them; say which browsers ran; a budget failure is reported with its cause shown). Vitest runs with no 30 s named timeout left and the 60 s ones kept. A temp file planted beside a progress file is gone once `quiz serve --autosave` is listening. No golden changes; if one does, it is counted and explained.
+
+### Review
+
+Built by Sonnet in three commits, `d0e44e4`..`be1629f`, from the brief alone; reviewed by Opus on 2026-11-06. Every "Done when" holds, nothing was done differently, and no gap is raised.
+
+**Tests.** The agent's `npm run check`: typecheck, Biome and knip clean; Vitest, the startup tests alone 2 of 2, the rest 2710 passed (2706 and the 4 new), 3 skipped; Playwright, Chromium and Firefox both, 443 passed, 309 skipped, 2 failed, both `budget.spec.ts:53` (1008 and 1630 ms against 1000) under the full run's load. The reviewer reran the typecheck, `test/atomic-temps.test.ts` and `test/serve/` (85 of 85), and `budget.spec.ts:53` alone with one worker on the idle laptop: Chromium 985 ms, Firefox 911 ms, both pass. So the failure is the load, as in 3l's and 3m's reviews, now shown. `serve.spec.ts:318`, G69's flake, passed in both browsers.
+
+**Read in the diff.** G68: `testTimeout: 30_000` with its reason; 6 named 30 s timeouts removed (`build-file-cli`, `maths-code`, `several-cli` 2, `vi-scan`, `watch`), 7 longer ones kept (60 s: `build-file-cli`, `fonts-cli`, `maths-code`, `ids`, `startup` 2; 120 s: `parse/robust`). `tui-pty.test.ts`'s `30000` is the helper's own wait, not a Vitest timeout, and stays. G69: `removeStaleTemps` in `src/cli/atomic.ts` matches only regular files named `.<basename>.<8 lower-case hex>.tmp` and swallows every failure; `serve` calls it after the progress file's checks and the `--out` clash, just before the server starts, and the autosaver's `remove` calls it after deleting the progress file, so `finish` clears them. The unit test plants the near misses (another file's, 7 and 9 hex, upper case, a suffix, no dot, a dot-as-wildcard name, a folder); the CLI tests cover the start, a temp planted during the run, and the exit 1 that leaves it. COMMANDS.md and TECHNICAL_DESIGN.md say it as the brief asked.
+
+**Goldens:** none changed, added or removed. Nothing under `src/page/` changed.
+
+**Next:** the `grade --web` boards (3v).
