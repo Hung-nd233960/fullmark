@@ -1,5 +1,5 @@
 import { randomBytes } from "node:crypto";
-import { mkdir, rename, rm, stat, writeFile } from "node:fs/promises";
+import { mkdir, readdir, rename, rm, stat, writeFile } from "node:fs/promises";
 import { basename, dirname, join } from "node:path";
 import { readFailure } from "./paths";
 
@@ -51,3 +51,21 @@ const isFolder = (path: string): Promise<boolean> =>
     (s) => s.isDirectory(),
     () => false,
   );
+
+/**
+ * Removes the temporary files an earlier run left beside `file`, killed during `writeFileAtomic`: in its folder, the
+ * files named exactly `.<basename of file>.<8 lower-case hex>.tmp` and nothing else. A file that cannot be removed is
+ * left, and so is a missing folder: this is never an error. `file` itself is not touched.
+ */
+export async function removeStaleTemps(file: string): Promise<void> {
+  const folder = dirname(file);
+  const prefix = `.${basename(file)}.`;
+  const isTemp = (name: string): boolean =>
+    name.startsWith(prefix) && name.endsWith(".tmp") && /^[0-9a-f]{8}$/.test(name.slice(prefix.length, -4));
+  const entries = await readdir(folder, { withFileTypes: true }).catch(() => []);
+  await Promise.all(
+    entries
+      .filter((e) => e.isFile() && isTemp(e.name))
+      .map((e) => rm(join(folder, e.name), { force: true }).catch(() => undefined)),
+  );
+}

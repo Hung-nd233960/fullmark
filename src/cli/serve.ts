@@ -13,7 +13,7 @@ import type { Saved } from "../page/saved";
 import { createAutosaver } from "../serve/autosave";
 import { readServeModule } from "../serve/module-file";
 import { type ServerOutcome, startServer } from "../serve/server";
-import { writeFileAtomic } from "./atomic";
+import { removeStaleTemps, writeFileAtomic } from "./atomic";
 import { type BuildIo, runtimeFolder, systemOpen } from "./build";
 import { checkFile, describeOutcome, issueJson } from "./check";
 import { loadConfig, realMachine } from "./config";
@@ -275,7 +275,10 @@ export async function runServe(file: string, opts: ServeOptions, io: ServeIo): P
       ? null
       : createAutosaver({
           write: (text) => writeFileAtomic(progressFile, Buffer.from(text, "utf8")),
-          remove: () => rm(progressFile, { force: true }),
+          remove: async () => {
+            await rm(progressFile, { force: true });
+            await removeStaleTemps(progressFile);
+          },
           now: pace.now,
           setTimer: pace.setTimer,
           onError(error) {
@@ -284,6 +287,9 @@ export async function runServe(file: string, opts: ServeOptions, io: ServeIo): P
             io.err(`warning: cannot keep the progress in ${shownPath(progressFile, io.cwd)}: ${readFailure(error)}`);
           },
         });
+
+  // a run killed during a progress write leaves its temp file, whose random name no later write reuses
+  if (progressFile !== null) await removeStaleTemps(progressFile);
 
   let server: Awaited<ReturnType<typeof startServer>>;
   try {

@@ -350,6 +350,33 @@ describe("quiz serve --autosave", () => {
     expect(existsSync(file)).toBe(false);
   });
 
+  it("removes the temp files a killed run left beside the progress file, at the start and once the results are written", async () => {
+    const t = setup();
+    const left = join(t.dir, ".p.json.0123abcd.tmp");
+    const other = join(t.dir, ".q.json.0123abcd.tmp");
+    writeFileSync(left, "{");
+    writeFileSync(other, "{");
+    const done = runServe("quiz.md", t.options({ autosave: "p.json", out: "r.json" }), t.io);
+    const url = await listening(t.out);
+    expect(existsSync(left)).toBe(false);
+    expect(existsSync(other)).toBe(true);
+    const during = join(t.dir, ".p.json.89abcdef.tmp");
+    writeFileSync(during, "{");
+    expect((await post(url, { quizId: "map", attempt: attempt() })).status).toBe(200);
+    expect(await done).toBe(0);
+    expect(existsSync(during)).toBe(false);
+    expect(existsSync(other)).toBe(true);
+  });
+
+  it("leaves the temp files alone when the run exits 1 on a wrong progress file", async () => {
+    const t = setup();
+    const left = join(t.dir, ".p.json.0123abcd.tmp");
+    writeFileSync(left, "{");
+    writeFileSync(join(t.dir, "p.json"), "not a progress file");
+    expect(await runServe("quiz.md", t.options({ autosave: "p.json" }), t.io)).toBe(1);
+    expect(existsSync(left)).toBe(true);
+  });
+
   it("exits 1 naming the version for a file of another version, and leaves it alone", async () => {
     const t = setup();
     const file = join(t.dir, "p.json");
