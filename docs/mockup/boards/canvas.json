@@ -124,6 +124,43 @@
       "x": 2720,
       "y": 6600
     },
+    "Review.dc.html": {
+      "h": 940,
+      "is_interactive": true,
+      "title": "quiz review, interactive: Keep, Fix or Drop on each question, reasons after Fix or Drop; the sidebar as on the Quiz boar",
+      "w": 1280,
+      "x": 0,
+      "y": 12000
+    },
+    "ReviewFinish.dc.html": {
+      "h": 940,
+      "title": "Finish with questions not judged: Go back, or Mark them Keep and finish",
+      "w": 1280,
+      "x": 2720,
+      "y": 12000
+    },
+    "ReviewPhone.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "title": "quiz review on a phone: one card, the bar at the foot",
+      "w": 390,
+      "x": 1360,
+      "y": 13108
+    },
+    "ReviewSince.dc.html": {
+      "h": 940,
+      "title": "quiz review --since: only new or changed questions, the earlier verdict and a diff",
+      "w": 1280,
+      "x": 1360,
+      "y": 12000
+    },
+    "ReviewVi.dc.html": {
+      "h": 940,
+      "title": "quiz review with ui_lang vi: the form's words in Vietnamese, the questions in the quiz's language",
+      "w": 1280,
+      "x": 0,
+      "y": 13060
+    },
     "Start.dc.html": {
       "h": 1240,
       "is_interactive": true,
@@ -160,42 +197,99 @@
       "x": 1360,
       "y": 2820
     },
-    "Review.dc.html": {
-      "h": 940,
-      "is_interactive": true,
-      "title": "quiz review, interactive: Keep, Fix or Drop on each question, reasons after Fix or Drop; the sidebar as on the Quiz board, the verdict map over the materials",
-      "w": 1280,
+    "Grade.dc.html": {
       "x": 0,
-      "y": 12000
-    },
-    "ReviewSince.dc.html": {
-      "h": 940,
-      "title": "quiz review --since: only new or changed questions, the earlier verdict and a diff",
+      "y": 14560,
       "w": 1280,
+      "h": 940,
+      "title": "quiz grade --web, interactive: the answer beside the rubric, inputs on valid steps, a running total; tweaks for mode, AI grades, dialogs",
+      "is_interactive": true
+    },
+    "GradeBanded.dc.html": {
       "x": 1360,
-      "y": 12000
-    },
-    "ReviewFinish.dc.html": {
-      "h": 940,
-      "title": "Finish with questions not judged: Go back, or Mark them Keep and finish",
+      "y": 14560,
       "w": 1280,
-      "x": 2720,
-      "y": 12000
-    },
-    "ReviewPhone.dc.html": {
-      "h": 844,
-      "is_interactive": true,
-      "title": "quiz review on a phone: one card, the bar at the foot",
-      "w": 390,
-      "x": 4080,
-      "y": 12000
-    },
-    "ReviewVi.dc.html": {
       "h": 940,
-      "title": "quiz review with ui_lang vi: the form's words in Vietnamese, the questions in the quiz's language",
+      "title": "Legacy, option A: the rubric as tiles, one per criterion (banded, dark). Superseded by the table (G85); kept for the record"
+    },
+    "GradeAI.dc.html": {
+      "x": 2720,
+      "y": 14560,
+      "w": 1280,
+      "h": 940,
+      "title": "With --grades: Claude's grades pre-filled to accept or adjust (holistic, paper, --name given)"
+    },
+    "GradeCode.dc.html": {
+      "x": 4080,
+      "y": 14560,
+      "w": 1280,
+      "h": 940,
+      "title": "A code answer, white, sidebar closed"
+    },
+    "GradePhone.dc.html": {
+      "x": 5440,
+      "y": 14560,
+      "w": 390,
+      "h": 844,
+      "title": "quiz grade --web on a phone: answer over rubric, Finish at the foot",
+      "is_interactive": true
+    },
+    "GradeFinish.dc.html": {
+      "x": 0,
+      "y": 15620,
+      "w": 1280,
+      "h": 940,
+      "title": "Finish: two graded, two left pending, the grader asked for a name"
+    },
+    "GradeBlocked.dc.html": {
+      "x": 1360,
+      "y": 15620,
+      "w": 1280,
+      "h": 940,
+      "title": "Finish blocked: a lost mark with no note, a half-graded essay"
+    },
+    "GradeDone.dc.html": {
+      "x": 2720,
+      "y": 15620,
+      "w": 1280,
+      "h": 940,
+      "title": "Saved: the grades file and the report written, the server stopped"
+    },
+    "GradeVi.dc.html": {
+      "x": 4080,
+      "y": 15620,
+      "w": 1280,
+      "h": 940,
+      "title": "quiz grade --web with ui_lang vi: the form in Vietnamese, the answers in the quiz language"
+    },
+    "GradeBandedTable.dc.html": {
+      "x": 5440,
+      "y": 15620,
+      "w": 1280,
+      "h": 940,
+      "title": "A banded essay (IELTS Task 2), dark: Criterion | Band | Note, a band per criterion, the overall band computed"
+    },
+    "GradeAdditiveTable.dc.html": {
+      "x": 6800,
+      "y": 15620,
+      "w": 1280,
+      "h": 940,
+      "title": "Points per criterion (additive, light): Criterion | Points | Note, the score split − | points | + in its cell"
+    },
+    "GradeHolisticTable.dc.html": {
+      "x": 8160,
+      "y": 15620,
+      "w": 1280,
+      "h": 940,
+      "title": "One score (holistic, paper): Rubric point | Verdict, the score as the table footer row"
+    },
+    "RubricC.dc.html": {
+      "h": 3900,
+      "is_interactive": true,
+      "title": "The rubric box, interactive: each rubric type (additive, banded, holistic, code) as the replay reads it (left) and as grade fills it (right); rounded sections, no table",
       "w": 1280,
       "x": 0,
-      "y": 13060
+      "y": 17060
     }
   },
   "createdOnFiles": {
@@ -208,11 +302,28 @@
   },
   "notes": {
     "formsReview": {
-      "x": 0,
-      "y": 11700,
-      "text": "Forms: quiz review",
       "kind": "title1",
-      "maxW": 4470
+      "maxW": 4470,
+      "text": "Forms: quiz review",
+      "w": 240,
+      "x": 0,
+      "y": 11700
+    },
+    "formsGrade": {
+      "kind": "title1",
+      "maxW": 5830,
+      "text": "Forms: quiz grade --web",
+      "w": 240,
+      "x": 0,
+      "y": 14260
+    },
+    "formsGradeC": {
+      "kind": "title1",
+      "maxW": 1280,
+      "text": "Option C, one rubric box for quiz replay and quiz grade --web",
+      "w": 240,
+      "x": 0,
+      "y": 16760
     }
   },
   "order": [
@@ -242,7 +353,20 @@
     "ReviewSince.dc.html",
     "ReviewFinish.dc.html",
     "ReviewPhone.dc.html",
-    "ReviewVi.dc.html"
+    "ReviewVi.dc.html",
+    "Grade.dc.html",
+    "GradeBanded.dc.html",
+    "GradeBandedTable.dc.html",
+    "GradeAdditiveTable.dc.html",
+    "GradeHolisticTable.dc.html",
+    "GradeAI.dc.html",
+    "GradeCode.dc.html",
+    "GradePhone.dc.html",
+    "GradeFinish.dc.html",
+    "GradeBlocked.dc.html",
+    "GradeDone.dc.html",
+    "GradeVi.dc.html",
+    "RubricC.dc.html"
   ],
   "pages": [],
   "title": "fullmark themes"

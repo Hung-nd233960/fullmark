@@ -1,0 +1,1616 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>quiz grade --web form</title>
+    <script src="./support.js"></script>
+  </head>
+  <body>
+    <x-dc>
+      <helmet>
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,600;0,700;1,400&amp;family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&amp;display=swap"
+        />
+        <style>
+          body {
+            margin: 0;
+          }
+        </style>
+      </helmet>
+      <div lang="{{lang}}" style="{{rootStyle}}">
+        <header
+          style="display: flex; flex-direction: column; background: {{t.card}}; border-bottom: 1px solid {{t.line}}"
+        >
+          <div
+            style="
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              gap: 16px;
+              padding: 12px 28px 8px;
+            "
+          >
+            <div
+              style="
+                min-width: 0;
+                display: flex;
+                align-items: baseline;
+                gap: 10px;
+                white-space: nowrap;
+                overflow: hidden;
+              "
+            >
+              <span
+                style="font-size: 0.8em; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: {{t.muted}}"
+                >{{L.grade}}</span
+              >
+              <span
+                lang="en"
+                style="
+                  font-weight: 700;
+                  font-size: 1.1em;
+                  overflow: hidden;
+                  text-overflow: ellipsis;
+                "
+                >Signals and Systems: midterm practice</span
+              >
+              <span style="font-size: 0.85em; color: {{t.muted}}">{{L.attemptOf}}</span>
+            </div>
+            <div style="display: flex; gap: 8px; align-items: center; flex-shrink: 0">
+              <button
+                onClick="{{toggleSide}}"
+                aria-expanded="{{sideExpanded}}"
+                aria-keyshortcuts="Q"
+                title="{{L.sideTitle}}"
+                style="{{hdrBtn}}"
+              >
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <rect x="3" y="4" width="18" height="16" rx="2"></rect>
+                  <path d="M15 4v16"></path>
+                </svg>
+                {{L.questions}}
+              </button>
+              <button aria-label="{{L.appearance}}" title="{{L.appearance}}" style="{{iconBtn}}">
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <circle cx="12" cy="12" r="9"></circle>
+                  <path d="M12 3v18"></path>
+                  <path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor"></path>
+                </svg>
+              </button>
+              <button onClick="{{openFinish}}" disabled="{{done}}" style="{{finishBtn}}">
+                {{L.finish}}
+              </button>
+            </div>
+          </div>
+          <div
+            style="display: flex; gap: 18px; padding: 0 28px 10px; font-size: 0.85em; color: {{t.muted}}; font-variant-numeric: tabular-nums"
+          >
+            <span>{{statusGraded}}</span>
+            <span>{{statusGiven}}</span>
+            <span>{{statusScore}}</span>
+            <sc-if value="{{ai}}" hint-placeholder-val="{{ false }}">
+              <span>{{L.aiLine}}</span>
+            </sc-if>
+          </div>
+        </header>
+
+        <div style="flex: 1; min-height: 0; display: flex">
+          <main
+            style="
+              flex: 1;
+              min-width: 0;
+              overflow-y: auto;
+              padding: 22px 28px 40px;
+              box-sizing: border-box;
+            "
+          >
+            <sc-if value="{{done}}" hint-placeholder-val="{{ false }}">
+              <section
+                style="{{cardStyle}}; max-width: 720px; margin: 40px auto 0; display: flex; flex-direction: column; gap: 12px"
+              >
+                <div
+                  style="display: flex; align-items: center; gap: 10px; color: {{t.ok}}; font-weight: 700; font-size: 1.2em"
+                >
+                  <svg
+                    width="22"
+                    height="22"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d="M5 12.5l4.5 4.5L19 7"></path>
+                  </svg>
+                  {{L.saved}}
+                </div>
+                <p
+                  style="
+                    margin: 0;
+                    font-size: 1.1em;
+                    font-weight: 700;
+                    font-variant-numeric: tabular-nums;
+                  "
+                >
+                  {{doneScore}}
+                </p>
+                <p style="margin: 0">{{doneGraded}}</p>
+                <ul
+                  style="
+                    margin: 0;
+                    padding-left: 20px;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 4px;
+                  "
+                >
+                  <li>
+                    <code style="{{inlineCode}}">midterm-results-grades.json</code> {{L.gradesFile}}
+                  </li>
+                  <li>
+                    <code style="{{inlineCode}}">midterm-results-report.md</code> {{L.reportFile}}
+                  </li>
+                </ul>
+                <p style="margin: 0; color: {{t.muted}}; font-size: 0.9em">{{L.closed}}</p>
+              </section>
+            </sc-if>
+
+            <sc-if value="{{showCard}}" hint-placeholder-val="{{ true }}">
+              <section aria-labelledby="qh" style="{{cardStyle}}">
+                <sc-if value="{{ai}}" hint-placeholder-val="{{ false }}">
+                  <div
+                    style="display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: -4px 0 14px; padding: 8px 12px; border-radius: 8px; background: {{t.infoWash}}; color: {{t.info}}; font-size: 0.9em"
+                  >
+                    <span>{{aiNote}}</span>
+                    <sc-if value="{{cur.adjusted}}" hint-placeholder-val="{{ false }}">
+                      <button onClick="{{restoreAi}}" style="{{smallBtn}}">{{L.restoreAi}}</button>
+                    </sc-if>
+                  </div>
+                </sc-if>
+                <div
+                  style="display: flex; justify-content: space-between; gap: 12px; font-size: 0.85em; color: {{t.muted}}"
+                >
+                  <span id="qh">{{cur.head}}</span>
+                  <span style="{{cur.stateStyle}}">{{cur.state}}</span>
+                </div>
+                <p lang="en" style="margin: 8px 0 16px; font-size: 1.1em; font-weight: 600">
+                  {{cur.prompt}}
+                </p>
+
+                <div style="display: flex; flex-direction: column; gap: 22px">
+                  <div style="{{answerGrid}}">
+                    <div style="{{answerHead}}">
+                      <span style="font-weight: 700">{{L.answer}}</span>
+                      <span style="flex: 1; color: {{t.muted}}; font-variant-numeric: tabular-nums">{{cur.count}}</span>
+                      <sc-if value="{{sampleOff}}" hint-placeholder-val="{{ true }}">
+                        <button onClick="{{toggleSample}}" aria-pressed="{{samplePressed}}" style="{{sampleBtn}}">{{L.sampleBeside}}</button>
+                      </sc-if>
+                    </div>
+                    <sc-if value="{{sampleOn}}" hint-placeholder-val="{{ false }}">
+                      <div style="{{answerHead}}">
+                        <span lang="{{lang}}" style="{{samplePill}}">{{L.sample}}</span>
+                        <span style="flex: 1"></span>
+                        <button onClick="{{toggleSample}}" aria-pressed="{{samplePressed}}" style="{{sampleBtn}}">{{L.sampleBeside}}</button>
+                      </div>
+                    </sc-if>
+                    <div style="min-width: 0">
+                      <sc-if value="{{cur.code}}" hint-placeholder-val="{{ false }}">
+                        <pre lang="en" tabindex="0" aria-label="{{L.answer}}" style="{{codeBox}}">
+{{cur.answer}}</pre>
+                      </sc-if>
+                      <sc-if value="{{cur.prose}}" hint-placeholder-val="{{ true }}">
+                        <div lang="en" tabindex="0" role="region" aria-label="{{L.answer}}" style="{{answerBox}}">{{cur.answer}}</div>
+                      </sc-if>
+                    </div>
+                    <sc-if value="{{sampleOn}}" hint-placeholder-val="{{ false }}">
+                      <div style="min-width: 0">
+                        <sc-if value="{{cur.code}}" hint-placeholder-val="{{ false }}">
+                          <pre lang="en" tabindex="0" aria-label="{{L.sample}}" style="{{codeBox}}">
+{{cur.sample}}</pre>
+                        </sc-if>
+                        <sc-if value="{{cur.prose}}" hint-placeholder-val="{{ true }}">
+                          <div lang="en" tabindex="0" role="region" aria-label="{{L.sample}}" style="{{answerBox}}">{{cur.sample}}</div>
+                        </sc-if>
+                      </div>
+                    </sc-if>
+                  </div>
+
+                  <div
+                    style="display: flex; flex-direction: column; gap: 12px; min-width: 0; padding-top: 18px; border-top: 1px solid {{t.line}}"
+                  >
+                    <div
+                      style="
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        gap: 12px;
+                        font-size: 0.85em;
+                      "
+                    >
+                      <span style="font-weight: 700">{{L.rubric}}</span>
+                      <span style="display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 6px">
+                        <sc-for list="{{cur.modeTags}}" as="tag" hint-placeholder-count="2">
+                          <span style="{{tag.style}}">{{tag.text}}</span>
+                        </sc-for>
+                      </span>
+                    </div>
+
+                    <sc-if value="{{cur.additiveTable}}" hint-placeholder-val="{{ false }}">
+                      <table style="{{gtTable}}">
+                        <thead>
+                          <tr style="text-align: left; color: {{t.muted}}">
+                            <th style="{{gtTh}}">{{L.criterionH}}</th>
+                            <th style="{{gtThPts}}">{{L.pointsW}}</th>
+                            <th style="{{gtTh}}">{{L.noteShort}}</th>
+                            <th style="{{gtThAct}}"><sc-if value="{{cur.anyClearable}}" hint-placeholder-val="{{ true }}"><button onClick="{{cur.clearAll}}" aria-label="{{L.clearAllLabel}}" title="{{L.clearAllLabel}}" style="{{gtClearAllBtn}}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"></path><path d="M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2"></path><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path><path d="M10 11v6"></path><path d="M14 11v6"></path></svg></button></sc-if><sc-if value="{{cur.noneClearable}}" hint-placeholder-val="{{ false }}"><span style="{{srOnly}}">{{L.clearW}}</span></sc-if></th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <sc-for list="{{cur.rows}}" as="row" hint-placeholder-count="3">
+                            <tr aria-label="{{row.text}}">
+                              <td style="{{gtTd}}">
+                                <span lang="en" style="display: flex; flex-direction: column; line-height: 1.3">
+                                  <span style="font-weight: 600">{{row.text}}</span>
+                                  <span style="font-size: 0.85em; color: {{t.muted}}">{{row.maxText}}</span>
+                                </span>
+                              </td>
+                              <td style="{{gtTdPtsFlush}}">
+                                <div style="{{gtStep}}">
+                                  <button onClick="{{row.down}}" aria-label="{{row.downLabel}}" disabled="{{row.atMin}}" style="{{gtStepBtn}}">−</button>
+                                  <input type="text" inputmode="decimal" role="spinbutton" aria-label="{{row.inputLabel}}" aria-valuemin="0" aria-valuemax="{{row.maxNum}}" aria-valuenow="{{row.valueNow}}" aria-invalid="{{row.typoInvalid}}" placeholder="–" value="{{row.typed}}" onInput="{{row.onType}}" style="{{row.bandStyle}}" />
+                                  <button onClick="{{row.up}}" aria-label="{{row.upLabel}}" disabled="{{row.atMax}}" style="{{gtStepBtn}}">+</button>
+                                </div>
+                              </td>
+                              <td style="{{gtTdFlush}}">
+                                <div style="display: flex; flex-direction: column; height: 100%">
+                                  <textarea rows="1" placeholder="{{row.ask}}" aria-label="{{row.noteLabelFor}}" aria-required="{{row.req}}" onInput="{{row.onNote}}" aria-invalid="{{row.invalid}}" style="{{row.flushArea}}">{{row.note}}</textarea>
+                                  <div style="{{gtStrip}}">
+                                    <sc-if value="{{row.typo}}" hint-placeholder-val="{{ false }}">
+                                      <span style="color: {{t.bad}}; font-weight: 600">{{row.typoText}}</span>
+                                    </sc-if>
+                                    <sc-if value="{{row.err}}" hint-placeholder-val="{{ false }}">
+                                      <span style="color: {{t.bad}}; font-weight: 600">{{L.noteMissing}}</span>
+                                    </sc-if>
+                                    <span aria-hidden="true" style="{{row.dot}}; margin: 0 -4px 1px auto"></span>
+                                  </div>
+                                </div>
+                              </td>
+                              <td style="{{gtTdAct}}">
+                                <sc-if value="{{row.clearable}}" hint-placeholder-val="{{ true }}">
+                                  <button onClick="{{row.clearRow}}" aria-label="{{row.clearRowLabel}}" title="{{row.clearRowLabel}}" style="{{gtClearBtn}}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 21l-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21"></path><path d="M22 21H7"></path><path d="M5 11l9 9"></path></svg></button>
+                                </sc-if>
+                              </td>
+                            </tr>
+                          </sc-for>
+                        </tbody>
+                      </table>
+                    </sc-if>
+                    <sc-if value="{{cur.additiveTiles}}" hint-placeholder-val="{{ true }}">
+                      <sc-for list="{{cur.rows}}" as="row" hint-placeholder-count="3">
+                        <div role="group" aria-label="{{row.text}}" style="{{row.box}}">
+                          <div lang="en" style="{{tileHead}}">
+                            {{row.text}}
+                            <span style="font-weight: 400; color: {{t.muted}}"
+                              >· {{row.maxText}}</span
+                            >
+                          </div>
+                          <div
+                            role="radiogroup"
+                            aria-label="{{row.groupLabel}}"
+                            style="display: flex; flex-wrap: wrap; gap: 4px"
+                          >
+                            <sc-for list="{{row.opts}}" as="o" hint-placeholder-count="5">
+                              <button
+                                role="radio"
+                                aria-checked="{{o.on}}"
+                                onClick="{{o.pick}}"
+                                style="{{o.style}}"
+                              >
+                                {{o.label}}
+                              </button>
+                            </sc-for>
+                          </div>
+                          <label
+                            style="
+                              display: flex;
+                              flex-direction: column;
+                              gap: 4px;
+                              font-size: 0.85em;
+                            "
+                          >
+                            <span
+                              style="display: flex; align-items: center; gap: 6px; font-weight: 600"
+                              >{{L.noteShort}}<span aria-hidden="true" style="{{row.dot}}"></span
+                            ></span>
+                            <input
+                              type="text"
+                              value="{{row.note}}"
+                              placeholder="{{row.ask}}"
+                              aria-required="{{row.req}}"
+                              onInput="{{row.onNote}}"
+                              aria-invalid="{{row.invalid}}"
+                              style="{{row.noteStyle}}"
+                            />
+                          </label>
+                          <sc-if value="{{row.err}}" hint-placeholder-val="{{ false }}">
+                            <span style="font-size: 0.85em; color: {{t.bad}}; font-weight: 600"
+                              >{{L.noteMissing}}</span
+                            >
+                          </sc-if>
+                        </div>
+                      </sc-for>
+                    </sc-if>
+
+                    <sc-if value="{{cur.bandedTable}}" hint-placeholder-val="{{ false }}">
+                      <table style="{{gtTable}}">
+                        <thead>
+                          <tr style="text-align: left; color: {{t.muted}}">
+                            <th style="{{gtTh}}">{{L.criterionH}}</th>
+                            <th style="{{gtThBand}}">{{L.bandH}}</th>
+                            <th style="{{gtTh}}">{{L.noteShort}}</th>
+                            <th style="{{gtThAct}}"><sc-if value="{{cur.anyClearable}}" hint-placeholder-val="{{ true }}"><button onClick="{{cur.clearAll}}" aria-label="{{L.clearAllLabel}}" title="{{L.clearAllLabel}}" style="{{gtClearAllBtn}}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"></path><path d="M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2"></path><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path><path d="M10 11v6"></path><path d="M14 11v6"></path></svg></button></sc-if><sc-if value="{{cur.noneClearable}}" hint-placeholder-val="{{ false }}"><span style="{{srOnly}}">{{L.clearW}}</span></sc-if></th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <sc-for list="{{cur.rows}}" as="row" hint-placeholder-count="4">
+                            <tr aria-label="{{row.text}}">
+                              <td style="{{gtTd}}">
+                                <span lang="en" style="display: flex; flex-direction: column; line-height: 1.3">
+                                  <span style="font-weight: 700">{{row.id}}</span>
+                                  <span style="font-size: 0.85em; color: {{t.muted}}">{{row.name}}</span>
+                                </span>
+                              </td>
+                              <td style="{{gtTdBandFlush}}">
+                                <div style="{{gtStep}}">
+                                  <button onClick="{{row.down}}" aria-label="{{row.downLabel}}" disabled="{{row.atMin}}" style="{{gtStepBtn}}">−</button>
+                                  <input type="text" inputmode="decimal" role="spinbutton" aria-label="{{row.inputLabel}}" aria-valuemin="0" aria-valuemax="9" aria-valuenow="{{row.valueNow}}" aria-invalid="{{row.typoInvalid}}" placeholder="–" value="{{row.typed}}" onInput="{{row.onType}}" style="{{row.bandStyle}}" />
+                                  <button onClick="{{row.up}}" aria-label="{{row.upLabel}}" disabled="{{row.atMax}}" style="{{gtStepBtn}}">+</button>
+                                </div>
+                              </td>
+                              <td style="{{gtTdFlush}}">
+                                <div style="display: flex; flex-direction: column; height: 100%">
+                                  <textarea id="{{row.noteId}}" rows="1" placeholder="{{row.ask}}" aria-label="{{row.noteLabelFor}}" aria-required="{{row.req}}" onInput="{{row.onNote}}" aria-invalid="{{row.invalid}}" style="{{row.flushArea}}">{{row.note}}</textarea>
+                                  <div style="{{gtStrip}}">
+                                    <sc-if value="{{row.typo}}" hint-placeholder-val="{{ false }}">
+                                      <span style="color: {{t.bad}}; font-weight: 600">{{row.typoText}}</span>
+                                    </sc-if>
+                                    <sc-if value="{{row.errOnly}}" hint-placeholder-val="{{ false }}">
+                                      <span style="color: {{t.bad}}; font-weight: 600">{{L.noteMissingShort}}</span>
+                                    </sc-if>
+                                    <span aria-hidden="true" style="{{row.dot}}; margin: 0 -4px 1px auto"></span>
+                                  </div>
+                                </div>
+                              </td>
+                              <td style="{{gtTdAct}}">
+                                <sc-if value="{{row.clearable}}" hint-placeholder-val="{{ true }}">
+                                  <button onClick="{{row.clearRow}}" aria-label="{{row.clearRowLabel}}" title="{{row.clearRowLabel}}" style="{{gtClearBtn}}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 21l-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21"></path><path d="M22 21H7"></path><path d="M5 11l9 9"></path></svg></button>
+                                </sc-if>
+                              </td>
+                            </tr>
+                          </sc-for>
+                        </tbody>
+                      </table>
+                    </sc-if>
+                    <sc-if value="{{cur.bandedTiles}}" hint-placeholder-val="{{ false }}">
+                      <div style="{{bandGrid}}">
+                        <sc-for list="{{cur.rows}}" as="row" hint-placeholder-count="4">
+                          <div role="group" aria-label="{{row.text}}" style="{{row.tile}}">
+                            <div style="display: flex; align-items: flex-start; gap: 8px">
+                              <div
+                                lang="en"
+                                style="
+                                  flex: 1;
+                                  min-width: 0;
+                                  display: flex;
+                                  flex-direction: column;
+                                  line-height: 1.3;
+                                "
+                              >
+                                <span style="font-weight: 700; font-size: 1.15em">{{row.id}}</span>
+                                <span style="font-size: 0.85em; color: {{t.muted}}"
+                                  >{{row.name}}</span
+                                >
+                              </div>
+                              <sc-if value="{{row.set}}" hint-placeholder-val="{{ true }}">
+                                <button
+                                  onClick="{{row.clear}}"
+                                  aria-label="{{row.clearLabel}}"
+                                  title="{{row.clearLabel}}"
+                                  style="{{clearBtn}}"
+                                >
+                                  <svg
+                                    width="18"
+                                    height="18"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    aria-hidden="true"
+                                  >
+                                    <path
+                                      d="M7 21l-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21"
+                                    ></path>
+                                    <path d="M22 21H7"></path>
+                                    <path d="M5 11l9 9"></path>
+                                  </svg>
+                                </button>
+                              </sc-if>
+                            </div>
+                            <div style="{{joinWide}}">
+                              <button
+                                onClick="{{row.down}}"
+                                aria-label="{{row.downLabel}}"
+                                disabled="{{row.atMin}}"
+                                style="{{joinBtnWide}}"
+                              >
+                                −
+                              </button>
+                              <input
+                                type="text"
+                                inputmode="decimal"
+                                role="spinbutton"
+                                aria-label="{{row.inputLabel}}"
+                                aria-valuemin="0"
+                                aria-valuemax="9"
+                                aria-valuenow="{{row.valueNow}}"
+                                aria-invalid="{{row.typoInvalid}}"
+                                placeholder="–"
+                                value="{{row.typed}}"
+                                onInput="{{row.onType}}"
+                                style="{{row.bandStyle}}"
+                              />
+                              <button
+                                onClick="{{row.up}}"
+                                aria-label="{{row.upLabel}}"
+                                disabled="{{row.atMax}}"
+                                style="{{joinBtnWide}}"
+                              >
+                                +
+                              </button>
+                            </div>
+                            <label
+                              for="{{row.noteId}}"
+                              style="
+                                display: flex;
+                                align-items: baseline;
+                                gap: 6px;
+                                font-size: 0.85em;
+                              "
+                            >
+                              <span style="font-weight: 600">{{L.noteShort}}</span>
+                              <span aria-hidden="true" style="{{row.dot}}"></span>
+                            </label>
+                            <textarea
+                              id="{{row.noteId}}"
+                              rows="4"
+                              placeholder="{{row.ask}}"
+                              aria-required="{{row.req}}"
+                              onInput="{{row.onNote}}"
+                              aria-invalid="{{row.invalid}}"
+                              style="{{row.areaStyle}}"
+                            >
+{{row.note}}</textarea>
+                            <div
+                              style="font-size: 0.85em; color: {{t.bad}}; font-weight: 600; min-height: 0"
+                            >
+                              <sc-if value="{{row.typo}}" hint-placeholder-val="{{ false }}">
+                                <span>{{row.typoText}}</span>
+                              </sc-if>
+                              <sc-if value="{{row.errOnly}}" hint-placeholder-val="{{ false }}">
+                                <span>{{L.noteMissingShort}}</span>
+                              </sc-if>
+                            </div>
+                          </div>
+                        </sc-for>
+                      </div>
+                    </sc-if>
+
+                    <sc-if value="{{cur.holisticTable}}" hint-placeholder-val="{{ false }}">
+                      <table style="{{gtTable}}">
+                        <thead>
+                          <tr style="text-align: left; color: {{t.muted}}">
+                            <th style="{{gtTh}}">{{L.pointH}}</th>
+                            <th style="{{gtThVerdict}}">{{L.verdictH}}</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <sc-for list="{{cur.bullets}}" as="b" hint-placeholder-count="3">
+                            <tr>
+                              <td lang="en" style="{{gtTd}}; font-weight: 600">{{b.text}}</td>
+                              <td style="{{gtTdVerdictFlush}}">
+                                <div role="radiogroup" aria-label="{{b.groupLabel}}" style="{{gtSeg}}">
+                                  <sc-for list="{{b.opts}}" as="o" hint-placeholder-count="3">
+                                    <button role="radio" aria-checked="{{o.on}}" onClick="{{o.pick}}" style="{{o.flush}}">{{o.label}}</button>
+                                  </sc-for>
+                                </div>
+                              </td>
+                            </tr>
+                          </sc-for>
+                          <tr>
+                            <td style="{{gtTdFoot}}">
+                              <span style="display: flex; flex-direction: column; line-height: 1.3">
+                                <span style="font-weight: 700">{{L.score}}</span>
+                                <span style="font-size: 0.85em; color: {{t.muted}}">{{cur.maxText}}</span>
+                              </span>
+                            </td>
+                            <td style="{{gtTdFootFlush}}">
+                              <div style="display: flex; flex-direction: column; height: 100%">
+                                <div style="{{gtStep}}">
+                                  <button onClick="{{cur.down}}" aria-label="{{L.less}}" disabled="{{cur.atMin}}" style="{{gtStepBtn}}">−</button>
+                                  <input type="text" inputmode="decimal" role="spinbutton" aria-label="{{L.score}}" aria-valuemin="0" aria-valuemax="{{cur.points}}" aria-valuenow="{{cur.valueNow}}" aria-invalid="{{cur.typoInvalid}}" placeholder="–" value="{{cur.typed}}" onInput="{{cur.onType}}" style="{{cur.scoreStyle}}" />
+                                  <button onClick="{{cur.up}}" aria-label="{{L.more}}" disabled="{{cur.atMax}}" style="{{gtStepBtn}}">+</button>
+                                </div>
+                                <div style="{{gtStrip}}"><span style="{{cur.hintStyle}}; font-size: 1em">{{cur.hint}}</span></div>
+                              </div>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </sc-if>
+                    <sc-if value="{{cur.holisticTiles}}" hint-placeholder-val="{{ false }}">
+                      <div role="group" style="{{plainBox}}">
+                        <div style="{{tileHead}}">
+                          {{L.score}}
+                          <span style="font-weight: 400; color: {{t.muted}}"
+                            >· {{cur.maxText}}</span
+                          >
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 12px">
+                          <div style="{{joinGroup}}">
+                            <button
+                              onClick="{{cur.down}}"
+                              aria-label="{{L.less}}"
+                              disabled="{{cur.atMin}}"
+                              style="{{joinBtn}}"
+                            >
+                              −
+                            </button>
+                            <input
+                              type="text"
+                              inputmode="decimal"
+                              role="spinbutton"
+                              aria-label="{{L.score}}"
+                              aria-valuemin="0"
+                              aria-valuemax="{{cur.points}}"
+                              aria-valuenow="{{cur.valueNow}}"
+                              aria-invalid="{{cur.typoInvalid}}"
+                              placeholder="–"
+                              value="{{cur.typed}}"
+                              onInput="{{cur.onType}}"
+                              style="{{cur.scoreStyle}}; flex: 0 0 4.2em; width: 4.2em"
+                            />
+                            <button
+                              onClick="{{cur.up}}"
+                              aria-label="{{L.more}}"
+                              disabled="{{cur.atMax}}"
+                              style="{{joinBtn}}"
+                            >
+                              +
+                            </button>
+                          </div>
+                          <span style="{{cur.hintStyle}}">{{cur.hint}}</span>
+                        </div>
+                      </div>
+                      <div role="group" style="{{plainBox}}">
+                        <div style="{{tileHead}}">{{L.bullets}}</div>
+                        <sc-for list="{{cur.bullets}}" as="b" hint-placeholder-count="3">
+                          <div
+                            style="
+                              display: flex;
+                              justify-content: space-between;
+                              align-items: center;
+                              gap: 10px;
+                              flex-wrap: wrap;
+                            "
+                          >
+                            <span lang="en" style="flex: 1 1 160px; min-width: 0">{{b.text}}</span>
+                            <div
+                              role="radiogroup"
+                              aria-label="{{b.groupLabel}}"
+                              style="display: flex; gap: 4px"
+                            >
+                              <sc-for list="{{b.opts}}" as="o" hint-placeholder-count="3">
+                                <button
+                                  role="radio"
+                                  aria-checked="{{o.on}}"
+                                  onClick="{{o.pick}}"
+                                  style="{{o.style}}"
+                                >
+                                  {{o.label}}
+                                </button>
+                              </sc-for>
+                            </div>
+                          </div>
+                        </sc-for>
+                      </div>
+                    </sc-if>
+
+                    <section role="status" aria-label="{{L.gradingW}}" style="{{resultBox}}">
+                      <span style="font-weight: 700; font-size: 1.15em">{{L.gradingW}}</span>
+                      <div style="{{resultStrip}}">
+                        <div style="{{cur.raw.tile}}">
+                          <div style="display: flex; flex-direction: column; line-height: 1.3; min-width: 0">
+                            <span style="font-weight: 700">{{cur.raw.label}}</span>
+                            <span style="font-size: 0.85em; color: {{t.muted}}">{{cur.raw.sub}}</span>
+                          </div>
+                          <div style="{{cur.raw.valueStyle}}">{{cur.raw.value}}</div>
+                        </div>
+                        <span aria-hidden="true" style="{{resultChev}}"
+                          ><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg
+                        ></span>
+                        <div style="{{cur.scheme.tile}}">
+                          <div style="display: flex; flex-direction: column; line-height: 1.3; min-width: 0">
+                            <span style="font-weight: 700">{{cur.scheme.label}}</span>
+                            <span style="font-size: 0.85em; color: {{t.muted}}">{{cur.scheme.sub}}</span>
+                          </div>
+                          <div style="{{cur.scheme.valueStyle}}">{{cur.scheme.value}}</div>
+                        </div>
+                        <span aria-hidden="true" style="{{resultChev}}"
+                          ><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg
+                        ></span>
+                        <div style="{{cur.final.tile}}">
+                          <div style="display: flex; flex-direction: column; line-height: 1.3; min-width: 0">
+                            <span style="font-weight: 700">{{cur.final.label}}</span>
+                            <span style="font-size: 0.85em; color: {{t.muted}}">{{cur.final.sub}}</span>
+                          </div>
+                          <div style="{{cur.final.valueStyle}}">{{cur.final.value}}</div>
+                        </div>
+                      </div>
+                    </section>
+
+                    <label
+                      style="display: flex; flex-direction: column; gap: 4px; font-size: 0.9em"
+                    >
+                      <span style="display: flex; align-items: center; gap: 6px; font-weight: 600">{{L.whyShort}}<span aria-hidden="true" style="{{cur.whyDot}}"></span></span>
+                      <textarea
+                        rows="3"
+                        onInput="{{cur.onWhy}}"
+                        aria-invalid="{{cur.whyInvalid}}"
+                        style="{{cur.whyStyle}}"
+                      >
+{{cur.why}}</textarea>
+                    </label>
+                    <sc-if value="{{cur.whyMissing}}" hint-placeholder-val="{{ false }}">
+                      <span style="font-size: 0.85em; color: {{t.bad}}; font-weight: 600"
+                        >{{L.whyMissing}}</span
+                      >
+                    </sc-if>
+                    <label
+                      style="display: flex; flex-direction: column; gap: 4px; font-size: 0.9em"
+                    >
+                      <span style="font-weight: 600">{{L.improve}}</span>
+                      <textarea rows="2" onInput="{{cur.onImprove}}" style="{{areaStyle}}">
+{{cur.improve}}</textarea>
+                    </label>
+                  </div>
+                </div>
+
+                <div
+                  style="display: flex; justify-content: space-between; gap: 10px; margin-top: 18px; padding-top: 14px; border-top: 1px solid {{t.line}}"
+                >
+                  <button onClick="{{prev}}" disabled="{{atFirst}}" style="{{hdrBtn}}">
+                    ← {{L.prev}}
+                  </button>
+                  <button onClick="{{next}}" disabled="{{atLast}}" style="{{hdrBtn}}">
+                    {{L.next}} →
+                  </button>
+                </div>
+              </section>
+            </sc-if>
+            <sc-if value="{{blankCard}}" hint-placeholder-val="{{ false }}">
+              <section aria-labelledby="qh31" style="{{cardStyle}}">
+                <div style="display: flex; justify-content: space-between; gap: 12px; font-size: 0.85em; color: {{t.muted}}">
+                  <span id="qh31">{{L.q31Head}}</span>
+                  <span style="font-weight: 700; color: {{t.muted}}">{{L.noAnswerState}}</span>
+                </div>
+                <p lang="en" style="margin: 8px 0 16px; font-size: 1.1em; font-weight: 600">{{L.q31Prompt}}</p>
+                <div style="display: flex; flex-direction: column; gap: 22px">
+                  <div style="display: flex; flex-direction: column; gap: 10px">
+                    <div style="{{answerHead}}"><span style="font-weight: 700">{{L.answer}}</span></div>
+                    <div style="{{noAnswerBox}}">{{L.noAnswerBody}}</div>
+                  </div>
+                  <div style="display: flex; flex-direction: column; gap: 10px; padding-top: 18px; border-top: 1px solid {{t.line}}">
+                    <div style="{{answerHead}}"><span style="font-weight: 700">{{L.rubric}}</span></div>
+                    <ul lang="en" style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 6px">
+                      <sc-for list="{{q31Crit}}" as="c" hint-placeholder-count="3">
+                        <li style="{{critRow}}"><span style="flex: 1">{{c.text}}</span><span style="font-variant-numeric: tabular-nums; color: {{t.muted}}">{{c.pts}}</span></li>
+                      </sc-for>
+                    </ul>
+                  </div>
+                  <div style="display: flex; flex-direction: column; gap: 10px">
+                    <div style="{{answerHead}}"><span lang="{{lang}}" style="{{samplePill}}">{{L.sample}}</span></div>
+                    <div lang="en" tabindex="0" role="region" aria-label="{{L.sample}}" style="{{answerBox}}">{{L.q31Sample}}</div>
+                  </div>
+                  <p style="margin: 0; font-size: 0.85em; color: {{t.muted}}">{{L.readOnlyNote}}</p>
+                </div>
+              </section>
+            </sc-if>
+          </main>
+          <sc-if value="{{sideOpen}}" hint-placeholder-val="{{ true }}">
+            <aside aria-label="{{L.questions}}" style="{{sideStyle}}">
+              <div
+                style="display: flex; align-items: center; gap: 8px; padding: 0 10px 0 18px; border-bottom: 1px solid {{sideLine}}"
+              >
+                <h2
+                  style="
+                    flex: 1;
+                    margin: 0;
+                    display: flex;
+                    align-items: center;
+                    min-height: 48px;
+                    font-size: 1em;
+                    font-weight: 700;
+                  "
+                >
+                  {{L.questions}}
+                </h2>
+                <button
+                  onClick="{{closeSide}}"
+                  aria-label="{{L.closeSide}}"
+                  title="{{L.closeSide}}"
+                  style="{{closeBtn}}"
+                >
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d="M6 6l12 12M18 6L6 18"></path>
+                  </svg>
+                </button>
+              </div>
+              <div
+                style="
+                  flex: 1;
+                  overflow-y: auto;
+                  padding: 16px 18px;
+                  display: flex;
+                  flex-direction: column;
+                  gap: 14px;
+                "
+              >
+                <nav
+                  aria-label="{{L.toGrade}}"
+                  style="display: flex; flex-direction: column; gap: 8px"
+                >
+                  <button onClick="{{fold.grade.toggle}}" aria-expanded="{{fold.grade.expanded}}" style="{{groupHeadBtn}}">
+                    <span aria-hidden="true" style="width: 12px; color: {{t.muted}}">{{fold.grade.chevron}}</span>
+                    <span style="flex: 1">{{L.toGrade}}</span>
+                    <span style="font-variant-numeric: tabular-nums; color: {{t.muted}}">{{gradedCount}}</span>
+                  </button>
+                  <sc-if value="{{fold.grade.open}}" hint-placeholder-val="{{ true }}">
+                  <ul
+                    style="
+                      list-style: none;
+                      margin: 0;
+                      padding: 0;
+                      display: flex;
+                      flex-direction: column;
+                      gap: 4px;
+                    "
+                  >
+                    <sc-for list="{{items}}" as="it" hint-placeholder-count="4">
+                      <li>
+                        <button
+                          onClick="{{it.go}}"
+                          aria-current="{{it.current}}"
+                          aria-label="{{it.label}}"
+                          style="{{it.style}}"
+                        >
+                          <span aria-hidden="true" style="{{it.glyphStyle}}">{{it.glyph}}<sc-if value="{{it.half}}" hint-placeholder-val="{{ false }}"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" style="display: block; margin: 0 auto"><circle cx="8" cy="8" r="6" fill="none" stroke="{{ringTrack}}" stroke-width="2.5"></circle><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" pathLength="100" stroke-dasharray="{{it.ringDash}}" transform="rotate(-90 8 8)"></circle></svg></sc-if></span>
+                          <span
+                            style="
+                              flex: 1;
+                              min-width: 0;
+                              display: flex;
+                              flex-direction: column;
+                              text-align: left;
+                              line-height: 1.3;
+                            "
+                          >
+                            <span style="font-weight: 600">{{it.title}}</span>
+                            <span style="font-size: 0.8em; color: {{t.muted}}">{{it.sub}}</span>
+                          </span>
+                          <span style="font-variant-numeric: tabular-nums; font-weight: 600"
+                            >{{it.score}}</span
+                          >
+                        </button>
+                      </li>
+                    </sc-for>
+                  </ul>
+                  </sc-if>
+                </nav>
+                <div style="display: flex; flex-direction: column; gap: 8px">
+                  <button onClick="{{fold.blank.toggle}}" aria-expanded="{{fold.blank.expanded}}" style="{{groupHeadBtn}}">
+                    <span aria-hidden="true" style="width: 12px; color: {{t.muted}}">{{fold.blank.chevron}}</span>
+                    <span style="flex: 1">{{L.notAnsweredH}}</span>
+                    <span style="font-variant-numeric: tabular-nums; color: {{t.muted}}">1</span>
+                  </button>
+                  <sc-if value="{{fold.blank.open}}" hint-placeholder-val="{{ true }}">
+                  <button onClick="{{openBlank}}" aria-current="{{blankCurrent}}" aria-label="{{L.q31Label}}" style="{{blankRow}}">
+                    <span style="flex: 1; text-align: left">{{L.q31}}</span>
+                    <span style="font-variant-numeric: tabular-nums">0 / 4</span>
+                  </button>
+                  </sc-if>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 8px">
+                  <button onClick="{{fold.auto.toggle}}" aria-expanded="{{fold.auto.expanded}}" style="{{groupHeadBtn}}">
+                    <span aria-hidden="true" style="width: 12px; color: {{t.muted}}">{{fold.auto.chevron}}</span>
+                    <span style="flex: 1">{{L.autoHead}}</span>
+                    <span style="font-variant-numeric: tabular-nums; color: {{t.muted}}">34 / 40</span>
+                  </button>
+                  <sc-if value="{{fold.auto.open}}" hint-placeholder-val="{{ true }}">
+                  <div style="{{autoRow}}">
+                    <span aria-hidden="true" style="{{autoGlyph}}">✓</span>
+                    <span style="flex: 1; min-width: 0; display: flex; flex-direction: column; line-height: 1.3">
+                      <span style="font-weight: 600">{{L.autoTitle}}</span>
+                      <span style="font-size: 0.8em; color: {{t.muted}}">{{L.autoSub}}</span>
+                    </span>
+                    <span style="font-variant-numeric: tabular-nums; font-weight: 600">34 / 40</span>
+                  </div>
+                  </sc-if>
+                </div>
+                <div
+                  style="display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 0.75em; color: {{t.muted}}; padding-top: 8px; border-top: 1px solid {{t.line}}"
+                >
+                  <span style="{{lgItem}}"><span style="{{lgDone}}">✓</span>{{L.st.done}}</span>
+                  <span style="{{lgItem}}"><span style="{{lgHalf}}"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" style="display: block; margin: 0 auto"><circle cx="8" cy="8" r="6" fill="none" stroke="{{ringTrack}}" stroke-width="2.5"></circle><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" pathLength="100" stroke-dasharray="{{lgRingDash}}" transform="rotate(-90 8 8)"></circle></svg></span>{{L.st.half}}</span>
+                  <span style="{{lgItem}}"><span style="{{lgBad}}">!</span>{{L.st.bad}}</span>
+                  <span style="{{lgItem}}"><span style="{{lgNone}}"></span>{{L.st.none}}</span>
+                  <span style="{{lgItem}}"><span style="{{lgCur}}"></span>{{L.currentW}}</span>
+                  <span style="{{lgItem}}"><span style="{{lgReqBox}}"><span style="{{lgReq}}"></span></span>{{L.requiredW}}</span>
+                </div>
+                <div
+                  style="font-size: 0.75em; color: {{t.muted}}; display: flex; flex-wrap: wrap; gap: 4px 12px"
+                >
+                  <span><kbd style="{{kbd}}">N</kbd> {{L.nextKey}}</span>
+                  <span><kbd style="{{kbd}}">Q</kbd> {{L.keyQ}}</span>
+                  <span><kbd style="{{kbd}}">Esc</kbd> {{L.keyEsc}}</span>
+                </div>
+              </div>
+            </aside>
+          </sc-if>
+        </div>
+
+        <sc-if value="{{dialogOpen}}" hint-placeholder-val="{{ false }}">
+          <div
+            style="
+              position: absolute;
+              inset: 0;
+              background: rgba(20, 20, 24, 0.45);
+              display: flex;
+              align-items: flex-start;
+              justify-content: center;
+              padding-top: 150px;
+            "
+          >
+            <div
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="dlgTitle"
+              style="width: 560px; box-sizing: border-box; background: {{t.card}}; border: 1px solid {{t.lineStrong}}; border-radius: 12px; padding: 24px 26px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.25)"
+            >
+              <h2 id="dlgTitle" style="margin: 0; font-size: 1.15em; font-weight: 700">
+                {{dlgTitle}}
+              </h2>
+              <sc-if value="{{blocked}}" hint-placeholder-val="{{ false }}">
+                <p style="margin: 0">{{L.blockedBody}}</p>
+                <ul
+                  style="
+                    margin: 0;
+                    padding-left: 20px;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 6px;
+                  "
+                >
+                  <sc-for list="{{problems}}" as="p" hint-placeholder-count="2">
+                    <li>
+                      <button onClick="{{p.go}}" style="{{linkBtn}}">{{p.where}}</button>:
+                      {{p.what}}
+                    </li>
+                  </sc-for>
+                </ul>
+              </sc-if>
+              <sc-if value="{{canSave}}" hint-placeholder-val="{{ true }}">
+                <p style="margin: 0; font-variant-numeric: tabular-nums">{{dlgSummary}}</p>
+                <sc-if value="{{hasPending}}" hint-placeholder-val="{{ true }}">
+                  <p style="margin: 0; font-size: 0.9em; color: {{t.muted}}">{{dlgPending}}</p>
+                </sc-if>
+                <sc-if value="{{askName}}" hint-placeholder-val="{{ true }}">
+                  <label style="display: flex; flex-direction: column; gap: 4px; margin-top: 4px">
+                    <span style="font-weight: 600">{{L.yourName}}</span>
+                    <input
+                      type="text"
+                      value="{{name}}"
+                      onInput="{{onName}}"
+                      autocomplete="name"
+                      aria-describedby="nameHelp"
+                      style="{{inputStyle}}"
+                    />
+                    <span id="nameHelp" style="font-size: 0.85em; color: {{t.muted}}"
+                      >{{L.nameHelp}}</span
+                    >
+                  </label>
+                </sc-if>
+                <sc-if value="{{nameGiven}}" hint-placeholder-val="{{ false }}">
+                  <p style="margin: 0; font-size: 0.9em; color: {{t.muted}}">{{L.gradedAs}}</p>
+                </sc-if>
+              </sc-if>
+              <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 8px">
+                <button onClick="{{closeDlg}}" style="{{hdrBtn}}">{{L.goBack}}</button>
+                <sc-if value="{{canSave}}" hint-placeholder-val="{{ true }}">
+                  <button onClick="{{save}}" disabled="{{saveDisabled}}" style="{{saveBtn}}">
+                    {{L.saveGrades}}
+                  </button>
+                </sc-if>
+              </div>
+            </div>
+          </div>
+        </sc-if>
+      </div>
+    </x-dc>
+    <script
+      type="text/x-dc"
+      data-dc-script
+      data-props='{"theme":{"editor":"enum","options":["light","dark","oled","white","paper"],"default":"light"},"lang":{"editor":"enum","options":["en","vi"],"default":"en"},"q":{"editor":"enum","options":["additive","banded","holistic","code"],"default":"additive"},"prefill":{"editor":"enum","options":["none","ai"],"default":"none"},"name":{"editor":"enum","options":["ask","given"],"default":"ask"},"dialog":{"editor":"enum","options":["none","finish","blocked","done"],"default":"none"},"side":{"editor":"enum","options":["open","closed"],"default":"open"},"layout":{"editor":"enum","options":["tiles","table"],"default":"table"},"$preview":{"width":1280,"height":940}}'
+    >
+      class Component extends DCLogic {
+        renderVals() {
+          var self = this;
+          var s = this.state || {};
+          var T = {
+            light: { bg: "#eceae5", surface: "#f4f3ef", card: "#fcfcfa", sunken: "#e4e2dc", line: "#d6d4cd", lineStrong: "#8c8b83", text: "#2a2b31", muted: "#55554f", accent: "#46608a", onAccent: "#fcfcfa", ok: "#3d6946", bad: "#963f3e", warn: "#725b1c", info: "#365b84", hint: "#3b6884", shadow: "0 1px 2px rgba(40,38,30,0.06), 0 2px 8px rgba(40,38,30,0.04)", okWash: "#e3ebe2", badWash: "#f2e3e1", infoWash: "#e2e8f0" },
+            dark: { bg: "#1b1d22", surface: "#262a31", card: "#2c3038", sunken: "#15171b", line: "#464c57", lineStrong: "#7b8394", text: "#d9dce2", muted: "#a9afba", accent: "#8fa8d4", onAccent: "#15171b", ok: "#92b99a", bad: "#d08a88", warn: "#cfb277", info: "#8fb0d6", hint: "#8dbad6", shadow: "0 1px 3px rgba(0,0,0,0.35)", okWash: "#2a3a30", badWash: "#3d2b2d", infoWash: "#243042" },
+            oled: { bg: "#000000", surface: "#0e0e10", card: "#0f0f11", sunken: "#18181b", line: "#303238", lineStrong: "#73767e", text: "#e0e0e0", muted: "#a3a5aa", accent: "#9fb2d4", onAccent: "#000000", ok: "#9cc2a5", bad: "#d9a09d", warn: "#d3bf91", info: "#a0b8d6", hint: "#9fc0d4", shadow: "none", okWash: "#121c15", badWash: "#201414", infoWash: "#111a26" },
+            white: { bg: "#ffffff", surface: "#ffffff", card: "#ffffff", sunken: "#f2f2f2", line: "#c9c9c9", lineStrong: "#767676", text: "#1a1a1a", muted: "#575757", accent: "#1f4f8f", onAccent: "#ffffff", ok: "#2f6f3a", bad: "#b02a26", warn: "#7f5d00", info: "#1f5f9e", hint: "#24678c", shadow: "none", okWash: "#eef5ef", badWash: "#fbeeed", infoWash: "#eaf1fa" },
+            paper: { bg: "#f6f1e7", surface: "#efe8da", card: "#fbf8f1", sunken: "#ebe3d3", line: "#dcd2bf", lineStrong: "#8b806c", text: "#37302a", muted: "#665b4e", accent: "#4c6b65", onAccent: "#fbf8f1", ok: "#426a44", bad: "#97463b", warn: "#755a17", info: "#426283", hint: "#3e687c", shadow: "0 1px 2px rgba(70,55,30,0.07)", okWash: "#e6ebdc", badWash: "#f1e1d8", infoWash: "#e4e6e4" }
+          };
+          var MONO = "'Cascadia Code', Consolas, Menlo, monospace";
+          var themeName = this.props.theme || "light";
+          var t = T[themeName] || T.light;
+          var font = themeName === "paper" ? "'Source Serif 4', Georgia, serif" : themeName === "dark" ? "'Be Vietnam Pro', 'Segoe UI', sans-serif" : "'Segoe UI', system-ui, -apple-system, Roboto, sans-serif";
+          var lang = this.props.lang === "vi" ? "vi" : "en";
+          var dec = function (x) { var r = String(Math.round(x * 100) / 100); return lang === "vi" ? r.replace(".", ",") : r; };
+
+          // The form's own words, in ui_lang. The questions and answers stay in the quiz's language.
+          var LANG = {
+            en: {
+              grade: "Grade", attemptOf: "attempt of 5 Nov 2026, 14:32", questions: "Questions", sideTitle: "Questions to grade (Q)",
+              appearance: "Appearance", finish: "Finish", toGrade: "To grade", q31Head: "Question 31 · Essay · 4 points", q31Label: "Question 31: not answered, 0 / 4. Opens it read-only.", noAnswerState: "No answer · 0 / 4", q31Prompt: "Explain why a moving-average filter is a low-pass filter.", noAnswerBody: "No answer was submitted. It counts as 0 of 4 points, so there is nothing to grade.", q31c1: "States the frequency response of an M-point average", q31c2: "Shows the gain is 1 at DC and falls towards high frequencies", q31c3: "Names a limit: slow roll-off or sidelobes", q31Sample: "An M-point moving average has H(e^jω) = (1/M)·sin(Mω/2)/sin(ω/2)·e^(−jω(M−1)/2). At ω = 0 the gain is 1; it falls towards ω = π, with nulls at multiples of 2π/M, so slow changes pass and fast ones are smoothed out. It is a poor low-pass filter all the same: the roll-off is slow and the sidelobes stay high (about −13 dB).", readOnlyNote: "Read only: nothing here is written to the grades file.", notAnsweredH: "Not answered",
+              q31: "Question 31 · Essay", autoLine: "The other 26 questions are marked by fullmark: 34 of 40 points.", autoHead: "Scored by fullmark", autoTitle: "26 questions", autoSub: "marked on submit · choice, fill-in, numeric",
+              closeSide: "Close the sidebar (Esc)", nextKey: "next not graded", currentW: "current", criterionH: "Criterion", pointH: "Rubric point", verdictH: "Verdict · optional, not scored", bandH: "Band", noteFor: function (c) { return "Note for " + c; }, requiredW: "required", whyShort: "Why this score", graded: function (a, b) { return a + " of " + b + " graded"; }, keyQ: "questions", keyEsc: "close", answer: "Answer", sample: "Sample answer", sampleBeside: "Side-by-side sample", rubric: "Rubric",
+              score: "Score", anyScore: "type it, or use − and +; 0 to 4", less: "Less", more: "More", bullets: "Each point, optional and not scored",
+              met: "Met", partly: "Partly", missed: "Missed", clear: "Clear", clearOf: function (c) { return "Clear the band for " + c; }, total: "Total",
+              noteMissing: "A lost mark needs a note: say what was missing.", offBand: function (x) { return "“" + x + "” is not a band: 0 to 9, in steps of 0.5."; }, offPts: function (x, m, st) { return "“" + x + "” is not a score here: 0 to " + m + ", in steps of " + st + "."; }, pointsFor: function (c) { return "Points for " + c; }, lowerPts: function (c) { return "Take a step off " + c; }, raisePts: function (c) { return "Add a step to " + c; }, clearPts: function (c) { return "Clear the points for " + c; }, clearW: "Clear", clearAllLabel: "Clear all: every score and note on this question", clearRow: function (c) { return "Clear " + c + ": score and note"; }, offScore: function (x, p) { return "“" + x + "” is not a score: 0 to " + p + "."; }, bandFor: function (c) { return "Band for " + c; }, noteShort: "Note", needReq: "required", needOpt: "optional", askBand: function (c) { return "What held " + c + " back?"; }, askAdd: "What was missing?", noteOptional: "Optional", noteMissingShort: "Say what held the band back.", noteMissingBand: "A band below 9 needs a note: say what held it back.",
+              whyMissing: "A single score needs a reason.", improve: "To improve (optional)", prev: "Previous", next: "Next",
+              saved: "Grades saved", gradesFile: "your grades (kind: human)", reportFile: "the report, with the grades folded in",
+              closed: "The server has stopped. You can close this tab.", goBack: "Go back", saveGrades: "Save grades",
+              yourName: "Your name, as the grader", nameHelp: "Written into the grades file as who graded. Required.",
+              blockedBody: "Nothing is saved until these are fixed:", restoreAi: "Undo my changes",
+              aiLine: "Pre-filled from Claude Opus 5.5's grades",
+              mode: { additive: "points per criterion", banded: "bands 0 to 9, step 0.5 · IELTS Writing Task 2", holistic: "one score" },
+              st: { none: "Not graded", half: "Half graded", done: "Graded", bad: "Needs a note", ai: "AI grade, unchanged", adj: "Adjusted" },
+              essay: "Essay", code: "Code", pts: function (n) { return n === 1 ? "1 point" : dec(n) + " points"; },
+              head: function (n, kind, p) { return "Question " + n + " · " + kind + " · " + p; },
+              words: function (n) { return n + " words"; }, lines: function (n) { return n + " lines"; },
+              upTo: function (m) { return "up to " + m; }, bandOf: "band 0 to 9, step 0.5", presetT2: "IELTS Writing Task 2", scaleTag: function (a, b, st) { return "bands " + a + "–" + b + " · step " + st; },
+              radios: function (c) { return "Points for " + c; }, verdictFor: function (c) { return "Verdict for " + c; },
+              raise: function (c) { return "Raise " + c; }, lower: function (c) { return "Lower " + c; },
+              noteOpt: "Note (optional: full marks)", noteReq: "Note (required: a mark was lost)",
+              whyOpt: "Why this score (optional)", whyReq: "Why this score (required)",
+              sumHow: "the sum of the criteria, computed by fullmark",
+              bandHow: function (mean, band, pts) { return "mean " + mean + ", IELTS rounding: band " + band + ", so " + pts + " of 9 points"; },
+              bandWait: "every band given, then fullmark rounds the mean",
+              holHow: "the score you give", notYet: "–", overall: "Overall band", pointsW: "Points", meanW: "mean", bandW: "band", ieltsRound: "IELTS rounding", rawW: "Raw score", gradingW: "Grading", schemeW: "Grading scheme", asIs: "As given", noRounding: "no rounding", pointsLow: "points", ieltsRule: "to the nearest 0.5; .25 and .75 round up", meanOf: function (n) { return "mean of " + n + " bands"; }, pointsOf: function (x) { return x + " / 9 points"; }, afterAll: function (n) { return "once all " + n + " bands are given"; }, sumOf: function (n) { return "the sum of " + n + " criteria"; }, bandsGiven: function (a, b) { return a + " of " + b + " bands given"; },
+              gradedOf: function (a, b) { return "Graded " + a + " of " + b; },
+              given: function (a, b) { return a + " of " + b + " points given"; },
+              scoreSoFar: function (a, b, p) { return "Score so far " + a + " / " + b + " (" + p + "%)"; },
+              aiNote: function (st) { return "Claude Opus 5.5 graded this on 5 Nov. Accept it as it is, or change any cell: " + st + "."; },
+              finishT: "Save your grades?", blockedT: "Some grades are not finished",
+              summary: function (g, n, a, b) { return g + " of " + n + " questions graded, " + a + " of " + b + " points given."; },
+              pending: function (list) { return list + " stay pending: the report leaves them out of the score until someone grades them."; },
+              gradedAs: "Graded as T. Lan (from --name).",
+              half: "half graded: give every component or clear them all", noteP: "a lost mark has no note", whyP: "the score has no reason",
+              qn: function (n) { return "Question " + n; },
+              doneScore: function (a, b, p) { return "Score " + a + " / " + b + " (" + p + "%)"; },
+              doneGraded: function (g, pend) { return g + " graded by T. Lan" + (pend ? "; " + pend + " still pending." : "."); },
+              doneAi: " Reviewing Claude Opus 5.5's grades."
+            },
+            vi: {
+              grade: "Chấm", attemptOf: "lượt làm 14:32, 5/11/2026", questions: "Câu hỏi", sideTitle: "Các câu cần chấm (Q)",
+              appearance: "Giao diện", finish: "Hoàn tất", toGrade: "Cần chấm", q31Head: "Câu 31 · Tự luận · 4 điểm", q31Label: "Câu 31: không trả lời, 0 / 4. Mở để xem.", noAnswerState: "Không trả lời · 0 / 4", q31Prompt: "Explain why a moving-average filter is a low-pass filter.", noAnswerBody: "Không có câu trả lời. Câu này tính 0 / 4 điểm, nên không có gì để chấm.", q31c1: "States the frequency response of an M-point average", q31c2: "Shows the gain is 1 at DC and falls towards high frequencies", q31c3: "Names a limit: slow roll-off or sidelobes", q31Sample: "An M-point moving average has H(e^jω) = (1/M)·sin(Mω/2)/sin(ω/2)·e^(−jω(M−1)/2). At ω = 0 the gain is 1; it falls towards ω = π, with nulls at multiples of 2π/M, so slow changes pass and fast ones are smoothed out. It is a poor low-pass filter all the same: the roll-off is slow and the sidelobes stay high (about −13 dB).", readOnlyNote: "Chỉ xem: không có gì ở đây được ghi vào tệp điểm.", notAnsweredH: "Không trả lời",
+              q31: "Câu 31 · Tự luận", autoLine: "26 câu còn lại do fullmark chấm: 34 / 40 điểm.", autoHead: "Fullmark chấm", autoTitle: "26 câu", autoSub: "chấm khi nộp bài · trắc nghiệm, điền, số",
+              closeSide: "Đóng thanh bên (Esc)", nextKey: "câu chưa chấm tiếp theo", currentW: "đang xem", criterionH: "Tiêu chí", pointH: "Ý trong đáp án", verdictH: "Đánh giá · không bắt buộc, không tính điểm", bandH: "Band", noteFor: function (c) { return "Ghi chú cho " + c; }, requiredW: "bắt buộc", whyShort: "Vì sao cho điểm này", graded: function (a, b) { return "đã chấm " + a + " / " + b; }, keyQ: "câu hỏi", keyEsc: "đóng", answer: "Bài làm", sample: "Bài mẫu", sampleBeside: "Bài mẫu", rubric: "Thang chấm",
+              score: "Điểm", anyScore: "gõ điểm, hoặc dùng − và +; từ 0 đến 4", less: "Giảm", more: "Tăng", bullets: "Từng ý, không bắt buộc và không tính điểm",
+              met: "Đạt", partly: "Một phần", missed: "Chưa đạt", clear: "Xoá", clearOf: function (c) { return "Xoá band của " + c; }, total: "Tổng",
+              noteMissing: "Bị trừ điểm thì cần ghi chú: ghi rõ còn thiếu gì.", offBand: function (x) { return "“" + x + "” không phải band: từ 0 đến 9, bước 0,5."; }, offPts: function (x, m, st) { return "“" + x + "” không phải điểm hợp lệ: từ 0 đến " + m + ", bước " + st + "."; }, pointsFor: function (c) { return "Điểm cho " + c; }, lowerPts: function (c) { return "Bớt một bước ở " + c; }, raisePts: function (c) { return "Thêm một bước ở " + c; }, clearPts: function (c) { return "Xoá điểm của " + c; }, clearW: "Xoá", clearAllLabel: "Xoá hết: mọi điểm và ghi chú của câu này", clearRow: function (c) { return "Xoá " + c + ": điểm và ghi chú"; }, offScore: function (x, p) { return "“" + x + "” không phải điểm hợp lệ: từ 0 đến " + p + "."; }, bandFor: function (c) { return "Band " + c; }, noteShort: "Ghi chú", needReq: "bắt buộc", needOpt: "không bắt buộc", askBand: function (c) { return "Điều gì làm giảm " + c + "?"; }, askAdd: "Còn thiếu gì?", noteOptional: "Không bắt buộc", noteMissingShort: "Ghi rõ điều gì làm giảm band.", noteMissingBand: "Band dưới 9 cần ghi chú: ghi rõ điều gì làm giảm band.",
+              whyMissing: "Cho một điểm chung thì cần nêu lý do.", improve: "Cần cải thiện (không bắt buộc)", prev: "Câu trước", next: "Câu sau",
+              saved: "Đã lưu điểm", gradesFile: "điểm bạn chấm (kind: human)", reportFile: "báo cáo, đã gộp điểm chấm",
+              closed: "Máy chủ đã dừng. Bạn có thể đóng thẻ này.", goBack: "Quay lại", saveGrades: "Lưu điểm",
+              yourName: "Tên bạn, với tư cách người chấm", nameHelp: "Ghi vào tệp điểm là người chấm. Bắt buộc.",
+              blockedBody: "Chưa lưu được cho đến khi sửa những chỗ này:", restoreAi: "Hoàn tác thay đổi của tôi",
+              aiLine: "Điền sẵn từ điểm của Claude Opus 5.5",
+              mode: { additive: "chấm theo tiêu chí", banded: "band 0 đến 9, bước 0,5 · IELTS Writing Task 2", holistic: "một điểm chung" },
+              st: { none: "Chưa chấm", half: "Chấm dở", done: "Đã chấm", bad: "Thiếu ghi chú", ai: "Điểm AI, giữ nguyên", adj: "Đã chỉnh" },
+              essay: "Tự luận", code: "Lập trình", pts: function (n) { return dec(n) + " điểm"; },
+              head: function (n, kind, p) { return "Câu " + n + " · " + kind + " · " + p; },
+              words: function (n) { return n + " chữ"; }, lines: function (n) { return n + " dòng"; },
+              upTo: function (m) { return "tối đa " + m; }, bandOf: "band 0 đến 9, bước 0,5", presetT2: "IELTS Writing Task 2", scaleTag: function (a, b, st) { return "band " + a + "–" + b + " · bước " + st; },
+              radios: function (c) { return "Điểm cho " + c; }, verdictFor: function (c) { return "Đánh giá cho " + c; },
+              raise: function (c) { return "Tăng " + c; }, lower: function (c) { return "Giảm " + c; },
+              noteOpt: "Ghi chú (không bắt buộc: đủ điểm)", noteReq: "Ghi chú (bắt buộc: bị trừ điểm)",
+              whyOpt: "Lý do cho điểm (không bắt buộc)", whyReq: "Lý do cho điểm (bắt buộc)",
+              sumHow: "tổng các tiêu chí, do fullmark tính",
+              bandHow: function (mean, band, pts) { return "trung bình " + mean + ", làm tròn kiểu IELTS: band " + band + ", tức " + pts + " / 9 điểm"; },
+              bandWait: "cho đủ các band, rồi fullmark làm tròn trung bình",
+              holHow: "điểm bạn cho", notYet: "–", overall: "Band tổng", pointsW: "Điểm", meanW: "trung bình", bandW: "band", ieltsRound: "làm tròn kiểu IELTS", rawW: "Điểm thô", gradingW: "Chấm điểm", schemeW: "Cách quy đổi", asIs: "Giữ nguyên", noRounding: "không làm tròn", pointsLow: "điểm", ieltsRule: "về bội số gần nhất của 0,5; .25 và .75 làm tròn lên", meanOf: function (n) { return "trung bình " + n + " band"; }, pointsOf: function (x) { return x + " / 9 điểm"; }, afterAll: function (n) { return "khi đã cho đủ " + n + " band"; }, sumOf: function (n) { return "tổng " + n + " tiêu chí"; }, bandsGiven: function (a, b) { return "đã cho " + a + " / " + b + " band"; },
+              gradedOf: function (a, b) { return "Đã chấm " + a + " / " + b; },
+              given: function (a, b) { return "đã cho " + a + " / " + b + " điểm"; },
+              scoreSoFar: function (a, b, p) { return "Điểm hiện tại " + a + " / " + b + " (" + p + "%)"; },
+              aiNote: function (st) { return "Claude Opus 5.5 đã chấm câu này ngày 5/11. Giữ nguyên, hoặc sửa bất kỳ ô nào: " + st + "."; },
+              finishT: "Lưu điểm đã chấm?", blockedT: "Một số câu chưa chấm xong",
+              summary: function (g, n, a, b) { return "Đã chấm " + g + " / " + n + " câu, cho " + a + " / " + b + " điểm."; },
+              pending: function (list) { return list + " vẫn chờ chấm: báo cáo chưa tính các câu này vào điểm cho đến khi có người chấm."; },
+              gradedAs: "Người chấm: T. Lan (từ --name).",
+              half: "chấm dở: cho đủ mọi thành phần hoặc xoá hết", noteP: "bị trừ điểm mà không có ghi chú", whyP: "điểm chung chưa có lý do",
+              qn: function (n) { return "Câu " + n; },
+              doneScore: function (a, b, p) { return "Điểm " + a + " / " + b + " (" + p + "%)"; },
+              doneGraded: function (g, pend) { return g + " do T. Lan chấm" + (pend ? "; " + pend + " vẫn chờ chấm." : "."); },
+              doneAi: " Đã rà lại điểm của Claude Opus 5.5."
+            }
+          };
+          var L = LANG[lang];
+
+          // The four answered essay and code questions of this attempt. Question 31 was left blank.
+          var Q = [
+            { id: "q21", n: 21, kind: "essay", mode: "additive", points: 3, step: 0.25,
+              prompt: "Derive the transfer function of an RC low-pass filter with the Laplace transform, and say what its pole tells you.",
+              answer: "With zero initial conditions, the capacitor current is i = C dv/dt, so in the s-domain I(s) = sC·Vout(s). The loop gives Vin(s) = R·I(s) + Vout(s) = (sRC + 1)·Vout(s).\n\nSo H(s) = Vout(s) / Vin(s) = 1 / (1 + sRC).\n\nThe pole is at s = −1/RC. It sets the cut-off frequency: above 1/(2πRC) the output falls by 20 dB per decade.",
+              words: 71,
+              sample: "Define the Laplace transform and the impedance of the capacitor, 1/(sC), assuming zero initial conditions. The voltage divider gives H(s) = 1/(1 + sRC). The single pole at s = −1/RC lies in the left half-plane, so the filter is stable, and it sets the cut-off frequency ωc = 1/RC.",
+              criteria: [
+                { id: "defs", text: "Establish the definitions", max: 0.5 },
+                { id: "derive", text: "Derive the transfer function", max: 1.5 },
+                { id: "interp", text: "Interpret the pole", max: 1 }
+              ] },
+            { id: "q24", n: 24, kind: "essay", mode: "banded", points: 9,
+              prompt: "Some people think university students should study whatever they like; others think they should study only subjects that will be useful later. Discuss both views and give your own opinion.",
+              answer: "It is often argued that university should prepare young people for work, so students must choose useful subjects such as engineering or medicine. This view has some merit, because graduates need to find jobs and the country needs skilled workers.\n\nHowever, I believe students should be free to study what they like. Firstly, people who enjoy their subject study harder and achieve more. Secondly, it is difficult to predict which skills will be useful in twenty years; many jobs today did not exist when their workers were at university.\n\nIn conclusion, although useful subjects matter, freedom of choice leads to better learning and more flexible graduates.",
+              words: 112,
+              sample: "A band 7+ answer discusses both views with developed examples, states a clear position in the introduction and keeps it throughout, uses a range of cohesive devices without overuse, and shows flexible vocabulary and complex sentences with few errors. It is at least 250 words.",
+              criteria: [
+                { id: "TR", text: "Task response" }, { id: "CC", text: "Coherence and cohesion" },
+                { id: "LR", text: "Lexical resource" }, { id: "GRA", text: "Grammatical range and accuracy" }
+              ] },
+            { id: "q27", n: 27, kind: "essay", mode: "holistic", points: 4,
+              prompt: "Explain why a signal must be sampled faster than twice its highest frequency.",
+              answer: "If you sample too slowly, a high frequency looks the same as a lower one after sampling, which is called aliasing. The Nyquist rate is twice the highest frequency, so sampling faster than that keeps every component distinct and the signal can be rebuilt with an ideal low-pass filter. For example, a 3 kHz tone sampled at 4 kHz shows up as 1 kHz.",
+              words: 68,
+              sample: "Sampling makes copies of the spectrum at multiples of the sampling rate. If fs > 2·fmax the copies do not overlap and an ideal low-pass filter recovers the signal; otherwise they overlap and high frequencies fold onto low ones (aliasing), which no filter can undo.",
+              bullets: [
+                { id: "copies", text: "Sampling repeats the spectrum at multiples of fs" },
+                { id: "aliasing", text: "Overlap folds high frequencies onto low ones" },
+                { id: "example", text: "A worked example" }
+              ] },
+            { id: "q30", n: 30, kind: "code", mode: "additive", points: 5, step: 0.5,
+              prompt: "Write a Python function conv(x, h) that returns the full discrete convolution of two lists, without numpy.",
+              answer: "def conv(x, h):\n    y = [0] * (len(x) + len(h) - 1)\n    for n in range(len(y)):\n        for k in range(len(h)):\n            if 0 <= n - k < len(x):\n                y[n] += h[k] * x[n - k]\n    return y",
+              lines: 7,
+              sample: "def conv(x, h):\n    \"\"\"Full convolution: len(x) + len(h) - 1 samples.\"\"\"\n    y = [0.0] * (len(x) + len(h) - 1)\n    for i, xi in enumerate(x):\n        for j, hj in enumerate(h):\n            y[i + j] += xi * hj\n    return y",
+              criteria: [
+                { id: "loop", text: "Correct convolution sum", max: 2 },
+                { id: "edges", text: "Handles the edges and the output length", max: 1.5 },
+                { id: "clear", text: "Clear names, a docstring or comments", max: 1.5 }
+              ] }
+          ];
+
+          // Claude's grades, pre-filled with --grades. Without it the form opens with what was given in this sitting.
+          var AI = {
+            q21: { c: { defs: 0.5, derive: 1.5, interp: 0.5 }, n: { defs: "", derive: "", interp: "Names the cut-off but not stability: the pole is in the left half-plane." }, why: "A clean derivation; the pole's meaning is half there.", imp: "Say why a left-half-plane pole means a stable filter." },
+            q24: { c: { TR: 6, CC: 6.5, LR: 6, GRA: 6.5 }, n: { TR: "Under 250 words; the opinion is clear but the useful-subjects view is thin.", CC: "Clear paragraphs and linking, a little mechanical (Firstly, Secondly).", LR: "Adequate range; 'useful' and 'study' repeat.", GRA: "Mostly accurate; few complex structures." }, why: "A clear position, held back by length and development.", imp: "Write 250 words or more and develop each view with an example." },
+            q27: { c: { score: 3 }, b: { copies: "missed", aliasing: "met", example: "met" }, why: "Explains aliasing with a correct example, but never says why the spectrum overlaps.", imp: "Show the spectrum repeating at multiples of fs." },
+            q30: { c: { loop: 2, edges: 1.5, clear: 0.5 }, n: { loop: "", edges: "", clear: "No docstring or comment; k and n are fine for a sum." }, why: "Correct and handles the edges.", imp: "Add a docstring saying the output length." }
+          };
+          var MINE = {
+            q21: { c: { defs: 0.5, derive: 1.25, interp: 0.5 }, n: { defs: "", derive: "Uses zero initial conditions without saying so.", interp: "Gives the cut-off, not what the pole says about stability." }, why: "", imp: "" },
+            q24: { c: { TR: 6, CC: 6.5 }, n: { TR: "Under 250 words; one side of the debate is thin.", CC: "Clear paragraphs; the linking is mechanical." }, why: "", imp: "" },
+            q27: { c: {}, b: {}, why: "", imp: "" },
+            q30: { c: {}, n: {}, why: "", imp: "" }
+          };
+          // For the Finish boards: two questions graded and two left; or a lost mark with no note and a half-graded essay.
+          var FINISHED = JSON.parse(JSON.stringify(MINE));
+          FINISHED.q24 = { c: { TR: 6, CC: 6.5, LR: 6, GRA: 6.5 }, n: { TR: "Under 250 words; one side of the debate is thin.", CC: "Clear paragraphs; the linking is mechanical.", LR: "Adequate range; 'useful' and 'study' repeat.", GRA: "Mostly accurate; few complex sentences." }, why: "", imp: "Write 250 words or more." };
+          var BLOCKED = JSON.parse(JSON.stringify(MINE));
+          BLOCKED.q21.n.interp = "";
+          var ai = (this.props.prefill || "none") === "ai";
+          var dlgProp = this.props.dialog || "none";
+          var G = s.g || (ai ? AI : dlgProp === "blocked" ? BLOCKED : dlgProp === "finish" || dlgProp === "done" ? FINISHED : MINE);
+          var nameMode = this.props.name || "ask";
+          var pick = { additive: "q21", banded: "q24", holistic: "q27", code: "q30" };
+          var layout = this.props.layout || "table";
+          var curId = s.q || pick[this.props.q || "additive"] || "q21";
+          var sampleOn = !!s.sample;
+          var sideOpen = s.side !== undefined ? s.side : (this.props.side || "open") === "open";
+          var dialog = s.dialog !== undefined ? s.dialog : this.props.dialog || "none";
+          var done = dialog === "done";
+
+          var clone = function (o) { return JSON.parse(JSON.stringify(o)); };
+          var put = function (id, fn) { var g = clone(G); fn(g[id]); self.setState({ g: g }); };
+          var round2 = function (x) { return Math.round(x * 100) / 100; };
+          // IELTS rounding: .25 up to the half band, .75 up to the next band, to the nearest half band.
+          var ielts = function (m) { return Math.floor(m * 4 + 1e-9) % 2 === 1 ? (Math.floor(m * 4 + 1e-9) + 1) / 4 : Math.round(m * 2) / 2; };
+
+          // What each question holds: how many components, how many given, its total, and its problems.
+          var info = function (q) {
+            var g = G[q.id];
+            var given = 0, total = 0, need = 0, problems = [];
+            if (q.mode === "additive") {
+              need = q.criteria.length;
+              q.criteria.forEach(function (c) {
+                var v = g.c[c.id];
+                if (v !== undefined && v !== null) { given++; total += v; if (v < c.max && !(g.n[c.id] || "").trim()) problems.push("note"); }
+              });
+            } else if (q.mode === "banded") {
+              need = q.criteria.length;
+              var sum = 0;
+              q.criteria.forEach(function (c) {
+                var v = g.c[c.id];
+                if (v !== undefined && v !== null) { given++; sum += v; if (v < 9 && !(g.n[c.id] || "").trim()) problems.push("note"); }
+              });
+              if (given === need) { var band = ielts(sum / need); total = round2((q.points * band) / 9); }
+            } else {
+              need = 1;
+              if (g.c.score !== undefined && g.c.score !== null) { given = 1; total = g.c.score; if (!(g.why || "").trim()) problems.push("why"); }
+            }
+            var state = given === 0 ? "none" : given < need ? "half" : problems.length ? "bad" : "done";
+            if (given > 0 && given < need) problems.unshift("half");
+            var adjusted = ai && JSON.stringify(g) !== JSON.stringify(AI[q.id]);
+            return { given: given, need: need, total: given === need ? total : null, state: state, problems: problems, adjusted: adjusted };
+          };
+          var stateWord = function (q, i) {
+            if (ai && i.state === "done") return i.adjusted ? L.st.adj : L.st.ai;
+            return L.st[i.state];
+          };
+          var stateColor = function (st) { return st === "done" ? t.ok : st === "bad" || st === "half" ? t.bad : t.muted; };
+
+          var infos = {};
+          var gradedN = 0, givenPts = 0, gradedPts = 0;
+          Q.forEach(function (q) { var i = info(q); infos[q.id] = i; if (i.state === "done") { gradedN++; givenPts += i.total; gradedPts += q.points; } });
+          var AUTO_EARNED = 34, AUTO_POINTS = 40, BLANK = 4;
+          var soFarE = AUTO_EARNED + givenPts, soFarP = AUTO_POINTS + BLANK + gradedPts;
+          var pct = function (a, b) { return Math.round((a / b) * 100); };
+
+          var curQ = Q.filter(function (q) { return q.id === curId; })[0] || Q[0];
+          var idx = Q.indexOf(curQ);
+          var go = function (id) { return function () { self.setState({ q: id, dialog: "none", blank: false }); }; };
+          var blankOn = !!s.blank;
+
+          // half graded: a ring filled to the share of components given, not ½, which reads as a score (and ◐ is "partly right" on Results)
+          var GLYPH = { done: "✓", half: "", bad: "!", none: "" };
+          // one fixed arc, about a third of the ring with round ends: "started", never a half (◐) or a spinner
+          var RING = "30 100";
+          var ROWCOL = { done: t.ok, half: t.bad, bad: t.bad, none: t.text };
+          var ROWWASH = { done: t.okWash, half: t.badWash, bad: t.badWash, none: t.card };
+          var items = Q.map(function (q) {
+            var i = infos[q.id];
+            var on = !blankOn && q.id === curQ.id;
+            var st = i.state;
+            return {
+              title: L.qn(q.n), go: go(q.id), current: on ? "true" : "false",
+              sub: (q.kind === "code" ? L.code : L.essay) + " · " + L.mode[q.mode].split(",")[0],
+              score: (i.total === null ? L.notYet : dec(i.total)) + " / " + dec(q.points),
+              label: L.qn(q.n) + ": " + stateWord(q, i) + (i.total === null ? "" : ", " + dec(i.total) + " / " + dec(q.points)),
+              glyph: GLYPH[st], half: st === "half", ringDash: RING,
+              glyphStyle: "flex: 0 0 20px; text-align: center; font-weight: 700; color: " + ROWCOL[st],
+              style: "font: inherit; font-size: 0.9em; width: 100%; min-height: 48px; box-sizing: border-box; display: flex; align-items: center; gap: 8px; padding: 4px 10px 4px 6px; border-radius: 6px; cursor: pointer; color: " + t.text + "; background: " + ROWWASH[st] + "; border: " + (on ? "2px solid " + t.text : st === "none" ? "1px solid " + t.line : "1px solid " + ROWCOL[st])
+            };
+          });
+
+          var segBtn = function (on) {
+            return "font: inherit; font-size: 0.9em; min-width: 44px; height: 40px; box-sizing: border-box; padding: 0 10px; border-radius: 8px; cursor: pointer; font-variant-numeric: tabular-nums; font-weight: 600; border: 1px solid " + (on ? t.accent : t.lineStrong) + "; box-shadow: " + (on ? "inset 0 0 0 1px " + t.accent : "none") + "; background: " + (on ? t.accent : t.card) + "; color: " + (on ? t.onAccent : t.text);
+          };
+          var TY = s.ty || {};
+          var parseNum = function (text) { var x = Number(String(text).trim().replace(",", ".")); return String(text).trim() === "" || isNaN(x) ? null : x; };
+          var typer = function (key, max, stepV, setFn) {
+            // Every value the field may hold, written with "." or ",": a keystroke that is not the start of one
+            // of them (a letter, a second separator, "10", "6.3") is refused, so the field never holds an invalid value.
+            var valid = [];
+            for (var k = 0; k <= Math.round(max / stepV); k++) {
+              var str = String(Math.round(k * stepV * 100) / 100);
+              if (str.indexOf(".") < 0) str += ".0";
+              valid.push(str, str.replace(".", ","));
+            }
+            return function (e) {
+              var text = e.target.value.replace(/\s/g, "");
+              var fits = text === "" || valid.some(function (v) { return v.indexOf(text) === 0; });
+              if (!fits) { e.target.value = TY[key] !== undefined ? TY[key] : e.target.defaultValue; self.forceUpdate(); return; }
+              var x = parseNum(text);
+              var ty = Object.assign({}, TY);
+              var ok = text.trim() === "" || (x !== null && x >= 0 && x <= max && Math.abs(Math.round(x / stepV) * stepV - x) < 1e-9);
+              if (ok) delete ty[key]; else ty[key] = text;
+              var g2 = JSON.parse(JSON.stringify(G));
+              if (ok) setFn(g2[curQ.id], text.trim() === "" ? null : x);
+              self.setState({ g: g2, ty: ty });
+            };
+          };
+          var showErrors = dialog === "blocked" || !!s.tried;
+          // every number field: a bare figure, no field chrome; the parts beside it are split by the line colour; a set value gets the accent wash and underline, as a chosen verdict does
+          var numCss = function (set) {
+            return "-webkit-appearance: none; appearance: none; flex: 1 1 3.6em; box-sizing: border-box; width: 100%; min-width: 0; height: 100%; min-height: 44px; margin: 0; padding: 0; border: 0; border-radius: 0; text-align: center; font: inherit; font-size: 1.2em; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1; outline-offset: -3px; border-left: 1px solid " + t.line + "; border-right: 1px solid " + t.line + "; color: " + (set ? t.text : t.muted) + "; background: " + (set ? "color-mix(in srgb, " + t.accent + " 10%, transparent); box-shadow: inset 0 -3px 0 " + t.accent : "transparent; box-shadow: none");
+          };
+          var noteDot = function (err) {
+            return "display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: " + (err ? t.bad : t.warn);
+          };
+          // a note the validator will ask for: amber and dashed while empty, red after Finish was tried, plain once written
+          var noteCss = function (err, missing, kind) {
+            var border = err ? "2px solid " + t.bad : missing ? "1px dashed " + t.warn : "1px solid " + t.lineStrong;
+            return "font: inherit; font-size: 0.95em; width: 100%; box-sizing: border-box; border-radius: 8px; background: " + t.sunken + "; color: " + t.text + "; border: " + border + (kind === "input" ? "; height: 40px; padding: 0 12px" : "; resize: vertical; padding: 6px 10px");
+          };
+          var inputCss = function (bad) {
+            return "font: inherit; font-size: 0.95em; width: 100%; box-sizing: border-box; height: 40px; padding: 0 12px; border-radius: 8px; background: " + t.sunken + "; color: " + t.text + "; border: " + (bad ? "2px solid " + t.bad : "1px solid " + t.lineStrong);
+          };
+          var boxCss = function (bad, set) {
+            return "display: flex; flex-direction: column; gap: 10px; padding: 12px 14px; border-radius: 10px; min-width: 0; background: " + (set ? t.card : t.surface) + "; border: " + (bad ? "2px solid " + t.bad : "1px solid " + (set ? t.lineStrong : t.line));
+          };
+
+          var g = G[curQ.id];
+          var ci = infos[curQ.id];
+          var cur = {
+            head: L.head(curQ.n, curQ.kind === "code" ? L.code : L.essay, L.pts(curQ.points)),
+            prompt: curQ.prompt, answer: curQ.answer, sample: curQ.sample,
+            count: curQ.kind === "code" ? L.lines(curQ.lines) : L.words(curQ.words),
+            code: curQ.kind === "code", prose: curQ.kind !== "code",
+            modeLine: L.mode[curQ.mode],
+            // the rubric's fixed values, as the grades template carries them: the preset's name (only when the rubric uses one), then the scale
+            modeTags: (curQ.mode === "banded" ? [L.presetT2, L.scaleTag("0", "9", dec(0.5))] : [L.mode[curQ.mode]]).map(function (x, i) {
+              return { text: x, style: "display: inline-flex; align-items: center; height: 24px; padding: 0 10px; border-radius: 999px; font-variant-numeric: tabular-nums; white-space: nowrap; border: 1px solid " + (i === 0 && curQ.mode === "banded" ? t.lineStrong : t.line) + "; background: " + t.surface + "; color: " + (i === 0 && curQ.mode === "banded" ? t.text : t.muted) + "; font-weight: " + (i === 0 && curQ.mode === "banded" ? 600 : 400) };
+            }),
+            additive: curQ.mode === "additive", additiveTiles: curQ.mode === "additive" && layout !== "table", additiveTable: curQ.mode === "additive" && layout === "table", banded: curQ.mode === "banded", bandedTiles: curQ.mode === "banded" && layout !== "table", bandedTable: curQ.mode === "banded" && layout === "table", holistic: curQ.mode === "holistic", holisticTiles: curQ.mode === "holistic" && layout !== "table", holisticTable: curQ.mode === "holistic" && layout === "table",
+            state: stateWord(curQ, ci), stateStyle: "font-weight: 700; color: " + stateColor(ci.state),
+            adjusted: ci.adjusted,
+            rows: [], bullets: []
+          };
+          var bigCss = function (on) { return "font-size: 1.6em; line-height: 1.1; font-weight: 700; font-variant-numeric: tabular-nums; color: " + (on ? t.text : t.muted); };
+          var chipOf = function (text, strong) { return { text: text, style: "display: inline-flex; align-items: center; min-height: 26px; padding: 0 10px; border-radius: 999px; font-variant-numeric: tabular-nums; border: 1px solid " + t.line + "; background: " + t.card + "; color: " + (strong ? t.text : t.muted) + "; font-weight: " + (strong ? 600 : 400) }; };
+          var valCss = function (on, size) { return "font-size: " + size + "; line-height: 1.1; font-weight: 700; font-variant-numeric: tabular-nums; color: " + (on ? t.text : t.muted); };
+          var resCol = function (label, value, sub, on, kind) {
+            return { label: label, value: value, sub: sub,
+              valueStyle: "line-height: 1.1; font-variant-numeric: tabular-nums; font-weight: 700; font-size: " + (kind === "final" ? "1.8em" : kind === "scheme" ? "1em" : "1.4em") + "; color: " + (!on ? t.muted : kind === "final" && layout === "table" ? t.accent : t.text),
+              // no box per column: raw and scheme sit on the Grading box itself; only the overall band is highlighted, with the tint a set band has
+              // in the table layout the Grading block is line-based like the table: no boxes, the overall band set apart by size alone
+              tile: layout === "table" ? "display: flex; flex-direction: column; justify-content: space-between; gap: 6px; min-width: 0; padding: 4px 12px" : "display: flex; flex-direction: column; justify-content: space-between; gap: 10px; min-width: 0; padding: 10px 12px; border-radius: 8px" + (kind === "final" ? "; background: color-mix(in srgb, " + t.accent + " " + (on ? 16 : 6) + "%, " + t.card + "); border: 1px solid " + (on ? t.accent : t.line) : "; border: 1px solid transparent") };
+          };
+          var ARROW = { text: "→", style: "color: " + t.muted };
+          var areaFor = function (bad) {
+            return "font: inherit; font-size: 0.95em; width: 100%; box-sizing: border-box; resize: vertical; padding: 6px 10px; border-radius: 8px; background: " + t.sunken + "; color: " + t.text + "; border: " + (bad ? "2px solid " + t.bad : "1px solid " + t.lineStrong);
+          };
+          if (curQ.mode === "additive") {
+            cur.rows = curQ.criteria.map(function (c) {
+              var v = g.c[c.id];
+              var has = v !== undefined && v !== null;
+              var lost = has && v < c.max;
+              var note = g.n[c.id] || "";
+              var missing = lost && !note.trim();
+              var err = missing && showErrors;
+              var opts = [];
+              for (var k = 0; k <= Math.round(c.max / curQ.step); k++) {
+                (function (val) {
+                  var on = has && Math.abs(v - val) < 1e-9;
+                  opts.push({ label: dec(val), on: on ? "true" : "false", style: segBtn(on), pick: function () { put(curQ.id, function (x) { if (on) delete x.c[c.id]; else x.c[c.id] = val; }); } });
+                })(round2(k * curQ.step));
+              }
+              return {
+                text: c.text, maxText: L.upTo(dec(c.max)), groupLabel: L.radios(c.text), opts: opts,
+                // option B's stepper: from empty, either button gives full marks, then − takes off a step
+                set: has, maxNum: String(c.max), valueNow: has ? String(v) : "", inputLabel: L.pointsFor(c.text),
+                typed: TY[curQ.id + c.id] !== undefined ? TY[curQ.id + c.id] : has ? dec(v) : "",
+                typo: TY[curQ.id + c.id] !== undefined, typoInvalid: TY[curQ.id + c.id] !== undefined ? "true" : "false",
+                typoText: L.offPts(TY[curQ.id + c.id], dec(c.max), dec(curQ.step)),
+                onType: typer(curQ.id + c.id, c.max, curQ.step, function (x, val) { if (val === null) delete x.c[c.id]; else x.c[c.id] = val; }),
+                down: function () { put(curQ.id, function (x) { var cv = x.c[c.id]; x.c[c.id] = cv === undefined || cv === null ? c.max : Math.max(0, round2(cv - curQ.step)); }); },
+                up: function () { put(curQ.id, function (x) { var cv = x.c[c.id]; x.c[c.id] = cv === undefined || cv === null ? c.max : Math.min(c.max, round2(cv + curQ.step)); }); },
+                atMin: has && v <= 0, atMax: has && v >= c.max,
+                downLabel: L.lowerPts(c.text), upLabel: L.raisePts(c.text), clearLabel: L.clearPts(c.text),
+                clear: function () { put(curQ.id, function (x) { delete x.c[c.id]; }); },
+                clearable: has || !!note.trim() || TY[curQ.id + c.id] !== undefined, clearRowLabel: L.clearRow(c.id || c.text),
+                clearRow: function () { var ty = Object.assign({}, TY); delete ty[curQ.id + c.id]; var g2 = JSON.parse(JSON.stringify(G)); delete g2[curQ.id].c[c.id]; delete g2[curQ.id].n[c.id]; self.setState({ g: g2, ty: ty }); },
+                bandStyle: numCss(has),
+                note: note, onNote: function (e) { var val = e.target.value; put(curQ.id, function (x) { x.n[c.id] = val; }); },
+                req: lost ? "true" : "false", dot: lost ? noteDot(err) : "display: none", dotSlot: "flex: 0 0 7px; display: flex; padding-top: 14px", noteLabelFor: L.noteFor(c.id),
+                ask: lost ? (curQ.mode === "banded" ? L.askBand(c.id) : L.askAdd) : L.noteOptional,
+                err: err, missing: missing, invalid: err ? "true" : "false",
+                noteStyle: noteCss(err, missing, "input"), areaStyle: noteCss(err, missing, "area"), flushArea: "font: inherit; font-size: 0.95em; display: block; width: 100%; flex: 1; min-height: 52px; box-sizing: border-box; margin: 0; padding: 10px 12px 2px; border: 0; border-radius: 0; resize: none; outline-offset: -3px; color: " + t.text + "; background: " + (err ? t.badWash : t.sunken), box: boxCss(err, has)
+              };
+            });
+            cur.totalText = (ci.total === null ? L.notYet : dec(ci.total)) + " / " + dec(curQ.points);
+            cur.totalHow = L.sumHow;
+            cur.bigLabel = L.total; cur.bigText = cur.totalText; cur.bigStyle = bigCss(ci.total !== null);
+            cur.raw = resCol(L.rawW, ci.total === null ? "–" : dec(ci.total), L.sumOf(curQ.criteria.length), ci.total !== null, "raw");
+            cur.scheme = resCol(L.schemeW, L.asIs, L.noRounding, true, "scheme");
+            cur.final = resCol(L.total, cur.totalText, L.pointsLow, ci.total !== null, "final");
+          } else if (curQ.mode === "banded") {
+            var sum = 0, n = 0;
+            cur.rows = curQ.criteria.map(function (c) {
+              var v = g.c[c.id];
+              var has = v !== undefined && v !== null;
+              if (has) { sum += v; n++; }
+              var lost = has && v < 9;
+              var note = g.n[c.id] || "";
+              var missing = lost && !note.trim();
+              var err = missing && showErrors;
+              var step = function (d) { return function () { put(curQ.id, function (x) { var cv = x.c[c.id]; x.c[c.id] = cv === undefined || cv === null ? 6 : Math.max(0, Math.min(9, cv + d)); }); }; };
+              return {
+                text: c.id + " · " + c.text, id: c.id, name: c.text, noteId: "note-" + curQ.id + "-" + c.id, need: lost ? L.needReq : L.needOpt, needStyle: "font-size: 0.9em; color: " + (missing ? t.bad : lost ? t.text : t.muted) + "; font-weight: " + (lost ? 600 : 400), tile: "display: grid; grid-row: span 5; grid-template-rows: subgrid; row-gap: 8px; padding: 12px 14px; border-radius: 10px; min-width: 0; background: " + (has ? t.card : t.surface) + "; border: " + (err ? "2px solid " + t.bad : "1px solid " + (has ? t.lineStrong : t.line)), clearLabel: L.clearOf(c.id), maxText: "",
+                bandText: has ? dec(v) : "–", set: has,
+                typed: TY[curQ.id + c.id] !== undefined ? TY[curQ.id + c.id] : has ? dec(v) : "",
+                typo: TY[curQ.id + c.id] !== undefined, typoInvalid: TY[curQ.id + c.id] !== undefined ? "true" : "false",
+                typoText: L.offBand(TY[curQ.id + c.id]),
+                errOnly: err && TY[curQ.id + c.id] === undefined,
+                valueNow: has ? String(v) : "", inputLabel: L.bandFor(c.id),
+                onType: typer(curQ.id + c.id, 9, 0.5, function (x, val) { if (val === null) delete x.c[c.id]; else x.c[c.id] = val; }),
+                bandStyle: numCss(has),
+                down: step(-0.5), up: step(0.5), atMin: has && v <= 0, atMax: has && v >= 9,
+                downLabel: L.lower(c.id), upLabel: L.raise(c.id),
+                clear: function () { put(curQ.id, function (x) { delete x.c[c.id]; }); },
+                clearable: has || !!note.trim() || TY[curQ.id + c.id] !== undefined, clearRowLabel: L.clearRow(c.id || c.text),
+                clearRow: function () { var ty = Object.assign({}, TY); delete ty[curQ.id + c.id]; var g2 = JSON.parse(JSON.stringify(G)); delete g2[curQ.id].c[c.id]; delete g2[curQ.id].n[c.id]; self.setState({ g: g2, ty: ty }); },
+                note: note, onNote: function (e) { var val = e.target.value; put(curQ.id, function (x) { x.n[c.id] = val; }); },
+                req: lost ? "true" : "false", dot: lost ? noteDot(err) : "display: none", dotSlot: "flex: 0 0 7px; display: flex; padding-top: 14px", noteLabelFor: L.noteFor(c.id),
+                ask: lost ? (curQ.mode === "banded" ? L.askBand(c.id) : L.askAdd) : L.noteOptional,
+                err: err, missing: missing, invalid: err ? "true" : "false",
+                noteStyle: noteCss(err, missing, "input"), areaStyle: noteCss(err, missing, "area"), flushArea: "font: inherit; font-size: 0.95em; display: block; width: 100%; flex: 1; min-height: 52px; box-sizing: border-box; margin: 0; padding: 10px 12px 2px; border: 0; border-radius: 0; resize: none; outline-offset: -3px; color: " + t.text + "; background: " + (err ? t.badWash : t.sunken), box: boxCss(err, has)
+              };
+            });
+            if (n === curQ.criteria.length) {
+              var mean = sum / n;
+              var band = ielts(mean);
+              cur.totalText = dec(ci.total) + " / 9";
+              cur.totalHow = L.bandHow(dec(mean), dec(band), dec(ci.total));
+              cur.bigLabel = L.overall; cur.bigText = dec(band); cur.bigStyle = bigCss(true);
+              cur.raw = resCol(L.rawW, dec(mean), L.meanOf(n), true, "raw");
+              cur.scheme = resCol(L.schemeW, L.ieltsRound, L.ieltsRule, true, "scheme");
+              cur.final = resCol(L.overall, dec(band), L.pointsOf(dec(ci.total)), true, "final");
+            } else {
+              cur.totalText = L.notYet + " / 9";
+              cur.totalHow = L.bandWait;
+              cur.bigLabel = L.overall; cur.bigText = "–"; cur.bigStyle = bigCss(false);
+              cur.raw = resCol(L.rawW, "–", L.bandsGiven(n, curQ.criteria.length), false, "raw");
+              cur.scheme = resCol(L.schemeW, L.ieltsRound, L.ieltsRule, true, "scheme");
+              cur.final = resCol(L.overall, "–", L.afterAll(curQ.criteria.length), false, "final");
+            }
+          } else {
+            var sc = g.c.score;
+            var hasS = sc !== undefined && sc !== null;
+            var moveS = function (d) { return function () { put(curQ.id, function (x) { var cv = x.c.score; x.c.score = cv === undefined || cv === null ? 2 : Math.max(0, Math.min(curQ.points, cv + d)); }); }; };
+            cur.maxText = L.upTo(dec(curQ.points));
+            cur.scoreText = hasS ? dec(sc) : "–";
+            var hk = curQ.id + "score";
+            cur.typed = TY[hk] !== undefined ? TY[hk] : hasS ? dec(sc) : "";
+            cur.typoInvalid = TY[hk] !== undefined ? "true" : "false";
+            cur.valueNow = hasS ? String(sc) : ""; cur.points = String(curQ.points);
+            cur.onType = typer(hk, curQ.points, 0.25, function (x, val) { if (val === null) delete x.c.score; else x.c.score = val; });
+            cur.hint = TY[hk] !== undefined ? L.offScore(TY[hk], dec(curQ.points)) : L.anyScore;
+            cur.hintStyle = "font-size: 0.85em; color: " + (TY[hk] !== undefined ? t.bad : t.muted) + "; font-weight: " + (TY[hk] !== undefined ? 600 : 400);
+            cur.scoreStyle = numCss(hasS);
+            cur.down = moveS(-0.5); cur.up = moveS(0.5);
+            cur.atMin = hasS && sc <= 0; cur.atMax = hasS && sc >= curQ.points;
+            var VW = { met: L.met, partly: L.partly, missed: L.missed };
+            cur.bullets = curQ.bullets.map(function (b) {
+              var bv = (g.b || {})[b.id];
+              return {
+                text: b.text, groupLabel: L.verdictFor(b.text),
+                opts: ["met", "partly", "missed"].map(function (k, i) {
+                  var on = bv === k;
+                  // option B: a flush third of the cell; the chosen one takes its verdict's colour (met ok, partly warn, missed bad), as the replay draws them
+                  var vc = { met: t.ok, partly: t.warn, missed: t.bad }[k];
+                  var flush = "font: inherit; font-size: 0.95em; padding: 0 6px; margin: 0; border: 0; border-radius: 0; cursor: pointer; outline-offset: -3px; font-weight: " + (on ? 700 : 600) + "; border-left: " + (i ? "1px solid " + t.line : "0") + "; color: " + (on ? vc : t.text) + "; background: " + (on ? "color-mix(in srgb, " + vc + " 16%, " + t.card + ")" : "transparent") + (on ? "; box-shadow: inset 0 -3px 0 " + vc : "");
+                  return { label: VW[k], on: on ? "true" : "false", style: segBtn(on), flush: flush, pick: function () { put(curQ.id, function (x) { x.b = x.b || {}; if (on) delete x.b[b.id]; else x.b[b.id] = k; }); } };
+                })
+              };
+            });
+            cur.totalText = (hasS ? dec(sc) : L.notYet) + " / " + dec(curQ.points);
+            cur.totalHow = L.holHow;
+            cur.bigLabel = L.score; cur.bigText = cur.totalText; cur.bigStyle = bigCss(hasS);
+            cur.raw = resCol(L.rawW, hasS ? dec(sc) : "–", L.holHow, hasS, "raw");
+            cur.scheme = resCol(L.schemeW, L.asIs, L.noRounding, true, "scheme");
+            cur.final = resCol(L.score, cur.totalText, L.pointsLow, hasS, "final");
+          }
+          // the table head's eraser clears every criterion of this question: scores, typed text and notes (not "why" or "to improve")
+          cur.anyClearable = !!(cur.rows && cur.rows.some(function (r) { return r.clearable; }));
+          cur.noneClearable = !cur.anyClearable;
+          cur.clearAll = function () { var ty = Object.assign({}, TY); Object.keys(ty).forEach(function (k) { if (k.indexOf(curQ.id) === 0) delete ty[k]; }); var g2 = JSON.parse(JSON.stringify(G)); g2[curQ.id].c = {}; g2[curQ.id].n = {}; self.setState({ g: g2, ty: ty }); };
+          var whyReq = curQ.mode === "holistic";
+          var whyMissing = whyReq && ci.given > 0 && !(g.why || "").trim();
+          var areaCss = function (bad) {
+            return "font: inherit; font-size: 0.95em; width: 100%; box-sizing: border-box; resize: vertical; padding: 8px 12px; border-radius: 8px; background: " + t.sunken + "; color: " + t.text + "; border: " + (bad ? "2px solid " + t.bad : "1px solid " + t.lineStrong);
+          };
+          cur.why = g.why || ""; cur.improve = g.imp || "";
+          cur.whyLabel = whyReq ? L.whyReq : L.whyOpt;
+          cur.whyLabelStyle = "font-weight: 600; color: " + (whyMissing ? t.bad : t.text);
+          cur.whyDot = whyReq ? noteDot(whyMissing && showErrors) : "display: none";
+          cur.whyMissing = whyMissing; cur.whyInvalid = whyMissing ? "true" : "false"; cur.whyStyle = areaCss(whyMissing);
+          cur.onWhy = function (e) { var val = e.target.value; put(curQ.id, function (x) { x.why = val; }); };
+          cur.onImprove = function (e) { var val = e.target.value; put(curQ.id, function (x) { x.imp = val; }); };
+
+          // Finish: half-graded questions and missing notes block the save; questions not graded stay pending.
+          var problems = [];
+          var pending = [];
+          Q.forEach(function (q) {
+            var i = infos[q.id];
+            if (i.state === "none") pending.push(L.qn(q.n));
+            i.problems.forEach(function (p) {
+              if (problems.some(function (x) { return x.id === q.id && x.p === p; })) return;
+              problems.push({ id: q.id, p: p, where: L.qn(q.n), what: p === "half" ? L.half : p === "note" ? L.noteP : L.whyP, go: go(q.id) });
+            });
+          });
+          var blocked = problems.length > 0;
+          var name = s.name !== undefined ? s.name : "";
+          var askName = nameMode === "ask";
+
+          var edged = themeName === "oled" || themeName === "white";
+          var legend = function (bg, border, color) { return "display: inline-flex; align-items: center; justify-content: center; width: 14px; height: 14px; box-sizing: border-box; border-radius: 3px; font-size: 9px; font-weight: 700; line-height: 1; background: " + bg + "; border: " + border + "; color: " + color; };
+          var btnBase = "font: inherit; font-weight: 600; box-sizing: border-box; height: 44px; padding: 0 16px; border-radius: 8px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; ";
+          return {
+            t: t, L: L, lang: lang, ai: ai, done: done, sideOpen: sideOpen && !done, sideExpanded: sideOpen ? "true" : "false",
+            // each sidebar group folds under its head, as Quiz's part headings do: chevron, aria-expanded, open at first
+            fold: ["grade", "blank", "auto"].reduce(function (acc, k) {
+              var shut = !!(s.fold || {})[k];
+              acc[k] = { open: !shut, expanded: shut ? "false" : "true", chevron: shut ? "▸" : "▾",
+                toggle: function () { var f = Object.assign({}, s.fold || {}); f[k] = !shut; self.setState({ fold: f }); } };
+              return acc;
+            }, {}),
+            showCard: !done && !blankOn, blankCard: !done && blankOn, items: items, cur: cur,
+            openBlank: function () { self.setState({ blank: true, dialog: "none" }); }, blankCurrent: blankOn ? "true" : "false",
+            q31Crit: [{ text: L.q31c1, pts: "1" }, { text: L.q31c2, pts: "2" }, { text: L.q31c3, pts: "1" }],
+            critRow: "display: flex; gap: 12px; align-items: baseline; padding: 8px 12px; border-radius: 8px; font-size: 0.95em; background: " + t.surface + "; border: 1px solid " + t.line,
+            noAnswerBox: "padding: 12px 14px; border-radius: 8px; font-style: italic; color: " + t.muted + "; background: " + t.surface + "; border: 1px dashed " + t.lineStrong,
+            aiNote: L.aiNote(stateWord(curQ, ci)),
+            restoreAi: function () { var gg = clone(G); gg[curQ.id] = clone(AI[curQ.id]); self.setState({ g: gg }); },
+            statusGraded: L.gradedOf(gradedN, Q.length),
+            statusGiven: L.given(dec(givenPts), dec(gradedPts)),
+            statusScore: L.scoreSoFar(dec(soFarE), dec(soFarP), pct(soFarE, soFarP)),
+            prev: function () { if (idx > 0) self.setState({ q: Q[idx - 1].id }); },
+            next: function () { if (idx < Q.length - 1) self.setState({ q: Q[idx + 1].id }); },
+            atFirst: idx === 0, atLast: idx === Q.length - 1,
+            toggleSide: function () { self.setState({ side: !sideOpen }); },
+            openFinish: function () { self.setState({ dialog: "finish", tried: true }); },
+            dialogOpen: dialog === "finish" || dialog === "blocked",
+            blocked: blocked, canSave: !blocked,
+            dlgTitle: blocked ? L.blockedT : L.finishT,
+            problems: problems,
+            dlgSummary: L.summary(gradedN, Q.length, dec(givenPts), dec(gradedPts)),
+            hasPending: pending.length > 0, dlgPending: L.pending(pending.join(", ")),
+            askName: askName, nameGiven: !askName, name: name,
+            onName: function (e) { self.setState({ name: e.target.value }); },
+            saveDisabled: askName && !name.trim(),
+            closeDlg: function () { self.setState({ dialog: "none" }); },
+            save: function () { self.setState({ dialog: "done" }); },
+            doneScore: L.doneScore(dec(soFarE), dec(soFarP), pct(soFarE, soFarP)),
+            doneGraded: L.doneGraded(gradedN === 1 ? L.qn(Q.filter(function (q) { return infos[q.id].state === "done"; })[0].n) : gradedN + (lang === "vi" ? " câu" : " questions"), pending.join(", ")) + (ai ? L.doneAi : ""),
+            rootStyle: "position: relative; width: 1280px; height: 940px; box-sizing: border-box; display: flex; flex-direction: column; overflow: hidden; background: " + t.bg + "; color: " + t.text + "; font-family: " + font + "; font-size: 17px; line-height: 1.55",
+            cardStyle: "background: " + t.card + "; border: 1px solid " + t.line + "; border-radius: 12px; padding: 20px 24px; box-shadow: " + t.shadow,
+            hdrBtn: btnBase + "border: 2px solid " + t.lineStrong + "; background: " + t.card + "; color: " + t.text,
+            iconBtn: "font: inherit; display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; box-sizing: border-box; border-radius: 8px; cursor: pointer; border: 2px solid " + t.lineStrong + "; background: " + t.card + "; color: " + t.text,
+            finishBtn: btnBase + "font-weight: 700; border: 2px solid " + t.accent + "; background: " + t.accent + "; color: " + t.onAccent,
+            saveBtn: btnBase + "font-weight: 700; border: 2px solid " + t.accent + "; background: " + t.accent + "; color: " + t.onAccent,
+            smallBtn: "font: inherit; font-size: 0.9em; font-weight: 600; height: 36px; padding: 0 12px; border-radius: 8px; cursor: pointer; border: 1px solid " + t.info + "; background: transparent; color: " + t.info,
+            linkBtn: "font: inherit; padding: 0; border: 0; background: none; cursor: pointer; text-decoration: underline; color: " + t.accent,
+            stepBtn: "font: inherit; font-size: 1.2em; font-weight: 700; width: 44px; height: 44px; border-radius: 8px; cursor: pointer; border: 2px solid " + t.lineStrong + "; background: " + t.card + "; color: " + t.text,
+            plainBox: boxCss(false, true),
+            joinWide: "display: flex; width: 100%; box-sizing: border-box; height: 44px; border-radius: 8px; overflow: hidden; border: 1px solid " + t.lineStrong + "; background: " + t.card,
+            joinBtnWide: "flex: 0 0 48px; -webkit-appearance: none; appearance: none; min-width: 44px; height: 100%; padding: 0; margin: 0; font: inherit; font-size: 1.2em; font-weight: 600; line-height: 1; border: 0; cursor: pointer; outline-offset: -3px; background: transparent; color: " + t.muted,
+            clearBtn: "font: inherit; flex-shrink: 0; display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; margin: -6px -8px 0 0; padding: 0; border: 0; border-radius: 8px; cursor: pointer; background: transparent; color: " + t.muted,
+            // option B (layout: table): the replay's grade-table cells, header 2 px strong rule, rows 1 px, outer border hidden
+            gtTable: "width: 100%; border-collapse: collapse; border-style: hidden; font-size: 0.95em",
+            gtTh: "padding: 6px 12px; font-weight: 700; font-size: 0.85em; border-bottom: 2px solid " + t.lineStrong + "; border-left: 1px solid " + t.line,
+            gtThBand: "padding: 6px 12px; font-weight: 700; font-size: 0.85em; width: 200px; border-bottom: 2px solid " + t.lineStrong + "; border-left: 1px solid " + t.line,
+            gtTd: "padding: 10px 12px; vertical-align: top; border-top: 1px solid " + t.line + "; border-left: 1px solid " + t.line,
+            gtTdBand: "padding: 10px 12px; vertical-align: top; width: 230px; border-top: 1px solid " + t.line + "; border-left: 1px solid " + t.line,
+            gtThPts: "padding: 6px 12px; font-weight: 700; font-size: 0.85em; width: 200px; border-bottom: 2px solid " + t.lineStrong + "; border-left: 1px solid " + t.line,
+            gtTdPts: "padding: 10px 12px; vertical-align: top; width: 230px; border-top: 1px solid " + t.line + "; border-left: 1px solid " + t.line,
+            // the score cell split flush into − | score | +, the table's own lines between them; the note fills its cell over a strip for the dot
+            gtTdBandFlush: "padding: 0; height: 1px; vertical-align: top; width: 200px; border-top: 1px solid " + t.line + "; border-left: 1px solid " + t.line,
+            gtTdPtsFlush: "padding: 0; height: 1px; vertical-align: top; width: 200px; border-top: 1px solid " + t.line + "; border-left: 1px solid " + t.line,
+            gtTdFlush: "padding: 0; height: 1px; vertical-align: top; background: " + t.sunken + "; border-top: 1px solid " + t.line + "; border-left: 1px solid " + t.line,
+            gtTdFootFlush: "padding: 0; height: 1px; vertical-align: top; border-top: 2px solid " + t.lineStrong + "; border-left: 1px solid " + t.line,
+            gtTdVerdictFlush: "padding: 0; height: 1px; vertical-align: top; width: 300px; border-top: 1px solid " + t.line + "; border-left: 1px solid " + t.line,
+            gtSeg: "display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); height: 100%; min-height: 56px",
+            gtStep: "display: grid; grid-template-columns: 48px minmax(0, 1fr) 48px; height: 100%; min-height: 72px",
+            gtStepBtn: "-webkit-appearance: none; appearance: none; font: inherit; font-size: 1.3em; font-weight: 600; line-height: 1; padding: 0; margin: 0; border: 0; border-radius: 0; cursor: pointer; outline-offset: -3px; background: transparent; color: " + t.muted,
+            gtStepNum: "font-size: 1.2em",
+            gtStrip: "display: flex; align-items: flex-end; gap: 6px; min-height: 18px; padding: 0 10px 5px; font-size: 0.8em; line-height: 1.3",
+            gtTdNote: "padding: 8px 10px; vertical-align: top; height: 1px; border-top: 1px solid " + t.line + "; border-left: 1px solid " + t.line,
+            gtThAct: "width: 44px; padding: 0; border-bottom: 2px solid " + t.lineStrong + "; border-left: 1px solid " + t.line,
+            gtTdAct: "width: 44px; padding: 10px 4px; vertical-align: top; text-align: center; border-top: 1px solid " + t.line + "; border-left: 1px solid " + t.line,
+            srOnly: "position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap",
+            // Clear all: a trash can in the design's plain icon button (as the sidebar's close), the row erasers staying bare
+            gtClearAllBtn: "font: inherit; display: flex; align-items: center; justify-content: center; margin: 4px auto; width: 36px; height: 36px; box-sizing: border-box; padding: 0; border-radius: 8px; cursor: pointer; border: 1px solid " + t.lineStrong + "; background: " + t.card + "; color: " + t.text,
+            // one score in the table layout: the rubric's points as rows with their verdict, the score as the footer row under a 2 px rule
+            gtThVerdict: "padding: 6px 12px; font-weight: 700; font-size: 0.85em; width: 300px; border-bottom: 2px solid " + t.lineStrong + "; border-left: 1px solid " + t.line,
+            gtTdVerdict: "padding: 10px 12px; vertical-align: middle; width: 300px; border-top: 1px solid " + t.line + "; border-left: 1px solid " + t.line,
+            gtTdFoot: "padding: 10px 12px; vertical-align: top; border-top: 2px solid " + t.lineStrong + "; border-left: 1px solid " + t.line,
+            gtClearSlot: "flex: 0 0 36px; display: flex; justify-content: center",
+            gtClearBtn: "font: inherit; display: flex; margin: 0 auto; align-items: center; justify-content: center; width: 36px; height: 36px; padding: 0; border: 0; border-radius: 8px; cursor: pointer; background: transparent; color: " + t.muted,
+            bandGrid: "display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); grid-template-rows: auto auto auto 1fr auto; column-gap: 12px; row-gap: 0",
+            // the same four columns as the band tiles: raw under the first, the scheme across the middle two, the overall band under the last
+            // one box, "Grading", holding three equal columns with a chevron between: raw score > scheme > overall band
+            resultBox: layout === "table" ? "display: flex; flex-direction: column; gap: 8px; padding: 12px 0 0; border-top: 2px solid " + t.lineStrong : "display: flex; flex-direction: column; gap: 10px; padding: 12px 14px; border-radius: 10px; background: " + t.card + "; border: 1px solid " + t.line,
+            resultStrip: "display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) auto minmax(0, 1fr); align-items: stretch; column-gap: 6px",
+            resultChev: "display: flex; align-items: center; color: " + t.muted + "",
+            resultCol: "display: flex; flex-direction: column; gap: 6px; min-width: 0; padding: 12px 16px",
+            resultLabel: "font-size: 0.72em; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: " + t.muted,
+            tileHead: "display: flex; align-items: baseline; gap: 6px; font-weight: 600",
+            joinGroup: "display: flex; flex-shrink: 0; box-sizing: border-box; height: 44px; border-radius: 8px; overflow: hidden; border: 1px solid " + t.lineStrong + "; background: " + t.card,
+            joinBtn: "-webkit-appearance: none; appearance: none; min-width: 44px; height: 100%; padding: 0; margin: 0; font: inherit; font-size: 1.2em; font-weight: 600; line-height: 1; border: 0; cursor: pointer; outline-offset: -3px; background: transparent; color: " + t.muted,
+            areaStyle: areaCss(false),
+            inputStyle: inputCss(false) + "; height: 44px",
+            sampleOn: sampleOn, sampleOff: !sampleOn, samplePressed: sampleOn ? "true" : "false",
+            toggleSample: function () { self.setState({ sample: !sampleOn }); },
+            // one grid for the heads and the boxes: "Sample answer" sits over its box, level with "Answer"; the toggle stays at the right end
+            answerHead: "display: flex; align-items: center; gap: 12px; min-height: 36px; font-size: 0.85em; min-width: 0",
+            answerGrid: "display: grid; column-gap: 16px; row-gap: 10px; align-items: start; grid-template-columns: " + (sampleOn ? "minmax(0, 1fr) minmax(0, 1fr)" : "minmax(0, 1fr)"),
+            sampleBtn: "font: inherit; font-size: 1em; font-weight: 600; min-height: 36px; box-sizing: border-box; padding: 0 12px; border-radius: 8px; cursor: pointer; border: 1px solid " + (sampleOn ? t.accent : t.lineStrong) + "; box-shadow: " + (sampleOn ? "inset 0 0 0 1px " + t.accent : "none") + "; background: " + (sampleOn ? t.infoWash : t.card) + "; color: " + (sampleOn ? t.accent : t.text),
+            // the sample gets the answer's own box; only its pill, sticky at the top as it scrolls, says which is which
+            samplePill: "display: inline-flex; align-items: center; height: 24px; padding: 0 10px; border-radius: 999px; font-family: " + font + "; font-size: 1em; font-weight: 700; white-space: nowrap; background: " + t.infoWash + "; color: " + t.accent + "; border: 1px solid " + t.accent,
+            answerBox: (sampleOn ? "height: 360px; box-sizing: border-box;" : "max-height: 360px;") + " overflow-y: auto; white-space: pre-line; padding: 12px 14px; border-radius: 8px; background: " + t.surface + "; border: 1px solid " + t.line,
+            codeBox: "margin: 0; " + (sampleOn ? "height: 360px; box-sizing: border-box;" : "max-height: 420px;") + " overflow: auto; padding: 12px 14px; border-radius: 8px; font-family: " + MONO + "; font-size: 0.85em; line-height: 1.5; background: " + t.sunken + "; border: 1px solid " + t.line,
+            inlineCode: "font-family: " + MONO + "; font-size: 0.9em; padding: 1px 6px; border-radius: 4px; background: " + t.sunken,
+            kbd: "font-family: " + MONO + "; font-size: 0.95em; padding: 0 5px; border: 1px solid " + t.lineStrong + "; border-bottom-width: 2px; border-radius: 4px; background: " + t.card + "; color: " + t.text,
+            sideStyle: "flex: 0 0 320px; min-width: 0; display: flex; flex-direction: column; overflow: hidden; background: " + t.card + "; border-left: 1px solid " + (edged ? t.lineStrong : t.line),
+            sideLine: t.line,
+            closeBtn: "font: inherit; display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 8px; cursor: pointer; border: 1px solid " + t.lineStrong + "; background: " + t.card + "; color: " + t.text,
+            closeSide: function () { self.setState({ side: false }); },
+            groupHead: "font-size: 0.85em; font-weight: 600; display: flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 10px; border-radius: 8px; border: 1px solid " + t.line + "; background: " + t.surface,
+            groupHeadBtn: "font-size: 0.85em; font-weight: 600; display: flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 10px; border-radius: 8px; border: 1px solid " + t.line + "; background: " + t.surface + "; font: inherit; font-size: 0.85em; font-weight: 600; width: 100%; box-sizing: border-box; cursor: pointer; text-align: left; color: " + t.text,
+            // the auto-marked questions as their own group: one row drawn as a graded row (bare ✓, ok wash and border), not a button
+            autoRow: "font-size: 0.9em; display: flex; align-items: center; gap: 8px; min-height: 48px; box-sizing: border-box; padding: 4px 10px 4px 6px; border-radius: 6px; color: " + t.text + "; background: " + ROWWASH.done + "; border: 1px solid " + t.ok,
+            autoGlyph: "flex: 0 0 20px; text-align: center; font-weight: 700; color: " + t.ok,
+            blankRow: "font-size: 0.9em; display: flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 10px 0 34px; border-radius: 6px; color: " + t.muted + "; background: " + t.surface + "; border: 1px dashed " + t.lineStrong + "; font: inherit; font-size: 0.9em; width: 100%; box-sizing: border-box; cursor: pointer; text-align: left" + (blankOn ? "; border: 2px solid " + t.text : ""),
+            gradedCount: L.graded(gradedN, Q.length),
+            lgItem: "display: flex; align-items: center; gap: 5px",
+            lgDone: legend(t.okWash, "1px solid " + t.ok, t.ok),
+            lgHalf: "display: inline-flex; align-items: center; justify-content: center; width: 14px; height: 14px; color: " + t.bad,
+            ringTrack: "color-mix(in srgb, " + t.bad + " 30%, transparent)", lgRingDash: RING,
+            lgBad: legend(t.badWash, "1px solid " + t.bad, t.bad),
+            lgNone: legend(t.card, "1px solid " + t.line, t.text),
+            lgCur: legend(t.card, "2px solid " + t.text, t.text),
+            lgReqBox: "display: inline-flex; align-items: center; justify-content: center; width: 14px; height: 14px",
+            lgReq: noteDot(false),
+          };
+        }
+      }
+    </script>
+  </body>
+</html>

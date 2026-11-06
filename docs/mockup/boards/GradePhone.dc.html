@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>quiz grade --web on a phone</title>
+    <script src="./support.js"></script>
+  </head>
+  <body>
+    <x-dc>
+      <helmet>
+        <style>
+          body {
+            margin: 0;
+          }
+        </style>
+      </helmet>
+      <div style="{{rootStyle}}">
+        <header
+          style="display: flex; align-items: center; gap: 10px; padding: 10px 16px; background: {{t.card}}; border-bottom: 1px solid {{t.line}}"
+        >
+          <div style="flex: 1; min-width: 0; display: flex; flex-direction: column">
+            <span
+              style="
+                font-weight: 700;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+              "
+              >Grade: Signals and Systems</span
+            >
+            <span style="font-size: 0.8em; color: {{t.muted}}; font-variant-numeric: tabular-nums"
+              >{{line}}</span
+            >
+          </div>
+          <button aria-label="Questions to grade" title="Questions to grade" style="{{iconBtn}}">
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <rect x="3" y="4" width="18" height="16" rx="2"></rect>
+              <path d="M15 4v16"></path>
+            </svg>
+          </button>
+          <button aria-label="Appearance" title="Appearance" style="{{iconBtn}}">
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <circle cx="12" cy="12" r="9"></circle>
+              <path d="M12 3v18"></path>
+              <path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor"></path>
+            </svg>
+          </button>
+        </header>
+
+        <main
+          style="
+            flex: 1;
+            min-height: 0;
+            overflow-y: auto;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+          "
+        >
+          <section
+            aria-labelledby="pq21"
+            style="background: {{t.card}}; border: 1px solid {{t.line}}; border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 12px"
+          >
+            <div
+              style="display: flex; justify-content: space-between; gap: 8px; font-size: 0.8em; color: {{t.muted}}"
+            >
+              <span id="pq21">Question 21 · Essay · 3 points</span>
+              <span style="{{stateStyle}}">{{state}}</span>
+            </div>
+            <p style="margin: 0; font-weight: 600">
+              Derive the transfer function of an RC low-pass filter with the Laplace transform, and
+              say what its pole tells you.
+            </p>
+            <details
+              open=""
+              style="border: 1px solid {{t.line}}; border-radius: 8px; padding: 8px 12px; background: {{t.surface}}"
+            >
+              <summary
+                style="cursor: pointer; font-weight: 700; font-size: 0.9em; min-height: 32px"
+              >
+                Answer · 71 words
+              </summary>
+              <p style="margin: 8px 0 0; font-size: 0.95em; white-space: pre-line">
+                With zero initial conditions, I(s) = sC·Vout(s), and the loop gives Vin(s) = (sRC +
+                1)·Vout(s). So H(s) = 1 / (1 + sRC). The pole is at s = −1/RC and sets the cut-off
+                frequency.
+              </p>
+            </details>
+            <details style="border: 1px solid {{t.line}}; border-radius: 8px; padding: 8px 12px">
+              <summary
+                style="cursor: pointer; font-weight: 600; font-size: 0.9em; min-height: 32px"
+              >
+                Sample answer
+              </summary>
+            </details>
+
+            <!-- the desktop's table (G85) stacked: per criterion its name, then the score cell split − | points | +, then the note cell -->
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; padding-top: 4px; border-top: 1px solid {{t.line}}">
+              <span style="font-weight: 700; font-size: 0.85em; padding-top: 6px">Rubric <span style="font-weight: 400; color: {{t.muted}}">· points per criterion</span></span>
+              <button onClick="{{clearAll}}" aria-label="Clear all: every score and note on this question" title="Clear all: every score and note on this question" style="{{clearAllBtn}}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"></path><path d="M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2"></path><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path><path d="M10 11v6"></path><path d="M14 11v6"></path></svg></button>
+            </div>
+            <div style="{{list}}">
+              <sc-for list="{{rows}}" as="row" hint-placeholder-count="3">
+                <div role="group" aria-label="{{row.text}}" style="{{rowBox}}">
+                  <div style="{{rowHead}}">
+                    <span style="display: flex; flex-direction: column; line-height: 1.3; min-width: 0">
+                      <span style="font-weight: 600">{{row.text}}</span>
+                      <span style="font-size: 0.85em; color: {{t.muted}}">up to {{row.max}}</span>
+                    </span>
+                    <sc-if value="{{row.clearable}}" hint-placeholder-val="{{ true }}">
+                      <button onClick="{{row.clearRow}}" aria-label="{{row.clearLabel}}" title="{{row.clearLabel}}" style="{{clearBtn}}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 21l-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21"></path><path d="M22 21H7"></path><path d="M5 11l9 9"></path></svg></button>
+                    </sc-if>
+                  </div>
+                  <div style="{{stepBox}}">
+                    <button onClick="{{row.down}}" aria-label="{{row.downLabel}}" disabled="{{row.atMin}}" style="{{stepBtn}}">−</button>
+                    <input type="text" inputmode="decimal" role="spinbutton" aria-label="{{row.groupLabel}}" aria-valuemin="0" aria-valuemax="{{row.max}}" aria-valuenow="{{row.valueNow}}" placeholder="–" value="{{row.typed}}" style="{{row.numStyle}}" />
+                    <button onClick="{{row.up}}" aria-label="{{row.upLabel}}" disabled="{{row.atMax}}" style="{{stepBtn}}">+</button>
+                  </div>
+                  <div style="{{noteBox}}">
+                    <textarea rows="2" placeholder="{{row.ask}}" aria-label="{{row.noteLabel}}" aria-required="{{row.req}}" onInput="{{row.onNote}}" style="{{noteArea}}">{{row.note}}</textarea>
+                    <div style="{{strip}}">
+                      <sc-if value="{{row.missing}}" hint-placeholder-val="{{ false }}">
+                        <span style="color: {{t.muted}}">Required: a mark was lost</span>
+                      </sc-if>
+                      <span aria-hidden="true" style="{{row.dot}}; margin: 0 -4px 1px auto"></span>
+                    </div>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+            <section role="status" aria-label="Grading" style="{{resultBox}}">
+              <span style="font-weight: 700; font-size: 0.85em">Grading</span>
+              <div style="{{resultStrip}}">
+                <span style="{{resCell}}"><span style="{{resLabel}}">Raw score</span><span style="{{rawStyle}}">{{raw}}</span></span>
+                <span aria-hidden="true" style="color: {{t.muted}}">›</span>
+                <span style="{{resCell}}"><span style="{{resLabel}}">Scheme</span><span style="font-weight: 600">As given</span></span>
+                <span aria-hidden="true" style="color: {{t.muted}}">›</span>
+                <span style="{{resCell}}"><span style="{{resLabel}}">Total</span><span style="{{finalStyle}}">{{total}}</span></span>
+              </div>
+            </section>
+            <label style="display: flex; flex-direction: column; gap: 4px; font-size: 0.9em">
+              <span style="font-weight: 600">Why this score <span style="font-weight: 400; color: {{t.muted}}">· optional</span></span>
+              <textarea rows="3" style="{{areaStyle}}"></textarea>
+            </label>
+          </section>
+        </main>
+
+        <footer
+          style="display: grid; grid-template-columns: 44px minmax(0, 1fr) 44px; gap: 8px; padding: 10px 16px 14px; background: {{t.card}}; border-top: 1px solid {{t.line}}"
+        >
+          <button aria-label="Previous question" style="{{iconBtn}}">←</button>
+          <button
+            style="font: inherit; font-weight: 700; height: 44px; border-radius: 8px; cursor: pointer; border: 2px solid {{t.accent}}; background: {{t.accent}}; color: {{t.onAccent}}"
+          >
+            Finish
+          </button>
+          <button aria-label="Next question" style="{{iconBtn}}">→</button>
+        </footer>
+      </div>
+    </x-dc>
+    <script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+      class Component extends DCLogic {
+        renderVals() {
+          var self = this;
+          var s = this.state || {};
+          var t = { bg: "#eceae5", surface: "#f4f3ef", card: "#fcfcfa", sunken: "#e4e2dc", line: "#d6d4cd", lineStrong: "#8c8b83", text: "#2a2b31", muted: "#55554f", accent: "#46608a", onAccent: "#fcfcfa", ok: "#3d6946", bad: "#963f3e" };
+          // On a phone the answer and the rubric stack; the rubric is the desktop's table, each row stacked.
+          var C = [
+            { id: "defs", text: "Establish the definitions", max: 0.5 },
+            { id: "derive", text: "Derive the transfer function", max: 1.5 },
+            { id: "interp", text: "Interpret the pole", max: 1 }
+          ];
+          var V = s.v || { defs: 0.5, derive: 1.25 };
+          var N = s.n || { derive: "Uses zero initial conditions without saying so." };
+          var given = 0, total = 0, bad = false;
+          C.forEach(function (c) { if (V[c.id] !== undefined) { given++; total += V[c.id]; if (V[c.id] < c.max && !(N[c.id] || "").trim()) bad = true; } });
+          var r2 = function (x) { return Math.round(x * 100) / 100; };
+          var put = function (fn) { var nv = Object.assign({}, V), nn = Object.assign({}, N); fn(nv, nn); self.setState({ v: nv, n: nn }); };
+          var amber = "#8a6418";
+          var rows = C.map(function (c) {
+            var v = V[c.id];
+            var has = v !== undefined;
+            var lost = has && v < c.max;
+            var note = N[c.id] || "";
+            var missing = lost && !note.trim();
+            return {
+              text: c.text, max: String(c.max), groupLabel: "Points for " + c.text, valueNow: has ? String(v) : "", typed: has ? String(v) : "",
+              // from empty, either button gives full marks; then − takes off a step of 0.25
+              down: function () { put(function (nv) { nv[c.id] = has ? Math.max(0, r2(v - 0.25)) : c.max; }); },
+              up: function () { put(function (nv) { nv[c.id] = has ? Math.min(c.max, r2(v + 0.25)) : c.max; }); },
+              atMin: has && v <= 0, atMax: has && v >= c.max,
+              downLabel: "Take a step off " + c.text, upLabel: "Add a step to " + c.text,
+              clearable: has || !!note.trim(), clearLabel: "Clear " + c.text + ": score and note",
+              clearRow: function () { put(function (nv, nn) { delete nv[c.id]; delete nn[c.id]; }); },
+              note: note, onNote: function (e) { var nn = Object.assign({}, N); nn[c.id] = e.target.value; self.setState({ v: V, n: nn }); },
+              noteLabel: "Note for " + c.text, req: lost ? "true" : "false", missing: missing,
+              ask: lost ? "Why the mark was lost" : "Note (optional)",
+              dot: lost ? "display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: " + amber : "display: none",
+              numStyle: "-webkit-appearance: none; appearance: none; box-sizing: border-box; width: 100%; min-width: 0; height: 100%; margin: 0; padding: 0; border: 0; border-radius: 0; text-align: center; font: inherit; font-size: 1.2em; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1; outline-offset: -3px; border-left: 1px solid " + t.line + "; border-right: 1px solid " + t.line + "; color: " + (has ? t.text : t.muted) + "; background: " + (has ? "color-mix(in srgb, " + t.accent + " 10%, transparent); box-shadow: inset 0 -3px 0 " + t.accent : "transparent")
+            };
+          });
+          var cell = "border: 1px solid " + t.line;
+          var state = given === 0 ? "Not graded" : given < C.length ? "Half graded" : bad ? "Needs a note" : "Graded";
+          return {
+            t: t, rows: rows,
+            line: "Graded " + (given === C.length && !bad ? 1 : 0) + " of 4 · Question 21",
+            state: state, stateStyle: "font-weight: 700; color: " + (state === "Graded" ? t.ok : state === "Not graded" ? t.muted : t.bad),
+            total: (given === C.length ? String(r2(total)) : "–") + " / 3", raw: given === C.length ? String(r2(total)) : "–",
+            clearAll: function () { self.setState({ v: {}, n: {} }); },
+            clearAllBtn: "font: inherit; display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; box-sizing: border-box; padding: 0; margin-top: 4px; border-radius: 8px; cursor: pointer; border: 1px solid " + t.lineStrong + "; background: " + t.card + "; color: " + t.text,
+            clearBtn: "font: inherit; display: flex; align-items: center; justify-content: center; flex-shrink: 0; width: 36px; height: 36px; padding: 0; border: 0; border-radius: 8px; cursor: pointer; background: transparent; color: " + t.muted,
+            list: "display: flex; flex-direction: column; border-top: 2px solid " + t.lineStrong,
+            rowBox: "display: flex; flex-direction: column; padding: 10px 0 12px; border-bottom: 1px solid " + t.line,
+            rowHead: "display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; padding-bottom: 8px",
+            stepBox: "display: grid; grid-template-columns: 56px minmax(0, 1fr) 56px; height: 48px; " + cell,
+            stepBtn: "-webkit-appearance: none; appearance: none; font: inherit; font-size: 1.3em; font-weight: 600; line-height: 1; padding: 0; margin: 0; border: 0; border-radius: 0; cursor: pointer; outline-offset: -3px; background: transparent; color: " + t.muted,
+            noteBox: "display: flex; flex-direction: column; background: " + t.sunken + "; " + cell + "; border-top: 0",
+            noteArea: "font: inherit; font-size: 0.95em; display: block; width: 100%; box-sizing: border-box; margin: 0; padding: 10px 12px 2px; border: 0; border-radius: 0; resize: none; outline-offset: -3px; background: transparent; color: " + t.text,
+            strip: "display: flex; align-items: flex-end; gap: 6px; min-height: 18px; padding: 0 10px 5px; font-size: 0.8em; line-height: 1.3",
+            resultBox: "display: flex; flex-direction: column; gap: 6px; padding-top: 10px; border-top: 2px solid " + t.lineStrong,
+            resultStrip: "display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) auto minmax(0, 1fr); align-items: end; column-gap: 6px",
+            resCell: "display: flex; flex-direction: column; gap: 2px; min-width: 0",
+            resLabel: "font-size: 0.75em; color: " + t.muted,
+            rawStyle: "font-weight: 700; font-size: 1.2em; font-variant-numeric: tabular-nums; color: " + (given === C.length ? t.text : t.muted),
+            finalStyle: "font-weight: 700; font-size: 1.5em; font-variant-numeric: tabular-nums; color: " + (given === C.length ? t.accent : t.muted),
+            areaStyle: "font: inherit; font-size: 0.95em; width: 100%; box-sizing: border-box; resize: vertical; padding: 8px 12px; border-radius: 8px; background: " + t.sunken + "; color: " + t.text + "; border: 1px solid " + t.lineStrong,
+            iconBtn: "font: inherit; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; width: 44px; height: 44px; box-sizing: border-box; border-radius: 8px; cursor: pointer; border: 2px solid " + t.lineStrong + "; background: " + t.card + "; color: " + t.text,
+            rootStyle: "width: 390px; height: 844px; box-sizing: border-box; display: flex; flex-direction: column; overflow: hidden; background: " + t.bg + "; color: " + t.text + "; font-family: 'Segoe UI', system-ui, -apple-system, Roboto, sans-serif; font-size: 16px; line-height: 1.55"
+          };
+        }
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,723 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>option C, one rubric box for replay and grade</title>
+    <script src="./support.js"></script>
+  </head>
+  <body>
+    <x-dc>
+      <helmet>
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,600;0,700;1,400&amp;family=Lexend:wght@400;600;700&amp;family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&amp;display=swap"
+        />
+        <style>
+          body {
+            margin: 0;
+          }
+        </style>
+      </helmet>
+      <div style="{{rootStyle}}">
+        <div style="display: flex; flex-direction: column; gap: 4px">
+          <span style="{{statLabel}}">Option C · the rubric box</span>
+          <h1 style="margin: 0; font-size: 1.6em; line-height: 1.2">
+            One rubric, read in the replay and filled in grade
+          </h1>
+          <p style="margin: 0; max-width: 900px; color: {{t.muted}}">
+            No table. The rubric is a box like the score card's stats: rounded, one section per
+            criterion, a total section at the foot. Each section is the same in both forms. The
+            replay shows the value in a result-coloured slot and the note as text. Grade puts a −
+            value + control in the same slot and a note field in the same place.
+          </p>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px">
+          <span style="{{colHead}}">quiz replay · read-only</span>
+          <span style="{{colHead}}">quiz grade --web · editable</span>
+        </div>
+
+        <sc-for list="{{types}}" as="ty" hint-placeholder-count="4">
+          <div style="display: flex; flex-direction: column; gap: 10px">
+            <span style="{{typeHead}}">{{ty.title}}</span>
+            <div
+              style="
+                display: grid;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 24px;
+                align-items: start;
+              "
+            >
+              <sc-for list="{{ty.pair}}" as="q" hint-placeholder-count="2">
+                <section aria-label="{{q.label}}" style="{{cardStyle}}">
+                  <div style="{{cardHead}}">
+                    <span>{{q.head}}</span>
+                    <span style="{{q.badge}}">
+                      <svg
+                        width="14"
+                        height="14"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2.5"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        aria-hidden="true"
+                      >
+                        <path d="{{q.badgeIcon}}"></path>
+                      </svg>
+                      {{q.badgeText}}
+                    </span>
+                  </div>
+                  <p style="{{stem}}">{{q.prompt}}</p>
+
+                  <!-- The rubric box: the same sections in both forms. -->
+                  <div role="group" aria-label="{{q.boxLabel}}" style="{{box}}">
+                    <div style="{{boxHead}}">
+                      <!-- Two lines each side: the rubric's type over its step; who graded over when. -->
+                      <span
+                        style="
+                          display: flex;
+                          flex-direction: column;
+                          line-height: 1.3;
+                          min-width: 0;
+                        "
+                      >
+                        <!-- hint: the page's colour for labels about a question (its #tags) -->
+                        <span style="font-weight: 700; color: {{t.hint}}">{{q.typeTitle}}</span>
+                        <span style="font-size: 0.82em; color: {{t.muted}}">{{q.stepLine}}</span>
+                      </span>
+                      <span
+                        style="
+                          display: flex;
+                          flex-direction: column;
+                          align-items: flex-end;
+                          line-height: 1.3;
+                          text-align: right;
+                        "
+                      >
+                        <span style="font-size: 0.85em; font-weight: 600">{{q.by1}}</span>
+                        <span style="font-size: 0.8em; color: {{t.muted}}">{{q.by2}}</span>
+                      </span>
+                    </div>
+
+                    <sc-for list="{{q.rows}}" as="r" hint-placeholder-count="3">
+                      <div style="{{sec}}">
+                        <div style="{{q.secTop}}">
+                          <span
+                            style="
+                              display: flex;
+                              flex-direction: column;
+                              line-height: 1.35;
+                              min-width: 0;
+                            "
+                          >
+                            <span style="font-weight: 600">{{r.text}}</span>
+                            <span style="font-size: 0.82em; color: {{t.muted}}">{{r.meta}}</span>
+                          </span>
+                          <!-- The slot: a value in the replay, a control in grade. -->
+                          <div style="{{slotCol}}">
+                            <sc-if value="{{r.isValue}}" hint-placeholder-val="{{ true }}">
+                              <span style="{{r.valueStyle}}"
+                                ><span style="text-align: right">{{r.value}}</span
+                                ><span style="{{r.slashS}}">/</span
+                                ><span
+                                  style="font-weight: 400; color: {{t.muted}}; text-align: left"
+                                  >{{r.of}}</span
+                                ></span
+                              >
+                            </sc-if>
+                            <sc-if value="{{r.isPill}}" hint-placeholder-val="{{ false }}">
+                              <!-- One slot the width of grade's group, the verdict given in it, coloured as a value slot is. -->
+                              <span aria-label="{{r.pillLabel}}" style="{{r.pillStyle}}"
+                                >{{r.pill}}</span
+                              >
+                            </sc-if>
+                            <sc-if value="{{r.isStep}}" hint-placeholder-val="{{ false }}">
+                              <div style="{{r.stepRow}}">
+                                <div style="{{r.stepBox}}">
+                                  <button
+                                    onClick="{{r.erase}}"
+                                    aria-label="{{r.eraseLabel}}"
+                                    title="{{r.eraseLabel}}"
+                                    aria-disabled="{{r.eraseOff}}"
+                                    style="{{r.eraseSeg}}"
+                                  >
+                                    <svg
+                                      width="16"
+                                      height="16"
+                                      viewBox="0 0 24 24"
+                                      fill="none"
+                                      stroke="currentColor"
+                                      stroke-width="2"
+                                      stroke-linecap="round"
+                                      stroke-linejoin="round"
+                                      aria-hidden="true"
+                                    >
+                                      <path
+                                        d="M7 21l-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21"
+                                      ></path>
+                                      <path d="M22 21H7"></path>
+                                      <path d="M5 11l9 9"></path>
+                                    </svg>
+                                  </button>
+                                  <button
+                                    onClick="{{r.down}}"
+                                    aria-label="{{r.downLabel}}"
+                                    title="{{r.downTip}}"
+                                    style="{{stepBtn}}"
+                                  >
+                                    <span>−</span>
+                                  </button>
+                                  <div style="{{r.midStyle}}">
+                                    <input
+                                      type="text"
+                                      inputmode="decimal"
+                                      role="spinbutton"
+                                      aria-label="{{r.groupLabel}}"
+                                      aria-valuemin="0"
+                                      aria-valuemax="{{r.max}}"
+                                      aria-valuenow="{{r.valueNow}}"
+                                      placeholder="–"
+                                      value="{{r.typed}}"
+                                      onInput="{{r.onType}}"
+                                      style="{{r.numStyle}}"
+                                    /><span aria-hidden="true" style="{{r.slashStyle}}">/</span
+                                    ><span aria-hidden="true" style="{{r.ofStyle}}"
+                                      >{{r.ofTag}}</span
+                                    >
+                                  </div>
+                                  <button
+                                    onClick="{{r.up}}"
+                                    aria-label="{{r.upLabel}}"
+                                    title="{{r.upTip}}"
+                                    style="{{r.stepBtnR}}"
+                                  >
+                                    <span>+</span>
+                                  </button>
+                                </div>
+                                <span aria-hidden="true" style="{{sepS}}">/</span>
+                                <button
+                                  onClick="{{r.full}}"
+                                  aria-label="{{r.fullLabel}}"
+                                  title="{{r.fullLabel}}"
+                                  aria-pressed="{{r.atMaxS}}"
+                                  style="{{r.fullStyle}}"
+                                >
+                                  {{r.fullText}}
+                                </button>
+                              </div>
+                            </sc-if>
+                            <sc-if value="{{r.meterOn}}" hint-placeholder-val="{{ false }}"
+                              ><span aria-hidden="true" style="{{meterRow}}"
+                                ><sc-for list="{{r.ticks}}" as="k" hint-placeholder-count="6"
+                                  ><span style="{{k.style}}"></span></sc-for></span
+                            ></sc-if>
+                            <sc-if value="{{r.isSeg}}" hint-placeholder-val="{{ false }}">
+                              <div
+                                role="radiogroup"
+                                aria-label="{{r.groupLabel}}"
+                                style="{{segBox}}"
+                              >
+                                <button
+                                  onClick="{{r.erase}}"
+                                  aria-label="{{r.eraseLabel}}"
+                                  title="{{r.eraseLabel}}"
+                                  aria-disabled="{{r.eraseOff}}"
+                                  style="{{r.eraseSeg}}"
+                                >
+                                  <svg
+                                    width="16"
+                                    height="16"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    aria-hidden="true"
+                                  >
+                                    <path
+                                      d="M7 21l-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21"
+                                    ></path>
+                                    <path d="M22 21H7"></path>
+                                    <path d="M5 11l9 9"></path>
+                                  </svg>
+                                </button>
+                                <sc-for list="{{r.opts}}" as="o" hint-placeholder-count="3">
+                                  <button
+                                    role="radio"
+                                    aria-checked="{{o.on}}"
+                                    onClick="{{o.pick}}"
+                                    style="{{o.style}}"
+                                  >
+                                    {{o.text}}
+                                  </button>
+                                </sc-for>
+                              </div>
+                            </sc-if>
+                          </div>
+                        </div>
+                        <sc-if value="{{r.showNoteText}}" hint-placeholder-val="{{ true }}">
+                          <p style="{{noteText}}">{{r.note}}</p>
+                        </sc-if>
+                        <sc-if value="{{r.showNoteField}}" hint-placeholder-val="{{ false }}">
+                          <textarea
+                            rows="2"
+                            placeholder="{{r.ask}}"
+                            aria-label="{{r.noteLabel}}"
+                            aria-required="{{r.req}}"
+                            onInput="{{r.onNote}}"
+                            style="{{r.noteArea}}"
+                          >
+{{r.note}}</textarea>
+                        </sc-if>
+                        <sc-if value="{{r.missing}}" hint-placeholder-val="{{ false }}">
+                          <span style="{{reqLine}}">Required: a mark was lost, say why</span>
+                        </sc-if>
+                        <sc-if value="{{r.hasUnder}}" hint-placeholder-val="{{ false }}">
+                          <span style="{{reqLine}}">{{r.under}}</span>
+                        </sc-if>
+                      </div>
+                    </sc-for>
+
+                    <!-- The total: computed (or, for one score, given here). -->
+                    <div style="{{footSec}}">
+                      <div style="{{q.secTop}}">
+                        <span
+                          style="
+                            display: flex;
+                            flex-direction: column;
+                            line-height: 1.35;
+                            min-width: 0;
+                          "
+                        >
+                          <!-- accent: the result the rubric adds up to, as the final figure was on the Grading strip -->
+                          <span style="font-weight: 700; color: {{t.accent}}">{{q.totalName}}</span>
+                          <span style="font-size: 0.82em; color: {{t.muted}}">{{q.totalHow}}</span>
+                        </span>
+                        <div style="{{slotCol}}">
+                          <sc-if value="{{q.foot.isValue}}" hint-placeholder-val="{{ true }}">
+                            <span style="{{q.foot.valueStyle}}"
+                              ><span style="text-align: right">{{q.foot.value}}</span
+                              ><span style="{{q.foot.slashS}}">/</span
+                              ><span style="font-weight: 400; color: {{t.muted}}; text-align: left"
+                                >{{q.foot.of}}</span
+                              ></span
+                            >
+                          </sc-if>
+                          <!-- grade's computed total: the value where − value + sits above, the maximum in the full-mark box's place -->
+                          <sc-if value="{{q.foot.isSplit}}" hint-placeholder-val="{{ false }}">
+                            <div style="{{q.foot.stepRow}}">
+                              <span style="{{q.foot.valueStyle}}">{{q.foot.value}}</span>
+                              <span aria-hidden="true" style="{{sepS}}">/</span>
+                              <span aria-label="{{q.foot.maxLabel}}" style="{{q.foot.maxStyle}}"
+                                >{{q.foot.of}}</span
+                              >
+                            </div>
+                          </sc-if>
+                          <sc-if value="{{q.foot.isStep}}" hint-placeholder-val="{{ false }}">
+                            <div style="{{q.foot.stepRow}}">
+                              <div style="{{q.foot.stepBox}}">
+                                <button
+                                  onClick="{{q.foot.erase}}"
+                                  aria-label="{{q.foot.eraseLabel}}"
+                                  title="{{q.foot.eraseLabel}}"
+                                  aria-disabled="{{q.foot.eraseOff}}"
+                                  style="{{q.foot.eraseSeg}}"
+                                >
+                                  <svg
+                                    width="16"
+                                    height="16"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    aria-hidden="true"
+                                  >
+                                    <path
+                                      d="M7 21l-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21"
+                                    ></path>
+                                    <path d="M22 21H7"></path>
+                                    <path d="M5 11l9 9"></path>
+                                  </svg>
+                                </button>
+                                <button
+                                  onClick="{{q.foot.down}}"
+                                  aria-label="Lower the score"
+                                  title="{{q.foot.downTip}}"
+                                  style="{{stepBtn}}"
+                                >
+                                  <span>−</span>
+                                </button>
+                                <div style="{{q.foot.midStyle}}">
+                                  <input
+                                    type="text"
+                                    inputmode="decimal"
+                                    role="spinbutton"
+                                    aria-label="The score"
+                                    aria-valuemin="0"
+                                    aria-valuemax="{{q.foot.max}}"
+                                    aria-valuenow="{{q.foot.valueNow}}"
+                                    placeholder="–"
+                                    value="{{q.foot.typed}}"
+                                    onInput="{{q.foot.onType}}"
+                                    style="{{q.foot.numStyle}}"
+                                  /><span aria-hidden="true" style="{{q.foot.slashStyle}}">/</span
+                                  ><span aria-hidden="true" style="{{q.foot.ofStyle}}"
+                                    >{{q.foot.ofTag}}</span
+                                  >
+                                </div>
+                                <button
+                                  onClick="{{q.foot.up}}"
+                                  aria-label="Raise the score"
+                                  title="{{q.foot.upTip}}"
+                                  style="{{q.foot.stepBtnR}}"
+                                >
+                                  <span>+</span>
+                                </button>
+                              </div>
+                              <span aria-hidden="true" style="{{sepS}}">/</span>
+                              <button
+                                onClick="{{q.foot.full}}"
+                                aria-label="{{q.foot.fullLabel}}"
+                                title="{{q.foot.fullLabel}}"
+                                aria-pressed="{{q.foot.atMaxS}}"
+                                style="{{q.foot.fullStyle}}"
+                              >
+                                {{q.foot.fullText}}
+                              </button>
+                            </div>
+                          </sc-if>
+                          <sc-if value="{{q.foot.meterOn}}" hint-placeholder-val="{{ false }}"
+                            ><span aria-hidden="true" style="{{meterRow}}"
+                              ><sc-for list="{{q.foot.ticks}}" as="k" hint-placeholder-count="6"
+                                ><span style="{{k.style}}"></span></sc-for></span
+                          ></sc-if>
+                        </div>
+                      </div>
+                      <sc-if value="{{q.foot.hasUnder}}" hint-placeholder-val="{{ false }}">
+                        <span style="{{reqLine}}">{{q.foot.under}}</span>
+                      </sc-if>
+                    </div>
+
+                    <!-- The grader's two texts, as sections of the same box. -->
+                    <sc-for list="{{q.texts}}" as="x" hint-placeholder-count="2">
+                      <div style="{{sec}}">
+                        <span style="font-weight: 600; font-size: 0.92em"
+                          >{{x.label}} <span style="{{x.tagStyle}}">· {{x.tag}}</span></span
+                        >
+                        <sc-if value="{{x.edit}}" hint-placeholder-val="{{ false }}">
+                          <textarea
+                            rows="2"
+                            aria-label="{{x.label}}"
+                            aria-required="{{x.req}}"
+                            onInput="{{x.onInput}}"
+                            style="{{x.area}}"
+                          >
+{{x.value}}</textarea>
+                        </sc-if>
+                        <sc-if value="{{x.read}}" hint-placeholder-val="{{ true }}">
+                          <p style="{{noteText}}">{{x.value}}</p>
+                        </sc-if>
+                      </div>
+                    </sc-for>
+                  </div>
+                  <sc-if value="{{q.edit}}" hint-placeholder-val="{{ false }}">
+                    <div style="display: flex; justify-content: flex-end">
+                      <button
+                        onClick="{{q.clearAll}}"
+                        aria-label="{{q.clearAllLabel}}"
+                        style="{{clearAllBtn}}"
+                      >
+                        <svg
+                          width="18"
+                          height="18"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          aria-hidden="true"
+                        >
+                          <path d="M3 6h18"></path>
+                          <path d="M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2"></path>
+                          <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path>
+                          <path d="M10 11v6"></path>
+                          <path d="M14 11v6"></path></svg
+                        >Clear this question
+                      </button>
+                    </div>
+                  </sc-if>
+                </section>
+              </sc-for>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </x-dc>
+    <script
+      type="text/x-dc"
+      data-dc-script
+      data-props='{"theme":{"editor":"enum","options":["light","dark","oled","white","paper"],"default":"light"},"font":{"editor":"enum","options":["system","sans","serif","readable"],"default":"system"},"scale":{"editor":"enum","options":["box","text","inline","meter"],"default":"box"},"$preview":{"width":1280,"height":3900}}'
+    >
+      class Component extends DCLogic {
+        renderVals() {
+          var self = this;
+          var s = this.state || {};
+          var T = {
+            light: { bg: "#eceae5", surface: "#f4f3ef", card: "#fcfcfa", sunken: "#e4e2dc", line: "#d6d4cd", lineStrong: "#8c8b83", text: "#2a2b31", muted: "#55554f", accent: "#46608a", onAccent: "#fcfcfa", ok: "#3d6946", bad: "#963f3e", warn: "#725b1c", info: "#365b84", hint: "#3b6884", shadow: "0 1px 2px rgba(40,38,30,0.06), 0 2px 8px rgba(40,38,30,0.04)", okWash: "#e3ebe2", badWash: "#f2e3e1", infoWash: "#e2e8f0" },
+            dark: { bg: "#1b1d22", surface: "#262a31", card: "#2c3038", sunken: "#15171b", line: "#464c57", lineStrong: "#7b8394", text: "#d9dce2", muted: "#a9afba", accent: "#8fa8d4", onAccent: "#15171b", ok: "#92b99a", bad: "#d08a88", warn: "#cfb277", info: "#8fb0d6", hint: "#8dbad6", shadow: "0 1px 3px rgba(0,0,0,0.35)", okWash: "#2a3a30", badWash: "#3d2b2d", infoWash: "#243042" },
+            oled: { bg: "#000000", surface: "#0e0e10", card: "#0f0f11", sunken: "#18181b", line: "#303238", lineStrong: "#73767e", text: "#e0e0e0", muted: "#a3a5aa", accent: "#9fb2d4", onAccent: "#000000", ok: "#9cc2a5", bad: "#d9a09d", warn: "#d3bf91", info: "#a0b8d6", hint: "#9fc0d4", shadow: "none", okWash: "#121c15", badWash: "#201414", infoWash: "#111a26" },
+            white: { bg: "#ffffff", surface: "#ffffff", card: "#ffffff", sunken: "#f2f2f2", line: "#c9c9c9", lineStrong: "#767676", text: "#1a1a1a", muted: "#575757", accent: "#1f4f8f", onAccent: "#ffffff", ok: "#2f6f3a", bad: "#b02a26", warn: "#7f5d00", info: "#1f5f9e", hint: "#24678c", shadow: "none", okWash: "#eef5ef", badWash: "#fbeeed", infoWash: "#eaf1fa" },
+            paper: { bg: "#f6f1e7", surface: "#efe8da", card: "#fbf8f1", sunken: "#ebe3d3", line: "#dcd2bf", lineStrong: "#8b806c", text: "#37302a", muted: "#665b4e", accent: "#4c6b65", onAccent: "#fbf8f1", ok: "#426a44", bad: "#97463b", warn: "#755a17", info: "#426283", hint: "#3e687c", shadow: "0 1px 2px rgba(70,55,30,0.07)", okWash: "#e6ebdc", badWash: "#f1e1d8", infoWash: "#e4e6e4" }
+          };
+          var F = { system: "'Segoe UI', system-ui, -apple-system, Roboto, 'Noto Sans', sans-serif", sans: "'Be Vietnam Pro', 'Segoe UI', sans-serif", serif: "'Source Serif 4', Georgia, serif", readable: "'Lexend', 'Segoe UI', sans-serif" };
+          var themeName = this.props.theme || "light";
+          var t = T[themeName] || T.light;
+          var font = F[this.props.font || "system"];
+          var edged = themeName === "oled" || themeName === "white";
+          var radius = themeName === "white" ? 4 : 12;
+          var inner = themeName === "white" ? 4 : 8;
+          var border = edged ? t.lineStrong : t.line;
+          var r2 = function (x) { return Math.round(x * 100) / 100; };
+          var dec = function (x) { return String(r2(x)); };
+          var clone = function (o) { return JSON.parse(JSON.stringify(o)); };
+          var scale = this.props.scale || "box";
+          var bx = scale === "box";
+          var inl = scale === "inline" || scale === "meter", met = scale === "meter";
+          // The meter: one tick per step, filled up to the value.
+          var ticks = function (v, max, st, col) { var n = Math.round(max / st), f = v === undefined ? 0 : Math.round(v / st), a = []; for (var i = 0; i < n; i++) a.push({ style: "flex: 1 1 0; height: 6px; border-radius: 2px; background: " + (i < f ? col : t.sunken) + (i < f ? "" : "; box-shadow: inset 0 0 0 1px " + t.line) }); return a; };
+          var onStep = function (v, st) { return Math.abs(v / st - Math.round(v / st)) < 1e-9; };
+
+          var Q = [
+            { id: "q21", n: 21, kind: "essay", mode: "additive", points: 3, step: 0.25, title: "Points per criterion (additive)",
+              prompt: "Derive the transfer function of an RC low-pass filter, and say what its pole tells you.",
+              criteria: [{ id: "defs", text: "Establish the definitions", max: 0.5 }, { id: "derive", text: "Derive the transfer function", max: 1.5 }, { id: "interp", text: "Interpret the pole", max: 1 }] },
+            { id: "q24", n: 24, kind: "essay", mode: "banded", points: 9, step: 0.5, title: "A band per criterion (banded, IELTS Writing Task 2)",
+              prompt: "Some people think students should study whatever they like; others, only useful subjects. Discuss both views.",
+              criteria: [{ id: "TR", text: "Task response", max: 9 }, { id: "CC", text: "Coherence and cohesion", max: 9 }, { id: "LR", text: "Lexical resource", max: 9 }, { id: "GRA", text: "Grammatical range and accuracy", max: 9 }] },
+            { id: "q27", n: 27, kind: "essay", mode: "holistic", points: 4, step: 0.5, title: "One score (holistic), each point with an optional verdict",
+              prompt: "Explain why a signal must be sampled faster than twice its highest frequency.",
+              bullets: [{ id: "copies", text: "Sampling repeats the spectrum at multiples of fs" }, { id: "aliasing", text: "Overlap folds high frequencies onto low ones" }, { id: "example", text: "A worked example" }] },
+            { id: "q30", n: 30, kind: "code", mode: "additive", points: 5, step: 0.5, title: "Code, points per criterion",
+              prompt: "Write a Python function conv(x, h) that returns the full discrete convolution of two lists.",
+              criteria: [{ id: "loop", text: "Correct convolution sum", max: 2 }, { id: "edges", text: "Handles the edges and the output length", max: 1.5 }, { id: "clear", text: "Clear names, a docstring or comments", max: 1.5 }] }
+          ];
+          // The replay shows a finished grade; grade starts from what this sitting has given.
+          var DONE = {
+            q21: { c: { defs: 0.5, derive: 1.25, interp: 0.5 }, n: { defs: "", derive: "Uses zero initial conditions without saying so.", interp: "Gives the cut-off, not what the pole says about stability." }, why: "A clean derivation; the pole's meaning is half there.", imp: "Say why a left-half-plane pole means a stable filter." },
+            q24: { c: { TR: 6, CC: 6.5, LR: 6, GRA: 6.5 }, n: { TR: "Under 250 words; one side of the debate is thin.", CC: "Clear paragraphs; the linking is mechanical.", LR: "Adequate range; 'useful' and 'study' repeat.", GRA: "Mostly accurate; few complex sentences." }, why: "A clear position, held back by length and development.", imp: "Write 250 words or more." },
+            q27: { c: { score: 3 }, b: { copies: "missed", aliasing: "met", example: "met" }, why: "Explains aliasing with a correct example, but never says why the spectrum overlaps.", imp: "Show the spectrum repeating at multiples of fs." },
+            q30: { c: { loop: 2, edges: 1.5, clear: 0.5 }, n: { loop: "", edges: "", clear: "No docstring or comment." }, why: "Correct and handles the edges.", imp: "Add a docstring saying the output length." }
+          };
+          var START = {
+            q21: { c: { defs: 0.5, derive: 1.25 }, n: { derive: "" }, why: "", imp: "" },
+            q24: { c: { TR: 6, CC: 6.5 }, n: { TR: "Under 250 words; one side of the debate is thin.", CC: "" }, why: "", imp: "" },
+            q27: { c: { score: 3 }, b: { aliasing: "met" }, why: "", imp: "" },
+            q30: { c: {}, n: {}, why: "", imp: "" }
+          };
+          var G = s.g || START;
+          var TY = s.ty || {};
+          var put = function (fn) { var g = clone(G), ty = clone(TY); fn(g, ty); self.setState({ g: g, ty: ty }); };
+
+          var badge = function (col, wash) { return "display: flex; align-items: center; gap: 6px; font-weight: 700; padding: 2px 10px; border-radius: 999px; white-space: nowrap; color: " + col + "; background: " + wash; };
+          var ICON = { clock: "M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 7v5l3 2", check: "M5 12.5l4.5 4.5L19 7", half: "M12 4a8 8 0 0 1 0 16z", cross: "M6 6l12 12M18 6L6 18", alert: "M12 7v6M12 17v.01" };
+          // The slot's result colours are the results map's: full ok, part warn, none bad; a band is neutral.
+          var slot = function (res) {
+            var bd = res === "c" ? "2px solid " + t.ok : res === "p" ? "2px solid " + t.warn : res === "w" ? "2px solid " + t.bad : "1px solid " + border;
+            var bg = res === "c" ? t.okWash : res === "w" ? t.badWash : t.card;
+            return "display: flex; align-items: center; justify-content: center; box-sizing: border-box; height: 44px; border-radius: " + inner + "px; font-weight: 700; font-size: 1.1em; font-variant-numeric: tabular-nums; border: " + bd + "; background: " + bg;
+          };
+          var resOf = function (v, max) { return v >= max ? "c" : v <= 0 ? "w" : "p"; };
+          var area = function (err) { return "font: inherit; font-size: 0.92em; display: block; width: 100%; box-sizing: border-box; margin: 0; min-height: 56px; padding: 8px 12px; border-radius: " + inner + "px; resize: vertical; outline-offset: 2px; color: " + t.text + "; background: " + t.sunken + "; border: " + (err ? "2px solid " + t.bad : "1px solid " + t.line); };
+
+          // The grade control: a rounded − value + group, drawn like the filter's segmented buttons.
+          var stepper = function (qid, key, max, st, label, isBand) {
+            var v = G[qid].c[key], has = v !== undefined, tk = qid + "." + key, typed = TY[tk];
+            var bad = typed !== undefined && typed.trim() !== "" && (isNaN(Number(typed)) || Number(typed) < 0 || Number(typed) > max || !onStep(Number(typed), st));
+            var from = isBand ? Math.round(max / 2 / st) * st : null;
+            var edge = bad ? t.bad : has ? t.accent : t.lineStrong;
+            return {
+              isStep: true, isValue: false, v: v, has: has, max: dec(max),
+              stepRow: bx ? "display: grid; grid-template-columns: minmax(0, 1fr) auto 56px; align-items: center" : "display: block",
+              full: function () { put(function (gg, ty) { delete ty[tk]; gg[qid].c[key] = max; }); },
+              fullLabel: "Full marks: " + dec(max), fullText: dec(max), atMaxS: has && v >= max ? "true" : "false",
+              fullStyle: bx ? "font: inherit; font-weight: 700; font-variant-numeric: tabular-nums; box-sizing: border-box; height: 44px; padding: 0; border-radius: " + inner + "px; cursor: pointer; outline-offset: 2px; border: 2px solid " + (has && v >= max ? t.ok : t.lineStrong) + "; background: " + (has && v >= max ? t.okWash : t.card) + "; color: " + (has && v >= max ? t.ok : t.muted) : "display: none",
+              ofTag: inl ? dec(max) : "", downTip: "−" + dec(st), upTip: "+" + dec(st),
+              ofStyle: "font-weight: 400; font-size: 0.95em; color: " + t.muted + "; white-space: nowrap; text-align: left" + (inl ? "" : "; display: none"),
+              slashStyle: "font-weight: 400; color: " + t.muted + "; padding: 0 3px" + (inl ? "" : "; display: none"),
+              stepTagStyle: "font-size: 0.6em; font-weight: 600; line-height: 1; color: " + t.muted + (inl ? "" : "; display: none"),
+              midStyle: (inl ? "display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);" : "display: flex; justify-content: center;") + " align-items: center; min-width: 0; height: 100%; border-left: 2px solid " + edge + "; border-right: 2px solid " + edge + "; background: " + (bad ? t.badWash : has ? t.surface : t.card),
+              meterOn: met, ticks: ticks(bad ? undefined : v, max, st, t.accent),
+              valueNow: has ? String(v) : "", typed: typed !== undefined ? typed : has ? dec(v) : "",
+              groupLabel: label + ", 0 to " + dec(max) + " in steps of " + dec(st),
+              downLabel: "Take " + dec(st) + " off " + label, upLabel: "Add " + dec(st) + " to " + label,
+              down: function () { put(function (gg, ty) { delete ty[tk]; gg[qid].c[key] = has ? Math.max(0, r2(v - st)) : isBand ? from : r2(max - st); }); },
+              up: function () { put(function (gg, ty) { delete ty[tk]; gg[qid].c[key] = has ? Math.min(max, r2(v + st)) : isBand ? from : max; }); },
+              onType: function (e) {
+                var raw = e.target.value, x = Number(raw);
+                put(function (gg, ty) { ty[tk] = raw; if (raw.trim() === "") delete gg[qid].c[key]; else if (!isNaN(x) && x >= 0 && x <= max && onStep(x, st)) gg[qid].c[key] = x; });
+              },
+              hasUnder: bad, under: "Use steps of " + dec(st) + ", from 0 to " + dec(max),
+              edge: edge, stepBox: "display: grid; grid-template-columns: 36px 40px minmax(0, 1fr) 40px; box-sizing: border-box; height: 44px; border-radius: " + inner + "px; overflow: hidden; border: 2px solid " + edge + "; background: " + t.card,
+              stepBtnR: "-webkit-appearance: none; appearance: none; font: inherit; font-size: 1.25em; font-weight: 700; line-height: 1; padding: 0; margin: 0; border: 0; cursor: pointer; outline-offset: -4px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; background: transparent; color: " + t.text,
+              numStyle: "-webkit-appearance: none; appearance: none; box-sizing: border-box; min-width: 0; height: 100%; margin: 0; padding: 0; border: 0; border-radius: 0; text-align: center; font: inherit; font-size: 1.1em; font-weight: 700; font-variant-numeric: tabular-nums; outline-offset: -4px; " + (inl ? "width: 100%; text-align: right; " : "flex: 1 1 auto; width: 100%; ") + "color: " + (bad ? t.bad : has ? t.text : t.muted) + "; background: transparent"
+            };
+          };
+          var valueSlot = function (v, max, res, st) { return { meterOn: met && !!st, ticks: st ? ticks(v, max, st, res === "c" ? t.ok : res === "p" ? t.warn : res === "w" ? t.bad : t.lineStrong) : [], isStep: false, isValue: true, value: v === undefined ? "–" : dec(v), of: inl || bx ? dec(max) : "", slashS: "font-weight: 400; color: " + t.muted + "; padding: 0 3px" + (inl || bx ? "" : "; display: none"), valueStyle: slot(res) + (inl ? "; display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr)" : ""), hasUnder: false }; };
+
+          var build = function (q, edit) {
+            var g = edit ? G[q.id] : DONE[q.id];
+            var c = { label: "Question " + q.n + (edit ? ", grading" : ", replay"), prompt: q.prompt, rows: [] };
+            c.modeText = { additive: "points per criterion", banded: "bands 0 to 9", holistic: "one score" }[q.mode] + (inl ? "" : ", step " + dec(q.step));
+            c.stepText = inl ? "steps of " + dec(q.step) : "";
+            c.head = "Question " + q.n + " · " + q.points + " points · " + (q.kind === "code" ? "code" : "essay");
+            c.boxLabel = "Rubric for question " + q.n;
+            c.typeTitle = { additive: "Points per criterion", banded: "A band per criterion", holistic: "One score" }[q.mode];
+            // The maximum is in the card's head and badge, so the second line carries the step (and a band's scale).
+            c.stepLine = (q.mode === "banded" ? "bands 0 to 9, " : "") + "step " + dec(q.step);
+            c.by1 = edit ? "Graded by you" : "Graded by Claude (agent)";
+            c.by2 = edit ? "saved at Finish" : "21 Oct 2026";
+            c.edit = edit;
+            c.secTop = "display: grid; grid-template-columns: minmax(0, 1fr) " +  (q.mode === "holistic" ? "284px" : bx ? "262px" : "200px") + "; align-items: center; gap: 14px";
+            var given = 0, need = 0, missing = 0, score = null, sum = 0;
+            // The eraser: muted, hidden (its column kept) while there is nothing to clear.
+            var eraseSeg = function (on, edge) { return "-webkit-appearance: none; appearance: none; font: inherit; display: flex; align-items: center; justify-content: center; height: 100%; padding: 0; margin: 0; border: 0; border-right: 2px solid " + edge + "; outline-offset: -4px; background: " + t.surface + "; cursor: " + (on ? "pointer" : "default") + "; color: " + (on ? t.muted : t.line); };
+            var eraseStyle = function (on) { return "font: inherit; display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; padding: 0; border: 0; border-radius: " + inner + "px; cursor: pointer; background: transparent; color: " + t.muted + (on ? "" : "; visibility: hidden"); };
+            var dropTyped = function (ty, k) { Object.keys(ty).forEach(function (x) { if (x === k || (k.slice(-1) === "." && x.indexOf(k) === 0)) delete ty[x]; }); };
+            if (q.mode !== "holistic") {
+              need = q.criteria.length;
+              c.rows = q.criteria.map(function (cr) {
+                var v = g.c[cr.id], has = v !== undefined;
+                var r = edit ? stepper(q.id, cr.id, cr.max, q.step, cr.text, q.mode === "banded") : valueSlot(v, cr.max, q.mode === "banded" ? "n" : resOf(v, cr.max), q.step);
+                var note = (g.n && g.n[cr.id]) || "";
+                var lost = has && v < cr.max, miss = edit && lost && !note.trim();
+                if (has) { given++; sum += v; }
+                if (miss) missing++;
+                r.text = cr.text;
+                // The eraser sits in the score's control, so it clears the score only; the note is typed work and stays.
+                r.eraseLabel = "Clear the score for " + cr.text;
+                r.eraseSeg = eraseSeg(has, r.edge || t.lineStrong); r.eraseOff = has ? "false" : "true";
+                r.erase = function () { put(function (gg, ty) { delete gg[q.id].c[cr.id]; dropTyped(ty, q.id + "." + cr.id); }); };
+                r.meta = inl || bx ? "" : q.mode === "banded" ? "band 0 to 9" : "up to " + dec(cr.max);
+                r.isPill = false; r.isSeg = false;
+                r.note = note; r.missing = miss;
+                r.showNoteText = !edit && !!note; r.showNoteField = edit;
+                r.req = lost ? "true" : "false";
+                r.ask = lost ? "Note (required: a mark was lost)" : "Note (optional)";
+                r.noteLabel = "Note for " + cr.text;
+                r.noteArea = area(miss);
+                r.onNote = function (e) { var val = e.target.value; put(function (gg) { gg[q.id].n = gg[q.id].n || {}; gg[q.id].n[cr.id] = val; }); };
+                return r;
+              });
+              if (q.mode === "additive") {
+                score = given === need ? r2(sum) : null;
+                c.totalName = "Total"; c.totalHow = score === null ? given + " of " + need + " criteria given" : "the sum of the criteria";
+              } else {
+                if (given === need) { var mean = sum / need; score = Math.floor(mean * 2 + 0.5) / 2; c.totalHow = "mean " + dec(mean) + ", IELTS rounding to " + dec(score); }
+                else c.totalHow = given + " of " + need + " bands given";
+                c.totalName = "Overall band";
+              }
+              c.foot = valueSlot(score === null ? undefined : score, q.points, score === null ? "n" : q.mode === "banded" ? "n" : resOf(score, q.points));
+              if (edit && bx) {
+                // In grade the maximum has its own box on the right, so the total carries no "/ max".
+                var fullT = score !== null && score >= q.points;
+                c.foot.isValue = false; c.foot.isSplit = true;
+                c.foot.stepRow = "display: grid; grid-template-columns: minmax(0, 1fr) auto 56px; align-items: center";
+                c.foot.maxLabel = "Out of " + q.points;
+                c.foot.maxStyle = "display: flex; align-items: center; justify-content: center; box-sizing: border-box; height: 44px; border-radius: " + inner + "px; font-weight: 700; font-variant-numeric: tabular-nums; border: 2px solid " + (fullT ? t.ok : t.lineStrong) + "; background: " + (fullT ? t.okWash : t.card) + "; color: " + (fullT ? t.ok : t.muted);
+              } else c.foot.isSplit = false;
+              c.foot.eraseLabel = ""; c.foot.eraseSeg = ""; c.foot.eraseOff = "true"; c.foot.erase = function () {};
+            } else {
+              need = 1;
+              c.rows = q.bullets.map(function (b) {
+                var cur = (g.b || {})[b.id], vc = { met: t.ok, partly: t.warn, missed: t.bad };
+                var r = { text: b.text, meta: "verdict, not scored", isValue: false, isStep: false, isPill: !edit, isSeg: edit, showNoteText: false, showNoteField: false, missing: false, hasUnder: false, groupLabel: "Verdict for " + b.text,
+                  eraseLabel: "Clear the verdict for " + b.text, eraseSeg: eraseSeg(!!cur, t.lineStrong), eraseOff: cur ? "false" : "true",
+                  erase: function () { put(function (gg) { if (gg[q.id].b) delete gg[q.id].b[b.id]; }); } };
+                if (!edit) {
+                  r.pill = cur ? { met: "Met", partly: "Partly", missed: "Missed" }[cur] : "No verdict";
+                  r.pillLabel = b.text + ": " + r.pill.toLowerCase();
+                  // Grade's group is 3 choices wide; the replay shows only the one given, in a slot of the same size.
+                  r.pillStyle = cur ? slot({ met: "c", partly: "p", missed: "w" }[cur]) + "; font-size: 0.95em; color: " + vc[cur] : slot("n") + "; font-size: 0.92em; font-weight: 500; border-style: dashed; color: " + t.muted;
+                } else {
+                  r.opts = ["met", "partly", "missed"].map(function (k, i) {
+                    var on = cur === k;
+                    return {
+                      text: { met: "Met", partly: "Partly", missed: "Missed" }[k], on: on ? "true" : "false",
+                      pick: function () { put(function (gg) { gg[q.id].b = gg[q.id].b || {}; if (gg[q.id].b[b.id] === k) delete gg[q.id].b[b.id]; else gg[q.id].b[b.id] = k; }); },
+                      style: "-webkit-appearance: none; appearance: none; font: inherit; font-size: 0.92em; margin: 0; padding: 0; border: 0; cursor: pointer; outline-offset: -4px; height: 100%" + (i ? "; border-left: 2px solid " + t.lineStrong : "") + "; font-weight: 700; color: " + (on ? vc[k] : t.text) + "; background: " + (on ? "color-mix(in srgb, " + vc[k] + " 18%, " + t.card + ")" : t.card)
+                    };
+                  });
+                }
+                return r;
+              });
+              var v = g.c.score;
+              if (v !== undefined) { given = 1; score = v; }
+              c.totalName = "Score"; c.totalHow = edit ? (inl || bx ? "type it, or use − and +" : "type it, or use − and +; 0 to " + q.points) : "the score given";
+              c.foot = edit ? stepper(q.id, "score", q.points, q.step, "the score", false) : valueSlot(v, q.points, resOf(v, q.points), q.step);
+              c.foot.eraseLabel = "Clear the score"; c.foot.eraseSeg = eraseSeg(v !== undefined, c.foot.edge || t.lineStrong); c.foot.eraseOff = v !== undefined ? "false" : "true";
+              c.foot.erase = function () { put(function (gg, ty) { delete gg[q.id].c.score; dropTyped(ty, q.id + ".score"); }); };
+            }
+            c.clearAllLabel = "Clear all: every score, verdict and note on question " + q.n;
+            c.clearAll = function () { put(function (gg, ty) { gg[q.id] = { c: {}, n: {}, b: {}, why: "", imp: "" }; dropTyped(ty, q.id + "."); }); };
+            c.clearAllStyle = "font: inherit; display: flex; align-items: center; justify-content: center; flex-shrink: 0; width: 36px; height: 36px; box-sizing: border-box; padding: 0; margin-left: 12px; border-radius: " + inner + "px; cursor: pointer; border: 1px solid " + t.lineStrong + "; background: " + t.card + "; color: " + t.text;
+            var whyReq = q.mode === "holistic" && given === 1, whyMiss = edit && whyReq && !(g.why || "").trim();
+            if (whyMiss) missing++;
+            c.texts = [
+              { label: "Why this score", tag: q.mode === "holistic" ? "required for one score" : "optional", value: g.why || "", req: whyReq ? "true" : "false", miss: whyMiss, key: "why" },
+              { label: "To improve", tag: "optional", value: g.imp || "", req: "false", miss: false, key: "imp" }
+            ].filter(function (x) { return edit || x.value; }).map(function (x) {
+              x.edit = edit; x.read = !edit;
+              x.tagStyle = "font-weight: " + (x.miss ? 700 : 400) + "; color: " + (x.miss ? t.bad : t.muted);
+              x.area = area(x.miss);
+              x.onInput = function (e) { var val = e.target.value; put(function (gg) { gg[q.id][x.key] = val; }); };
+              return x;
+            });
+            // The badge: the replay's result once graded; in grade, what is left to do until then.
+            var st = given === 0 ? "none" : given < need ? "half" : missing ? "bad" : "done";
+            if (st === "done") {
+              var res = resOf(score, q.points);
+              c.badgeText = (res === "c" ? "Correct" : res === "w" ? "Wrong" : "Partly right") + " · " + dec(score) + " / " + q.points;
+              c.badgeIcon = res === "c" ? ICON.check : res === "w" ? ICON.cross : ICON.half;
+              c.badge = res === "c" ? badge(t.ok, t.okWash) : res === "w" ? badge(t.bad, t.badWash) : badge(t.warn, t.surface) + "; border: 2px solid " + t.warn;
+            } else if (st === "bad") { c.badgeText = "Needs a note"; c.badgeIcon = ICON.alert; c.badge = badge(t.bad, t.badWash); }
+            else if (st === "half") { c.badgeText = "Half graded · " + given + " of " + need; c.badgeIcon = ICON.clock; c.badge = badge(t.info, t.infoWash) + "; border: 1px dashed " + t.info; }
+            else { c.badgeText = "Waiting for a grade"; c.badgeIcon = ICON.clock; c.badge = badge(t.info, t.infoWash); }
+            return c;
+          };
+
+          var types = Q.map(function (q) { return { title: q.title, pair: [build(q, false), build(q, true)] }; });
+
+          return {
+            t: t, types: types,
+            rootStyle: "width: 1280px; min-height: 3900px; box-sizing: border-box; display: flex; flex-direction: column; gap: 28px; padding: 36px 40px; background: " + t.bg + "; color: " + t.text + "; font-family: " + font + "; font-size: 17px; line-height: 1.6",
+            statLabel: "font-size: 0.72em; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: " + t.muted,
+            colHead: "font-weight: 700; font-size: 0.9em; padding-bottom: 6px; border-bottom: 2px solid " + t.lineStrong,
+            typeHead: "font-weight: 700; font-size: 1.05em",
+            cardStyle: "display: flex; flex-direction: column; gap: 12px; background: " + t.card + "; border: 1px solid " + border + "; border-radius: " + radius + "px; padding: 20px 22px; box-shadow: " + t.shadow,
+            cardHead: "display: flex; justify-content: space-between; align-items: center; gap: 12px; font-size: 0.8em; color: " + t.muted,
+            stem: "margin: 0; font-size: 1.02em; font-weight: 600",
+            box: "display: flex; flex-direction: column; border: 1px solid " + border + "; border-radius: " + inner + "px; overflow: hidden; background: " + t.surface,
+            boxHead: "display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: 12px; min-height: 52px; padding: 8px 14px; background: " + t.card + "; border-bottom: 2px solid " + t.lineStrong + "; margin-bottom: -1px; position: relative; z-index: 1",
+            sec: "display: flex; flex-direction: column; gap: 8px; padding: 12px 14px; border-top: 1px solid " + border,
+            footSec: "display: flex; flex-direction: column; gap: 8px; padding: 12px 14px; border-top: 2px solid " + t.lineStrong + "; background: " + t.card,
+            noteText: "margin: 0; font-size: 0.92em; color: " + t.muted,
+            reqLine: "font-size: 0.8em; font-weight: 600; color: " + t.bad,
+            stepBtn: "-webkit-appearance: none; appearance: none; font: inherit; font-size: 1.25em; font-weight: 700; line-height: 1; padding: 0; margin: 0; border: 0; cursor: pointer; outline-offset: -4px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; background: transparent; color: " + t.text,
+            slotCol: "display: flex; flex-direction: column; gap: 5px; min-width: 0",
+            meterRow: "display: flex; gap: 2px; padding: 0 2px",
+            slashS: "font-weight: 400; color: " + t.muted + "; padding: 0 3px",
+            stepChip: "margin-left: 8px; font-size: 0.78em; font-weight: 600; font-variant-numeric: tabular-nums; padding: 1px 8px; border-radius: 999px; color: " + t.text + "; background: " + t.sunken + (inl ? "" : "; display: none"),
+            sepS: "padding: 0 7px; font-size: 1.1em; font-weight: 400; color: " + t.muted + (bx ? "" : "; display: none"),
+            clearAllBtn: "font: inherit; font-size: 0.9em; font-weight: 700; display: flex; align-items: center; gap: 8px; box-sizing: border-box; height: 40px; padding: 0 14px; border-radius: " + inner + "px; cursor: pointer; border: 2px solid " + t.lineStrong + "; background: " + t.card + "; color: " + t.text,
+            segBox: "display: grid; grid-template-columns: 36px repeat(3, minmax(0, 1fr)); box-sizing: border-box; height: 44px; border-radius: " + inner + "px; overflow: hidden; border: 2px solid " + t.lineStrong
+          };
+        }
+      }
+    </script>
+  </body>
+</html>
