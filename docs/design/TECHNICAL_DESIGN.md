@@ -520,7 +520,7 @@ Everything is stored in plain files, never a database, because the library is a 
 
 Markdown is the content itself (quizzes, reports, guides), not a data format.
 
-**Every write is atomic.** A file is written to a temporary file in the same folder, flushed, then renamed over the old one, so a crash or Ctrl+C leaves either the old file or the new one, never half of each. On Windows a rename can fail briefly while an editor, a sync client or an antivirus holds the file open, so it is retried for up to a second before exiting 2 with the file named.
+**Every write is atomic.** A file is written to a temporary file in the same folder, flushed, then renamed over the old one, so a crash or Ctrl+C leaves either the old file or the new one, never half of each. On Windows a rename can fail briefly while an editor, a sync client or an antivirus holds the file open, so it is retried for up to a second before exiting 2 with the file named. The temporary file is named `.<file name>.<8 lower-case hex>.tmp`, so a run killed during a write can leave one behind; `quiz serve --autosave FILE` removes the ones of that one file (that exact pattern, in its folder) when it starts and when the results are written, and a file that cannot be removed is left without an error.
 
 **Library and shelf writes take a lock.** A command that changes the library (or writes a shelf) creates `.fullmark.lock` in its root, holding the process id, the command and the start time, and removes it when done, git commit included. Commands that only read never lock.
 
