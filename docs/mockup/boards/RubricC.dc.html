@@ -267,9 +267,7 @@
                             aria-label="{{r.noteLabel}}"
                             aria-required="{{r.req}}"
                             onInput="{{r.onNote}}"
-                            style="{{r.noteArea}}"
-                          >
-{{r.note}}</textarea>
+                            style="{{r.noteArea}}" value="{{r.note}}"></textarea>
                         </sc-if>
                         <sc-if value="{{r.missing}}" hint-placeholder-val="{{ false }}">
                           <span style="{{reqLine}}">Required: a mark was lost, say why</span>
@@ -414,9 +412,7 @@
                             aria-label="{{x.label}}"
                             aria-required="{{x.req}}"
                             onInput="{{x.onInput}}"
-                            style="{{x.area}}"
-                          >
-{{x.value}}</textarea>
+                            style="{{x.area}}" value="{{x.value}}"></textarea>
                         </sc-if>
                         <sc-if value="{{x.read}}" hint-placeholder-val="{{ true }}">
                           <p style="{{noteText}}">{{x.value}}</p>

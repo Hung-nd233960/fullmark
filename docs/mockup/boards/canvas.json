@@ -204,6 +204,21 @@
       "x": 0,
       "y": 15620
     },
+    "RubricPhone.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "title": "On a phone, grade --web, interactive: the same box, 44 px controls (G79, G89); Tweaks for the form and the rubric type",
+      "w": 390,
+      "x": 1830,
+      "y": 15620
+    },
+    "RubricPhoneReplay.dc.html": {
+      "h": 844,
+      "title": "On a phone, the replay: the rubric box stacked (G89), paper + serif",
+      "w": 390,
+      "x": 1360,
+      "y": 15620
+    },
     "Start.dc.html": {
       "h": 1240,
       "is_interactive": true,
@@ -239,21 +254,6 @@
       "w": 1280,
       "x": 1360,
       "y": 2820
-    },
-    "RubricPhoneReplay.dc.html": {
-      "h": 844,
-      "title": "On a phone, the replay: the rubric box stacked (G89), paper + serif",
-      "w": 390,
-      "x": 1360,
-      "y": 15620
-    },
-    "RubricPhone.dc.html": {
-      "h": 844,
-      "is_interactive": true,
-      "title": "On a phone, grade --web, interactive: the same box, 44 px controls (G79, G89); Tweaks for the form and the rubric type",
-      "w": 390,
-      "x": 1830,
-      "y": 15620
     }
   },
   "createdOnFiles": {

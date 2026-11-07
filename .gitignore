@@ -10,5 +10,6 @@ playwright-report/
 # the canvas exports; the boards and images under docs/mockup/ are committed
 docs/mockup/*.zip
 docs/mockup/*.pdf
+docs/mockup/images/*@2x.png
 /samples/
 examples/site/
