@@ -16,6 +16,41 @@
       "x": 0,
       "y": 5240
     },
+    "GradeBanded.dc.html": {
+      "h": 940,
+      "title": "Legacy, option A: the rubric as tiles, one per criterion (banded, dark). Superseded by the table (G85); kept for the rec",
+      "w": 1280,
+      "x": 2704,
+      "y": 14522
+    },
+    "GradeBlocked.dc.html": {
+      "h": 940,
+      "title": "Finish blocked: a lost mark with no note, a half-graded essay",
+      "w": 1280,
+      "x": 1360,
+      "y": 14522
+    },
+    "GradeDone.dc.html": {
+      "h": 940,
+      "title": "Saved: the grades file and the report written, the server stopped",
+      "w": 1280,
+      "x": 2720,
+      "y": 15620
+    },
+    "GradeFinish.dc.html": {
+      "h": 940,
+      "title": "Finish: two graded, two left pending, the grader asked for a name",
+      "w": 1280,
+      "x": 0,
+      "y": 14522
+    },
+    "GradeHolisticTable.dc.html": {
+      "h": 940,
+      "title": "One score (holistic, paper): Rubric point | Verdict, the score as the table footer row",
+      "w": 1280,
+      "x": 8160,
+      "y": 15620
+    },
     "Light.dc.html": {
       "h": 940,
       "title": "light + system, free",
@@ -49,15 +84,15 @@
       "is_interactive": true,
       "title": "Phone: the sidebar takes the screen, with a way back",
       "w": 390,
-      "x": 3594,
+      "x": 2774,
       "y": 9523
     },
     "MaterialsStacked.dc.html": {
       "h": 940,
       "title": "Sidebar B, stacked: the layout while answering; part tabs and one grid over the materials",
       "w": 1280,
-      "x": 683,
-      "y": 10583
+      "x": 0,
+      "y": 10571
     },
     "Oled.dc.html": {
       "h": 940,
@@ -84,8 +119,8 @@
       "h": 1123,
       "title": "Printable paper: materials page, after the last question and before the key",
       "w": 794,
-      "x": 2720,
-      "y": 9523
+      "x": 1748,
+      "y": 8280
     },
     "PrintPaper.dc.html": {
       "h": 1123,
@@ -119,7 +154,7 @@
     },
     "ResultsReplay.dc.html": {
       "h": 1560,
-      "title": "Replay: paper + serif, banner, essay graded by the agent, results map open",
+      "title": "Replay: paper + serif, banner, the essay graded by the agent in the rubric box (G86), results map open",
       "w": 1280,
       "x": 2720,
       "y": 6600
@@ -161,6 +196,14 @@
       "x": 0,
       "y": 13060
     },
+    "RubricC.dc.html": {
+      "h": 3900,
+      "is_interactive": true,
+      "title": "The rubric box, interactive: each rubric type (additive, banded, holistic, code) as the replay reads it (left) and as gr",
+      "w": 1280,
+      "x": 0,
+      "y": 15620
+    },
     "Start.dc.html": {
       "h": 1240,
       "is_interactive": true,
@@ -197,99 +240,20 @@
       "x": 1360,
       "y": 2820
     },
-    "Grade.dc.html": {
-      "x": 0,
-      "y": 14560,
-      "w": 1280,
-      "h": 940,
-      "title": "quiz grade --web, interactive: the answer beside the rubric, inputs on valid steps, a running total; tweaks for mode, AI grades, dialogs",
-      "is_interactive": true
-    },
-    "GradeBanded.dc.html": {
-      "x": 1360,
-      "y": 14560,
-      "w": 1280,
-      "h": 940,
-      "title": "Legacy, option A: the rubric as tiles, one per criterion (banded, dark). Superseded by the table (G85); kept for the record"
-    },
-    "GradeAI.dc.html": {
-      "x": 2720,
-      "y": 14560,
-      "w": 1280,
-      "h": 940,
-      "title": "With --grades: Claude's grades pre-filled to accept or adjust (holistic, paper, --name given)"
-    },
-    "GradeCode.dc.html": {
-      "x": 4080,
-      "y": 14560,
-      "w": 1280,
-      "h": 940,
-      "title": "A code answer, white, sidebar closed"
-    },
-    "GradePhone.dc.html": {
-      "x": 5440,
-      "y": 14560,
-      "w": 390,
+    "RubricPhoneReplay.dc.html": {
       "h": 844,
-      "title": "quiz grade --web on a phone: answer over rubric, Finish at the foot",
-      "is_interactive": true
-    },
-    "GradeFinish.dc.html": {
-      "x": 0,
-      "y": 15620,
-      "w": 1280,
-      "h": 940,
-      "title": "Finish: two graded, two left pending, the grader asked for a name"
-    },
-    "GradeBlocked.dc.html": {
+      "title": "On a phone, the replay: the rubric box stacked (G89), paper + serif",
+      "w": 390,
       "x": 1360,
-      "y": 15620,
-      "w": 1280,
-      "h": 940,
-      "title": "Finish blocked: a lost mark with no note, a half-graded essay"
+      "y": 15620
     },
-    "GradeDone.dc.html": {
-      "x": 2720,
-      "y": 15620,
-      "w": 1280,
-      "h": 940,
-      "title": "Saved: the grades file and the report written, the server stopped"
-    },
-    "GradeVi.dc.html": {
-      "x": 4080,
-      "y": 15620,
-      "w": 1280,
-      "h": 940,
-      "title": "quiz grade --web with ui_lang vi: the form in Vietnamese, the answers in the quiz language"
-    },
-    "GradeBandedTable.dc.html": {
-      "x": 5440,
-      "y": 15620,
-      "w": 1280,
-      "h": 940,
-      "title": "A banded essay (IELTS Task 2), dark: Criterion | Band | Note, a band per criterion, the overall band computed"
-    },
-    "GradeAdditiveTable.dc.html": {
-      "x": 6800,
-      "y": 15620,
-      "w": 1280,
-      "h": 940,
-      "title": "Points per criterion (additive, light): Criterion | Points | Note, the score split − | points | + in its cell"
-    },
-    "GradeHolisticTable.dc.html": {
-      "x": 8160,
-      "y": 15620,
-      "w": 1280,
-      "h": 940,
-      "title": "One score (holistic, paper): Rubric point | Verdict, the score as the table footer row"
-    },
-    "RubricC.dc.html": {
-      "h": 3900,
+    "RubricPhone.dc.html": {
+      "h": 844,
       "is_interactive": true,
-      "title": "The rubric box, interactive: each rubric type (additive, banded, holistic, code) as the replay reads it (left) and as grade fills it (right); rounded sections, no table",
-      "w": 1280,
-      "x": 0,
-      "y": 17060
+      "title": "On a phone, grade --web, interactive: the same box, 44 px controls (G79, G89); Tweaks for the form and the rubric type",
+      "w": 390,
+      "x": 1830,
+      "y": 15620
     }
   },
   "createdOnFiles": {
@@ -300,15 +264,11 @@
   "launch": {
     "view": "canvas"
   },
+  "noteOrder": [
+    "formsReview",
+    "formsGrade"
+  ],
   "notes": {
-    "formsReview": {
-      "kind": "title1",
-      "maxW": 4470,
-      "text": "Forms: quiz review",
-      "w": 240,
-      "x": 0,
-      "y": 11700
-    },
     "formsGrade": {
       "kind": "title1",
       "maxW": 5830,
@@ -317,13 +277,13 @@
       "x": 0,
       "y": 14260
     },
-    "formsGradeC": {
+    "formsReview": {
       "kind": "title1",
-      "maxW": 1280,
-      "text": "Option C, one rubric box for quiz replay and quiz grade --web",
+      "maxW": 4470,
+      "text": "Forms: quiz review",
       "w": 240,
       "x": 0,
-      "y": 16760
+      "y": 11700
     }
   },
   "order": [
@@ -354,19 +314,14 @@
     "ReviewFinish.dc.html",
     "ReviewPhone.dc.html",
     "ReviewVi.dc.html",
-    "Grade.dc.html",
     "GradeBanded.dc.html",
-    "GradeBandedTable.dc.html",
-    "GradeAdditiveTable.dc.html",
     "GradeHolisticTable.dc.html",
-    "GradeAI.dc.html",
-    "GradeCode.dc.html",
-    "GradePhone.dc.html",
     "GradeFinish.dc.html",
     "GradeBlocked.dc.html",
     "GradeDone.dc.html",
-    "GradeVi.dc.html",
-    "RubricC.dc.html"
+    "RubricC.dc.html",
+    "RubricPhoneReplay.dc.html",
+    "RubricPhone.dc.html"
   ],
   "pages": [],
   "title": "fullmark themes"

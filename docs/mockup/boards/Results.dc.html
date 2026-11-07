@@ -562,27 +562,57 @@
                     mẫu ở 10 kHz trông giống 3 kHz.
                   </p>
                 </div>
-                <table style="{{tableStyle}}">
-                  <thead>
-                    <tr style="text-align: left; color: {{t.muted}}">
-                      <th style="{{th}}">Criterion</th>
-                      <th style="{{thNum}}">Awarded</th>
-                      <th style="{{thNum}}">Max</th>
-                      <th style="{{th}}">Note</th>
-                    </tr>
-                  </thead>
-                  <tbody>
+                <sc-if value="{{graded}}" hint-placeholder-val="{{ true }}">
+                  <div role="group" aria-label="Rubric for question 32" style="{{box}}">
+                    <div style="{{boxHead}}">
+                      <span style="display: flex; flex-direction: column; line-height: 1.3; min-width: 0">
+                        <span style="font-weight: 700; color: {{t.hint}}">Points per criterion</span>
+                        <span style="font-size: 0.82em; color: {{t.muted}}">step 0.5</span>
+                      </span>
+                      <span style="display: flex; flex-direction: column; align-items: flex-end; line-height: 1.3; text-align: right">
+                        <span style="font-size: 0.85em; font-weight: 600">Graded by Claude (agent)</span>
+                        <span style="font-size: 0.8em; color: {{t.muted}}">21 Oct 2026</span>
+                      </span>
+                    </div>
                     <sc-for list="{{rubric}}" as="r" hint-placeholder-count="3">
-                      <tr>
-                        <td style="{{td}}">{{r.name}}</td>
-                        <td style="{{tdNum}}">{{r.awarded}}</td>
-                        <td style="{{tdNum}}">{{r.max}}</td>
-                        <td style="{{tdNote}}">{{r.note}}</td>
-                      </tr>
+                      <div style="{{sec}}">
+                        <div style="{{secTop}}">
+                          <span style="font-weight: 600; min-width: 0">{{r.name}}</span>
+                          <span aria-label="{{r.label}}" style="{{r.slot}}"
+                            ><span aria-hidden="true">{{r.awarded}}</span
+                            ><span aria-hidden="true" style="{{slashS}}">/</span
+                            ><span aria-hidden="true" style="font-weight: 400; color: {{t.muted}}">{{r.max}}</span></span
+                          >
+                        </div>
+                        <sc-if value="{{r.hasNote}}" hint-placeholder-val="{{ true }}">
+                          <p style="{{noteText}}">{{r.note}}</p>
+                        </sc-if>
+                      </div>
                     </sc-for>
-                  </tbody>
-                </table>
-                <span style="font-size: 0.85em; color: {{t.muted}}">{{graderLine}}</span>
+                    <div style="{{footSec}}">
+                      <div style="{{secTop}}">
+                        <span style="display: flex; flex-direction: column; line-height: 1.35; min-width: 0">
+                          <span style="font-weight: 700; color: {{t.accent}}">Total</span>
+                          <span style="font-size: 0.82em; color: {{t.muted}}">the sum of the criteria</span>
+                        </span>
+                        <span aria-label="3 of 4 points" style="{{totalSlot}}"
+                          ><span aria-hidden="true">3</span
+                          ><span aria-hidden="true" style="{{slashS}}">/</span
+                          ><span aria-hidden="true" style="font-weight: 400; color: {{t.muted}}">4</span></span
+                        >
+                      </div>
+                    </div>
+                    <sc-for list="{{texts}}" as="x" hint-placeholder-count="2">
+                      <div style="{{sec}}">
+                        <span style="font-weight: 600; font-size: 0.92em">{{x.label}}</span>
+                        <p style="{{noteText}}">{{x.value}}</p>
+                      </div>
+                    </sc-for>
+                  </div>
+                </sc-if>
+                <sc-if value="{{pending}}" hint-placeholder-val="{{ false }}">
+                  <span style="font-size: 0.85em; color: {{t.muted}}">{{graderLine}}</span>
+                </sc-if>
               </section>
             </sc-if>
           </main>
@@ -784,11 +814,24 @@
           var cellPad = "padding: 8px 12px; border-top: 1px solid " + t.lineStrong + "; border-left: 1px solid " + t.line;
           var headCell = "padding: 6px 12px; font-weight: 700; font-size: 0.85em; border-bottom: 2px solid " + t.lineStrong + "; border-left: 1px solid " + t.line;
 
+          var inner = themeName === "white" ? 4 : 8;
+          var rborder = themeName === "oled" || themeName === "white" ? t.lineStrong : t.line;
+          var slotOf = function (aw, mx) {
+            var res = aw >= mx ? "c" : aw <= 0 ? "w" : "p";
+            var bd = res === "c" ? "2px solid " + t.ok : res === "p" ? "2px solid " + t.warn : "2px solid " + t.bad;
+            var bg = res === "c" ? t.okWash : res === "w" ? t.badWash : t.card;
+            return "display: flex; align-items: center; justify-content: center; box-sizing: border-box; height: 44px; border-radius: " + inner + "px; font-weight: 700; font-size: 1.1em; font-variant-numeric: tabular-nums; border: " + bd + "; background: " + bg;
+          };
           var rubric = [
             { name: "States the Nyquist condition", max: "1", awarded: graded ? "1" : "—", note: graded ? "Correct: fs ≥ 2·fmax." : "" },
             { name: "Explains the spectral overlap", max: "2", awarded: graded ? "1" : "—", note: graded ? "Says the copies overlap, but not where they fold (fs/2)." : "" },
             { name: "Gives a worked example", max: "1", awarded: graded ? "1" : "—", note: graded ? "7 kHz at 10 kHz showing as 3 kHz is right." : "" }
-          ];
+          ].map(function (r) {
+            r.slot = slotOf(Number(r.awarded), Number(r.max));
+            r.label = r.awarded + " of " + r.max + (r.max === "1" ? " point" : " points");
+            r.hasNote = !!r.note;
+            return r;
+          });
           var pct = function (v) { return Math.round(v) + "%"; };
           // Each part's bar is split by result, in the map's order and colours; flags are not shown.
           var segFill = { c: t.ok, p: t.warn, w: t.bad, u: t.lineStrong, e: t.info };
@@ -874,6 +917,19 @@
             q19Choices: [choice("A", "Hàm sinc", false, true), choice("B", "Hàm Gauss", false, false), choice("C", "Hàm mũ suy giảm", true, false), choice("D", "Hàm delta Dirac", false, false)],
             q27Choices: [choice("A", "The signal is band-limited", true, true), choice("B", "fs is more than twice the highest frequency", false, true), choice("C", "The signal is periodic", false, false), choice("D", "The samples are quantised to 16 bits", false, false)],
             rubric: rubric,
+            graded: graded,
+            box: "display: flex; flex-direction: column; border: 1px solid " + rborder + "; border-radius: " + inner + "px; overflow: hidden; background: " + t.surface,
+            boxHead: "display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 12px; min-height: 52px; box-sizing: border-box; padding: 8px 14px; background: " + t.card + "; border-bottom: 2px solid " + t.lineStrong + "; margin-bottom: -1px; position: relative; z-index: 1",
+            sec: "display: flex; flex-direction: column; gap: 8px; padding: 12px 14px; border-top: 1px solid " + rborder,
+            secTop: "display: grid; grid-template-columns: minmax(0, 1fr) 262px; align-items: center; gap: 14px",
+            footSec: "display: flex; flex-direction: column; gap: 8px; padding: 12px 14px; border-top: 2px solid " + t.lineStrong + "; background: " + t.card,
+            noteText: "margin: 0; font-size: 0.92em; color: " + t.muted,
+            slashS: "font-weight: 400; color: " + t.muted + "; padding: 0 3px",
+            totalSlot: slotOf(3, 4),
+            texts: [
+              { label: "Why this score", value: "A clear statement of the condition and a right example; the overlap is described but not where the copies fold." },
+              { label: "To improve", value: "Say that frequencies above fs/2 fold back around fs/2, and show it on the example." }
+            ],
             graderLine: graded ? "Graded by Claude (agent) · 21 Oct 2026 · 3 / 4 points" : "Not graded yet. Run quiz grade, then open the attempt again to see the grade.",
             essayIcon: graded ? "M12 4a8 8 0 0 1 0 16z" : "M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 7v5l3 2",
             essayBadgeText: graded ? "Partly right · 3 / 4" : "Waiting for a grade · not in the score yet",

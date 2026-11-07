@@ -886,7 +886,7 @@ Built by Sonnet in three commits, `d0e44e4`..`be1629f`, from the brief alone; re
 
 ## Slice 3o: the rubric box, read-only, in place of the grade table
 
-**Approved by the owner on 2026-11-07**, with G89 and G90 as recommended. It builds G86's box on the page after Submit and in `quiz replay`, and G84's "chữ", so that 3f's form starts from a box the page already has. The editable box is 3f's. Built from the RubricC board's left column (`docs/mockup/boards/RubricC.dc.html`, its "scale" Tweak on `box`, the default), in the page's frame as the ResultsReplay board draws it.
+**Approved by the owner on 2026-11-07**, with G89 and G90 as recommended. It builds G86's box on the page after Submit and in `quiz replay`, and G84's "chữ", so that 3f's form starts from a box the page already has. The editable box is 3f's. Built from the RubricC board's left column (`docs/mockup/boards/RubricC.dc.html`, its "scale" Tweak on `box`, the default), in the page's frame as the ResultsReplay board draws it (redrawn with the box on 2026-11-07); on a phone, from RubricPhoneReplay (G89).
 
 ### Read first
 
